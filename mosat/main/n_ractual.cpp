@@ -37,12 +37,6 @@ int n_read_actual(char *fname, time_t times[], int max,
       continue;
     }
     long sensor = atol(argv[0]);
-    long n_pulses = atol(argv[5]);
-    //printf("%s %s %s %s ", argv[0], argv[2], argv[3], argv[5]);
-//char *strptime(const char *s, const char *format, struct tm *tm);
-//char *strptime(const char *s, const char *format, struct tm *tm);
-    //time_t mytime;
-    //mytime = time(NULL);
     localtime_r(&today, &mytm);
     if (NULL == strptime(argv[3], "%T", &mytm))
     {
@@ -61,7 +55,6 @@ int n_read_actual(char *fname, time_t times[], int max,
       continue;
     }
     times[n_lines] = this_time;
-    //times[n_lines] = this_time - 35;
     n_lines++;
     if (n_lines >= max)
     {
@@ -70,20 +63,3 @@ int n_read_actual(char *fname, time_t times[], int max,
   }
   return n_lines;
 }
-
-/***
-int main(int xargc, char *xargv[])
-{
-  time_t scheduled[500];
-  int n = read_actual("logdata/20050203_log.txt", scheduled, 500);
-  printf("n = %d\n", n);
-  for (int i=0; i < n; i++)
-  {
-    char buf1[30];
-    struct tm mytm;
-    localtime_r(&scheduled[i], &mytm);
-    strftime(buf1, sizeof(buf1), "%T, %F", &mytm);
-    printf("%s\n", buf1); 
-  }
-}
-****/

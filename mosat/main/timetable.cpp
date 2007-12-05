@@ -43,18 +43,14 @@ int square_number(double difference, section_info_t *sinfo)
   int ns = 0;
   for (int i=0; i < sinfo->n; i++)
   {
-//     printf("loop %d total time: %lf, ns: %d\n",i, total_time, ns);
     if (difference < (total_time + sinfo->times[i]))
     {
       double fraction = difference - total_time;
       double f25 = sinfo->times[i] / 4.0;
-//      printf("total time: %lf\n",total_time);
-//      printf("Fraction: %lf\nF25: %lf\n",fraction,f25);
       return ns + 1 + int(fraction / f25);
     }
     if (difference < (total_time + sinfo->times[i]) + 8.0)
     {
-//      printf("At station, adding 5\n");
       return ns + 5;
     }
     ns += 5;
@@ -99,18 +95,12 @@ void gen_html(FILE *fp, char *background, int top, int left,
   {
     fprintf(fp, "\n");
     fprintf(fp, "<div style=\"position:absolute; top:%dpx; left:%dpx; z-index:2\">\n", top + itop[i], left + ileft[i]);
-    //if (i == 0) 
-    //  fprintf(fp, "        <img SRC=%s>\n", "where.png");
-    //else 
-      fprintf(fp, "        <img SRC=%s>\n", iname);
+    fprintf(fp, "        <img SRC=%s>\n", iname);
     fprintf(fp, "</div>\n");
     fprintf(fp, "<div style=\"position:absolute; top:%dpx; left:%dpx; z-index:2\">\n", top + texttop[i], left + textleft[i]);
     fprintf(fp, "        %s\n", thetext[i]);
     fprintf(fp, "</div>\n");
-
-
   }
-
 
   fprintf(fp, "\n");
   fprintf(fp, "</body>\n");
@@ -138,7 +128,6 @@ void gen_display(FILE *fp, char *background, int top, int left, char *iname,
       itop[k] = 222;
       texttop[k] = 222 + 30;
     }
-    //itop[k] = (itop[k] == 0) ? 180 : 222;
     ileft[k] = (int)((((double) td[k].square / 45.0) * (969.0 - 22.0)) + 22.0);
     textleft[k] = ileft[k] - 10;
     char buf[30];
@@ -149,53 +138,14 @@ void gen_display(FILE *fp, char *background, int top, int left, char *iname,
   }
   gen_html(fp, background, top, left, iname, n, 
        itop, ileft, textleft, texttop, thetext);
-
 }
 
 /**********************************************************************/
-
-
-
-/**
-       int flock(int fd, int operation);
-
-DESCRIPTION
-       Apply  or  remove an advisory lock on the open file specified by fd.  The parameter operation is one of the follow-
-       ing:
-
-              LOCK_SH   Place a shared lock.  More than one process may hold a shared lock for a given  file  at  a  given
-                        time.
-
-              LOCK_EX   Place  an exclusive lock.  Only one process may hold an exclusive lock for a given file at a given
-                        time.
-
-              LOCK_UN   Remove an existing lock held by this process.
-
-       int ftruncate(int fd, off_t length);
-
-       int fseek(FILE *stream, long offset, int whence);
-       long ftell(FILE *stream);
-       void rewind(FILE *stream);
-       int fgetpos(FILE *stream, fpos_t *pos);
-       int fsetpos(FILE *stream, fpos_t *pos);
-
-
-
-***/
 
 #define NORMAL_DEPARTURE (0)
 #define MISSING_DEPARTURE (1)
 #define EXTRA_DEPARTURE (2)
 
-/****
-int calc_time(int skip_place, time_t a1[], int a1_idx, 
-                    time_t a2[], int a2_idx, int max)
-{
-  for (int i = 0; (i < 5) && (i < max); i++)
-  {
-  }
-}
-*******/
 
 int decide_status(time_t programmed[], int prog_idx, 
                     time_t actual[], int actual_idx, int max)
@@ -208,17 +158,6 @@ int decide_status(time_t programmed[], int prog_idx,
   {
     return NORMAL_DEPARTURE;
   }
- /**
-    if ((programmed_time - actual_time) > 240)
-    if ((programmed_time - actual_time) < -240)
-  **/
-//  int dif = abs(programmed[prog_idx] - actual[actual_idx]);
-  /**
-  if (dif < 240)
-  {
-    return NORMAL_DEPARTURE;
-  }
-  ***/
   int total1 = 0;
   int total2 = 0;
   int total3 = 0;
@@ -372,7 +311,6 @@ int get_int (char argv[],char n_exit[50][200],char int_type[50][200])
   file = fopen(path,"w+");
   for(y=0;y<x;y++)
   {
-   //printf("exit=>%s\tinter=>%s\n",n_exit[y],int_type[y]);
    fprintf(file,"%s\t%s\n",n_exit[y],int_type[y]);
   }
   fclose(file);
@@ -436,7 +374,6 @@ fprintf(fp, "}\n");
   fprintf(fp, "alt=\"slogo\" src=\"../slogo.jpg\" style=\"width: 75px; height: 75px;\"><br>\n");
   fprintf(fp, "</td>\n");
   fprintf(fp, "<td colspan=\"5\" style=\"text-align: center; vertical-align: center;\"><big><big><big>%s<br>\n", station);
-  //fprintf(fp, "Sur<br>\n");
 
   localtime_r(&programmed[0], &mytm);
   strftime(buf1, sizeof(buf1), "%F", &mytm);
@@ -471,16 +408,10 @@ fprintf(fp, "}\n");
   char n_exit[50][200],int_type[50][200];
   int x;
   x  = get_int(dir,n_exit,int_type);
-/*  for(int y=0;y<x;y++)
-   printf("exit=>%s\tinter=>%s\n",n_exit[y],int_type[y]);*/
-
-/**********/
   int prog_idx = 0;
   int actual_idx = 0;
   time_t programmed_time;
   time_t actual_time; 
-  //time_t netfail_start = 0;
-  //time_t netfail_end = 0;
   int train_num;
   int total_dif = 0;
   int total_valid_dif = 0;
@@ -493,7 +424,6 @@ fprintf(fp, "}\n");
     prog_idx++;
     actual_time = actual[actual_idx];
     actual_idx++;
-    //printf("prog %d, act %d, ", programmed_time, actual_time);
     int status;// = decide_status(programmed, prog_idx, actual, actual_idx, n_times);
     int filter;
     localtime_r(&programmed_time, &mytm);
@@ -505,10 +435,7 @@ fprintf(fp, "}\n");
       if(intervalcont[1]!=0)
       {
        interval[0]=interval[0]/intervalcont[1];
-//       interval[0]=interval[0]-900;
       }     
-//      if(interval[0]<0)
-//       interval[0]=interval[0]*-1;
       intervalcont[0]=1;
       intervalcont[1]=0;
      }
@@ -517,10 +444,7 @@ fprintf(fp, "}\n");
       if(intervalcont[1]!=0)
       {
        interval[1]=interval[1]/intervalcont[1];
-//       interval[1]=interval[1]-315;
       }
-//      if(interval[1]<0)
-//       interval[1]=interval[1]*-1;
       intervalcont[0]=2;
       intervalcont[1]=0;
      }
@@ -529,10 +453,7 @@ fprintf(fp, "}\n");
       if(intervalcont[1]!=0)
       {
        interval[2]=interval[2]/intervalcont[1];
-//       interval[2]=interval[2]-540;
       }
-//      if(interval[2]<0)
-//       interval[2]=interval[2]*-1;
       intervalcont[0]=3;
       intervalcont[1]=0;
      }
@@ -541,10 +462,7 @@ fprintf(fp, "}\n");
       if(intervalcont[1]!=0)
       {
        interval[3]=interval[3]/intervalcont[1];
-//       interval[3]=interval[3]-420;
       }
-//      if(interval[3]<0)
-//       interval[3]=interval[3]*-1;
       intervalcont[0]=4;
       intervalcont[1]=0;
      }
@@ -553,10 +471,7 @@ fprintf(fp, "}\n");
       if(intervalcont[1]!=0)
       {
        interval[4]=interval[4]/intervalcont[1];
-//       interval[4]=interval[4]-315;
       }
-//      if(interval[4]<0)
-//       interval[4]=interval[4]*-1;
       intervalcont[0]=5;
       intervalcont[1]=0;
      }
@@ -566,10 +481,7 @@ fprintf(fp, "}\n");
      if(intervalcont[1]!=0)
      {
       interval[5]=interval[5]/intervalcont[1];
-//      interval[5]=interval[5]-630;
      }
-//     if(interval[5]<0)
-//      interval[5]=interval[5]*-1;
     }
     localtime_r(&actual_time, &mytm);
     strftime(buf2, sizeof(buf2), "%H", &mytm);
@@ -589,14 +501,6 @@ fprintf(fp, "}\n");
      prev[1]+=mytm.tm_min*60;
      prev[1]+=mytm.tm_hour*60*60;
     }
-/*    strftime(buf1, sizeof(buf1), "%M", &mytm);
-    if(atoi(buf2)==22&&atoi(buf1)>=30)
-     if(i==n_times-1)
-     {
-        n_times+=5;
-        if(!strcmp(dir,"tetlan"))
-         n_times--;
-     }*/
     filter=atoi(buf2);
     if(filter<5)
     {
@@ -675,7 +579,6 @@ fprintf(fp, "}\n");
       actual_idx--;
       actual_time = 0;
     }
-    //printf("Act %d, Sched %d\n", actual_idx, prog_idx);
     if (programmed_time == 0)
     {
       snprintf(buf1, sizeof(buf2), "-");
@@ -767,7 +670,6 @@ fprintf(fp, "}\n");
     else if (dif > 25)
     {
       fprintf(fp, "background-color: rgb(255, 255, 150); "); 
-      //pdc--;
     }
 
     fprintf(fp, "vertical-align: top; text-align: center;\">");
@@ -798,7 +700,6 @@ fprintf(fp, "}\n");
       interflag=-1;
     if (interflag!= -1) 
     {
-      //fprintf(fp, "%s", int_type[interflag]); 
       fprintf(fp,"<a href=\"#\" onclick=\"openWin('/cgi-bin/interdel?%d+%s+%s');return false;\" class=\"menu8\">%s</a>\n",j,dir,station,int_type[interflag]);
     }
     else 
@@ -835,7 +736,7 @@ fprintf(fp, "}\n");
   fprintf(fp, "    <tr>\n");
   fprintf(fp, "      <td colspan=\"6\" style=\"vertical-align: top; text-align: right;\">Porciento de Cumplimiento\n(Salidas con una diferencia de +/- 30seg)\n");
   fprintf(fp, "      </td>\n");
-  fprintf(fp, "      <td style=\"vertical-align: top; text-align: center;\">%.2f%<br>\n",(pdc/total_departures)*100);
+  fprintf(fp, "      <td style=\"vertical-align: top; text-align: center;\">%.2f%%<br>\n",(pdc/total_departures)*100);
   fprintf(fp, "      </td>\n");
   fprintf(fp, "    </tr>\n");
 /***************************************************************/
@@ -962,7 +863,6 @@ fprintf(fp, "}\n");
   fprintf(pdc_h,"%s\t%.2f\n",D,(pdc/total_departures)*100);
   fclose(pdc_h);
 /***************************************************************/
-/***************************************************************/
   FILE *gra;
   char day[50][100],pc[50][100],c;
   int c1=0,c2=0,f=0,jk;
@@ -1032,14 +932,12 @@ fprintf(fp, "}\n");
   {
    strncpy(day[c1],D,strlen(D));
    sprintf(pc[c1],"%.2f",(pdc/total_departures)*100);
-   //printf("c1->%d\tday->%s\tpercent->%s\n",c1,day[c1],pc[c1]);
    c1++;
   }
   gra = fopen(path,"w+");
    for(jk = 0;jk < c1; jk ++)
    {
     fprintf(gra,"%s\t%s\n",day[jk],pc[jk]);
-    //printf("jk->%d\tdia->%s\t%%->%s\n",jk,day[jk],pc[jk]);
    }
   fclose(gra);
   fprintf(fp, "  </tbody>\n");
@@ -1059,7 +957,6 @@ int main(int argc, char *argv[])
   int train[500];
   time_t actual[500];
   time_t programmed[500];
-  time_t start_time = time(NULL);
   int interuption[500];
   struct tm mytm;
   time_t mytime;
@@ -1071,9 +968,6 @@ int main(int argc, char *argv[])
     actual[i] = 0;
   }
 
-  //struct timespec res;
-  //int ret = clock_getres(CLOCK_REALTIME, &res);
-  //printf("%d %ld %ld\n", ret, res.tv_sec, res.tv_nsec);
   if (argc < 3)
   {
      printf("Not enough args\n");
@@ -1082,7 +976,6 @@ int main(int argc, char *argv[])
   char date_str[50];
   if (argc > 3)
   {
-    //strncpy(date_str, argv[3],strlen(argv[3]));
     strcpy(date_str, argv[3]);
   }
   else
@@ -1112,7 +1005,6 @@ int main(int argc, char *argv[])
   hd=fopen("/var/www/html/react/log/festivo.txt","r");
   int month_day = mytm.tm_mday;
   int month = mytm.tm_mon;
-//  printf("%i\n",month_day);
   char *sched_type;
   char sched_fname[200];
   switch (week_day)
@@ -1168,48 +1060,6 @@ int main(int argc, char *argv[])
       sched_type="domingo.txt";
    }
   }
-/*  hd=fopen("/var/www/html/react/log/navidad.txt","r");
-  if(hd == NULL)
-   puts("Cannot read the file navidad.txt");
-  else
-  {
-   int cont=0,cont2=0,flag=0;
-   char month_fest[20][10],day_fest[30][30],c;
-   while(!feof(hd))
-   {
-    fread(&c,sizeof(c),1,hd);
-    if(!isspace(c))
-    {
-     if(flag)
-      day_fest[cont][cont2]=c;
-     else
-      month_fest[cont][cont2]=c;
-     cont2++;
-    }
-    else
-    {
-     if(flag)
-     {
-      flag=0;
-      day_fest[cont][cont2]='\x0';
-      cont++;
-     }
-     else
-     {
-      flag=1;
-      month_fest[cont][cont2]='\x0';
-     }
-     cont2=0;
-    }
-   }
-   fclose(hd);
-   for(cont2=0;cont2<cont;cont2++)
-   {
-    if(month==(atoi(month_fest[cont2])-1))
-     if(month_day==atoi(day_fest[cont2]))
-      sched_type="navideno.txt";
-   }
-  }*/
 /***********************************************************/
 
   snprintf(sched_fname, sizeof(sched_fname), "%s/%s/%s", 
@@ -1224,11 +1074,9 @@ int main(int argc, char *argv[])
     char buf1[30];
     localtime_r(&programmed[i], &mytm);
     strftime(buf1, sizeof(buf1), "%T, %F", &mytm);
-    //printf("%02ld %s\n", train[i], buf1);
     int dif = 5;
     if (i == 5) dif = 10;
     if (i == 10) dif = 20;
-    //actual[i] = programmed[i] + dif;
     actual[i] = 0; 
   }
 
@@ -1247,10 +1095,6 @@ int main(int argc, char *argv[])
     strftime(buf1, sizeof(buf1), "%T, %F", &mytm);
   }
   int max = n_sched;
-/*  if (max < n_actual)
-  {
-    max = n_actual;
-  }*/
   printf("Scheduled: %d, Actual %d\n", n_sched, n_actual);
   char terminal[30];
   if(strcmp("periferico_sur",argv[1])==0)
@@ -1264,7 +1108,6 @@ int main(int argc, char *argv[])
   }
   snprintf(fname, sizeof(fname), 
        "%s/%s/%s_report_%s.html", HOME_DIR, argv[1], date_str,terminal);
-//"../public_html/log/
   printf("Generating: %s\n", fname);
   FILE *fp = fopen(fname, "w");
   if (fp == NULL)
@@ -1291,5 +1134,4 @@ int main(int argc, char *argv[])
   int left = 0;
 
   gen_display(fp, background, top, left, iname, td, ntd);
-
 }
