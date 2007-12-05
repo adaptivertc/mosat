@@ -2,10 +2,13 @@ INCLUDES = hp2mod.h  hprtu.h  modio.h  modsim.h  mtype.h  trace.h
 
 CC = g++ -Wall
 
+
+ALL= remote_record ntt runit ppc_record sync auto_report frames ppc_all
+
+all:	$(ALL)
+
 %.o:	%.cpp $(INCLUDES)
 	$(CC) -c -o $@ -Wall $<
-
-all:	remote_record ntt runit ppc_record ppc_all sync auto_report frames
 
 ppc_record: ppc_record.o train_detect.o evlog.o train_detect.h ppc_logger.o ppc_logger.h event_detect.o
 	g++ -g -o ppc_record -lrtcommon -lpthread \
@@ -22,7 +25,7 @@ runit:	runit.cpp
 	g++ -o runit runit.cpp
 
 clean:	
-	rm -fv *.o *.so runit ntt 
+	rm -fv *.o *.so $(ALL) 
 	make -f makefile.ppc clean
 
 
@@ -45,7 +48,7 @@ frames:	frames.cpp
 	g++ -Wall -o frames frames.cpp
 
 clean:	
-	rm -fv *.o *.so runit ntt 
+	rm -fv *.o *.so $(ALL) 
 	make -f makefile.ppc clean
 
 
