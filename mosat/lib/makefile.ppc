@@ -1,5 +1,5 @@
 
-CC= powerpc-linux-g++
+CC= powerpc-linux-g++ -I/usr/local/include
 
 DIR=ppc/
 
