@@ -42,4 +42,4 @@ $(DIR)ppc_record: $(DIR)ppc_record.o  $(DIR)train_detect.o $(DIR)ppc_logger.o $(
 #	$(CC) -lpthread -o $(DIR)dump_events $(DIR)dump_events.o
 
 clean: 
-	rm -fv $(DIR)*.o $(DIR)myconnect $(DIR)ppc_record
+	rm -fv $(DIR)*.o $(DIR)myconnect $(DIR)ppc_record $(DIR)dump_events
