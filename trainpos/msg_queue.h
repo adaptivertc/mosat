@@ -1,6 +1,7 @@
 
 #ifndef __MSG_QUEUE_INC__
 #define __MSG_QUEUE_INC__
+#include <time.h> //we only have to do this because maco is a bitch
 
 struct crossing_event_t
 {
