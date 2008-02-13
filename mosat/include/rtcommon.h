@@ -1,4 +1,5 @@
 /***************************************************************************
+
 Copyright (c) 2002,2003,2004 Donald Wayne Carr 
 
 Permission is hereby granted, free of charge, to any person obtaining a 
