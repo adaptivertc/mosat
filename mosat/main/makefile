@@ -32,12 +32,6 @@ clean:
 ppc_all:
 	make -f makefile.ppc
 
-ntt:	timetable.cpp rf.cpp n_ractual.cpp
-	g++ -o ntt -Wall -lrt -lrtcommon timetable.cpp rf.cpp n_ractual.cpp
-
-runit:	runit.cpp
-	g++ -o runit runit.cpp
-
 sync:	sync.cpp
 	g++ -Wall -o sync sync.cpp -lrtcommon
 
@@ -47,10 +41,4 @@ auto_report:	auto_report.cpp
 frames:	frames.cpp
 	g++ -Wall -o frames frames.cpp
 
-clean:	
-	rm -fv *.o *.so $(ALL) 
-	make -f makefile.ppc clean
 
-
-ppc_all:
-	make -f makefile.ppc
