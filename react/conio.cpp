@@ -25,8 +25,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 static char last_char = '\0';
 static bool have_char = false;
 static bool flag = true;
-static struct termio ttysave;
-static struct termio tty;
+static  struct termio ttysave;
+static  struct termio tty;
 
 /******************/
 

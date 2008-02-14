@@ -29,6 +29,75 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "rtcommon.h"
 #include "arg.h"
 
+/*************************************************************************************************/
+
+void display_data_t::gen_html(time_t now, train_data_t *trains, int n_trains) 
+{
+  int top = 50;
+  int left = 0;
+
+  fseek(fp, 0, SEEK_SET);
+  lockf(fd, F_LOCK, 0);
+
+
+  fprintf(fp, "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">\n");
+  fprintf(fp, "<html>\n");
+  fprintf(fp, "<head>\n");
+  fprintf(fp, "<META HTTP-EQUIV=\"refresh\" CONTENT=\"1\">\n");
+  fprintf(fp, "<meta http-equiv=\"pragma\" content=\"no-cache\">\n");
+  fprintf(fp, "  <meta http-equiv=\"content-type\"\n");
+  fprintf(fp, " content=\"text/html; charset=ISO-8859-1\">\n");
+  fprintf(fp, "  <title>Linea 1</title>\n");
+  fprintf(fp, "</head>\n");
+  fprintf(fp, "<body style=\"color: rgb(0, 0, 0); background-color: rgb(204, 204, 204);\"\n");
+  fprintf(fp, " link=\"#000099\" vlink=\"#990099\" alink=\"#000099\">\n");
+  /**
+  time_t now;
+  now = time(NULL);
+  ***/
+  char buf1[30];
+  struct tm mytm;
+  localtime_r(&now, &mytm);
+  strftime(buf1, sizeof(buf1), "%Y-%m-%d %T", &mytm);
+  fprintf(fp, "<h1>Linea 1 (%s)</h1>\n", buf1);
+  fprintf(fp, "\n");
+  fprintf(fp, "\n");
+  fprintf(fp, "<div style=\"position:absolute; top:%dpx; left:%dpx;\">\n", top, left);
+  fprintf(fp, "        <img SRC=%s>\n", background);
+  fprintf(fp, "</div>\n");
+
+  for (int i=0; i < n_trains; i++)
+  {
+    fprintf(fp, "\n");
+    fprintf(fp, "<div style=\"position:absolute; top:%dpx; left:%dpx; z-index:2\">\n",top + trains[i].y,left + trains[i].x);
+
+    if (trains[i].unexpected)
+    {
+      fprintf(fp, "        <img SRC=%s>\n", square_unexpected);
+    }
+    else
+    {
+      fprintf(fp, "        <img SRC=%s>\n", square);
+    }
+    fprintf(fp, "</div>\n");
+/*****
+    fprintf(fp, "<div style=\"position:absolute; top:%dpx; left:%dpx; z-index:2\">\n", top + texttop[i], left + textleft[i]);    fprintf(fp, "        %s\n", thetext[i]);
+    fprintf(fp, "</div>\n");
+******/
+  }
+  fprintf(fp, "\n");
+  fprintf(fp, "</body>\n");
+  fprintf(fp, "</html>\n");
+
+  fflush(fp);
+  long bytes = ftell(fp);
+  ftruncate(fd, bytes);
+  fseek(fp, 0, SEEK_SET);
+  lockf(fd, F_ULOCK, 0);
+}
+
+
+/*************************************************************************************************/
 
 display_dist_t::display_dist_t(int a_x1, int a_x2,
                                int a_y1, int a_y2, int n_sects)
@@ -44,6 +113,8 @@ display_dist_t::display_dist_t(int a_x1, int a_x2,
   //printf("x1 = %d, x2 = %d, y1 = %d, y2 = %d\n", x1, x2, y1, y2 );
   //printf("return_start = %d, n_squares = %d, total_x_pixels = %d\n", return_start, n_squares, total_x_pixels);
 }
+
+/*************************************************************************************************/
 
 void display_dist_t::calc_xy(int section, double fraction, int *x, int *y)
 {
@@ -481,6 +552,7 @@ void display_alg_t::update_train(time_t ts, int n)
     trains[n].line_location = sections[s].time_to_start + extra + RT_DWELL_TIME;
     fr = double(extra) / double(sections[s].section_time);
   }
+  trains[n].fraction_traveled = fr;
   dd->calc_xy(s, fr, &tx, &ty);
   trains[n].x = tx;
   trains[n].y = ty;

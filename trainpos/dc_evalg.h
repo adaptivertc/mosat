@@ -22,6 +22,7 @@ struct train_data_t
   int x;
   int y;
   int section;
+  double fraction_traveled;
   bool departed;
   time_t arival_time;
   time_t departure_time;
@@ -69,14 +70,31 @@ public:
   void calc_xy(int section, double fraction, int *x, int *y);
 };
 
+struct display_data_t
+{
+  bool valid;
+  int x[50];
+  int y[50];
+  FILE *fp;
+  int  fd;
+  display_dist_t *dd;
+  char *square;
+  char *square_unexpected;
+  char *background;
+public:
+  void read(char *base_name);
+  void gen_html(time_t now, train_data_t *trains, int n_trains);
+};
+
 class display_alg_t : public event_alg_t
 {
 private:
   int train_number;
-  void add_train(time_t ts);
   int n_trains;
-  train_data_t trains[50];
   int n_sections;
+  int n_displays;
+
+  train_data_t trains[50];
   tsecdata_t sections[50];
   void update_train(time_t ts, int n);
   display_dist_t *dd;
@@ -84,8 +102,11 @@ private:
   int fd;
   FILE *table_fp;
   int table_fd;
+
   alarm_entry_t actual_alarms[RT_MAX_ALARMS]; 
   alarm_entry_t alarm_history[RT_MAX_ALARMS]; 
+
+  void add_train(time_t ts);
 public:
   void read_sections(char *fname);
   void update(time_t time);
