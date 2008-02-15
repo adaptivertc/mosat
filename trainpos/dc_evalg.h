@@ -19,8 +19,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 struct train_data_t
 {
-  int x;
-  int y;
   int section;
   double fraction_traveled;
   bool departed;
@@ -70,18 +68,20 @@ public:
   void calc_xy(int section, double fraction, int *x, int *y);
 };
 
-struct display_data_t
+class display_data_t
 {
+private:
   bool valid;
-  int x[50];
-  int y[50];
   FILE *fp;
   int  fd;
   display_dist_t *dd;
   char *square;
   char *square_unexpected;
   char *background;
+  char *fname;
 public:
+  void set(char *a_background, char *a_square, char *a_unexpected,
+    char *a_fname, int a_x1, int a_x2, int a_y1, int a_y2, int n_sections);
   void read(char *base_name);
   void gen_html(time_t now, train_data_t *trains, int n_trains);
 };
@@ -97,7 +97,7 @@ private:
   train_data_t trains[50];
   tsecdata_t sections[50];
   void update_train(time_t ts, int n);
-  display_dist_t *dd;
+  display_data_t *ddata;
   FILE *fp;
   int fd;
   FILE *table_fp;
@@ -119,4 +119,5 @@ public:
   void gen_table(time_t now);
   void gen_alarms(time_t now);
 };
+
 

@@ -31,6 +31,35 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 /*************************************************************************************************/
 
+void display_data_t::set(char *a_background, char *a_square, char *a_unexpected,
+    char *a_fname, int a_x1, int a_x2, int a_y1, int a_y2, int n_sections)
+{
+  printf("creating diaplay_data_t: %s\n", a_fname);
+  background = a_background;
+  square = a_square;
+  square_unexpected = a_unexpected;
+  fname = a_fname;
+
+  fp = fopen(fname, "w");
+  if (fp == NULL)
+  {
+    perror(fname);
+    exit(0);
+  }
+  fd = fileno(fp);
+
+  
+  dd = new display_dist_t(a_x1, a_x2, a_y1, a_y2, n_sections);
+}
+
+/*************************************************************************************************/
+
+void display_data_t::read(char *base_name)
+{
+}
+
+/*************************************************************************************************/
+
 void display_data_t::gen_html(time_t now, train_data_t *trains, int n_trains) 
 {
   int top = 50;
@@ -38,7 +67,6 @@ void display_data_t::gen_html(time_t now, train_data_t *trains, int n_trains)
 
   fseek(fp, 0, SEEK_SET);
   lockf(fd, F_LOCK, 0);
-
 
   fprintf(fp, "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">\n");
   fprintf(fp, "<html>\n");
@@ -51,15 +79,11 @@ void display_data_t::gen_html(time_t now, train_data_t *trains, int n_trains)
   fprintf(fp, "</head>\n");
   fprintf(fp, "<body style=\"color: rgb(0, 0, 0); background-color: rgb(204, 204, 204);\"\n");
   fprintf(fp, " link=\"#000099\" vlink=\"#990099\" alink=\"#000099\">\n");
-  /**
-  time_t now;
-  now = time(NULL);
-  ***/
   char buf1[30];
   struct tm mytm;
   localtime_r(&now, &mytm);
   strftime(buf1, sizeof(buf1), "%Y-%m-%d %T", &mytm);
-  fprintf(fp, "<h1>Linea 1 (%s)</h1>\n", buf1);
+  fprintf(fp, "<h1>XXX-Linea 1 (%s)</h1>\n", buf1);
   fprintf(fp, "\n");
   fprintf(fp, "\n");
   fprintf(fp, "<div style=\"position:absolute; top:%dpx; left:%dpx;\">\n", top, left);
@@ -68,8 +92,10 @@ void display_data_t::gen_html(time_t now, train_data_t *trains, int n_trains)
 
   for (int i=0; i < n_trains; i++)
   {
+    int tx, ty;
+    dd->calc_xy(trains[i].section, trains[i].fraction_traveled, &tx, &ty);
     fprintf(fp, "\n");
-    fprintf(fp, "<div style=\"position:absolute; top:%dpx; left:%dpx; z-index:2\">\n",top + trains[i].y,left + trains[i].x);
+    fprintf(fp, "<div style=\"position:absolute; top:%dpx; left:%dpx; z-index:2\">\n",top + ty,left + tx);
 
     if (trains[i].unexpected)
     {
@@ -80,10 +106,6 @@ void display_data_t::gen_html(time_t now, train_data_t *trains, int n_trains)
       fprintf(fp, "        <img SRC=%s>\n", square);
     }
     fprintf(fp, "</div>\n");
-/*****
-    fprintf(fp, "<div style=\"position:absolute; top:%dpx; left:%dpx; z-index:2\">\n", top + texttop[i], left + textleft[i]);    fprintf(fp, "        %s\n", thetext[i]);
-    fprintf(fp, "</div>\n");
-******/
   }
   fprintf(fp, "\n");
   fprintf(fp, "</body>\n");
@@ -162,19 +184,15 @@ void display_dist_t::calc_xy(int section, double fraction, int *x, int *y)
 
 void display_alg_t::read_sections(char *fname)
 {
-
-// image size
-  dd = new display_dist_t(26, 967, 45, 72, 36);
-//  dd = new display_dist_t(54, 2001, 94, 153, 36);
+  ddata = new display_data_t[2];
+  ddata[0].set( "Line1_1024.png", "square10x10.png", "square_unexpected.png", "Line1.html",
+              26, 967, 45, 72, 36);
+  ddata[1].set( "Line1_1024.png", "square_unexpected.png", "square10x10.png", "XLine1.html",
+              26, 967, 45, 72, 36);
+  n_displays = 2;
+  
   n_trains = 0;
   train_number = 1;
-  fp = fopen("line1.html", "w");
-  if (fp == NULL)
-  {
-    perror("line1.html");
-    exit(0);
-  }
-  fd = fileno(fp);
 
   table_fp = fopen("line1_table.html", "w");
   if (table_fp == NULL)
@@ -183,9 +201,6 @@ void display_alg_t::read_sections(char *fname)
     exit(0);
   }
   table_fd = fileno(table_fp);
-
-
-  //display_dist_t(int a_x1, int a_x2, int a_y1, int a_y2, int n_sections);
 
   int max = 50;
 
@@ -402,18 +417,11 @@ void display_alg_t::gen_table(time_t now)
     {
       fprintf(table_fp, "      <td style=\"vertical-align: top;\">%s<br>\n", sections[trains[i].section].station);
     }
-  /***
-      <td
- style=\"vertical-align: top; background-color: rgb(153, 153, 255);\">(IslaRaza)<br>
-      </td>
-  ***/
     fprintf(table_fp, "      </td>\n");
 
     if (trains[i].seconds_in_section == 0)
     {
       fprintf(table_fp, " <td style=\"vertical-align: top; background-color: rgb(255, 204, 255);\">(en estaci&oacute;n)<br>\n");
-
-      //fprintf(table_fp, "      <td style=\"vertical-align: top;\">en estacion<br>\n");
     }
     else
     {
@@ -439,14 +447,11 @@ void display_alg_t::gen_display(time_t now)
 {
   long bytes;
 
-  fseek(fp, 0, SEEK_SET);
-  lockf(fd, F_LOCK, 0);
-  gen_html(now);
-  fflush(fp);
-  bytes = ftell(fp);
-  ftruncate(fd, bytes);
-  fseek(fp, 0, SEEK_SET);
-  lockf(fd, F_ULOCK, 0);
+
+  for (int i=0; i < n_displays; i++)
+  {
+    ddata[i].gen_html(now, trains, n_trains);
+  }
 
   fseek(table_fp, 0, SEEK_SET);
   lockf(table_fd, F_LOCK, 0);
@@ -457,75 +462,6 @@ void display_alg_t::gen_display(time_t now)
   fseek(table_fp, 0, SEEK_SET);
   lockf(table_fd, F_ULOCK, 0);
 }
-
-/***
-void gen_html(FILE *fp, char *background, int top, int left,
-             char *iname, int n_image, int itop[], int ileft[],
-             int textleft[], int texttop[], char thetext[][25])
-***/
-void display_alg_t::gen_html(time_t now)
-{
-  char *iname = "square10x10.png";
-  char *background = "Line1_1024.png";
-  //char *iname = "Square20x20.png";
-  char *i_unexpected = "square_unexpected.png";
-  //char *background = "Line1.png";
-  int top = 50;
-  int left = 0;
-
-
-  fprintf(fp, "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">\n");
-  fprintf(fp, "<html>\n");
-  fprintf(fp, "<head>\n");
-  fprintf(fp, "<META HTTP-EQUIV=\"refresh\" CONTENT=\"1\">\n");
-  fprintf(fp, "<meta http-equiv=\"pragma\" content=\"no-cache\">\n");
-  fprintf(fp, "  <meta http-equiv=\"content-type\"\n");
-  fprintf(fp, " content=\"text/html; charset=ISO-8859-1\">\n");
-  fprintf(fp, "  <title>Linea 1</title>\n");
-  fprintf(fp, "</head>\n");
-  fprintf(fp, "<body style=\"color: rgb(0, 0, 0); background-color: rgb(204, 204, 204);\"\n");
-  fprintf(fp, " link=\"#000099\" vlink=\"#990099\" alink=\"#000099\">\n");
-  /**
-  time_t now;
-  now = time(NULL);
-  ***/
-  char buf1[30];
-  struct tm mytm;
-  localtime_r(&now, &mytm);
-  strftime(buf1, sizeof(buf1), "%Y-%m-%d %T", &mytm);
-  fprintf(fp, "<h1>Linea 1 (%s)</h1>\n", buf1);
-  fprintf(fp, "\n");
-  fprintf(fp, "\n");
-  fprintf(fp, "<div style=\"position:absolute; top:%dpx; left:%dpx;\">\n", top, left);
-  fprintf(fp, "        <img SRC=%s>\n", background);
-  fprintf(fp, "</div>\n");
-
-  for (int i=0; i < n_trains; i++)
-  {
-    fprintf(fp, "\n");
-    fprintf(fp, "<div style=\"position:absolute; top:%dpx; left:%dpx; z-index:2\">\n",top + trains[i].y,left + trains[i].x);
-
-    if (trains[i].unexpected)
-    {
-      fprintf(fp, "        <img SRC=%s>\n", i_unexpected);
-    }
-    else
-    {
-      fprintf(fp, "        <img SRC=%s>\n", iname);
-    }
-    fprintf(fp, "</div>\n");
-/*****
-    fprintf(fp, "<div style=\"position:absolute; top:%dpx; left:%dpx; z-index:2\">\n", top + texttop[i], left + textleft[i]);    fprintf(fp, "        %s\n", thetext[i]);
-    fprintf(fp, "</div>\n");
-******/
-  }
-
-
-  fprintf(fp, "\n");
-  fprintf(fp, "</body>\n");
-  fprintf(fp, "</html>\n");
-}
-
 
 /*********************************************************/
 
@@ -553,9 +489,6 @@ void display_alg_t::update_train(time_t ts, int n)
     fr = double(extra) / double(sections[s].section_time);
   }
   trains[n].fraction_traveled = fr;
-  dd->calc_xy(s, fr, &tx, &ty);
-  trains[n].x = tx;
-  trains[n].y = ty;
   if (n < (n_trains - 1))
   {
     trains[n].seconds_to_next = trains[n+1].line_location - trains[n].line_location;
