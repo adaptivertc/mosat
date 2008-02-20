@@ -59,7 +59,7 @@ private:
   tsecdata_t sections[50];
   int n_times;
   time_t times[500];
-  int train_num[500];
+  char train_num[500][10];
   int week_day;
   sim_ev_notify_t *notify_obj;
   void add_train(time_t now);

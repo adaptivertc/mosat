@@ -126,9 +126,9 @@ int main(int argc, char *argv[])
   time_t start;
   class my_notify_t my_notify;
   class train_sim_t sim(&my_notify);
-  now = sim.read_day("laboral.txt");
+  now = sim.read_day(TIMETABLE_FILE);
   start = now;
-  sim.read_sections("line1_sections.txt");
+  sim.read_sections(SECTIONS_FILE);
   long wait_time = 100000;
   if (argc > 1)
   {

@@ -122,7 +122,7 @@ time_t train_sim_t::read_day(char *fname)
     {
       continue;
     }
-    long train = atol(argv[0]);
+    char *train = argv[0];
 //char *strptime(const char *s, const char *format, struct tm *tm);
     //time_t mytime;
     //mytime = time(NULL);
@@ -144,12 +144,14 @@ time_t train_sim_t::read_day(char *fname)
     **/
 
 
-    printf("%d: %s\n", n_lines, argv[1]);
+    printf("---%d: %s, %s---\n", n_lines, argv[0], argv[1]);
     times[n_lines] = mktime(&mytm);
-    train_num[n_lines] = train;
+    safe_strcpy(train_num[n_lines], argv[0], sizeof(train_num[n_lines])); 
+    //train_num[n_lines] = train;
     n_lines++;
     if (n_lines >= max)
     {
+      printf("Error: Maximum reached\n");
       break;
     }
   }
@@ -186,7 +188,7 @@ void train_sim_t::update(time_t now)
     localtime_r(&now, &mytm);
     if ( mytm.tm_wday != week_day)
     {
-      this->read_day("laboral.txt");
+      this->read_day(TIMETABLE_FILE);
     }
   }
 

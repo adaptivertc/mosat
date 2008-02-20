@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
   int qid = create_message_queue();
 
   display_alg_t dc_alg;
-  dc_alg.read_sections("line1_sections.txt");
+  dc_alg.read_sections(SECTIONS_FILE);
 
   gp_evalg_t gp_alg;
   gp_alg.init();

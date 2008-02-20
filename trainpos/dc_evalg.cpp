@@ -185,11 +185,13 @@ void display_dist_t::calc_xy(int section, double fraction, int *x, int *y)
 void display_alg_t::read_sections(char *fname)
 {
   ddata = new display_data_t[2];
-  ddata[0].set( "Line1_1024.png", "square10x10.png", "square_unexpected.png", "Line1.html",
-              26, 967, 45, 72, 36);
-  ddata[1].set( "Line1_1024.png", "square_unexpected.png", "square10x10.png", "XLine1.html",
-              26, 967, 45, 72, 36);
-  n_displays = 2;
+  ddata[0].set( "dia/CHENNAIBEACH_VELACHERY.png" , "dia/square12x12.png", "dia/square12x12.png", "Line1.html",
+              24, 968, 63, 94, 32);
+//  ddata[0].set( "Line1_1024.png", "square10x10.png", "square_unexpected.png", "Line1.html",
+//             26, 967, 45, 72, 36);
+//  ddata[1].set( "Line1_1024.png", "square_unexpected.png", "square10x10.png", "XLine1.html",
+//              26, 967, 45, 72, 36);
+  n_displays = 1;
   
   n_trains = 0;
   train_number = 1;
