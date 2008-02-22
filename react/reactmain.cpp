@@ -58,7 +58,7 @@ int num_tests(char *name)
 
 /*****************************************************************/
 
-void edit_files(char *base, int n)
+void edit_files(const char *base, int n)
 {
   if (n == 0)
   {
@@ -145,7 +145,7 @@ int main(int argc, char *argv[])
   bool check_keyboard = true;
   bool print_to_screen = true;
   bool busy_wait = false;
-  char *home_dir = "./";
+  const char *home_dir = "./";
   int current_arg;
   for (current_arg=1; current_arg < argc; current_arg++)
   {

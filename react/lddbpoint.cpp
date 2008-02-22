@@ -30,7 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
  * object file.
  */
 
-db_point_factory_t *load_db_point(char *sofile)
+db_point_factory_t *load_db_point(const char *sofile)
 {
   printf("Loading db point factory from: %s\n", sofile);
   void *handle = dlopen (sofile, RTLD_LAZY | RTLD_GLOBAL);

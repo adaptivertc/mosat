@@ -510,7 +510,8 @@ void react_t::init_driver(void)
 
 /************************************************************************/
 
-db_point_t ** react_t::read_one_point_type(db_point_factory_t *factory, char *a_home_dir, int *cnt)
+db_point_t ** react_t::read_one_point_type(db_point_factory_t *factory, 
+     const char *a_home_dir, int *cnt)
 {
   printf("Reading %s ........\n", factory->abbreviation());
   int max_points = 50;
@@ -577,7 +578,7 @@ db_point_t ** react_t::read_one_point_type(db_point_factory_t *factory, char *a_
 
 /************************************************************************/
 
-void react_t::read_factory_points(char *a_home_dir)
+void react_t::read_factory_points(const char *a_home_dir)
 {
   char path[200];
   snprintf(path, sizeof(path), "%s/dbfiles/factory.txt", a_home_dir);
@@ -606,7 +607,7 @@ void react_t::read_factory_points(char *a_home_dir)
 
 /************************************************************************/
 
-void react_t::read_all_points(char *a_home_dir)
+void react_t::read_all_points(const char *a_home_dir)
 {
   /* Read all database points from disk. */
 

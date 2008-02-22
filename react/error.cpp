@@ -39,7 +39,7 @@ rtexperror_t::rtexperror_t(void)
 }
 
 
-void rtexperror_t::set(int error_n, char *fmt, ... )
+void rtexperror_t::set(int error_n, const char *fmt, ... )
 {
   /* Set the current error. */
   va_list arg_pointer;

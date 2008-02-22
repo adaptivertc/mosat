@@ -151,7 +151,7 @@ struct expr_tree_t
   int make_post_fix(expr_op_t *expr);
 };
 
-char *expr_token_string(expr_token_t token);
+const char *expr_token_string(expr_token_t token);
 
 stack_value_t *eval_expr(expr_op_t *expr_ptr);
 expr_op_t *make_expr(char *line);

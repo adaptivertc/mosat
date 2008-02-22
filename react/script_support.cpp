@@ -203,7 +203,8 @@ void log_start(char *str)
 
 /************************************************************/
 
-char *find_str_ignore_strings(char *place_to_look, char *string_to_find)
+char *find_str_ignore_strings(char *place_to_look, 
+                                    const char *string_to_find)
 {
   // Here, we look for a certain string, but not in quoted strings.
   char *p;

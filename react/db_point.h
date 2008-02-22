@@ -96,7 +96,7 @@ public:
   virtual bool has_analog_val() = 0;
   virtual bool has_discrete_val() = 0;
   virtual bool has_int_val() = 0;
-  virtual char *list_functions(void) {return "";};
+  virtual const char *list_functions(void) {return "";};
   virtual ~db_point_factory_t(void) {};
 };
 

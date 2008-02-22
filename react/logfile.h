@@ -54,11 +54,11 @@ public:
   void do_init(bool print_to_file, bool print_to_screen);
   void create_dir(void);
   void close(void);
-  void write(char *txt);
-  void print(char *txt);
-  void vprint(char *fmt, ...);
-  FILE *open_file_in_log_dir(char *name);
-  void copy_file_to_log_dir(char *file, char *name);
+  void write(const char *txt);
+  void print(const char *txt);
+  void vprint(const char *fmt, ...);
+  FILE *open_file_in_log_dir(const char *name);
+  void copy_file_to_log_dir(const char *file, const char *name);
   void write_final_logs(int n);
   void insert_in_index(const char *fname, const char *secuencia);
   void next_test(void);

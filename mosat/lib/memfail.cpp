@@ -29,7 +29,7 @@ DEALINGS IN THE SOFTWARE.
 
 /*********************************************************************/
 
-void malloc_failure(char *file, int line)
+void malloc_failure(const char *file, int line)
 {
   /*  Routine for malloc failure. */
   /***  Here is the plain printf version *****/

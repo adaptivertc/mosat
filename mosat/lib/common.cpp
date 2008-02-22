@@ -78,7 +78,7 @@ void ltrim(char *str)
 
 /*********************************************************************/
 
-char *find_str(char *place_to_look, char *string_to_find)
+char *find_str(char *place_to_look, const char *string_to_find)
 {
   char *p;
   int n = strlen(string_to_find);

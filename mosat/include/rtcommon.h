@@ -42,10 +42,10 @@ bool is_a_space(char c);
 void rtrim(char *str);
 void ltrim(char *str);
 void strip_quotes(char *str);
-char *find_str(char *place_to_look, char *string_to_find);
+char *find_str(char *place_to_look, const char *string_to_find);
 void space_pad(char *str, int n);
 
-void malloc_failure(char *file, int line);
+void malloc_failure(const char *file, int line);
 void common_new_handler(void);
 void strip_trailing_zeros(char *str);
 void delete_cr(char *str);

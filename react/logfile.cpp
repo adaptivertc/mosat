@@ -36,7 +36,7 @@ void logfile_t::close(void)
 
 /****************************************************************/
 
-void logfile_t::print(char *txt)
+void logfile_t::print(const char *txt)
 {
   if (screen_print_enabled)
   {
@@ -50,7 +50,7 @@ void logfile_t::print(char *txt)
 
 /****************************************************************/
 
-void logfile_t::vprint(char *fmt, ...)
+void logfile_t::vprint(const char *fmt, ...)
 {
   char myline[80];
   va_list arg_ptr;
@@ -122,7 +122,7 @@ void logfile_t::write_final_logs(int n)
 
 /****************************************************************/
 
-void logfile_t::copy_file_to_log_dir(char *fname, char *name)
+void logfile_t::copy_file_to_log_dir(const char *fname, const char *name)
 {
   if (!file_print_enabled)
   {
@@ -140,7 +140,7 @@ void logfile_t::copy_file_to_log_dir(char *fname, char *name)
 
 /****************************************************************/
 
-FILE *logfile_t::open_file_in_log_dir(char *name)
+FILE *logfile_t::open_file_in_log_dir(const char *name)
 {
   char path[500];
   safe_strcpy(path, path_to_dir, sizeof(path));
@@ -371,7 +371,7 @@ char png_file[500];
 
 /*************************************************************************/
 
-static void my_create_image(char *data, char *png, bool window)
+static void my_create_image(const char *data, const char *png, bool window)
 {
   char *fname = "gnuplotoptions.txt";
   FILE *fp = fopen(fname, "w");

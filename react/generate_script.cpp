@@ -32,14 +32,14 @@ FILE *header_fp;
 FILE *code_fp;
 FILE *case_fp;
 
-static char *header_name = "gen_script.h";
-static char *case_name = "gen_case.cpp";
-static char *code_name = "gen_script.cpp";
-static bool debug = false;
+static const char *header_name = "gen_script.h";
+static const char *case_name = "gen_case.cpp";
+static const char *code_name = "gen_script.cpp";
+static const bool debug = false;
 
 /*********************************************************************/
 
-void generate_heading(FILE *fp, char *fname)
+void generate_heading(FILE *fp, const char *fname)
 {
   fprintf(fp, "/*******************************************************\n");
   fprintf(fp, " *   Fille name: %s\n", fname);
@@ -55,7 +55,7 @@ void generate_heading(FILE *fp, char *fname)
 
 /*********************************************************************/
 
-void generate_ifndef(FILE *fp, char *fname)
+void generate_ifndef(FILE *fp, const char *fname)
 {
   char str[100];
   char *p;
@@ -74,7 +74,7 @@ void generate_ifndef(FILE *fp, char *fname)
 
 /*********************************************************************/
 
-char *find_second_arg(char *str)
+const char *find_second_arg(char *str)
 {
   char *p;
   for (p = str; (*p != '\0') && is_a_space(*p); p++);
@@ -126,9 +126,9 @@ script_param_t  script_string_to_type(char *str)
 
 /************************************************************/
 
-char *script_type_to_string(script_param_t tp)
+const char *script_type_to_string(script_param_t tp)
 {
-   char *str;
+   const char *str;
    switch (tp)
    {
      case PARAM_DOUBLE:
@@ -153,9 +153,9 @@ char *script_type_to_string(script_param_t tp)
 
 /************************************************************/
 
-char *script_type_to_type_string(script_param_t tp)
+const char *script_type_to_type_string(script_param_t tp)
 {
-   char *str;
+   const char *str;
    switch (tp)
    {
      case PARAM_DOUBLE:
@@ -291,7 +291,7 @@ void generate_case_end(void)
 
 /************************************************************/
 
-void generate_set_param(char *script_obj_type,
+void generate_set_param(const char *script_obj_type,
 		script_param_t ptypes[], int n_params)
 {
   fprintf(code_fp, "void %s::set_param(int n, char *param)\n{\n",
@@ -334,8 +334,9 @@ void generate_set_param(char *script_obj_type,
 
 /************************************************************/
 
-void generate_constructor(char *script_obj_type, char *obj_type,
-       char *enum_type, char *fn_name, script_param_t ptypes[], int n_params)
+void generate_constructor(const char *script_obj_type, const char *obj_type,
+    const char *enum_type, const char *fn_name, 
+    script_param_t ptypes[], int n_params)
 {
   fprintf(code_fp, "%s::%s\n", script_obj_type, script_obj_type);
   fprintf(code_fp, "           (int argc, char *argv[], char *error, int esize)\n");
@@ -657,7 +658,7 @@ void print_function( int n, char *fn_name, script_param_t ret_type,
 
 /************************************************************/
 
-void parse_file(char *fname)
+void parse_file(const char *fname)
 {
   char *p_names[20];
   script_param_t p_types[20];
@@ -736,7 +737,7 @@ void parse_file(char *fname)
       if (NULL != fgets(line, sizeof(line), fp))
       {
         if (debug) printf("ScriptObject: %s\n", line);
-        char *tmpptr = find_second_arg(line);
+        const char *tmpptr = find_second_arg(line);
 	char object_type[100];
 	safe_strcpy(object_type, tmpptr, sizeof(object_type));
         if (debug) printf("ObjectType = %s\n", object_type);

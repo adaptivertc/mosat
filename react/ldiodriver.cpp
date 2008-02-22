@@ -67,7 +67,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
  * runnint REACT.
  */
 
-io_driver_factory_t *load_iodriver_factory(react_drv_base_t *drvdb, char *sofile, char *get_fn_name, char *other_lib)
+io_driver_factory_t *load_iodriver_factory(react_drv_base_t *drvdb, 
+     const char *sofile, const char *get_fn_name, const char *other_lib)
 {
   if (other_lib != NULL)
   {
@@ -105,7 +106,8 @@ io_driver_factory_t *load_iodriver_factory(react_drv_base_t *drvdb, char *sofile
 }
 
 
-io_driver_t *load_iodriver(react_drv_base_t *drvdb, char *sofile, char *get_fn_name, char *other_lib)
+io_driver_t *load_iodriver(react_drv_base_t *drvdb, 
+     const char *sofile, const char *get_fn_name, const char *other_lib)
 {
 
   if (other_lib != NULL)

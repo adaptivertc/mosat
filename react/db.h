@@ -67,7 +67,7 @@ public:
 };
 
 typedef db_point_factory_t *(*get_db_factory_t)(react_drv_base_t *r);
-db_point_factory_t *load_db_point(char *sofile);
+db_point_factory_t *load_db_point(const char *sofile);
 
 class react_t : public react_base_t
 {
@@ -82,8 +82,8 @@ private:
   bool keyboard_is_on;
   db_point_factory_t *point_factory[MAX_POINT_TYPES];
   db_point_t **db_points[MAX_POINT_TYPES];
-  db_point_t **read_one_point_type(db_point_factory_t *factory, char *a_home_dir, int *n);
-  void read_factory_points(char *a_home_dir);
+  db_point_t **read_one_point_type(db_point_factory_t *factory, const char *a_home_dir, int *n);
+  void read_factory_points(const char *a_home_dir);
 
 public:
   bool global_alarm_disable;
@@ -127,7 +127,7 @@ public:
   bool update(double theTime, bool execute_script);
   void read_io_cards(void);
   react_t();
-  void read_all_points(char *a_home_dir);
+  void read_all_points(const char *a_home_dir);
   void print_all_points(void);
   void send_do(int drv, int crd, int chnl, bool val);
   void send_ao(int drv, int crd, int chnl, double val);

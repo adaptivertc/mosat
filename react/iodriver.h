@@ -69,9 +69,11 @@ typedef io_driver_factory_t *(*get_iodriver_factory_t)(react_drv_base_t *r);
 
 typedef void (*del_io_drv_t)(io_driver_t *);
 
-io_driver_t *load_iodriver(react_drv_base_t *drvdb, char *sofile, char *get_fn_name, char *other_lib);
+io_driver_t *load_iodriver(react_drv_base_t *drvdb, 
+     const char *sofile, const char *get_fn_name, const char *other_lib);
 
-io_driver_factory_t *load_iodriver_factory(react_drv_base_t *drvdb, char *sofile, char *get_fn_name, char *other_lib);
+io_driver_factory_t *load_iodriver_factory(react_drv_base_t *drvdb, 
+  const char *sofile, const char *get_fn_name, const char *other_lib);
 
 class parallel_driver_t : public io_driver_t
 {

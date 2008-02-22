@@ -30,7 +30,7 @@ CC = g++
 
 MAKE = make
 
-all: react integrate utest rconsole rdisplay reactcgi rdrivers rtshmmain ai.so
+all: react integrate utest rconsole reactcgi rdrivers rtshmmain ai.so
 
 %.o:	%.cpp $(INCLUDES)
 	$(CC) -c -Wall -o $@ $<

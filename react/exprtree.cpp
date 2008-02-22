@@ -486,7 +486,7 @@ void expr_tree_t::print(void)
 
 /*********************************************************************/
 
-char *expr_token_string(expr_token_t token)
+const char *expr_token_string(expr_token_t token)
 {
   /* Return a char string representation of a token. */
   switch (token)

@@ -48,7 +48,7 @@ class rtexperror_t
   int error_num;
 public:
   rtexperror_t(void);
-  void set(int err_num, char *fmt, ... );
+  void set(int err_num, const char *fmt, ... );
   char *str() {return error_str;}
   int number() {return error_num;}
 };
