@@ -136,7 +136,17 @@ void display_data_t::gen_html(time_t now, train_data_t *trains, int n_trains)
 
     fprintf(fp, "<div style=\"position:absolute; top:%dpx; left:%dpx; z-index:2\">\n",top + ty + y_diff_for_text,left + tx - 10);
 
-    fprintf(fp, "<div style=\"text-align: center;\"><span style=\"font-weight: bold; color: rgb(255, 255, 0);\">%s</span></div>\n", trains[i].train_id);
+  
+    if (trains[i].seconds_late < 0)
+    {
+      fprintf(fp, "<div style=\"text-align: center;\"><span style=\"font-weight: bold; color: rgb(255, 255, 0);\">%s %d</span></div>\n", 
+                 trains[i].train_id, trains[i].seconds_late);
+    }
+    else
+    {
+      fprintf(fp, "<div style=\"text-align: center;\"><span style=\"font-weight: bold; color: rgb(255, 255, 0);\">%s +%d</span></div>\n", 
+                 trains[i].train_id, trains[i].seconds_late);
+    }
 
     fprintf(fp, "</div>\n");
   }
