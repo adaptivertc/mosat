@@ -620,7 +620,7 @@ void display_alg_t::process_event(crossing_event_t ev)
   }
   else if (ev.section == n_sections)
   {
-    if (trains[n_trains-1].section != n_sections)
+    if (trains[n_trains-1].section != (n_sections-1))
     {
       printf("***** horrible error\n");
     }
