@@ -17,6 +17,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ***********************************************************************/
 
+#include "time_table.h"
+
 struct train_data_t
 {
   int section;
@@ -29,8 +31,10 @@ struct train_data_t
   int seconds_late;
   int num;
   bool unexpected;
+  bool switched_direction;
   int line_location;
   int seconds_to_next;
+  char train_id[30];
 };
 
 struct tsecdata_t
@@ -65,7 +69,7 @@ private:
   int return_start;
 public:
   display_dist_t(int a_x1, int a_x2, int a_y1, int a_y2, int n_sections);
-  void calc_xy(int section, double fraction, int *x, int *y);
+  void calc_xy(int section, double fraction, int *x, int *y, bool *coming_back);
 };
 
 class display_data_t
@@ -96,6 +100,7 @@ private:
 
   train_data_t trains[50];
   tsecdata_t sections[50];
+  time_table_t time_table;
   void update_train(time_t ts, int n);
   display_data_t *ddata;
   FILE *fp;
@@ -106,7 +111,7 @@ private:
   alarm_entry_t actual_alarms[RT_MAX_ALARMS]; 
   alarm_entry_t alarm_history[RT_MAX_ALARMS]; 
 
-  void add_train(time_t ts);
+  void add_train(time_t ts, const char *train_id);
 public:
   void read_sections(char *fname);
   void update(time_t time);

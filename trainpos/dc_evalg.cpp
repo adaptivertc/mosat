@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <time.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <ctype.h>
 
 #include "msg_queue.h"
 #include "tcontrol.h"
@@ -59,6 +60,17 @@ void display_data_t::read(char *base_name)
 }
 
 /*************************************************************************************************/
+// This is special for India, we need to make it a plugin!!
+void switch_direction(train_data_t *t)
+{
+  const char * p = t->train_id;
+  for (; (*p != '\0') && (!isdigit(*p)); p++);  
+  if (*p == '\0') return;
+  int num = atol(p);
+  snprintf(t->train_id, sizeof(t->train_id), "VLB%d\n", num + 1);
+  t->switched_direction = true;
+}
+/*************************************************************************************************/
 
 void display_data_t::gen_html(time_t now, train_data_t *trains, int n_trains) 
 {
@@ -93,7 +105,8 @@ void display_data_t::gen_html(time_t now, train_data_t *trains, int n_trains)
   for (int i=0; i < n_trains; i++)
   {
     int tx, ty;
-    dd->calc_xy(trains[i].section, trains[i].fraction_traveled, &tx, &ty);
+    bool coming_back;
+    dd->calc_xy(trains[i].section, trains[i].fraction_traveled, &tx, &ty, &coming_back);
     fprintf(fp, "\n");
     fprintf(fp, "<div style=\"position:absolute; top:%dpx; left:%dpx; z-index:2\">\n",top + ty,left + tx);
 
@@ -105,6 +118,26 @@ void display_data_t::gen_html(time_t now, train_data_t *trains, int n_trains)
     {
       fprintf(fp, "        <img SRC=%s>\n", square);
     }
+    fprintf(fp, "</div>\n");
+
+    int y_diff_for_text;
+    if (coming_back)
+    {
+      if (!trains[i].switched_direction)
+      {
+        switch_direction(&trains[i]);
+      }
+      y_diff_for_text = -28;
+    }
+    else
+    {
+      y_diff_for_text = 20;
+    }
+
+    fprintf(fp, "<div style=\"position:absolute; top:%dpx; left:%dpx; z-index:2\">\n",top + ty + y_diff_for_text,left + tx - 10);
+
+    fprintf(fp, "<div style=\"text-align: center;\"><span style=\"font-weight: bold; color: rgb(255, 255, 0);\">%s</span></div>\n", trains[i].train_id);
+
     fprintf(fp, "</div>\n");
   }
   fprintf(fp, "\n");
@@ -138,7 +171,7 @@ display_dist_t::display_dist_t(int a_x1, int a_x2,
 
 /*************************************************************************************************/
 
-void display_dist_t::calc_xy(int section, double fraction, int *x, int *y)
+void display_dist_t::calc_xy(int section, double fraction, int *x, int *y, bool *coming_back)
 {
   int extra;
   int square;
@@ -167,6 +200,7 @@ void display_dist_t::calc_xy(int section, double fraction, int *x, int *y)
   if (section >= return_start)
   {
     *y = y1;
+    *coming_back = true;
     square = (5 * (section - return_start)) + extra;
     square = n_squares - square - 1;
   }
@@ -174,6 +208,7 @@ void display_dist_t::calc_xy(int section, double fraction, int *x, int *y)
   {
     square = (5 * section) + extra;
     *y = y2;
+    *coming_back = false;
   }
   *x = x1 + int(double(total_x_pixels) * (double(square) / double(n_squares-1)));
   //printf("s = %d, fr = %0.2lf, ex = %d, sq = %d, x = %d, y = %d\n",
@@ -253,11 +288,12 @@ void display_alg_t::read_sections(char *fname)
     }
   }
   n_sections = n_lines;
+  time_table.read_day(TIMETABLE_FILE);
 }
 
 /*********************************************************/
 
-void display_alg_t::add_train(time_t ts)
+void display_alg_t::add_train(time_t ts, const char *train_id)
 {
   for (int i=(n_trains - 1); i >= 0; i--)
   {
@@ -265,6 +301,7 @@ void display_alg_t::add_train(time_t ts)
   }
   trains[0].section = 0;
   trains[0].num = train_number;
+  safe_strcpy(trains[0].train_id, train_id, sizeof(trains[0].train_id));
   trains[0].arival_time = ts - sections[0].departure_sensor_loc; // really irrelavent, but should be assigned.
   trains[0].departure_time = ts - sections[0].departure_sensor_loc;
   trains[0].departed = true;
@@ -272,6 +309,7 @@ void display_alg_t::add_train(time_t ts)
   trains[0].seconds_in_section = ts - trains[0].arival_time;
   trains[0].seconds_late = 0;
   trains[0].unexpected = false;
+  trains[0].switched_direction = false;
   trains[0].line_location = trains[0].seconds_in_section;
 
   n_trains++;
@@ -353,7 +391,7 @@ void display_alg_t::gen_table(time_t now)
 
   for (int i=0; i < n_trains; i++)
   {
-    fprintf(table_fp, "      <td style=\"vertical-align: top;\">%02d<br>\n", trains[i].num);
+    fprintf(table_fp, "      <td style=\"vertical-align: top;\">%s<br>\n", trains[i].train_id);
     fprintf(table_fp, "      </td>\n");
     int secs_in_service = now - trains[i].service_entry_time;
     int mins_in_service = secs_in_service / 60;
@@ -577,10 +615,15 @@ void display_alg_t::process_event(crossing_event_t ev)
 {
   if (ev.section == 0)
   {
-    add_train(ev.time_stamp);
+    const char *tid = time_table.match_departure(ev.time_stamp);
+    add_train(ev.time_stamp, tid);
   }
   else if (ev.section == n_sections)
   {
+    if (trains[n_trains-1].section != n_sections)
+    {
+      printf("***** horrible error\n");
+    }
     printf("----------- train left service\n");
     n_trains--;
   }
