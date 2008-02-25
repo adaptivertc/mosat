@@ -36,6 +36,17 @@ static int factor_loc = 0;
 
 /********************************************************/
 
+void train_sim_t::next_day(void)
+{
+  for (int i=0; i < n_times; i++)
+  {
+    this->times[i] += 24 * 60 * 60;
+  }
+  next_entry = 0;
+}
+
+/********************************************************/
+
 train_sim_t::train_sim_t(sim_ev_notify_t *nobj)
 {
   n_trains = 0;
@@ -66,7 +77,6 @@ void train_sim_t::read_sections(char *fname)
     int argc;
     char *argv[25];
 
-    //printf("--- %s\n", line);
     safe_strcpy(tmp, line, sizeof(tmp));
     argc = get_delim_args(tmp, argv, '\t', 4);
     if (argc != 4)
@@ -93,7 +103,6 @@ void train_sim_t::read_sections(char *fname)
 
 time_t train_sim_t::read_day(char *fname)
 {
-//int read_schedule(char *fname, int train_num[], time_t times[], int max, time_t today)
   int max = 500;
   time_t today = time(NULL);
   char line[300];
@@ -123,31 +132,18 @@ time_t train_sim_t::read_day(char *fname)
       continue;
     }
     char *train = argv[0];
-//char *strptime(const char *s, const char *format, struct tm *tm);
-    //time_t mytime;
-    //mytime = time(NULL);
 
     localtime_r(&today, &mytm);
 
-    //if (NULL == strptime(argv[1], "%T", &temptm))
     if (NULL == strptime(argv[1], "%T", &mytm))
     {
       perror(argv[1]);
       exit(0);
     }
-    // First fill the temptm, then copy time fields to mytm, because Solaris, and maybe others
-    //   initialize the structure to all zeros, destroying other values.
-    /**
-    mytm.tm_hour = temptm.tm_hour;
-    mytm.tm_min = temptm.tm_min;
-    mytm.tm_sec = temptm.tm_sec;
-    **/
-
 
     printf("---%d: %s, %s---\n", n_lines, argv[0], argv[1]);
     times[n_lines] = mktime(&mytm);
-    safe_strcpy(train_num[n_lines], argv[0], sizeof(train_num[n_lines])); 
-    //train_num[n_lines] = train;
+    safe_strcpy(train_id[n_lines], argv[0], sizeof(train_id[n_lines])); 
     n_lines++;
     if (n_lines >= max)
     {
@@ -171,6 +167,10 @@ void train_sim_t::update(time_t now)
     {
       this->add_train(now);
       next_entry++;
+      if (next_entry >= n_times)
+      {
+        next_day();
+      }
       if (next_entry < n_times)
       {
         double d = ((double) random() / (double) RAND_MAX) * 12.0;

@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <time.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
 #include <ctype.h>
 
 #include "msg_queue.h"
@@ -60,16 +61,95 @@ void display_data_t::read(char *base_name)
 }
 
 /*************************************************************************************************/
-// This is special for India, we need to make it a plugin!!
+// This is special for India, we need to make it an installable plugin!!
 void switch_direction(train_data_t *t)
 {
-  const char * p = t->train_id;
-  for (; (*p != '\0') && (!isdigit(*p)); p++);  
-  if (*p == '\0') return;
-  int num = atol(p);
-  snprintf(t->train_id, sizeof(t->train_id), "VLB%d\n", num + 1);
-  t->switched_direction = true;
+  if (0 == strncmp(t->train_id, "BVL", 3))
+  {
+    const char * p = t->train_id;
+    for (; (*p != '\0') && (!isdigit(*p)); p++);  
+    if (*p == '\0') return;
+    int num = atol(p);
+    snprintf(t->train_id, sizeof(t->train_id), "VLB%d\n", num + 1);
+    t->switched_direction = true;
+  }
 }
+/*************************************************************************************************/
+
+void display_alg_t::gen_performance(time_t now)
+{
+  fprintf(perf_fp, "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">\n");
+  fprintf(perf_fp, "<html>\n");
+  fprintf(perf_fp, "<head>\n");
+  fprintf(perf_fp, "<META HTTP-EQUIV=\"refresh\" CONTENT=\"1\">\n");
+  fprintf(perf_fp, "<meta http-equiv=\"pragma\" content=\"no-cache\">\n");
+  fprintf(perf_fp, "  <meta content=\"text/html; charset=ISO-8859-1\"\n");
+  fprintf(perf_fp, " http-equiv=\"content-type\">\n");
+  fprintf(perf_fp, "  <title>Performance Data</title>\n");
+  fprintf(perf_fp, "</head>\n");
+  fprintf(perf_fp, "<body style=\"color: rgb(0, 0, 0); background-color: rgb(153, 153, 153);\"\n");
+  fprintf(perf_fp, " alink=\"#000099\" link=\"#000099\" vlink=\"#990099\">\n");
+  fprintf(perf_fp, "<table\n");
+  fprintf(perf_fp, " style=\"background-color: rgb(192, 192, 192); width: 100%; text-align: left;\"\n");
+  fprintf(perf_fp, " border=\"2\" cellpadding=\"2\" cellspacing=\"2\">\n");
+  fprintf(perf_fp, "  <tbody>\n");
+  fprintf(perf_fp, "    <tr>\n");
+  fprintf(perf_fp, "      <td colspan=\"2\" style=\"vertical-align: top;\"><big><big><big>Line\n");
+  char buf1[30];
+  struct tm mytm;
+  localtime_r(&now, &mytm);
+  strftime(buf1, sizeof(buf1), "%Y-%m-%d %T", &mytm);
+  fprintf(perf_fp, "1 (%s)</big></big></big><br>\n", buf1);
+  fprintf(perf_fp, "      </td>\n");
+  fprintf(perf_fp, "    </tr>\n");
+  fprintf(perf_fp, "  <tr>");
+  fprintf(perf_fp, "    <td style=\"width: 126px;\">TrainID</td>");
+  fprintf(perf_fp, "    <td style=\"width: 837px;\">Message</td>");
+  fprintf(perf_fp, "  </tr>");
+  int n_printed = 0;
+  for (int i=0; (i < n_trains) || (n_printed < 5); i++)
+  {
+    if (i < n_trains)
+    {
+      fprintf(perf_fp, "  <tr>\n");
+      if (trains[i].seconds_late > 20)
+      {
+        n_printed++;
+        fprintf(perf_fp, "      <td style=\"vertical-align: top;\">%s\n", trains[i].train_id);
+        fprintf(perf_fp, "      </td>\n");
+        fprintf(perf_fp, "      <td style=\"vertical-align: top;\">This train is %d seconds late %d tell him to hurry\n", 
+                                  trains[i].seconds_late);
+        fprintf(perf_fp, "      </td>\n");
+      }
+      if (trains[i].seconds_late < -20)
+      {
+        n_printed++;
+        fprintf(perf_fp, "      <td style=\"vertical-align: top;\">%s<br>\n", trains[i].train_id);
+        fprintf(perf_fp, "      </td>\n");
+        fprintf(perf_fp, "      <td style=\"vertical-align: top;\">This train is early tell him to wait %d seconds at the next station\n", 
+                  -trains[i].seconds_late);
+        fprintf(perf_fp, "      </td>\n");
+      }
+    }
+    else
+    {
+      n_printed++;
+      fprintf(perf_fp, "      <td style=\"vertical-align: top;\">|               \n");
+      fprintf(perf_fp, "      </td>\n");
+      fprintf(perf_fp, "      <td style=\"vertical-align: top;\">|                              \n");
+      fprintf(perf_fp, "      </td>\n");
+    }
+    fprintf(perf_fp, "  </tr>\n");
+  }
+  fprintf(perf_fp, "  </tbody>\n");
+  fprintf(perf_fp, "</table>\n");
+  fprintf(perf_fp, "<br>\n");
+  fprintf(perf_fp, "</body>\n");
+  fprintf(perf_fp, "</html>\n");
+} 
+
+
+
 /*************************************************************************************************/
 
 void display_data_t::gen_html(time_t now, train_data_t *trains, int n_trains) 
@@ -127,26 +207,16 @@ void display_data_t::gen_html(time_t now, train_data_t *trains, int n_trains)
       {
         switch_direction(&trains[i]);
       }
-      y_diff_for_text = -28;
+      y_diff_for_text = -26;
     }
     else
     {
-      y_diff_for_text = 20;
+      y_diff_for_text = 19;
     }
 
-    fprintf(fp, "<div style=\"position:absolute; top:%dpx; left:%dpx; z-index:2\">\n",top + ty + y_diff_for_text,left + tx - 10);
-
-  
-    if (trains[i].seconds_late < 0)
-    {
-      fprintf(fp, "<div style=\"text-align: center;\"><span style=\"font-weight: bold; color: rgb(255, 255, 0);\">%s %d</span></div>\n", 
+    fprintf(fp, "<div style=\"position:absolute; top:%dpx; left:%dpx; z-index:2\">\n",top + ty + y_diff_for_text,left + tx - 15);
+    fprintf(fp, "<div style=\"text-align: center;\"><span style=\"font-weight: bold; color: rgb(255, 255, 0);\">%s %+d</span></div>\n", 
                  trains[i].train_id, trains[i].seconds_late);
-    }
-    else
-    {
-      fprintf(fp, "<div style=\"text-align: center;\"><span style=\"font-weight: bold; color: rgb(255, 255, 0);\">%s +%d</span></div>\n", 
-                 trains[i].train_id, trains[i].seconds_late);
-    }
 
     fprintf(fp, "</div>\n");
   }
@@ -240,6 +310,7 @@ void display_alg_t::read_sections(char *fname)
   
   n_trains = 0;
   train_number = 1;
+  when_last_train_entered = time(NULL); 
 
   table_fp = fopen("line1_table.html", "w");
   if (table_fp == NULL)
@@ -248,6 +319,14 @@ void display_alg_t::read_sections(char *fname)
     exit(0);
   }
   table_fd = fileno(table_fp);
+
+  perf_fp = fopen("line1_perf.html", "w");
+  if (perf_fp == NULL)
+  {
+    perror("line1_perf.html");
+    exit(0);
+  }
+  perf_fd = fileno(perf_fp);
 
   int max = 50;
 
@@ -324,6 +403,7 @@ void display_alg_t::add_train(time_t ts, const char *train_id)
 
   n_trains++;
   train_number++;
+  when_last_train_entered = ts;
   printf("********** Added train, n_trains = %d\n", n_trains);
 }
 
@@ -370,7 +450,6 @@ void display_alg_t::gen_table(time_t now)
   struct tm mytm;
   localtime_r(&now, &mytm);
   strftime(buf1, sizeof(buf1), "%Y-%m-%d %T", &mytm);
-  //fprintf(table_fp, "<h1>Linea 1 (%s)</h1>\n", buf1);
   fprintf(table_fp, "1 (%s)</big></big></big><br>\n", buf1);
   fprintf(table_fp, "      </td>\n");
   fprintf(table_fp, "    </tr>\n");
@@ -511,6 +590,15 @@ void display_alg_t::gen_display(time_t now)
   ftruncate(table_fd, bytes);
   fseek(table_fp, 0, SEEK_SET);
   lockf(table_fd, F_ULOCK, 0);
+
+  fseek(perf_fp, 0, SEEK_SET);
+  lockf(perf_fd, F_LOCK, 0);
+  gen_performance(now);
+  fflush(perf_fp);
+  bytes = ftell(perf_fp);
+  ftruncate(perf_fd, bytes);
+  fseek(perf_fp, 0, SEEK_SET);
+  lockf(perf_fd, F_ULOCK, 0);
 }
 
 /*********************************************************/
@@ -555,6 +643,15 @@ void display_alg_t::update_train(time_t ts, int n)
 void display_alg_t::update(time_t ts)
 {
   //printf("--- update %d trains\n", n_trains);
+  if ((ts - when_last_train_entered) > (60 * 60 * 2))
+  {
+    if (train_number > 10)
+    {
+      when_last_train_entered = ts; 
+      train_number = 1;
+      time_table.next_day();
+    }
+  }
 
   for (int i=0; i < n_trains; i++)
   {

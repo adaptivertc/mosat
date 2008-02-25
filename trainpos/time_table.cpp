@@ -9,6 +9,24 @@
 #include "time_table.h"
 
 /********************************************************/
+time_table_t::time_table_t(void)
+{
+  n_departures = 0;
+  next_match = 0;
+}
+/********************************************************/
+
+void time_table_t::next_day(void)
+{
+  for (int i=0; i < n_departures; i++)
+  {
+    this->matched[i] = false;
+    this->times[i] += 24 * 60 * 60;
+  }
+  next_match = 0; 
+}
+
+/********************************************************/
 
 bool time_table_t::is_a_match(time_t scheduled_time, time_t actual_time)
 {
@@ -20,13 +38,13 @@ bool time_table_t::is_a_match(time_t scheduled_time, time_t actual_time)
 const char *time_table_t::match_departure(time_t actual_departure_time)
 {
   int found = false;
-  for (int i=(last_match + 1); i < n_departures; i++)
+  for (int i=(next_match); i < n_departures; i++)
   {
     if (is_a_match(this->times[i], actual_departure_time))
     {
        found = true;
        this->matched[i] = true;
-       last_match = i;
+       next_match = i + 1;
        return this->train_id[i];
     }
   

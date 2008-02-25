@@ -59,13 +59,14 @@ private:
   tsecdata_t sections[50];
   int n_times;
   time_t times[500];
-  char train_num[500][10];
+  char train_id[500][10];
   int week_day;
   sim_ev_notify_t *notify_obj;
   void add_train(time_t now);
   void update_train(int n, time_t now);
 public:
   train_sim_t(sim_ev_notify_t *nobj);
+  void next_day(void);
   time_t read_day(char *fname);
   void read_sections(char *fname);
   void update(time_t now);

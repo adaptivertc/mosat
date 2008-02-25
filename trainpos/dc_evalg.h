@@ -97,6 +97,7 @@ private:
   int n_trains;
   int n_sections;
   int n_displays;
+  time_t when_last_train_entered;
 
   train_data_t trains[50];
   tsecdata_t sections[50];
@@ -107,6 +108,9 @@ private:
   int fd;
   FILE *table_fp;
   int table_fd;
+
+  FILE *perf_fp;
+  int perf_fd;
 
   alarm_entry_t actual_alarms[RT_MAX_ALARMS]; 
   alarm_entry_t alarm_history[RT_MAX_ALARMS]; 
@@ -122,6 +126,7 @@ public:
   void gen_display(time_t now);
   void gen_html(time_t now);
   void gen_table(time_t now);
+  void gen_performance(time_t now);
   void gen_alarms(time_t now);
 };
 
