@@ -216,7 +216,7 @@ void display_data_t::gen_html(time_t now, train_data_t *trains, int n_trains)
 
     fprintf(fp, "<div style=\"position:absolute; top:%dpx; left:%dpx; z-index:2\">\n",top + ty + y_diff_for_text,left + tx - 15);
     fprintf(fp, "<div style=\"text-align: center;\"><span style=\"font-weight: bold; color: rgb(255, 255, 0);\">%s %+d</span></div>\n", 
-                 trains[i].train_id, trains[i].seconds_late);
+                 trains[i].train_id, -trains[i].seconds_late);
 
     fprintf(fp, "</div>\n");
   }
@@ -487,6 +487,8 @@ void display_alg_t::gen_table(time_t now)
     secs_in_service %= 60;
     fprintf(table_fp, "      <td style=\"vertical-align: top;\">%02d:%02d<br>\n", mins_in_service, secs_in_service);
     fprintf(table_fp, "      </td>\n");
+    fprintf(table_fp, "      <td style=\"vertical-align: top;\">%+d<br>\n", -trains[i].seconds_late);
+    /*** This was with parenthesis
     if (trains[i].seconds_late < 0)
     {
       fprintf(table_fp, "      <td style=\"vertical-align: top;\">(%d)<br>\n", -trains[i].seconds_late);
@@ -495,11 +497,14 @@ void display_alg_t::gen_table(time_t now)
     {
       fprintf(table_fp, "      <td style=\"vertical-align: top;\">%d<br>\n", trains[i].seconds_late);
     }
+    ***/
     fprintf(table_fp, "      </td>\n");
     if (double(trains[i].arival_time - trains[i].service_entry_time) > 60)
     {
       double percent =
             (double(trains[i].seconds_late) / double(trains[i].arival_time - trains[i].service_entry_time)) * 100.0;
+      fprintf(table_fp, "      <td style=\"vertical-align: top;\">%+0.1lf%%<br>\n", -percent);
+      /****
       if (percent < 0)
       {
         fprintf(table_fp, "      <td style=\"vertical-align: top;\">(%0.1lf%%)<br>\n", -percent);
@@ -508,6 +513,7 @@ void display_alg_t::gen_table(time_t now)
       {
         fprintf(table_fp, "      <td style=\"vertical-align: top;\">%0.1lf%%<br>\n", percent);
       }
+      ***/
     }
     else
     {
