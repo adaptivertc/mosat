@@ -24,6 +24,7 @@ class sim_ev_notify_t
 public:
   virtual void trigger_arrival(int section, time_t now) = 0;
   virtual void trigger_departure(int section, time_t now) = 0;
+  virtual ~sim_ev_notify_t(void){};
 };
 
 class dummy_notify_t : public sim_ev_notify_t
@@ -67,8 +68,8 @@ private:
 public:
   train_sim_t(sim_ev_notify_t *nobj);
   void next_day(void);
-  time_t read_day(char *fname);
-  void read_sections(char *fname);
+  time_t read_day(const char *fname);
+  void read_sections(const char *fname);
   void update(time_t now);
 };
 

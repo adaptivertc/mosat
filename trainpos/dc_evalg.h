@@ -79,14 +79,15 @@ private:
   FILE *fp;
   int  fd;
   display_dist_t *dd;
-  char *square;
-  char *square_unexpected;
-  char *background;
-  char *fname;
+  const char *square;
+  const char *square_unexpected;
+  const char *background;
+  const char *fname;
 public:
-  void set(char *a_background, char *a_square, char *a_unexpected,
-    char *a_fname, int a_x1, int a_x2, int a_y1, int a_y2, int n_sections);
-  void read(char *base_name);
+  void set(const char *a_background, const char *a_square, 
+       const char *a_unexpected, const char *a_fname, 
+       int a_x1, int a_x2, int a_y1, int a_y2, int n_sections);
+  void read(const char *base_name);
   void gen_html(time_t now, train_data_t *trains, int n_trains);
 };
 
@@ -117,7 +118,7 @@ private:
 
   void add_train(time_t ts, const char *train_id);
 public:
-  void read_sections(char *fname);
+  void read_sections(const char *fname);
   void update(time_t time);
   void process_event(crossing_event_t ev);
   void process_departure(int section, time_t now);

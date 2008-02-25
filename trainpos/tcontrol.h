@@ -53,8 +53,9 @@ struct alarm_info_t
 class alarm_notify_base_t
 {
 public:
-  virtual void estop(char *reason) = 0;
+  virtual void estop(const char *reason) = 0;
   virtual void set_alarm_state(alarm_info_t alarm_info) = 0;
+  virtual ~alarm_notify_base_t(void){};
 };
 
 struct config_info_t
@@ -83,7 +84,7 @@ private:
 public:
   alarm_admin_t(int a_n_sects, int a_n_algs, int a_n_types);
   void reset(void);
-  void estop(int alg, char *reason);
+  void estop(int alg, const char *reason);
   void set_alarm(int alg, alarm_info_t info);
   void evaluate_alarms(void);
   void ack_alarm(int section, int type, int new_severity);
@@ -96,7 +97,7 @@ private:
   alarm_admin_t *admin;
 public:
   alarm_notify_obj_t(int alg_num, alarm_admin_t *anAdmin);
-  void estop(char *reason);
+  void estop(const char *reason);
   void set_alarm_state(alarm_info_t alarm_info);
 };
 
@@ -108,6 +109,7 @@ public:
   virtual void train_exited(int section) = 0;
   virtual void initialize(config_info_t cinfo) = 0;
   virtual void process_event(crossing_event_t event) = 0;
+  virtual ~base_alg_t(void){};
 };
 
 class event_dispatch_t

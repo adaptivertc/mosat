@@ -58,7 +58,7 @@ train_sim_t::train_sim_t(sim_ev_notify_t *nobj)
 
 /********************************************************/
 
-void train_sim_t::read_sections(char *fname)
+void train_sim_t::read_sections(const char *fname)
 {
   int max = 50;
   char line[300];
@@ -101,13 +101,13 @@ void train_sim_t::read_sections(char *fname)
 
 /********************************************************/
 
-time_t train_sim_t::read_day(char *fname)
+time_t train_sim_t::read_day(const char *fname)
 {
   int max = 500;
   time_t today = time(NULL);
   char line[300];
 
-  struct tm mytm, temptm;
+  struct tm mytm;
   localtime_r(&today, &mytm);
   week_day = mytm.tm_wday;
 
@@ -131,7 +131,6 @@ time_t train_sim_t::read_day(char *fname)
     {
       continue;
     }
-    char *train = argv[0];
 
     localtime_r(&today, &mytm);
 

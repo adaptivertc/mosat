@@ -112,13 +112,7 @@ void send_update(time_t now)
 
 int main(int argc, char *argv[])
 {
-  int n_image;
-
-  int itop[100];
-  int ileft[100];
   bool use_actual_time = false;
-
-  crossing_queue_event_t msgbuf;
 
   qid = connect_message_queue();
 

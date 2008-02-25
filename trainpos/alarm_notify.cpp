@@ -39,7 +39,7 @@ alarm_notify_obj_t::alarm_notify_obj_t(int alg_num, alarm_admin_t *anAdmin)
   admin = anAdmin;
 }
 
-void alarm_notify_obj_t::estop(char *reason)
+void alarm_notify_obj_t::estop(const char *reason)
 {
 }
 

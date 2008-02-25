@@ -52,6 +52,7 @@ class event_alg_t
 public:
   virtual void update(time_t time) = 0;
   virtual void process_event(crossing_event_t ev) = 0;
+  virtual ~event_alg_t(void){};
 };
 
 struct train_compare_t

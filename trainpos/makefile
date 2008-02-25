@@ -1,5 +1,5 @@
 
-CC=g++
+CC=g++ -Wall
 
 INCLUDES=tcontrol.h alg1.h train_sim.h event_alg.h dc_evalg.h gp_evalg.h
 

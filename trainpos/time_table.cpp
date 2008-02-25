@@ -59,9 +59,8 @@ void time_table_t::read_day(const char *fname)
   time_t today = time(NULL);
   char line[300];
 
-  struct tm mytm, temptm;
+  struct tm mytm;
   localtime_r(&today, &mytm);
-  int week_day = mytm.tm_wday;
 
   FILE *fp = fopen(fname, "r");
   if (fp == NULL)
@@ -83,7 +82,6 @@ void time_table_t::read_day(const char *fname)
     {
       continue;
     }
-    char *train = argv[0];
 
     localtime_r(&today, &mytm);
 

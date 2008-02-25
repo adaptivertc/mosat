@@ -167,7 +167,7 @@ void alarm_admin_t::evaluate_alarms(void)
 
 /********************************************/
 
-void alarm_admin_t::estop(int alg, char *reason)
+void alarm_admin_t::estop(int alg, const char *reason)
 {
 }
 

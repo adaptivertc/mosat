@@ -33,8 +33,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 /*************************************************************************************************/
 
-void display_data_t::set(char *a_background, char *a_square, char *a_unexpected,
-    char *a_fname, int a_x1, int a_x2, int a_y1, int a_y2, int n_sections)
+void display_data_t::set(const char *a_background, const char *a_square, const char *a_unexpected,
+    const char *a_fname, int a_x1, int a_x2, int a_y1, int a_y2, int n_sections)
 {
   printf("creating diaplay_data_t: %s\n", a_fname);
   background = a_background;
@@ -56,7 +56,7 @@ void display_data_t::set(char *a_background, char *a_square, char *a_unexpected,
 
 /*************************************************************************************************/
 
-void display_data_t::read(char *base_name)
+void display_data_t::read(const char *base_name)
 {
 }
 
@@ -90,7 +90,7 @@ void display_alg_t::gen_performance(time_t now)
   fprintf(perf_fp, "<body style=\"color: rgb(0, 0, 0); background-color: rgb(153, 153, 153);\"\n");
   fprintf(perf_fp, " alink=\"#000099\" link=\"#000099\" vlink=\"#990099\">\n");
   fprintf(perf_fp, "<table\n");
-  fprintf(perf_fp, " style=\"background-color: rgb(192, 192, 192); width: 100%; text-align: left;\"\n");
+  fprintf(perf_fp, " style=\"background-color: rgb(192, 192, 192); width: 100%%; text-align: left;\"\n");
   fprintf(perf_fp, " border=\"2\" cellpadding=\"2\" cellspacing=\"2\">\n");
   fprintf(perf_fp, "  <tbody>\n");
   fprintf(perf_fp, "    <tr>\n");
@@ -117,7 +117,7 @@ void display_alg_t::gen_performance(time_t now)
         n_printed++;
         fprintf(perf_fp, "      <td style=\"vertical-align: top;\">%s\n", trains[i].train_id);
         fprintf(perf_fp, "      </td>\n");
-        fprintf(perf_fp, "      <td style=\"vertical-align: top;\">This train is %d seconds late %d tell him to hurry\n", 
+        fprintf(perf_fp, "      <td style=\"vertical-align: top;\">This train is %d seconds late tell him to hurry\n", 
                                   trains[i].seconds_late);
         fprintf(perf_fp, "      </td>\n");
       }
@@ -297,7 +297,7 @@ void display_dist_t::calc_xy(int section, double fraction, int *x, int *y, bool 
 
 /********************************************************/
 
-void display_alg_t::read_sections(char *fname)
+void display_alg_t::read_sections(const char *fname)
 {
   ddata = new display_data_t[2];
   ddata[0].set( "dia/CHENNAIBEACH_VELACHERY.png" , "dia/square12x12.png", "dia/square12x12.png", "Line1.html",
@@ -441,7 +441,7 @@ void display_alg_t::gen_table(time_t now)
   fprintf(table_fp, "<body style=\"color: rgb(0, 0, 0); background-color: rgb(153, 153, 153);\"\n");
   fprintf(table_fp, " alink=\"#000099\" link=\"#000099\" vlink=\"#990099\">\n");
   fprintf(table_fp, "<table\n");
-  fprintf(table_fp, " style=\"background-color: rgb(192, 192, 192); width: 100%; text-align: left;\"\n");
+  fprintf(table_fp, " style=\"background-color: rgb(192, 192, 192); width: 100%%; text-align: left;\"\n");
   fprintf(table_fp, " border=\"2\" cellpadding=\"2\" cellspacing=\"2\">\n");
   fprintf(table_fp, "  <tbody>\n");
   fprintf(table_fp, "    <tr>\n");
@@ -502,11 +502,11 @@ void display_alg_t::gen_table(time_t now)
             (double(trains[i].seconds_late) / double(trains[i].arival_time - trains[i].service_entry_time)) * 100.0;
       if (percent < 0)
       {
-        fprintf(table_fp, "      <td style=\"vertical-align: top;\">(%0.1lf\%)<br>\n", -percent);
+        fprintf(table_fp, "      <td style=\"vertical-align: top;\">(%0.1lf%%)<br>\n", -percent);
       }
       else
       {
-        fprintf(table_fp, "      <td style=\"vertical-align: top;\">%0.1lf\%<br>\n", percent);
+        fprintf(table_fp, "      <td style=\"vertical-align: top;\">%0.1lf%%<br>\n", percent);
       }
     }
     else
@@ -605,7 +605,6 @@ void display_alg_t::gen_display(time_t now)
 
 void display_alg_t::update_train(time_t ts, int n)
 {
-  int tx, ty;
   double fr;
   int s = trains[n].section;
   if (!trains[n].departed)
