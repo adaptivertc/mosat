@@ -49,6 +49,9 @@ int main(int argc, char *argv[])
   gp_evalg_t gp_alg;
   gp_alg.init();
 
+  ri_evalg_t gp_alg;
+  ri_alg.init();
+
   alarm_admin_t admin(0, 0, 0);
   alarm_notify_obj_t ano0(0, &admin);
   alarm_notify_obj_t ano1(1, &admin);
@@ -101,11 +104,13 @@ int main(int argc, char *argv[])
       last_time = qevent.data.time_stamp;
       dc_alg.update(qevent.data.time_stamp);
       gp_alg.update(qevent.data.time_stamp);
+      ri_alg.update(qevent.data.time_stamp);
     }
     else
     {
       dc_alg.process_event(qevent.data);
       gp_alg.process_event(qevent.data);
+      ri_alg.process_event(qevent.data);
     }
   }
 }
