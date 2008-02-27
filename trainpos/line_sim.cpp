@@ -32,9 +32,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "tcontrol.h"
 #include "train_sim.h"
 #include "rtcommon.h"
+#include "sim_msg.h"
 
 class my_notify_t : public sim_ev_notify_t
 {
+public:
   void trigger_arrival(int section, time_t now);
   void trigger_departure(int section, time_t now);
 };
@@ -115,6 +117,7 @@ int main(int argc, char *argv[])
   bool use_actual_time = false;
 
   qid = connect_message_queue();
+  create_sim_queue();
 
   time_t now;
   time_t start;
@@ -145,12 +148,37 @@ int main(int argc, char *argv[])
   }
 
 
+  sim_msg_t sim_msg;
   int i = 0;
   while(true)
   {
     //printf("-------------------- %d\n", i);
     sim.update(now);
     send_update(now);
+ 
+    if (0 == check_for_sim_msg(&sim_msg))
+    {
+      printf("sim command recieved: type %d, section %d, sensor %d\n",
+         sim_msg.type, sim_msg.section, sim_msg.sensor);
+      if (sim_msg.type == 1)
+      {
+         if (sim_msg.sensor == 0)
+         {
+           printf("----------triggering departure at section %d\n", sim_msg.section);
+           my_notify.trigger_departure(sim_msg.section, now);
+         }
+         else if (sim_msg.sensor == 1)
+         {
+           printf("----------triggering arrival at section %d\n", sim_msg.section + 1);
+           my_notify.trigger_arrival(sim_msg.section + 1, now);
+         }
+      }
+    } 
+    else
+    {
+      //printf("no sim message . . . \n");
+    } 
+
     if (use_actual_time)
     {
       now = time(NULL);
@@ -161,6 +189,8 @@ int main(int argc, char *argv[])
       now++;
       if (i > 5400) usleep(wait_time);
     }
+
+
     i++;
   }
 }

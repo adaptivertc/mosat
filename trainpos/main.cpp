@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "event_alg.h"
 #include "dc_evalg.h"
 #include "gp_evalg.h"
+#include "ri_evalg.h"
 
 int main(int argc, char *argv[])
 {
@@ -49,7 +50,7 @@ int main(int argc, char *argv[])
   gp_evalg_t gp_alg;
   gp_alg.init();
 
-  ri_evalg_t gp_alg;
+  ri_evalg_t ri_alg;
   ri_alg.init();
 
   alarm_admin_t admin(0, 0, 0);

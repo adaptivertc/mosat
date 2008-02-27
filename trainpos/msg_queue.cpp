@@ -32,7 +32,7 @@ static int qid;
 
 int create_message_queue(void)
 {
-  key_t mkey = ftok("/home/carr", 1);
+  key_t mkey = ftok("./", 1);
   int myqid = msgget(mkey, IPC_CREAT | 0700);
   if (myqid == -1)
   {
@@ -48,7 +48,7 @@ int create_message_queue(void)
 
 int connect_message_queue(void)
 {
-  key_t mkey = ftok("/home/carr", 1);
+  key_t mkey = ftok("./", 1);
   int myqid = msgget(mkey, 0700);
   if (myqid == -1)
   {
