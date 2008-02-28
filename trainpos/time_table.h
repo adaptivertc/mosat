@@ -10,7 +10,7 @@ private:
   int n_departures;
 public:
   time_table_t(void);
-  void read_day(const char *fname);
+  void read_day(void);
   const char *match_departure(time_t actual_departure_time);
   bool is_a_match(time_t scheduled_time, time_t actual_time);
   void next_day(void);

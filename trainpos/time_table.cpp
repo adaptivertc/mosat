@@ -7,6 +7,7 @@
 #include <arg.h>
 
 #include "time_table.h"
+#include "tpconfig.h"
 
 /********************************************************/
 time_table_t::time_table_t(void)
@@ -54,13 +55,19 @@ const char *time_table_t::match_departure(time_t actual_departure_time)
 
 /********************************************************/
 
-void time_table_t::read_day(const char *fname)
+void time_table_t::read_day(void)
 {
   time_t today = time(NULL);
   char line[300];
 
   struct tm mytm;
   localtime_r(&today, &mytm);
+
+  const char *fname = tpconfig.get_config("TIMETABLE_FILE");
+  if (fname == NULL)
+  {
+     fname = "timetable.txt";
+  }
 
   FILE *fp = fopen(fname, "r");
   if (fp == NULL)

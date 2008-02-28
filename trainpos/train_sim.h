@@ -68,7 +68,7 @@ private:
 public:
   train_sim_t(sim_ev_notify_t *nobj);
   void next_day(void);
-  time_t read_day(const char *fname);
+  time_t read_day(void);
   void read_sections(const char *fname);
   void update(time_t now);
 };

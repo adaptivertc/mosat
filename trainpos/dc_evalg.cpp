@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "rtcommon.h"
 #include "arg.h"
+#include "tpconfig.h"
 
 /*************************************************************************************************/
 
@@ -302,12 +303,15 @@ void display_dist_t::calc_xy(int section, double fraction, int *x, int *y, bool 
 
 void display_alg_t::read_sections(const char *fname)
 {
-
-  /***
-  reader.read_file("display_info.txt");
-  int n = reader.get_n_displays();
-  ddata = new display_data_t[n];
-  for (int i=0; i < n; i++)
+  const char *dfile = tpconfig.get_config("DISPLAY_FILE");
+  if (dfile == NULL)
+  {
+    dfile = "display_info.txt";
+  }
+  reader.read_file(dfile);
+  n_displays = reader.get_n_displays();
+  ddata = new display_data_t[n_displays];
+  for (int i=0; i < n_displays; i++)
   {
     const display_info_t *dd = reader.get_display_data(i);
     ddata[i].set( dd->background, dd->square, dd->square_unexpected, dd->html_out,
@@ -316,9 +320,8 @@ void display_alg_t::read_sections(const char *fname)
          i, dd->background, dd->square, dd->square_unexpected, dd->html_out,
          dd->x1, dd->x2, dd->y1, dd->y2, dd->n_sections);
   }
-  ****/
-  ddata = new display_data_t[1];
-  n_displays = 1;
+  //ddata = new display_data_t[1];
+  //n_displays = 1;
 
   ddata[0].set( "dia/CHENNAIBEACH_VELACHERY.png" , "dia/square12x12.png", "dia/square12x12.png", "Line1.html",
               24, 968, 63, 94, 32);
@@ -396,7 +399,7 @@ void display_alg_t::read_sections(const char *fname)
     }
   }
   n_sections = n_lines;
-  time_table.read_day(TIMETABLE_FILE);
+  time_table.read_day();
 }
 
 /*********************************************************/

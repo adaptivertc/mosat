@@ -34,6 +34,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "rtcommon.h"
 #include "sim_msg.h"
 
+#include "tpconfig.h"
+
+tp_config_t tpconfig;
+
 class my_notify_t : public sim_ev_notify_t
 {
 public:
@@ -114,6 +118,8 @@ void send_update(time_t now)
 
 int main(int argc, char *argv[])
 {
+  tpconfig.read_file("tpconfig.txt");
+
   bool use_actual_time = false;
 
   qid = connect_message_queue();
@@ -123,7 +129,7 @@ int main(int argc, char *argv[])
   time_t start;
   class my_notify_t my_notify;
   class train_sim_t sim(&my_notify);
-  now = sim.read_day(TIMETABLE_FILE);
+  now = sim.read_day();
   start = now;
   sim.read_sections(SECTIONS_FILE);
   long wait_time = 100000;

@@ -30,7 +30,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "tcontrol.h"
 #include "event_alg.h"
 
-const double driver_factors[10] = {1.03, 0.99, 0.98, 1.0, 1.03, 1.02, 0.99, 1.01, 0.98, 1.00};
+#include "tpconfig.h"
+
+const double driver_factors[10] = {1.03, 0.99, 0.98, 1.001, 1.03, 1.02, 0.99, 1.01, 0.98, 0.999};
 static int factor_loc = 0;
 
 
@@ -101,12 +103,17 @@ void train_sim_t::read_sections(const char *fname)
 
 /********************************************************/
 
-time_t train_sim_t::read_day(const char *fname)
+time_t train_sim_t::read_day(void)
 {
   int max = 500;
   time_t today = time(NULL);
   char line[300];
-
+  
+  const char *fname = tpconfig.get_config("TIMETABLE_FILE");
+  if (fname == NULL)
+  {
+    fname = "timetable.txt";
+  } 
   struct tm mytm;
   localtime_r(&today, &mytm);
   week_day = mytm.tm_wday;
@@ -187,7 +194,7 @@ void train_sim_t::update(time_t now)
     localtime_r(&now, &mytm);
     if ( mytm.tm_wday != week_day)
     {
-      this->read_day(TIMETABLE_FILE);
+      this->read_day();
     }
   }
 

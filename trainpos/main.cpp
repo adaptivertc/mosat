@@ -34,6 +34,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gp_evalg.h"
 #include "ri_evalg.h"
 
+#include "tpconfig.h"
+
+tp_config_t tpconfig;
+
 int main(int argc, char *argv[])
 {
   time_t last_time = 0;
@@ -42,10 +46,18 @@ int main(int argc, char *argv[])
   bool skip_departure = true;
   ****/
 
+  tpconfig.read_file("tpconfig.txt");
+
   int qid = create_message_queue();
 
+  const char *sections_file = tpconfig.get_config("SECTIONS_FILE");
+  if (sections_file == NULL)
+  {
+    sections_file = "sections.txt";
+  }
+
   display_alg_t dc_alg;
-  dc_alg.read_sections(SECTIONS_FILE);
+  dc_alg.read_sections(sections_file);
 
   gp_evalg_t gp_alg;
   gp_alg.init();
