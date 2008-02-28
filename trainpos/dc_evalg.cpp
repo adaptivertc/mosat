@@ -33,6 +33,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 /*************************************************************************************************/
 
+static display_reader_t reader;
+
 void display_data_t::set(const char *a_background, const char *a_square, const char *a_unexpected,
     const char *a_fname, int a_x1, int a_x2, int a_y1, int a_y2, int n_sections)
 {
@@ -42,6 +44,7 @@ void display_data_t::set(const char *a_background, const char *a_square, const c
   square_unexpected = a_unexpected;
   fname = a_fname;
 
+  printf("Opening the file for output: %s\n", fname);
   fp = fopen(fname, "w");
   if (fp == NULL)
   {
@@ -299,14 +302,30 @@ void display_dist_t::calc_xy(int section, double fraction, int *x, int *y, bool 
 
 void display_alg_t::read_sections(const char *fname)
 {
-  ddata = new display_data_t[2];
+
+  /***
+  reader.read_file("display_info.txt");
+  int n = reader.get_n_displays();
+  ddata = new display_data_t[n];
+  for (int i=0; i < n; i++)
+  {
+    const display_info_t *dd = reader.get_display_data(i);
+    ddata[i].set( dd->background, dd->square, dd->square_unexpected, dd->html_out,
+      dd->x1, dd->x2, dd->y1, dd->y2, dd->n_sections);
+      printf("Display[%d]: %s, %s, %s, %s, %d, %d, %d, %d, %d\n", 
+         i, dd->background, dd->square, dd->square_unexpected, dd->html_out,
+         dd->x1, dd->x2, dd->y1, dd->y2, dd->n_sections);
+  }
+  ****/
+  ddata = new display_data_t[1];
+  n_displays = 1;
+
   ddata[0].set( "dia/CHENNAIBEACH_VELACHERY.png" , "dia/square12x12.png", "dia/square12x12.png", "Line1.html",
               24, 968, 63, 94, 32);
 //  ddata[0].set( "Line1_1024.png", "square10x10.png", "square_unexpected.png", "Line1.html",
 //             26, 967, 45, 72, 36);
 //  ddata[1].set( "Line1_1024.png", "square_unexpected.png", "square10x10.png", "XLine1.html",
 //              26, 967, 45, 72, 36);
-  n_displays = 1;
   
   n_trains = 0;
   train_number = 1;

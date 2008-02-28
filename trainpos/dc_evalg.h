@@ -46,6 +46,32 @@ struct tsecdata_t
   char station[20];
 };
 
+struct display_info_t // For reading the display info from a file
+{
+  char background[80];
+  char square[80];
+  char square_unexpected[80];
+  char html_out[80];
+  int n_sections;
+  int x1;
+  int x2;
+  int y1;
+  int y2;
+};
+
+class display_reader_t
+{
+  int n_displays;
+  display_info_t *displays[20];
+public:
+  display_reader_t(void);
+  int get_n_displays(void) {return n_displays;};
+  const display_info_t *get_display_data(int n);
+  void read_file(const char *fname);
+};
+
+
+
 class display_dist_t
 {
 /***
