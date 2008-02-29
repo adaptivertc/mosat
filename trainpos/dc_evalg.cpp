@@ -53,13 +53,14 @@ void display_data_t::set(const char *a_background, const char *a_square, const c
   fname = strdup(path);
 
   printf("Opening the file for output: %s\n", fname);
-  fp = fopen(fname, "w");
+  fp = fopen(fname, "w+");
   if (fp == NULL)
   {
     perror(fname);
     exit(0);
   }
   fd = fileno(fp);
+  fseek(fp, 0, SEEK_SET);
 
   
   dd = new display_dist_t(a_x1, a_x2, a_y1, a_y2, n_sections);
@@ -341,21 +342,23 @@ void display_alg_t::read_sections(const char *fname)
   train_number = 1;
   when_last_train_entered = time(NULL); 
 
-  table_fp = fopen("line1_table.html", "w");
+  table_fp = fopen("line1_table.html", "w+");
   if (table_fp == NULL)
   {
     perror("line1_table.html");
     exit(0);
   }
   table_fd = fileno(table_fp);
+  fseek(table_fp, 0, SEEK_SET);
 
-  perf_fp = fopen("line1_perf.html", "w");
+  perf_fp = fopen("line1_perf.html", "w+");
   if (perf_fp == NULL)
   {
     perror("line1_perf.html");
     exit(0);
   }
   perf_fd = fileno(perf_fp);
+  fseek(perf_fp, 0, SEEK_SET);
 
   int max = 50;
 

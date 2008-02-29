@@ -32,7 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "tpconfig.h"
 
-const double driver_factors[10] = {1.03, 0.99, 0.98, 1.001, 1.03, 1.02, 0.99, 1.01, 0.98, 0.999};
+const double driver_factors[10] = {1.02, 0.99, 0.98, 1.005, 1.02, 1.02, 0.99, 1.01, 0.98, 0.995};
 static int factor_loc = 0;
 
 
