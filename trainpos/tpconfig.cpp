@@ -81,7 +81,7 @@ const char *tp_config_t::get_config(const char *aKey)
 
 /**********************************************************************/
 
-void tp_config_t::read_file(char *fname)
+void tp_config_t::read_file(const char *fname)
 {
   printf("Reading config file: %s\n", fname);
   FILE *fp = fopen(fname, "r");

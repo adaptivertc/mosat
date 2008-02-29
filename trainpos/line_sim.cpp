@@ -116,9 +116,52 @@ void send_update(time_t now)
 
 /********************************************************/
 
+void print_help(void)
+{
+  printf("Usage: line_sim [-c <config-file>]\n");
+}
+
+
+
+/********************************************************/
+
 int main(int argc, char *argv[])
 {
-  tpconfig.read_file("tpconfig.txt");
+  const char *config_file = "tpconfig.txt";
+  int current_arg;
+  for (current_arg=1; current_arg < argc; current_arg++)
+  {
+
+    if (0 == strcmp(argv[current_arg], "-c"))
+    {
+      if (argc > (current_arg + 1))
+      {
+        current_arg++;
+        printf("using config file: %s\n", argv[current_arg]);
+        config_file = argv[current_arg];
+      }
+      else
+      {
+        print_help();
+        printf("For -c option, you MUST specify the config file, %d, %d\n",
+                   argc, current_arg);
+        exit(1);
+      }
+    }
+    else if (0 == strcmp(argv[current_arg], "--help"))
+    {
+      print_help();
+      exit(0);
+    }
+    else
+    {
+      printf("Invalid argument: %s\n", argv[current_arg]);
+      print_help();
+      exit(1);
+    }
+  }
+
+  tpconfig.read_file(config_file);
 
   bool use_actual_time = false;
 
@@ -131,7 +174,14 @@ int main(int argc, char *argv[])
   class train_sim_t sim(&my_notify);
   now = sim.read_day();
   start = now;
-  sim.read_sections(SECTIONS_FILE);
+
+  const char *sections_file = tpconfig.get_config("SECTIONS_FILE");
+  if (sections_file == NULL)
+  {
+    sections_file = "sections.txt";
+  }
+
+  sim.read_sections(sections_file);
   long wait_time = 100000;
   if (argc > 1)
   {

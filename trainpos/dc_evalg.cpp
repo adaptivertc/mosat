@@ -43,7 +43,14 @@ void display_data_t::set(const char *a_background, const char *a_square, const c
   background = a_background;
   square = a_square;
   square_unexpected = a_unexpected;
-  fname = a_fname;
+  char path[300];
+  const char *html_home = tpconfig.get_config("HTML_HOME");
+  if (html_home == NULL)
+  {
+    html_home = "./";
+  }
+  snprintf(path, sizeof(path), "%s/%s", html_home, a_fname);
+  fname = strdup(path);
 
   printf("Opening the file for output: %s\n", fname);
   fp = fopen(fname, "w");
@@ -323,8 +330,8 @@ void display_alg_t::read_sections(const char *fname)
   //ddata = new display_data_t[1];
   //n_displays = 1;
 
-  ddata[0].set( "dia/CHENNAIBEACH_VELACHERY.png" , "dia/square12x12.png", "dia/square12x12.png", "Line1.html",
-              24, 968, 63, 94, 32);
+//  ddata[0].set( "dia/CHENNAIBEACH_VELACHERY.png" , "dia/square12x12.png", "dia/square12x12.png", "Line1.html",
+//              24, 968, 63, 94, 32);
 //  ddata[0].set( "Line1_1024.png", "square10x10.png", "square_unexpected.png", "Line1.html",
 //             26, 967, 45, 72, 36);
 //  ddata[1].set( "Line1_1024.png", "square_unexpected.png", "square10x10.png", "XLine1.html",

@@ -32,7 +32,7 @@ public:
   const char *get_config(const char *);
   int get_int(const char *);
   double get_double(const char *);
-  void read_file(char * path);
+  void read_file(const char * path);
   const char *first(void);
   const char *next(void);
   tp_config_t();

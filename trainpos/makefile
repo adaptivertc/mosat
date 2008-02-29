@@ -23,4 +23,4 @@ sim_error: sim_error.o $(INCLUDES)
 	$(CC) -o sim_error sim_error.o sim_msg.o
 
 clean:
-	rm -fv main line_sim *.o
+	rm -fv main line_sim sim_error *.o

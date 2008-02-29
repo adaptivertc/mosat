@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 
 # include <sys/types.h>
@@ -38,6 +39,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 tp_config_t tpconfig;
 
+void print_help(void)
+{
+  printf("Usage: trainpos [-c <config-file>]\n");
+}
+
+/***********************************/
+
 int main(int argc, char *argv[])
 {
   time_t last_time = 0;
@@ -45,8 +53,42 @@ int main(int argc, char *argv[])
   int skip_section = -1;
   bool skip_departure = true;
   ****/
+  const char *config_file = "tpconfig.txt";
+  int current_arg;
+  for (current_arg=1; current_arg < argc; current_arg++)
+  {
 
-  tpconfig.read_file("tpconfig.txt");
+    if (0 == strcmp(argv[current_arg], "-c"))
+    {
+      if (argc > (current_arg + 1))
+      {
+        current_arg++;
+        printf("using config file: %s\n", argv[current_arg]);
+        config_file = argv[current_arg];
+      }
+      else
+      {
+        print_help();
+        printf("For -c option, you MUST specify the config file, %d, %d\n", 
+                   argc, current_arg);
+        exit(1);
+      }
+    }
+    else if (0 == strcmp(argv[current_arg], "--help"))
+    {
+      print_help();
+      exit(0);
+    }
+    else
+    {
+      printf("Invalid argument: %s\n", argv[current_arg]);
+      print_help();
+      exit(1);
+    }
+  }
+ 
+
+  tpconfig.read_file(config_file);
 
   int qid = create_message_queue();
 

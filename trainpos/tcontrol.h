@@ -128,8 +128,8 @@ public:
 //#define SECTIONS_FILE "line1_sections.txt"
 //#define TIMETABLE_FILE "laboral.txt"
 
-#define SECTIONS_FILE "data/india_sections.txt"
-#define TIMETABLE_FILE "data/india_weekdays.txt"
+//#define SECTIONS_FILE "data/india_sections.txt"
+//#define TIMETABLE_FILE "data/india_weekdays.txt"
 
 
 #endif
