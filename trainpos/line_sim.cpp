@@ -118,7 +118,7 @@ void send_update(time_t now)
 
 void print_help(void)
 {
-  printf("Usage: line_sim [-c <config-file>] [-d <home dir>]\n");
+  printf("Usage: line_sim [-c <config-file>] [-d <home dir>] [-rt]\n");
 }
 
 
@@ -127,6 +127,8 @@ void print_help(void)
 
 int main(int argc, char *argv[])
 {
+  bool use_actual_time = false;
+  long wait_time = 100000;
   const char *config_file = "tpconfig.txt";
   const char *home_dir = "./";
   int current_arg;
@@ -165,6 +167,12 @@ int main(int argc, char *argv[])
         exit(1);
       }
     }
+    else if (0 == strcmp(argv[current_arg], "-rt"))
+    {
+      current_arg++;
+      wait_time = 1000000;
+      use_actual_time = true;
+    }
     else if (0 == strcmp(argv[current_arg], "--help"))
     {
       print_help();
@@ -180,7 +188,6 @@ int main(int argc, char *argv[])
 
   tpconfig.read_file(config_file);
 
-  bool use_actual_time = false;
 
   qid = connect_message_queue();
   create_sim_queue();
@@ -199,15 +206,6 @@ int main(int argc, char *argv[])
   }
 
   sim.read_sections(sections_file);
-  long wait_time = 100000;
-  if (argc > 1)
-  {
-    if (0 == strcmp(argv[1], "-rt")) 
-    {
-      wait_time = 1000000;
-      use_actual_time = true;
-    }
-  }
 
   if (use_actual_time)
   {
