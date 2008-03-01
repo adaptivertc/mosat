@@ -118,7 +118,7 @@ void send_update(time_t now)
 
 void print_help(void)
 {
-  printf("Usage: line_sim [-c <config-file>]\n");
+  printf("Usage: line_sim [-c <config-file>] [-d <home dir>]\n");
 }
 
 
@@ -128,6 +128,7 @@ void print_help(void)
 int main(int argc, char *argv[])
 {
   const char *config_file = "tpconfig.txt";
+  const char *home_dir = "./";
   int current_arg;
   for (current_arg=1; current_arg < argc; current_arg++)
   {
@@ -145,6 +146,22 @@ int main(int argc, char *argv[])
         print_help();
         printf("For -c option, you MUST specify the config file, %d, %d\n",
                    argc, current_arg);
+        exit(1);
+      }
+    }
+    else if (0 == strcmp(argv[current_arg], "-d"))
+    {
+      if (argc > (current_arg + 1))
+      {
+        current_arg++;
+        home_dir = argv[current_arg];
+        chdir(home_dir);
+        home_dir = "./";
+      }
+      else
+      {
+        print_help();
+        printf("For -d option, you MUST specify the directory, %d, %d\n", argc, current_arg);
         exit(1);
       }
     }

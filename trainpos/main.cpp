@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <string.h>
 #include <time.h>
 
@@ -41,7 +42,7 @@ tp_config_t tpconfig;
 
 void print_help(void)
 {
-  printf("Usage: trainpos [-c <config-file>]\n");
+  printf("Usage: trainpos [-c <config-file>] [-d <home dir>]\n");
 }
 
 /***********************************/
@@ -54,6 +55,7 @@ int main(int argc, char *argv[])
   bool skip_departure = true;
   ****/
   const char *config_file = "tpconfig.txt";
+  const char *home_dir = "./";
   int current_arg;
   for (current_arg=1; current_arg < argc; current_arg++)
   {
@@ -74,6 +76,23 @@ int main(int argc, char *argv[])
         exit(1);
       }
     }
+    else if (0 == strcmp(argv[current_arg], "-d"))
+    {
+      if (argc > (current_arg + 1))
+      {
+        current_arg++;
+        home_dir = argv[current_arg];
+        chdir(home_dir);
+        home_dir = "./";
+      }
+      else
+      {
+        print_help();
+        printf("For -d option, you MUST specify the directory, %d, %d\n", argc, current_arg);
+        exit(1);
+      }
+    }
+
     else if (0 == strcmp(argv[current_arg], "--help"))
     {
       print_help();
