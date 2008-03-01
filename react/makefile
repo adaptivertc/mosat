@@ -10,11 +10,15 @@ SRC3 = script_support.cpp gen_case.cpp gen_script.cpp conio.cpp int.cpp
 SRC4 =	pci.cpp ldiodriver.cpp timeaccum.cpp error.cpp eval.cpp expr.cpp exprlist.cpp exprtree.cpp point.cpp calc.cpp lddbpoint.cpp analog.cpp discrete.cpp pump.cpp level.cpp
 SRCS =  $(SRC1) $(SRC2) $(SRC3) $(SRC4)
 
+export CPATH=../include
+
+RTCOMMON=../lib/librtcommon.so
+
 INCLUDES = db.h db_point.h iodriver.h logfile.h\
 error.h exp.h reactpoint.h secuencia.h displaydata.h timeaccum.h gen_script.h
 
 #LIBS = -l pci_dask -ldl 
-LIBS = -ldl -lrtcommon
+LIBS = -ldl $(RTCOMMON) 
 
 GENFILES =  gen_case.cpp gen_script.cpp gen_script.h
 
@@ -27,6 +31,7 @@ CFLAGS = -Wall
 LDFLAGS =
 
 CC = g++
+
 
 MAKE = make
 
@@ -42,19 +47,19 @@ react:	$(INCLUDES) $(OBJS) dbpoint_util.so
 	$(CC) $(LDFLAGS) -rdynamic -o $@ $(OBJS) $(LIBS)
 
 rtshmmain: rtshmmain.o ldiodriver.o reactshmio.o reactshmio.h $(INCLUDES)
-	$(CC) -rdynamic -o rtshmmain rtshmmain.o ldiodriver.o reactshmio.o -ldl -lrtcommon
+	$(CC) -rdynamic -o rtshmmain rtshmmain.o ldiodriver.o reactshmio.o -ldl $(RTCOMMON)
 
 $(OBJS):	$(INCLUDES)
 
 secuencia:	secuencia.cpp
-	g++ -o secuencia -lrtcommon secuencia.cpp
+	g++ -o secuencia $(RTCOMMON)  secuencia.cpp
 
 
 test:	pid.cpp 
 	g++ -o test pid.cpp
 
 integrate:	integrate.cpp  
-	g++ -o integrate -lrtcommon integrate.cpp
+	g++ -o integrate $(RTCOMMON) integrate.cpp
 
 CFLAGS=-Wall -Wstrict-prototypes -O2
 
@@ -68,7 +73,7 @@ dbpoint_util.so: analog.cpp discrete.cpp
 	g++ -fpic -o dbpoint_util.so -shared analog.cpp discrete.cpp 
 
 gen:	generate_script.cpp 
-	g++ -o gen -Wall -lrtcommon generate_script.cpp
+	g++ -o gen -Wall $(RTCOMMON) generate_script.cpp
 
 $(GENFILES):	gen db_point.h
 	./gen
@@ -81,13 +86,13 @@ genc:	gen_script.cpp gen_script.h
 	g++ -c gen_script.cpp 
 
 avg:	average.cpp
-	g++ -o avg -lrtcommon average.cpp
+	g++ -o avg $(RTCOMMON) average.cpp
 
 gencase:	gen_script.cpp gen_script.h
 	g++ -c gen_case.cpp 
 
 utest:	utest.cpp
-	g++ -o utest -lrtcommon utest.cpp
+	g++ -o utest $(RTCOMMON) utest.cpp
 	
 ct:	conio.cpp conio.h coniotest.cpp
 	g++ -o ct coniotest.cpp conio.cpp
@@ -96,7 +101,7 @@ simtest:	simtest.cpp burnersim.cpp sim.h
 	g++ -o simtest simtest.cpp burnersim.cpp
 
 genhtml:	genhtml.cpp
-	g++ -o genhtml -lrtcommon genhtml.cpp
+	g++ -o genhtml $(RTCOMMON) genhtml.cpp
 
 rconsole: reactconsole.cpp
 	g++ -o rconsole reactconsole.cpp
@@ -114,7 +119,7 @@ usbtest: usbtest.cpp
 	g++ -Wall -W usbtest.cpp
 
 split_fields:	split_fields.cpp
-	g++ -o split_fields -lrtcommon split_fields.cpp
+	g++ -o split_fields $(RTCOMMON) split_fields.cpp
 	cp split_fields /home/carr/bin
 
 gen_images:	gen_images.cpp

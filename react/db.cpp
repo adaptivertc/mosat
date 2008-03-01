@@ -596,7 +596,7 @@ void react_t::read_factory_points(const char *a_home_dir)
     rtrim(line);
     if (0 == strlen(line)) continue;
     if (line[0] == '#') continue;
-    db_point_factory_t *factory = load_db_point("/usr/local/lib/ai.so");
+    db_point_factory_t *factory = load_db_point("./ai.so");
     if (factory == NULL)
     {
       exit(0);
@@ -614,7 +614,7 @@ void react_t::read_all_points(const char *a_home_dir)
   this->read_factory_points(a_home_dir);
   //db_point_factory_t *aif = new ai_point_factory_t;
   /**
-  db_point_factory_t *aif = load_db_point("/usr/local/lib/ai.so");
+  db_point_factory_t *aif = load_db_point("./ai.so");
   if (aif == NULL)
   {
     exit(0);

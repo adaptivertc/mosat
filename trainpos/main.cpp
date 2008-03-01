@@ -23,8 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string.h>
 #include <time.h>
 
-# include <sys/types.h>
-# include <sys/ipc.h>
+#include <sys/types.h>
+#include <sys/ipc.h>
 #include <sys/msg.h>
 
 #include "msg_queue.h"

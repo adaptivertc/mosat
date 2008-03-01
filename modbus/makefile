@@ -1,3 +1,10 @@
+
+
+export CPATH=../include
+
+RTCOMMON=../lib/librtcommon.so
+RTMODBUS=./librtmodbus.so
+
 INCLUDES = hp2mod.h  hprtu.h  modio.h  modsim.h  mtype.h  trace.h rtmodbus.h evlog.h
 
 CPP=g++
@@ -5,13 +12,13 @@ CPP=g++
 %.o:	%.cpp $(INCLUDES)
 	$(CPP) -c -o $@ -Wall $<
 
-all:	modsim myconnect librtmodbus.so
+all:	 librtmodbus.so modsim myconnect 
 
 modsim:	myservice.o modsim.o trace.h 
-	g++ -o modsim -lpthread -lrtmodbus -lrtcommon myservice.o 
+	g++ -o modsim -lpthread $(RTMODBUS) $(RTCOMMON) myservice.o 
 
 myconnect:	myconnect.o
-	g++ -o myconnect -lrtcommon myconnect.o -lrtmodbus
+	g++ -o myconnect $(RTMODBUS) myconnect.o $(RTCOMMON) 
 
 librtmodbus.so: trace.o modsim.o trace.h crc.o swap.o modtcpip_client.o\
                 modtcpip.o hexascii.o crc.o rtmodbus.o modio.o \

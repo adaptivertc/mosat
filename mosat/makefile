@@ -1,5 +1,5 @@
 
-DIRS= lib main
+DIRS= main
 
 MAKE= make
 

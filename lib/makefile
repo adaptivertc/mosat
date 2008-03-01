@@ -1,10 +1,11 @@
 
+export CPATH=../include
 CC=g++
 
 %.o:    %.cpp $(INCLUDES)
 	$(CC) -c -fpic -o $@ -Wall $<
 
-all: librtcommon.so ppcall
+all: librtcommon.so
 
 librtcommon.so: arg.o common.o safestr.o utimer.o memfail.o
 	g++ -shared -o librtcommon.so arg.o common.o safestr.o utimer.o memfail.o
