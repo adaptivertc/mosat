@@ -155,7 +155,6 @@ int main(int argc, char *argv[])
     {
       if (argc > (current_arg + 1))
       {
-        current_arg++;
         home_dir = argv[current_arg];
         chdir(home_dir);
         home_dir = "./";
@@ -243,6 +242,18 @@ int main(int argc, char *argv[])
            printf("----------triggering arrival at section %d\n", sim_msg.section + 1);
            my_notify.trigger_arrival(sim_msg.section + 1, now);
          }
+      }
+      else if (sim_msg.type == 5)
+      {
+        if ((sim_msg.section >= 1) && (sim_msg.section <= 25))
+        {
+          printf("!!!!!!!!!! set speedup to %d\n", sim_msg.section);
+          wait_time = 1000000 / sim_msg.section;
+        }
+        else
+        {
+          printf("@@@@@@@@@@@@ Ignoring speedup message, must be from 1 to 25\n");
+        }
       }
     } 
     else
