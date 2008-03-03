@@ -98,7 +98,7 @@ void display_alg_t::gen_performance(time_t now)
   fprintf(perf_fp, "<head>\n");
   fprintf(perf_fp, "<META HTTP-EQUIV=\"refresh\" CONTENT=\"1\">\n");
   fprintf(perf_fp, "<meta http-equiv=\"pragma\" content=\"no-cache\">\n");
-  fprintf(perf_fp, "  <meta content=\"text/html; charset=ISO-8859-1\"\n");
+  fprintf(perf_fp, "  <meta content=\"text/html; charset=UTF-8\"\n");
   fprintf(perf_fp, " http-equiv=\"content-type\">\n");
   fprintf(perf_fp, "  <title>Performance Data</title>\n");
   fprintf(perf_fp, "</head>\n");
@@ -181,7 +181,7 @@ void display_data_t::gen_html(time_t now, train_data_t *trains, int n_trains)
   fprintf(fp, "<META HTTP-EQUIV=\"refresh\" CONTENT=\"1\">\n");
   fprintf(fp, "<meta http-equiv=\"pragma\" content=\"no-cache\">\n");
   fprintf(fp, "  <meta http-equiv=\"content-type\"\n");
-  fprintf(fp, " content=\"text/html; charset=ISO-8859-1\">\n");
+  fprintf(fp, " content=\"text/html; charset=UTF-8\">\n");
   fprintf(fp, "  <title>Linea 1</title>\n");
   fprintf(fp, "</head>\n");
   fprintf(fp, "<body style=\"color: rgb(0, 0, 0); background-color: rgb(204, 204, 204);\"\n");
@@ -470,7 +470,7 @@ void display_alg_t::gen_table(time_t now)
   fprintf(table_fp, "<head>\n");
   fprintf(table_fp, "<META HTTP-EQUIV=\"refresh\" CONTENT=\"1\">\n");
   fprintf(table_fp, "<meta http-equiv=\"pragma\" content=\"no-cache\">\n");
-  fprintf(table_fp, "  <meta content=\"text/html; charset=ISO-8859-1\"\n");
+  fprintf(table_fp, "  <meta content=\"text/html; charset=UTF-8\"\n");
   fprintf(table_fp, " http-equiv=\"content-type\">\n");
   fprintf(table_fp, "  <title>Table de Trenes</title>\n");
   fprintf(table_fp, "</head>\n");

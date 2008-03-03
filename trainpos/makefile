@@ -9,7 +9,7 @@ INCLUDES=tcontrol.h alg1.h train_sim.h event_alg.h dc_evalg.h gp_evalg.h ri_eval
 %.o:    %.cpp $(INCLUDES)
 	$(CC) -c -g -o $@ $<
 
-all: main line_sim sim_error disp_curses
+all: main line_sim sim_error disp_curses rtautogen
 
 main: main.o event_dispatch.o alg1.o alarm_notify.o alarm_admin.o \
       msg_queue.o dc_evalg.o gp_evalg.o ri_evalg.o time_table.o \
@@ -29,3 +29,7 @@ disp_curses: disp_curses.cpp
 	$(CC) -o disp_curses -lcurses disp_curses.cpp
 clean:
 	rm -fv main line_sim sim_error disp_curses *.o
+
+rtautogen:	rtautogen.cpp
+	g++ -Wall -o rtautogen ../lib/librtcommon.so rtautogen.cpp
+
