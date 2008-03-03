@@ -37,12 +37,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 static display_reader_t reader;
 
 void display_data_t::set(const char *a_background, const char *a_square, const char *a_unexpected,
-    const char *a_fname, int a_x1, int a_x2, int a_y1, int a_y2, int n_sections)
+    const char *a_fname, int a_x1, int a_x2, int a_y1, int a_y2, 
+     int a_text_offset_y1, int a_text_offset_y2, int n_sections)
 {
   printf("creating diaplay_data_t: %s\n", a_fname);
   background = a_background;
   square = a_square;
   square_unexpected = a_unexpected;
+  text_offset_y1 = a_text_offset_y1;
+  text_offset_y2 = a_text_offset_y2;
   char path[300];
   const char *html_home = tpconfig.get_config("HTML_HOME");
   if (html_home == NULL)
@@ -219,14 +222,15 @@ void display_data_t::gen_html(time_t now, train_data_t *trains, int n_trains)
       {
         switch_direction(&trains[i]);
       }
-      y_diff_for_text = -26;
+      y_diff_for_text = text_offset_y1;//-26;
     }
     else
     {
-      y_diff_for_text = 19;
+      y_diff_for_text = text_offset_y2;//19;
     }
 
-    fprintf(fp, "<div style=\"position:absolute; top:%dpx; left:%dpx; z-index:2\">\n",top + ty + y_diff_for_text,left + tx - 15);
+    fprintf(fp, "<div style=\"position:absolute; top:%dpx; left:%dpx; z-index:2\">\n",
+                      top + ty + y_diff_for_text,left + tx - 15);
     fprintf(fp, "<div style=\"text-align: center;\"><span style=\"font-weight: bold; color: rgb(255, 255, 0);\">%s %+d</span></div>\n", 
                  trains[i].train_id, -trains[i].seconds_late);
 
@@ -323,7 +327,7 @@ void display_alg_t::read_sections(const char *fname)
   {
     const display_info_t *dd = reader.get_display_data(i);
     ddata[i].set( dd->background, dd->square, dd->square_unexpected, dd->html_out,
-      dd->x1, dd->x2, dd->y1, dd->y2, dd->n_sections);
+      dd->x1, dd->x2, dd->y1, dd->y2, dd->text_offset_y1, dd->text_offset_y2, dd->n_sections);
       printf("Display[%d]: %s, %s, %s, %s, %d, %d, %d, %d, %d\n", 
          i, dd->background, dd->square, dd->square_unexpected, dd->html_out,
          dd->x1, dd->x2, dd->y1, dd->y2, dd->n_sections);

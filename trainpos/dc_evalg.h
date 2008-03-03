@@ -57,6 +57,8 @@ struct display_info_t // For reading the display info from a file
   int x2;
   int y1;
   int y2;
+  int text_offset_y1;
+  int text_offset_y2;
 };
 
 class display_reader_t
@@ -109,10 +111,13 @@ private:
   const char *square_unexpected;
   const char *background;
   const char *fname;
+  int text_offset_y1;
+  int text_offset_y2;
 public:
   void set(const char *a_background, const char *a_square, 
        const char *a_unexpected, const char *a_fname, 
-       int a_x1, int a_x2, int a_y1, int a_y2, int n_sections);
+       int a_x1, int a_x2, int a_y1, int a_y2, 
+        int text_offset_y1, int text_offset_y2, int n_sections);
   void read(const char *base_name);
   void gen_html(time_t now, train_data_t *trains, int n_trains);
 };

@@ -49,7 +49,7 @@ void display_reader_t::read_file(const char *fname)
     char *argv[25];
 
     safe_strcpy(tmp, line, sizeof(tmp));
-    argc = get_delim_args(tmp, argv, ',', 9);
+    argc = get_delim_args(tmp, argv, ',', 20);
     if (argc == 0)
     {
       continue;
@@ -58,9 +58,9 @@ void display_reader_t::read_file(const char *fname)
     {
       continue;
     }
-    if (argc != 9)
+    if (argc != 11)
     {
-      printf("Wrong number of args\n");
+      printf("Wrong number of args: %d, should be 11\n", argc);
       continue;
     }
     printf("%s\n", line);
@@ -74,7 +74,9 @@ void display_reader_t::read_file(const char *fname)
     dd->x2 = atol(argv[5]);
     dd->y1 = atol(argv[6]);
     dd->y2 = atol(argv[7]);
-    dd->n_sections = atol(argv[8]);
+    dd->text_offset_y1 = atol(argv[8]);
+    dd->text_offset_y2 = atol(argv[9]);
+    dd->n_sections = atol(argv[10]);
     displays[n_displays] = dd;
     n_displays++;
     if (n_displays >= (sizeof(displays)/sizeof(displays[0])))
