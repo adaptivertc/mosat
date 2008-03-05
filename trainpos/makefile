@@ -26,7 +26,7 @@ sim_error: sim_error.o $(INCLUDES)
 	$(CC) -o sim_error sim_error.o sim_msg.o
 
 disp_curses: disp_curses.cpp
-	$(CC) -o disp_curses -lcurses disp_curses.cpp
+	$(CC) -o disp_curses -lncurses disp_curses.cpp
 clean:
 	rm -fv main line_sim sim_error disp_curses *.o
 
