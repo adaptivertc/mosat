@@ -107,7 +107,7 @@ rconsole: reactconsole.cpp
 	g++ -o rconsole reactconsole.cpp
 
 rdisplay: rtdisplay.cpp displaydata.cpp
-	g++ -o rdisplay -l curses rtdisplay.cpp displaydata.cpp
+	g++ -o rdisplay -l ncurses rtdisplay.cpp displaydata.cpp
 
 cgiTest: cgiTest.c
 	g++ -o  cgiTest cgiTest.c

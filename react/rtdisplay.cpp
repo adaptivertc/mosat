@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
-#include <curses.h>
+#include <ncurses.h>
 
 #include <sys/ipc.h>
 #include <sys/shm.h>

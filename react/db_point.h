@@ -31,7 +31,7 @@ database.
 
 #include <time.h>
 #include <sys/time.h>
-//#include <curses.h>
+//#include <ncurses.h>
 #include "rtcommon.h"
 #include "reactpoint.h"
 #include "exp.h"
