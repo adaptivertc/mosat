@@ -17,6 +17,8 @@ time_table_t::time_table_t(void)
 }
 /********************************************************/
 
+// Obviously, this needs to be fixed to read a different timetable
+// if necessary.
 void time_table_t::next_day(void)
 {
   for (int i=0; i < n_departures; i++)
@@ -29,6 +31,9 @@ void time_table_t::next_day(void)
 
 /********************************************************/
 
+// We will need hooks so that each location can specify the
+// matching algorithm. Here, if it is within 3 minutes of a 
+// scheduled departure, we match it.
 bool time_table_t::is_a_match(time_t scheduled_time, time_t actual_time)
 {
    return ((actual_time > (scheduled_time - 180)) || (actual_time < (scheduled_time + 180)));  
@@ -63,6 +68,10 @@ void time_table_t::read_day(void)
   struct tm mytm;
   localtime_r(&today, &mytm);
 
+  // Obviously, this needs to be modified with a hook to determine the
+  // correct timetable file. For each country, the holidays are different,
+  // and in some places, they will run a Sunday schedule on holidays, so it
+  // is very location dependent.
   const char *fname = tpconfig.get_config("TIMETABLE_FILE");
   if (fname == NULL)
   {

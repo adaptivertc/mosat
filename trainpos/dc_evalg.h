@@ -21,20 +21,22 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 struct train_data_t
 {
-  int section;
-  double fraction_traveled;
-  bool departed;
-  time_t arival_time;
-  time_t departure_time;
-  time_t service_entry_time;
-  int seconds_in_section;
+  int num; // sequential number assigned to trains entering service.
+  char train_id[30]; // train id as given in the timetable.
+  time_t service_entry_time; // exactly when the train entered service.
+  time_t scheduled_service_entry_time; // when the train was scheduled to enter service.  Must implement.
+  int line_location; // actual line location in seconds
+// Below this is data that can be calculated, and should not be in the shared structure. 
   int seconds_late;
-  int num;
+  int section;
+  int seconds_in_section;
+  double fraction_of_section_traveled;
+  int seconds_to_next_train; // number of seconds to next train in the system
+  bool departed;
+  time_t arival_time;  // time of last station arrival - I think.
+  time_t section_entry_time; // or time of last station departure;
   bool unexpected;
   bool switched_direction;
-  int line_location;
-  int seconds_to_next;
-  char train_id[30];
 };
 
 struct tsecdata_t
