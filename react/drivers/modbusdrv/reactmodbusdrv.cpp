@@ -34,6 +34,9 @@ Contains code for react modbus driver.
 #include <sys/time.h>
 #include <sys/types.h>
 
+#include <semaphore.h>
+#include <pthread.h>
+
 #include "rtmodbus.h"
 
 #include "../../reactpoint.h"
@@ -114,6 +117,12 @@ Contains code for react modbus driver.
 ****/
 /***********************************************************************/
 
+static void *rtmodbus_start_read_thread(void *driver_ptr)
+{
+  reactmodbus_driver_t *p = (reactmodbus_driver_t *)driver_ptr;
+  p->read_thread();
+}
+
 extern "C" io_driver_t *new_reactmodbus(react_drv_base_t *r)
 {
   printf("Creating new reactmodbus iodriver\n");
@@ -133,6 +142,30 @@ reactmodbus_driver_t::reactmodbus_driver_t(react_drv_base_t *react)
   do_offset = 0;
   ai_offset = 0;
   ao_offset = 0;
+
+  if (0 != sem_init(&read_mutex_sem, 0, 1))
+  {
+    perror("sem_init");
+  }
+  if (0 != sem_init(&read_wait_sem, 0, 0))
+  {
+    perror("sem_init");
+  }
+  
+  pthread_t thr;
+  int retval;
+  retval = pthread_create(&thr, NULL, rtmodbus_start_read_thread, this);
+  if (retval != 0)
+  {
+    perror("can't create thread");
+    exit(0);
+  }
+  retval = pthread_detach(thr);
+  if (retval != 0)
+  {
+    perror("can't detach thread");
+    exit(0);
+  }
 
   //modbus = rt_create_modbus("127.0.0.1:502");
   modbus = rt_create_modbus("127.0.0.1:502");
@@ -178,7 +211,9 @@ double reactmodbus_driver_t::get_ai(int channel)
 {
   if ((channel >= 0) && (channel < 64))
   {
+    sem_wait(&read_mutex_sem);
     return (double) ai_vals[channel];
+    sem_post(&read_mutex_sem);
   }
   else
   {
@@ -192,7 +227,9 @@ bool reactmodbus_driver_t::get_di(int channel)
 {
   if ((channel >= 0) && (channel < 64))
   {
+    sem_wait(&read_mutex_sem);
     return di_vals[channel];
+    sem_post(&read_mutex_sem);
   }
   else
   {
@@ -216,10 +253,33 @@ long reactmodbus_driver_t::get_count(int channel)
 
 /***********************************************************************/
 
+void reactmodbus_driver_t::read_thread(void)
+{
+  while(true)
+  {
+    modbus->read_ai(0, 16, tmp_ai_vals);
+    modbus->read_di(0, 16, tmp_di_vals);
+
+    sem_wait(&read_mutex_sem);
+      memcpy(ai_vals, tmp_ai_vals, sizeof(ai_vals));
+      memcpy(di_vals, tmp_di_vals, sizeof(di_vals));
+    sem_post(&read_mutex_sem);
+
+    printf("read thread waiting\n");
+    sem_wait(&read_wait_sem);
+    printf("thread woke up\n");
+  }
+}
+
+/***********************************************************************/
+
 void reactmodbus_driver_t::read(void)
 {
-  modbus->read_ai(0, 16, ai_vals);
-  modbus->read_di(0, 16, di_vals);
+  printf("reading\n");
+
+  sem_post(&read_wait_sem); // wake up the read thread to read the next values.
+  //modbus->read_ai(0, 16, ai_vals);
+  //modbus->read_di(0, 16, di_vals);
 }
 
 /***********************************************************************/

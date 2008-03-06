@@ -24,13 +24,18 @@ private:
   rtmodbus_t *modbus;
   unsigned short ai_vals[32];
   bool di_vals[32];
+  unsigned short tmp_ai_vals[32];
+  bool tmp_di_vals[32];
   int di_offset;
   int do_offset;
   int ai_offset;
   int ao_offset;
+  sem_t read_mutex_sem; 
+  sem_t read_wait_sem; 
 public:
   reactmodbus_driver_t(react_drv_base_t *react);
   void read(void);
+  void read_thread(void);
   bool get_di(int channel);
   double get_ai(int channel);
   long get_count(int channel);
