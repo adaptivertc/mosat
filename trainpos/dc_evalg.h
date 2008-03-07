@@ -39,6 +39,8 @@ struct train_data_t
   bool switched_direction;
 };
 
+
+/**
 struct tsecdata_t
 {
   int section_time;
@@ -47,6 +49,7 @@ struct tsecdata_t
   int time_to_start;
   char station[20];
 };
+****/
 
 struct display_info_t // For reading the display info from a file
 {
@@ -134,7 +137,7 @@ private:
   time_t when_last_train_entered;
 
   train_data_t trains[50];
-  tsecdata_t sections[50];
+  section_reader_t sections;
   time_table_t time_table;
   void update_train(time_t ts, int n);
   display_data_t *ddata;

@@ -9,6 +9,7 @@
 #include "msg_queue.h"
 #include "tcontrol.h"
 #include "event_alg.h"
+#include "section_reader.h"
 #include "dc_evalg.h"
 
 /********************************************************/

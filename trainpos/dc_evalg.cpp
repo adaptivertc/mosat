@@ -26,11 +26,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "msg_queue.h"
 #include "tcontrol.h"
 #include "event_alg.h"
+#include "section_reader.h"
 #include "dc_evalg.h"
 
 #include "rtcommon.h"
 #include "arg.h"
 #include "tpconfig.h"
+
 
 /*************************************************************************************************/
 
@@ -333,15 +335,6 @@ void display_alg_t::read_sections(const char *fname)
          i, dd->background, dd->square, dd->square_unexpected, dd->html_out,
          dd->x1, dd->x2, dd->y1, dd->y2, dd->n_sections);
   }
-  //ddata = new display_data_t[1];
-  //n_displays = 1;
-
-//  ddata[0].set( "dia/CHENNAIBEACH_VELACHERY.png" , "dia/square12x12.png", "dia/square12x12.png", "Line1.html",
-//              24, 968, 63, 94, 32);
-//  ddata[0].set( "Line1_1024.png", "square10x10.png", "square_unexpected.png", "Line1.html",
-//             26, 967, 45, 72, 36);
-//  ddata[1].set( "Line1_1024.png", "square_unexpected.png", "square10x10.png", "XLine1.html",
-//              26, 967, 45, 72, 36);
   
   n_trains = 0;
   train_number = 1;
@@ -365,55 +358,9 @@ void display_alg_t::read_sections(const char *fname)
   perf_fd = fileno(perf_fp);
   fseek(perf_fp, 0, SEEK_SET);
 
-  int max = 50;
+  sections.read_section_file();
+  n_sections = sections.get_n_sections();
 
-  char line[300];
-
-  FILE *fp = fopen(fname, "r");
-  if (fp == NULL)
-  {
-    perror(fname);
-    exit(0);
-  }
-
-  int n_lines = 0;
-  int total_time = 0;
-  for (int i=0; NULL != fgets(line, sizeof(line), fp); i++)
-  {
-    char tmp[300];
-    int argc;
-    char *argv[25];
-
-    //printf("--- %s\n", line);
-    safe_strcpy(tmp, line, sizeof(tmp));
-    argc = get_delim_args(tmp, argv, '\t', 4);
-    if (argc != 4)
-    {
-      printf("Wrong: %s\n", line);
-      continue;
-    }
-
-    safe_strcpy(sections[n_lines].station, argv[0], sizeof(sections[n_lines].station));
-    sections[n_lines].section_time = atol(argv[1]);
-    sections[n_lines].departure_sensor_loc = atol(argv[2]);
-    sections[n_lines].arival_sensor_loc = atol(argv[3]);
-    sections[n_lines].time_to_start = total_time;
-    printf("%20s(%d): %d %d %d %d\n",
-      sections[n_lines].station,
-      n_lines,
-      sections[n_lines].section_time,
-      sections[n_lines].departure_sensor_loc,
-      sections[n_lines].arival_sensor_loc,
-      sections[n_lines].time_to_start );
-    total_time += sections[n_lines].section_time;
-    if (n_lines != 0) total_time += RT_DWELL_TIME;
-    n_lines++;
-    if (n_lines >= max)
-    {
-      break;
-    }
-  }
-  n_sections = n_lines;
   time_table.read_day();
 }
 
@@ -428,10 +375,12 @@ void display_alg_t::add_train(time_t time_now, const char *train_id)
   trains[0].section = 0;
   trains[0].num = train_number;
   safe_strcpy(trains[0].train_id, train_id, sizeof(trains[0].train_id));
-  trains[0].arival_time = time_now - sections[0].departure_sensor_loc; // really irrelavent, but should be assigned.
-  trains[0].section_entry_time = time_now - sections[0].departure_sensor_loc;
+  trains[0].arival_time = time_now - sections.get_departure_sensor_loc(0); // really irrelavent, but should be assigned.
+  trains[0].section_entry_time = time_now - 
+                    sections.get_departure_sensor_loc(0);
   trains[0].departed = true;
-  trains[0].service_entry_time = time_now - sections[0].departure_sensor_loc;
+  trains[0].service_entry_time = time_now - 
+                   sections.get_departure_sensor_loc(0);
   trains[0].seconds_in_section = time_now - trains[0].arival_time;
   trains[0].seconds_late = 0;
   trains[0].unexpected = false;
@@ -565,11 +514,12 @@ void display_alg_t::gen_table(time_t now)
     if (trains[i].section >= (n_sections / 2))
     {
       fprintf(table_fp, "      <td style=\"vertical-align: top; background-color: rgb(153, 153, 255);\">(%s)<br>\n",
-                sections[trains[i].section].station);
+              sections.get_station_name(trains[i].section));
     }
     else
     {
-      fprintf(table_fp, "      <td style=\"vertical-align: top;\">%s<br>\n", sections[trains[i].section].station);
+      fprintf(table_fp, "      <td style=\"vertical-align: top;\">%s<br>\n", 
+             sections.get_station_name(trains[i].section));
     }
     fprintf(table_fp, "      </td>\n");
 
@@ -636,19 +586,20 @@ void display_alg_t::update_train(time_t time_now, int n)
   {
     fr = 0.0;
     trains[n].seconds_in_section = 0;
-    trains[n].line_location = sections[s].time_to_start + (time_now - trains[n].arival_time);
+    trains[n].line_location = sections.get_time_to_start(s) + (time_now - trains[n].arival_time);
     //printf("in station\n");
   }
   else
   {
     trains[n].seconds_in_section = time_now - trains[n].section_entry_time;
     int extra = trains[n].seconds_in_section;
-    if (trains[n].seconds_in_section > sections[s].section_time)
+    if (trains[n].seconds_in_section > sections.get_section_time(s))
     {
-      extra = sections[s].section_time;
+      extra = sections.get_section_time(s);
     }
-    trains[n].line_location = sections[s].time_to_start + extra + RT_DWELL_TIME;
-    fr = double(extra) / double(sections[s].section_time);
+    trains[n].line_location = sections.get_time_to_start(s) + 
+                extra + RT_DWELL_TIME;
+    fr = double(extra) / double(sections.get_section_time(s));
   }
   trains[n].fraction_of_section_traveled = fr;
   if (n < (n_trains - 1))
@@ -705,9 +656,11 @@ void display_alg_t::process_departure(int section, time_t now)
     return;
   }
   trains[tn].departed = true;
-  trains[tn].section_entry_time = now - sections[section].departure_sensor_loc;
+  trains[tn].section_entry_time = now - 
+                 sections.get_departure_sensor_loc(section);
   trains[tn].seconds_late = (now - trains[tn].service_entry_time) -
-            (sections[section].time_to_start + sections[section].departure_sensor_loc + RT_DWELL_TIME);
+            (sections.get_time_to_start(section) + 
+            sections.get_departure_sensor_loc(section) + RT_DWELL_TIME);
 
 }
 
@@ -733,9 +686,11 @@ void display_alg_t::process_arival(int section, time_t now)
   }
 
   trains[tn].arival_time = now +
-     (sections[trains[tn].section].section_time -  sections[trains[tn].section].arival_sensor_loc);
+     (sections.get_section_time(trains[tn].section) -  
+        sections.get_arival_sensor_loc(trains[tn].section));
   trains[tn].departed = false;
-  trains[tn].seconds_late = (trains[tn].arival_time - trains[tn].service_entry_time) - sections[section].time_to_start;
+  trains[tn].seconds_late = (trains[tn].arival_time - 
+          trains[tn].service_entry_time) - sections.get_time_to_start(section);
   trains[tn].section = section;
 }
 
