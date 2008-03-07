@@ -33,6 +33,7 @@ class speed_algorithm_base_t
 public:
   virtual void evaluate(time_t now, double actual_speed, double actual_distance, 
 	current_speed_limits_t limits, speed_results_t *results) = 0;
+  virtual ~speed_algorithm_base_t(){};
 };
 
 class speed_algorithms_t

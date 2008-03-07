@@ -761,7 +761,7 @@ int main(int argc, char *argv[])
       desired = limits.desired;
 
       speed_results_t results;
-      spd_DC.evaluate(now, actual, distance, limits, &results);  
+      spd_DC.evaluate((time_t) now, actual, distance, limits, &results);  
 
       time_in_section++;
 
