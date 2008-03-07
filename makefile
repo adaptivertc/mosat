@@ -1,5 +1,5 @@
 
-DIRS= lib modbus mosat react trainpos onboard 
+DIRS= lib modbus mosat react trainpos onboard classic_tcontrol
 
 MAKE= make
 
