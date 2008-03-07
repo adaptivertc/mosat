@@ -1,4 +1,6 @@
 
+export CPATH=../include
+
 CC=g++
 
 CPP=g++
