@@ -5,7 +5,7 @@ export CPATH=../include
 RTCOMMON=../lib/librtcommon.so
 RTMODBUS=./librtmodbus.so
 
-INCLUDES = hp2mod.h  hprtu.h  modio.h  modsim.h  mtype.h  trace.h rtmodbus.h evlog.h
+INCLUDES = hp2mod.h  hprtu.h  modio.h  modsim.h  mtype.h  trace.h evlog.h
 
 CPP=g++
 
