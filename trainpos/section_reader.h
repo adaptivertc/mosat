@@ -1,9 +1,12 @@
 
 #define TP_MAX_SECTIONS (50)
+#define TP_MAX_SENSORS (10)
 
 struct tsecdata_t
 {
   int section_time;
+  int n_sensors;
+  int sensor_locs[TP_MAX_SENSORS];
   int departure_sensor_loc;
   int arival_sensor_loc;
   int time_to_start;
@@ -19,11 +22,12 @@ private:
 public:
   int get_n_sections(void);
   void read_section_file(void);
-  int get_section_time(int i);
-  int get_departure_sensor_loc(int i);
-  int get_arival_sensor_loc(int i);
-  int get_time_to_start(int i);
-  const char *get_station_name(int i);
-  const tsecdata_t *get_section_data(int i);
+  int get_section_time(int section_number);
+  int get_departure_sensor_loc(int section_number);
+  int get_arival_sensor_loc(int section_number);
+  int get_time_to_start(int section_number);
+  int get_sensor_loc(int section_number, int sensor_number);
+  const char *get_station_name(int section_number);
+  const tsecdata_t *get_section_data(int section_number);
 };
 

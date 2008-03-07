@@ -12,14 +12,16 @@ CPP=g++
 all: speed speed_2x24 
 
 speed:	speed.o spd_display.o spd_comm.o spd_select.o spd_algo_DC.o
-	g++ -g -o speed -lncurses -lrtcommon -lrtmodbus speed.o spd_display.o spd_comm.o spd_select.o spd_algo_DC.o
+	g++ -g -o speed -lncurses ../lib/librtcommon.so ../modbus/librtmodbus.so \
+		speed.o spd_display.o spd_comm.o spd_select.o spd_algo_DC.o
 
 speed_4x40:	speed.o spd_display_4x40.o spd_comm.o spd_select.o
-	g++ -g -o speed_4x40 -lncurses -lrtcommon -lrtmodbus -lpthread speed.o spd_display_4x40.o spd_comm.o spd_select.o spd_algo_DC.o
+	g++ -g -o speed_4x40 -lncurses ../lib/librtcommon.so ../modbus/librtmodbus.so -lpthread \
+		speed.o spd_display_4x40.o spd_comm.o spd_select.o spd_algo_DC.o
 
 speed_2x24:	speed.o spd_display_2x24.o spd_comm.o d2x24_curses.o spd_select.o
-	g++ -g -o speed_2x24 -lncurses -lrtcommon -lrtmodbus speed.o spd_display_2x24.o spd_comm.o \
-		d2x24_curses.o spd_select.o  spd_algo_DC.o
+	g++ -g -o speed_2x24 -lncurses ../lib/librtcommon.so ../modbus/librtmodbus.so speed.o \
+		spd_display_2x24.o spd_comm.o d2x24_curses.o spd_select.o  spd_algo_DC.o
 
 lcdmesg: lcdmesg.c
 	gcc -o lcdmesg lcdmesg.c

@@ -18,80 +18,100 @@ int section_reader_t::get_n_sections(void)
 } 
 
 /********************************************************/
-int section_reader_t::get_section_time(int i)
+int section_reader_t::get_section_time(int section_number)
 {
-  if ((i < 0) || (i >= n_sections))
+  if ((section_number < 0) || (section_number >= n_sections))
   {
     printf("%s line %d: Out of range index (%d) to access section data\n",
-       __FILE__, __LINE__, i);
+       __FILE__, __LINE__, section_number);
     exit(1);
   }
-  return sections[i].section_time;
+  return sections[section_number].section_time;
 }
 
 /********************************************************/
 
-int section_reader_t::get_departure_sensor_loc(int i)
+int section_reader_t::get_sensor_loc(int section_number, 
+                                               int sensor_number)
 {
-  if ((i < 0) || (i >= n_sections))
+  if ((section_number < 0) || (section_number >= n_sections))
   {
     printf("%s line %d: Out of range index (%d) to access section data\n",
-       __FILE__, __LINE__, i);
+       __FILE__, __LINE__, section_number);
     exit(1);
   }
-  return sections[i].departure_sensor_loc;
+  if ((sensor_number < 0) || 
+        (sensor_number >= sections[section_number].n_sensors))
+  {
+    printf("%s line %d: Out of range index (%d) to access sensor loc for section %d\n",
+       __FILE__, __LINE__, sensor_number, section_number);
+    exit(1);
+  }
+  return (sections[section_number].sensor_locs[sensor_number]);
+}
+
+/********************************************************/
+int section_reader_t::get_departure_sensor_loc(int section_number)
+{
+  if ((section_number < 0) || (section_number >= n_sections))
+  {
+    printf("%s line %d: Out of range index (%d) to access section data\n",
+       __FILE__, __LINE__, section_number);
+    exit(1);
+  }
+  return sections[section_number].departure_sensor_loc;
 }
 
 /********************************************************/
 
-int section_reader_t::get_arival_sensor_loc(int i)
+int section_reader_t::get_arival_sensor_loc(int section_number)
 {
-  if ((i < 0) || (i >= n_sections))
+  if ((section_number < 0) || (section_number >= n_sections))
   {
     printf("%s line %d: Out of range index (%d) to access section data\n",
-       __FILE__, __LINE__, i);
+       __FILE__, __LINE__, section_number);
     exit(1);
   }
-  return sections[i].arival_sensor_loc;
+  return sections[section_number].arival_sensor_loc;
 }
 
 /********************************************************/
 
-int section_reader_t::get_time_to_start(int i)
+int section_reader_t::get_time_to_start(int section_number)
 {
-  if ((i < 0) || (i >= n_sections))
+  if ((section_number < 0) || (section_number >= n_sections))
   {
     printf("%s line %d: Out of range index (%d) to access section data\n",
-       __FILE__, __LINE__, i);
+       __FILE__, __LINE__, section_number);
     exit(1);
   }
-  return sections[i].time_to_start;
+  return sections[section_number].time_to_start;
 }
 
 /********************************************************/
 
-const char *section_reader_t::get_station_name(int i)
+const char *section_reader_t::get_station_name(int section_number)
 {
-  if ((i < 0) || (i >= n_sections))
+  if ((section_number < 0) || (section_number >= n_sections))
   {
     printf("%s line %d: Out of range index (%d) to access section data\n",
-       __FILE__, __LINE__, i);
+       __FILE__, __LINE__, section_number);
     exit(1);
   }
-  return sections[i].station;
+  return sections[section_number].station;
 }
 
 /********************************************************/
 
-const tsecdata_t *section_reader_t::get_section_data(int i)
+const tsecdata_t *section_reader_t::get_section_data(int section_number)
 {
-  if ((i < 0) || (i >= n_sections))
+  if ((section_number < 0) || (section_number >= n_sections))
   {
     printf("%s line %d: Out of range index (%d) to access section data\n",
-       __FILE__, __LINE__, i);
+       __FILE__, __LINE__, section_number);
     exit(1);
   }
-  return &sections[i];
+  return &sections[section_number];
 }
 
 /********************************************************/
