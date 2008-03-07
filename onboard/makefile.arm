@@ -1,0 +1,101 @@
+
+CC=arm-linux-gcc -mcpu=arm9 -Wall 
+
+CPP=arm-linux-g++ -mcpu=arm9 -Wall
+
+DIR=arm/
+
+ALL_FILES= $(DIR)lcdmesg $(DIR)keypad $(DIR)connect_wireless $(DIR)test_both $(DIR)test_lcd $(DIR)test_keypad \
+	$(DIR)speed $(DIR)xdio  $(DIR)xdio_pwm $(DIR)dio24  $(DIR)nvram2 $(DIR)lcdmesg $(DIR)tempSensor  $(DIR)nvram2_read \
+	$(DIR)frtimer_test $(DIR)speed_4x40 $(DIR)autonomous_mode
+
+$(DIR)%.o:    %.c $(INCLUDES)
+	$(CC) -c -o $@ $<
+
+$(DIR)%.o:    %.cpp $(INCLUDES)
+	$(CPP) -c -o $@ $<
+
+all:	$(ALL_FILES)
+
+$(DIR)keypad_tsarmp.o: keypad_tsarm.c 
+	$(CPP) -c -o $(DIR)keypad_tsarm.o keypad_tsarm.c
+
+$(DIR)d2x24_tsarm.o: d2x24_tsarm.c 
+	$(CPP) -c -o $(DIR)d2x24_tsarm.o d2x24_tsarm.c
+
+$(DIR)speed:	$(DIR)speed.o $(DIR)spd_display_2x24.o $(DIR)spd_com_tsarm.o \
+		$(DIR)d2x24_tsarm.o $(DIR)keypad_tsarm.o  $(DIR)spd_select.o $(DIR)frtimer.o
+	$(CPP) -o $(DIR)speed -lrtcommon -lpthread $(DIR)speed.o $(DIR)spd_display_2x24.o \
+		$(DIR)spd_com_tsarm.o $(DIR)d2x24_tsarm.o $(DIR)keypad_tsarm.o  $(DIR)spd_select.o $(DIR)frtimer.o
+
+$(DIR)speed_4x40:	$(DIR)speed.o $(DIR)spd_display_4x40.o $(DIR)spd_com_tsarm.o \
+		$(DIR)spd_select.o $(DIR)frtimer.o
+	$(CPP) -o $(DIR)speed_4x40 -lrtcommon -lrtmodbus -lpthread $(DIR)speed.o $(DIR)spd_display_4x40.o \
+		$(DIR)spd_com_tsarm.o $(DIR)spd_select.o $(DIR)frtimer.o 
+
+$(DIR)status:	$(DIR)status.o $(DIR)spd_display_4x40.o $(DIR)spd_com_tsarm.o \
+		$(DIR)spd_select.o $(DIR)frtimer.o
+	$(CPP) -o $(DIR)status -lrtcommon -lrtmodbus -lpthread $(DIR)status.o $(DIR)spd_display_4x40.o \
+		$(DIR)spd_com_tsarm.o $(DIR)spd_select.o $(DIR)frtimer.o 
+
+$(DIR)test_lcd:	$(DIR)test_lcd.o $(DIR)d2x24_tsarm.o  $(DIR)keypad_tsarm.o
+	$(CC) -o $(DIR)test_lcd -lpthread $(DIR)test_lcd.o $(DIR)d2x24_tsarm.o  $(DIR)keypad_tsarm.o
+
+$(DIR)tst_4x40: $(DIR)tst_4x40.o 
+	$(CPP) -o $(DIR)tst_4x40 $(DIR)tst_4x40.o -lrtcommon -lrtmodbus
+
+$(DIR)test_keypad:	$(DIR)test_keypad.o $(DIR)keypad_tsarm.o
+	$(CC) -o $(DIR)test_keypad -lpthread $(DIR)test_keypad.o $(DIR)keypad_tsarm.o
+
+$(DIR)test_both:	$(DIR)test_both.o -lpthread $(DIR)keypad_tsarm.o $(DIR)d2x24_tsarm.o
+	$(CC) -o $(DIR)test_both -lpthread $(DIR)test_both.o $(DIR)keypad_tsarm.o $(DIR)d2x24_tsarm.o
+
+$(DIR)lcdmesg: lcdmesg.c
+	$(CC) -o $(DIR)lcdmesg lcdmesg.c
+
+$(DIR)keypad: keypad.c
+	$(CC) -o $(DIR)keypad keypad.c
+		
+$(DIR)exe_command: exe_command.c
+	$(CC) -o $(DIR)exe_command exe_command.c
+		
+$(DIR)connect_wireless: connect_wireless.c
+	$(CC) -o $(DIR)connect_wireless connect_wireless.c
+
+$(DIR)connect_ip: connect_ip.c
+	$(CC) -o $(DIR)connect_ip connect_ip.c
+		
+		
+$(DIR)xdio: $(DIR)xdio.o $(DIR)frtimer.o frtimer.h
+	$(CPP) -o $(DIR)xdio -lrtcommon $(DIR)xdio.o $(DIR)frtimer.o
+		
+$(DIR)autonomous_mode: $(DIR)autonomous_mode.o $(DIR)frtimer.o frtimer.h
+	$(CPP) -o $(DIR)autonomous_mode -lrtcommon $(DIR)autonomous_mode.o $(DIR)frtimer.o
+		
+$(DIR)xdio_pwm: $(DIR)xdio_pwm.o $(DIR)frtimer.o frtimer.h
+	$(CPP) -o $(DIR)xdio_pwm -lrtcommon $(DIR)xdio_pwm.o $(DIR)frtimer.o
+		
+$(DIR)dio24: dio24.c
+	$(CC) -o $(DIR)dio24 dio24.c
+		
+$(DIR)nvram2: nvram2.c
+	$(CC) -o $(DIR)nvram2 nvram2.c
+		
+$(DIR)nvram2_read: nvram2_read.c
+	$(CC) -o $(DIR)nvram2_read nvram2_read.c
+		
+$(DIR)tempSensor: tempSensor.c 
+	$(CC) -o $(DIR)tempSensor tempSensor.c
+		
+$(DIR)frtimer_test: $(DIR)frtimer_test.o  $(DIR)frtimer.o frtimer.h
+	$(CPP) -o $(DIR)frtimer_test -lrtcommon $(DIR)frtimer_test.o $(DIR)frtimer.o
+		
+$(DIR)aldo: aldo.c 
+	$(CC) -o $(DIR)aldo aldo.c
+		
+clean:
+	rm -fv $(DIR)*.o
+	rm -fv $(DIR)*.so
+	rm -fv $(ALL_FILES)
+
+
