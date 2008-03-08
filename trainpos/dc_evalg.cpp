@@ -79,7 +79,7 @@ void display_data_t::read(const char *base_name)
 
 /*************************************************************************************************/
 // This is special for India, we need to make it an installable plugin!!
-void switch_direction(train_data_t *t)
+void switch_direction(train_data_t *t, train_calcs_t *calcs)
 {
   if (0 == strncmp(t->train_id, "BVL", 3))
   {
@@ -88,8 +88,8 @@ void switch_direction(train_data_t *t)
     if (*p == '\0') return;
     int num = atol(p);
     snprintf(t->train_id, sizeof(t->train_id), "VLB%d\n", num + 1);
-    t->switched_direction = true;
   }
+  calcs->switched_direction = true;
 }
 /*************************************************************************************************/
 
@@ -129,22 +129,22 @@ void display_alg_t::gen_performance(time_t now)
     if (i < n_trains)
     {
       fprintf(perf_fp, "  <tr>\n");
-      if (trains[i].seconds_late > 20)
+      if (calcs[i].seconds_late > 20)
       {
         n_printed++;
         fprintf(perf_fp, "      <td style=\"vertical-align: top;\">%s\n", trains[i].train_id);
         fprintf(perf_fp, "      </td>\n");
         fprintf(perf_fp, "      <td style=\"vertical-align: top;\">This train is %d seconds late tell him to hurry\n", 
-                                  trains[i].seconds_late);
+                                  calcs[i].seconds_late);
         fprintf(perf_fp, "      </td>\n");
       }
-      if (trains[i].seconds_late < -20)
+      if (calcs[i].seconds_late < -20)
       {
         n_printed++;
         fprintf(perf_fp, "      <td style=\"vertical-align: top;\">%s<br>\n", trains[i].train_id);
         fprintf(perf_fp, "      </td>\n");
         fprintf(perf_fp, "      <td style=\"vertical-align: top;\">This train is early tell him to wait %d seconds at the next station\n", 
-                  -trains[i].seconds_late);
+                  -calcs[i].seconds_late);
         fprintf(perf_fp, "      </td>\n");
       }
     }
@@ -169,7 +169,7 @@ void display_alg_t::gen_performance(time_t now)
 
 /*************************************************************************************************/
 
-void display_data_t::gen_html(time_t now, train_data_t *trains, int n_trains) 
+void display_data_t::gen_html(time_t now, train_data_t *trains, train_calcs_t *calcs, int n_trains) 
 {
   int top = 50;
   int left = 0;
@@ -204,11 +204,11 @@ void display_data_t::gen_html(time_t now, train_data_t *trains, int n_trains)
     int tx, ty;
     bool coming_back;
     dd->calc_xy(trains[i].section, 
-           trains[i].fraction_of_section_traveled, &tx, &ty, &coming_back);
+           calcs[i].fraction_of_section_traveled, &tx, &ty, &coming_back);
     fprintf(fp, "\n");
     fprintf(fp, "<div style=\"position:absolute; top:%dpx; left:%dpx; z-index:2\">\n",top + ty,left + tx);
 
-    if (trains[i].unexpected)
+    if (calcs[i].unexpected)
     {
       fprintf(fp, "        <img SRC=%s>\n", square_unexpected);
     }
@@ -221,9 +221,9 @@ void display_data_t::gen_html(time_t now, train_data_t *trains, int n_trains)
     int y_diff_for_text;
     if (coming_back)
     {
-      if (!trains[i].switched_direction)
+      if (!calcs[i].switched_direction)
       {
-        switch_direction(&trains[i]);
+        switch_direction(&trains[i], &calcs[i]);
       }
       y_diff_for_text = text_offset_y1;//-26;
     }
@@ -235,7 +235,7 @@ void display_data_t::gen_html(time_t now, train_data_t *trains, int n_trains)
     fprintf(fp, "<div style=\"position:absolute; top:%dpx; left:%dpx; z-index:2\">\n",
                       top + ty + y_diff_for_text,left + tx - 15);
     fprintf(fp, "<div style=\"text-align: center;\"><span style=\"font-weight: bold; color: rgb(255, 255, 0);\">%s %+d</span></div>\n", 
-                 trains[i].train_id, -trains[i].seconds_late);
+                 trains[i].train_id, -calcs[i].seconds_late);
 
     fprintf(fp, "</div>\n");
   }
@@ -375,17 +375,17 @@ void display_alg_t::add_train(time_t time_now, const char *train_id)
   trains[0].section = 0;
   trains[0].num = train_number;
   safe_strcpy(trains[0].train_id, train_id, sizeof(trains[0].train_id));
-  trains[0].arival_time = time_now - sections.get_departure_sensor_loc(0); // really irrelavent, but should be assigned.
-  trains[0].section_entry_time = time_now - 
+  calcs[0].arival_time = time_now - sections.get_departure_sensor_loc(0); // really irrelavent, but should be assigned.
+  calcs[0].section_entry_time = time_now - 
                     sections.get_departure_sensor_loc(0);
-  trains[0].departed = true;
+  calcs[0].departed = true;
   trains[0].service_entry_time = time_now - 
                    sections.get_departure_sensor_loc(0);
-  trains[0].seconds_in_section = time_now - trains[0].arival_time;
-  trains[0].seconds_late = 0;
-  trains[0].unexpected = false;
-  trains[0].switched_direction = false;
-  trains[0].line_location = trains[0].seconds_in_section;
+  calcs[0].seconds_in_section = time_now - calcs[0].arival_time;
+  calcs[0].seconds_late = 0;
+  calcs[0].unexpected = false;
+  calcs[0].switched_direction = false;
+  trains[0].line_location = calcs[0].seconds_in_section;
 
   n_trains++;
   train_number++;
@@ -473,12 +473,13 @@ void display_alg_t::gen_table(time_t now)
     secs_in_service %= 60;
     fprintf(table_fp, "      <td style=\"vertical-align: top;\">%02d:%02d<br>\n", mins_in_service, secs_in_service);
     fprintf(table_fp, "      </td>\n");
-    fprintf(table_fp, "      <td style=\"vertical-align: top;\">%+d<br>\n", -trains[i].seconds_late);
+    fprintf(table_fp, "      <td style=\"vertical-align: top;\">%+d<br>\n", 
+                     -calcs[i].seconds_late);
     fprintf(table_fp, "      </td>\n");
-    if (double(trains[i].arival_time - trains[i].service_entry_time) > 60)
+    if (double(calcs[i].arival_time - trains[i].service_entry_time) > 60)
     {
       double percent =
-            (double(trains[i].seconds_late) / double(trains[i].arival_time - trains[i].service_entry_time)) * 100.0;
+            (double(calcs[i].seconds_late) / double(calcs[i].arival_time - trains[i].service_entry_time)) * 100.0;
       fprintf(table_fp, "      <td style=\"vertical-align: top;\">%+0.1lf%%<br>\n", -percent);
     }
     else
@@ -487,18 +488,18 @@ void display_alg_t::gen_table(time_t now)
       fprintf(table_fp, "      <td style=\"vertical-align: top;\">-<br>\n");
     }
     fprintf(table_fp, "      </td>\n");
-    int secs_to_next_train = trains[i].seconds_to_next_train;
+    int secs_to_next_train =calcs[i].seconds_to_next_train;
     int mins_to_next_train = secs_to_next_train / 60;
     secs_to_next_train %= 60;
     if (i < (n_trains - 1))
     {
 
       fprintf(table_fp, "      <td style=\"vertical-align: top;");
-      if ( trains[i].seconds_to_next_train < 180)
+      if ( calcs[i].seconds_to_next_train < 180)
       {
          fprintf(table_fp, "background-color: rgb(255, 50, 50);");
       }
-      else if ( trains[i].seconds_to_next_train < 240)
+      else if ( calcs[i].seconds_to_next_train < 240)
       {
          fprintf(table_fp, "background-color: rgb(255, 255, 50);");
       }
@@ -523,13 +524,13 @@ void display_alg_t::gen_table(time_t now)
     }
     fprintf(table_fp, "      </td>\n");
 
-    if (trains[i].seconds_in_section == 0)
+    if (calcs[i].seconds_in_section == 0)
     {
       fprintf(table_fp, " <td style=\"vertical-align: top; background-color: rgb(255, 204, 255);\">(en estaci&oacute;n)<br>\n");
     }
     else
     {
-      fprintf(table_fp, "      <td style=\"vertical-align: top;\">%d<br>\n", trains[i].seconds_in_section);
+      fprintf(table_fp, "      <td style=\"vertical-align: top;\">%d<br>\n", calcs[i].seconds_in_section);
     }
 
     fprintf(table_fp, "      </td>\n");
@@ -554,7 +555,7 @@ void display_alg_t::gen_display(time_t now)
 
   for (int i=0; i < n_displays; i++)
   {
-    ddata[i].gen_html(now, trains, n_trains);
+    ddata[i].gen_html(now, trains, calcs, n_trains);
   }
 
   fseek(table_fp, 0, SEEK_SET);
@@ -582,18 +583,18 @@ void display_alg_t::update_train(time_t time_now, int n)
 {
   double fr;
   int s = trains[n].section;
-  if (!trains[n].departed)
+  if (!calcs[n].departed)
   {
     fr = 0.0;
-    trains[n].seconds_in_section = 0;
-    trains[n].line_location = sections.get_time_to_start(s) + (time_now - trains[n].arival_time);
+    calcs[n].seconds_in_section = 0;
+    trains[n].line_location = sections.get_time_to_start(s) + (time_now - calcs[n].arival_time);
     //printf("in station\n");
   }
   else
   {
-    trains[n].seconds_in_section = time_now - trains[n].section_entry_time;
-    int extra = trains[n].seconds_in_section;
-    if (trains[n].seconds_in_section > sections.get_section_time(s))
+    calcs[n].seconds_in_section = time_now - calcs[n].section_entry_time;
+    int extra = calcs[n].seconds_in_section;
+    if (calcs[n].seconds_in_section > sections.get_section_time(s))
     {
       extra = sections.get_section_time(s);
     }
@@ -601,14 +602,14 @@ void display_alg_t::update_train(time_t time_now, int n)
                 extra + RT_DWELL_TIME;
     fr = double(extra) / double(sections.get_section_time(s));
   }
-  trains[n].fraction_of_section_traveled = fr;
+  calcs[n].fraction_of_section_traveled = fr;
   if (n < (n_trains - 1))
   {
-    trains[n].seconds_to_next_train = trains[n+1].line_location - trains[n].line_location;
+    calcs[n].seconds_to_next_train = trains[n+1].line_location - trains[n].line_location;
   }
   else
   {
-    trains[n].seconds_to_next_train = 0;
+    calcs[n].seconds_to_next_train = 0;
   }
   //printf("trx = %d, try = %d\n", trains[n].x, trains[n].y);
 }
@@ -655,10 +656,10 @@ void display_alg_t::process_departure(int section, time_t now)
     printf("***** horrible error\n");
     return;
   }
-  trains[tn].departed = true;
-  trains[tn].section_entry_time = now - 
+  calcs[tn].departed = true;
+  calcs[tn].section_entry_time = now - 
                  sections.get_departure_sensor_loc(section);
-  trains[tn].seconds_late = (now - trains[tn].service_entry_time) -
+  calcs[tn].seconds_late = (now - trains[tn].service_entry_time) -
             (sections.get_time_to_start(section) + 
             sections.get_departure_sensor_loc(section) + RT_DWELL_TIME);
 
@@ -685,11 +686,11 @@ void display_alg_t::process_arival(int section, time_t now)
     return;
   }
 
-  trains[tn].arival_time = now +
+  calcs[tn].arival_time = now +
      (sections.get_section_time(trains[tn].section) -  
         sections.get_arival_sensor_loc(trains[tn].section));
-  trains[tn].departed = false;
-  trains[tn].seconds_late = (trains[tn].arival_time - 
+  calcs[tn].departed = false;
+  calcs[tn].seconds_late = (calcs[tn].arival_time - 
           trains[tn].service_entry_time) - sections.get_time_to_start(section);
   trains[tn].section = section;
 }

@@ -26,17 +26,22 @@ struct train_data_t
   time_t service_entry_time; // exactly when the train entered service.
   time_t scheduled_service_entry_time; // when the train was scheduled to enter service.  Must implement.
   int line_location; // actual line location in seconds
-// Below this is data that can be calculated, and should not be in the shared structure. 
-  int seconds_late;
-  int section;
-  int seconds_in_section;
-  double fraction_of_section_traveled;
+  int section; // Which section is this train in.
+               //Actually, "section" could be calculated, but, we avoid a search, and verify the section is correct.
+};
+
+struct train_calcs_t
+{
+// This is data that can be calculated, and should not be in the shared structure. 
+  int seconds_late; // seconds late for this train?
+  int seconds_in_section; // seconds in the current section 
+  double fraction_of_section_traveled; // Fraction of the section travelled
   int seconds_to_next_train; // number of seconds to next train in the system
-  bool departed;
+  bool departed; // Has departed the station.
   time_t arival_time;  // time of last station arrival - I think.
   time_t section_entry_time; // or time of last station departure;
-  bool unexpected;
-  bool switched_direction;
+  bool unexpected; // This train is unexpected.
+  bool switched_direction; // This train arrived at the final station and is coming back.
 };
 
 
@@ -124,7 +129,7 @@ public:
        int a_x1, int a_x2, int a_y1, int a_y2, 
         int text_offset_y1, int text_offset_y2, int n_sections);
   void read(const char *base_name);
-  void gen_html(time_t now, train_data_t *trains, int n_trains);
+  void gen_html(time_t now, train_data_t *trains, train_calcs_t *calcs, int n_trains);
 };
 
 class display_alg_t : public event_alg_t
@@ -137,6 +142,7 @@ private:
   time_t when_last_train_entered;
 
   train_data_t trains[50];
+  train_calcs_t calcs[50];
   section_reader_t sections;
   time_table_t time_table;
   void update_train(time_t ts, int n);
