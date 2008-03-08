@@ -31,3 +31,4 @@ public:
   const tsecdata_t *get_section_data(int section_number);
 };
 
+extern section_reader_t sections;

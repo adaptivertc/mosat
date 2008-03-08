@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "tcontrol.h"
 #include "event_alg.h"
 #include "section_reader.h"
+#include "trainpos.h"
 #include "dc_evalg.h"
 
 #include "rtcommon.h"
@@ -582,25 +583,36 @@ void display_alg_t::gen_display(time_t now)
 void display_alg_t::update_train(time_t time_now, int n)
 {
   double fr;
-  int s = trains[n].section;
+  int section = trains[n].section;
   if (!calcs[n].departed)
   {
     fr = 0.0;
     calcs[n].seconds_in_section = 0;
-    trains[n].line_location = sections.get_time_to_start(s) + (time_now - calcs[n].arival_time);
+    int time_to_start = sections.get_time_to_start(section); 
+    int line_location = time_to_start + (time_now - calcs[n].arival_time);
+    int global_departure_sensor_loc = 
+        time_to_start + sections.get_departure_sensor_loc(section);
+    if (line_location > global_departure_sensor_loc)  
+    {
+      // do NOT calculate a position past the departure sensor 
+      // untill they cross it.
+      trains[n].line_location = global_departure_sensor_loc;
+    } 
+    trains[n].line_location = line_location;
+//sections.get_time_to_start(section) + (time_now - calcs[n].arival_time);
     //printf("in station\n");
   }
   else
   {
     calcs[n].seconds_in_section = time_now - calcs[n].section_entry_time;
     int extra = calcs[n].seconds_in_section;
-    if (calcs[n].seconds_in_section > sections.get_section_time(s))
+    if (calcs[n].seconds_in_section > sections.get_section_time(section))
     {
-      extra = sections.get_section_time(s);
+      extra = sections.get_section_time(section);
     }
-    trains[n].line_location = sections.get_time_to_start(s) + 
+    trains[n].line_location = sections.get_time_to_start(section) + 
                 extra + RT_DWELL_TIME;
-    fr = double(extra) / double(sections.get_section_time(s));
+    fr = double(extra) / double(sections.get_section_time(section));
   }
   calcs[n].fraction_of_section_traveled = fr;
   if (n < (n_trains - 1))

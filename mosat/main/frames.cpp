@@ -15,9 +15,14 @@ void header(char Y[10], char M[10], char D[10],char  P[100],char st[50],char st2
  int month = mytm.tm_mon;
  int flag=0;
  FILE *hd;
- hd=fopen("/var/www/html/react/log/festivo.txt","r");
- if(hd==NULL)
- printf("Cannot read the file festivo.txt");
+ const char *festivo_fname = "/var/www/html/react/log/festivo.txt";
+ hd=fopen(festivo_fname,"r");
+ if(hd == NULL)
+ {
+   printf("Cannot read the file festivo.txt");
+   perror(festivo_fname);
+   exit(1);
+ }
  else
  {
   int cont=0,cont2=0,flag=0;
@@ -63,6 +68,11 @@ void header(char Y[10], char M[10], char D[10],char  P[100],char st[50],char st2
  strcat(Path,dir);
  strcat(Path,"_header.html");
  fd=fopen(Path,"w+");
+ if (fd == NULL)
+ {
+   perror(Path);
+   exit(1);
+ }
  fprintf(fd,"<HTML>\n");
  fprintf(fd," <HEAD>\n");
  fprintf(fd,"  <META HTTP-EQUIV=\"refresh\" CONTENT=\"30\">\n");
@@ -136,6 +146,11 @@ void get_pdc(char pdc[20],char dir[20])
  strcat(path,"pdc.txt");
  FILE *pc;
  pc=fopen(path,"r");
+ if (pc == NULL)
+ {
+   perror(path);
+   exit(1);
+ }
  if(pc!=NULL)
  {
   while(!feof(pc))
@@ -201,6 +216,11 @@ void frame_generator(int refresh,char L[3])
  strncat(Day2,".html",43);
  Day2[43]='\x0';
  fr = fopen(Day2,"w+");
+ if (fr == NULL)
+ {
+   perror(Day2);
+   exit(1);
+ }
  fprintf(fr,"<HTML>\n");
  fprintf(fr," <TITLE>\n\t\tSalida de Trenes\n </TITLE>\n");
  fprintf(fr," <meta http-equiv=\"refresh\" content=\"%i\">\n",refresh);
@@ -226,6 +246,11 @@ void frame_generator(int refresh,char L[3])
 }
 int main (int argc, char **argv)
 {
+ if (argc != 2)
+ {
+   printf("You must specify the time between refreshes on the command line\n");
+   exit(1);
+ } 
  int ref = atoi(argv[1]);
  printf("Generando reporte L2... ");
  frame_generator(ref,"L2");

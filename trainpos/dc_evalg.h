@@ -19,17 +19,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "time_table.h"
 
-struct train_data_t
-{
-  int num; // sequential number assigned to trains entering service.
-  char train_id[30]; // train id as given in the timetable.
-  time_t service_entry_time; // exactly when the train entered service.
-  time_t scheduled_service_entry_time; // when the train was scheduled to enter service.  Must implement.
-  int line_location; // actual line location in seconds
-  int section; // Which section is this train in.
-               //Actually, "section" could be calculated, but, we avoid a search, and verify the section is correct.
-};
-
 struct train_calcs_t
 {
 // This is data that can be calculated, and should not be in the shared structure. 
@@ -143,7 +132,7 @@ private:
 
   train_data_t trains[50];
   train_calcs_t calcs[50];
-  section_reader_t sections;
+  //section_reader_t sections;
   time_table_t time_table;
   void update_train(time_t ts, int n);
   display_data_t *ddata;

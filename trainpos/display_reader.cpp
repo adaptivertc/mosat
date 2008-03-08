@@ -10,6 +10,7 @@
 #include "tcontrol.h"
 #include "event_alg.h"
 #include "section_reader.h"
+#include "trainpos.h"
 #include "dc_evalg.h"
 
 /********************************************************/

@@ -12,12 +12,17 @@
 
 #include "section_reader.h"
 
+section_reader_t sections;
+
+/********************************************************/
+
 int section_reader_t::get_n_sections(void)
 {
   return n_sections;
 } 
 
 /********************************************************/
+
 int section_reader_t::get_section_time(int section_number)
 {
   if ((section_number < 0) || (section_number >= n_sections))

@@ -17,21 +17,22 @@
 
 void gen_log (char actualhour[],char newhour[])
 {
- char date[50];
- time_t t=time(NULL);
- struct tm ttm;
- localtime_r(&t,&ttm);
- strftime(date,sizeof(date),"%d/%m/%Y",&ttm);
- FILE *fp;
- fp=fopen("/nvram/siteur/sync_log.txt","a");
- if(fp!=NULL)
- {
-  fprintf(fp,"%s\tActual: %s\tNew: %s\n",date,actualhour,newhour);
-  fclose(fp);
- }
- else
-  printf("Cannot create file\n");
- 
+  char date[50];
+  time_t t=time(NULL);
+  struct tm ttm;
+  localtime_r(&t,&ttm);
+  strftime(date,sizeof(date),"%d/%m/%Y",&ttm);
+  FILE *fp;
+  fp=fopen("/nvram/siteur/sync_log.txt","a");
+  if(fp!=NULL)
+  {
+   fprintf(fp,"%s\tActual: %s\tNew: %s\n",date,actualhour,newhour);
+   fclose(fp);
+  }
+  else
+  {
+    printf("Cannot create file\n");
+  }
 }
 
 int main(int argc, char *argv[])

@@ -3,7 +3,7 @@ export CPATH=../include
 
 CC=g++ -Wall
 
-INCLUDES=tcontrol.h alg1.h train_sim.h event_alg.h dc_evalg.h gp_evalg.h ri_evalg.h sim_msg.h tpconfig.h
+INCLUDES=tcontrol.h alg1.h train_sim.h event_alg.h dc_evalg.h gp_evalg.h ri_evalg.h sim_msg.h tpconfig.h trainpos.h
 
 %.o:    %.cpp $(INCLUDES)
 	$(CC) -c -g -o $@ $<

@@ -33,6 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "event_alg.h"
 #include "section_reader.h"
+#include "trainpos.h"
 #include "dc_evalg.h"
 #include "gp_evalg.h"
 #include "ri_evalg.h"

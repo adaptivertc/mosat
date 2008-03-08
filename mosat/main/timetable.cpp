@@ -238,9 +238,10 @@ int get_int (char argv[],char n_exit[50][200],char int_type[50][200])
  strncat(path,"_int.txt",l+8);
  puts(path);
  file = fopen(path,"r");
- if(file == NULL)
+ if (file == NULL)
  {
-  puts("There is no interrupt file");
+  perror(path);
+  exit(1);
  }
  else
  {
@@ -309,6 +310,11 @@ int get_int (char argv[],char n_exit[50][200],char int_type[50][200])
   }
   remove(path);
   file = fopen(path,"w+");
+  if (file == NULL)
+  {
+    perror(path);
+    exit(1);
+  }
   for(y=0;y<x;y++)
   {
    fprintf(file,"%s\t%s\n",n_exit[y],int_type[y]);
@@ -858,8 +864,11 @@ fprintf(fp, "}\n");
   strncat(path,"pdc.txt",l+7);
   remove(path);
   pdc_h = fopen(path,"w+");
-  if(pdc_h==NULL)
-   puts("fail");
+  if (pdc_h == NULL)
+  {
+    perror(path);
+    exit(1);
+  }
   fprintf(pdc_h,"%s\t%.2f\n",D,(pdc/total_departures)*100);
   fclose(pdc_h);
 /***************************************************************/
