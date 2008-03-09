@@ -2,10 +2,8 @@ This is trainpos, a program to monitor the position of trains.
 
 Installation:
 
-On any Linux distribution, you first need to compile and install the library rtcommon. Under trunk, go to the directory lib and follow the directions in the README.TXT file.
-
-Following this, you need to compile this project. In a terminal, change to this directory, and justy type "make".
-
+On any Linux distribution, you just need to compile from the root (trunk), and it will make the libraries, then the applications in order.
+ 
 To run:
 
 You need to open two terminals in this directory. In the first one, runt the program "main".
