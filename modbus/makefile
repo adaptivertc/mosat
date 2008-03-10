@@ -41,5 +41,5 @@ install:
 
 
 clean:	
-	rm -fv *.o *.so modsim myconnect *.so *.o
+	rm -fv *.o modsim myconnect librtmodbus.so librtmodbus.a 
 

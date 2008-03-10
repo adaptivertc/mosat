@@ -19,7 +19,7 @@ install:
 	make -f makefile.ppc install
 
 clean:
-	rm -fv *.o *.so *.a
+	rm -fv *.o librtcommon.so librtcommon.a
 	make -f makefile.ppc clean
 
 

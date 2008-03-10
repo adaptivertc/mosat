@@ -36,6 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "trainpos.h"
 #include "dc_evalg.h"
 #include "gp_evalg.h"
+#include "ag_evalg.h"
 #include "ri_evalg.h"
 
 #include "tpconfig.h"
@@ -128,6 +129,9 @@ int main(int argc, char *argv[])
   ri_evalg_t ri_alg;
   ri_alg.init();
 
+  ag_evalg_t ag_alg;
+  ag_alg.init();
+
   alarm_admin_t admin(0, 0, 0);
   alarm_notify_obj_t ano0(0, &admin);
   alarm_notify_obj_t ano1(1, &admin);
@@ -181,12 +185,14 @@ int main(int argc, char *argv[])
       dc_alg.update(qevent.data.time_stamp);
       gp_alg.update(qevent.data.time_stamp);
       ri_alg.update(qevent.data.time_stamp);
+      ag_alg.update(qevent.data.time_stamp);
     }
     else
     {
       dc_alg.process_event(qevent.data);
       gp_alg.process_event(qevent.data);
       ri_alg.process_event(qevent.data);
+      ag_alg.process_event(qevent.data);
     }
   }
 }
