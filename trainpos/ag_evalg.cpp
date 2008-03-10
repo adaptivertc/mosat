@@ -24,14 +24,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "msg_queue.h"
 #include "tcontrol.h"
 #include "event_alg.h"
-#include "gp_evalg.h"
+#include "ag_evalg.h"
 
 #include "rtcommon.h"
 #include "arg.h"
 
 /*********************************************************/
 
-void gp_evalg_t::init(void)
+void ag_evalg_t::init(void)
 {
    // Do something!
 }
@@ -40,7 +40,7 @@ void gp_evalg_t::init(void)
 
 /*********************************************************/
 
-void gp_evalg_t::update(time_t ts)
+void ag_evalg_t::update(time_t ts)
 {
    // Do something!
 }
@@ -49,7 +49,7 @@ void gp_evalg_t::update(time_t ts)
 
 /*********************************************************/
 
-void gp_evalg_t::process_event(crossing_event_t ev)
+void ag_evalg_t::process_event(crossing_event_t ev)
 {
    // Do something!
 }

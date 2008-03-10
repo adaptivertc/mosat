@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 // Add other classes / structures as needed
 
-class gp_evalg_t : public event_alg_t
+class ag_evalg_t : public event_alg_t
 {
 private:
   // Add private definitions here!

@@ -3,7 +3,7 @@ export CPATH=../include
 
 CC=g++ -Wall
 
-INCLUDES=tcontrol.h alg1.h train_sim.h event_alg.h dc_evalg.h gp_evalg.h ri_evalg.h sim_msg.h tpconfig.h trainpos.h
+INCLUDES=tcontrol.h alg1.h train_sim.h event_alg.h dc_evalg.h gp_evalg.h ri_evalg.h ag_evalg.h sim_msg.h tpconfig.h trainpos.h
 
 RTCOMMON=../lib/librtcommon.a
 
@@ -13,11 +13,11 @@ RTCOMMON=../lib/librtcommon.a
 all: main line_sim sim_error disp_curses rtautogen
 
 main: main.o event_dispatch.o alg1.o alarm_notify.o alarm_admin.o \
-      msg_queue.o dc_evalg.o gp_evalg.o ri_evalg.o time_table.o \
+      msg_queue.o dc_evalg.o gp_evalg.o ag_evalg.o ri_evalg.o time_table.o \
       display_reader.o tpconfig.o section_reader.o $(INCLUDES) 
 	$(CC) -o main main.o event_dispatch.o alg1.o \
                  alarm_notify.o alarm_admin.o msg_queue.o dc_evalg.o \
-                 gp_evalg.o ri_evalg.o time_table.o display_reader.o \
+                 gp_evalg.o ag_evalg.o ri_evalg.o time_table.o display_reader.o \
 		tpconfig.o section_reader.o $(RTCOMMON)
 
 line_sim: line_sim.o msg_queue.o train_sim.o sim_msg.o tpconfig.o $(INCLUDES)
