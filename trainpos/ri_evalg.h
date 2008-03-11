@@ -22,7 +22,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class ri_evalg_t : public event_alg_t
 {
 private:
-  // Add private definitions here!
+  FILE * fp;
+  unsigned m_uiNumOfSections;
+  train_data_t trainarray[50];  
+// Add private definitions here!
 public:
   void init(void);
   void update(time_t time);
