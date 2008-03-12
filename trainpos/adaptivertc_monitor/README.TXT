@@ -50,6 +50,25 @@ ldd /usr/lib/python-support/python-gnome2-extras/python2.5/gtk-2.0/gtkmozembed.s
 export LD_LIBRARY_PATH=/usr/lib/firefox
 export MOZILLA_FIVE_HOME=/usr/lib/firefox
 
+
+Fedora 8
+
+
+
+rpm -ql gnome-python2-gtkmozembed
+/usr/lib/python2.5/site-packages/gtk-2.0/gtkmozembed.so
+/usr/share/gtk-doc/html/pygtkmozembed
+/usr/share/gtk-doc/html/pygtkmozembed/class-gtkmozembed.html
+/usr/share/gtk-doc/html/pygtkmozembed/gtkmozembed-class-reference.html
+/usr/share/gtk-doc/html/pygtkmozembed/index.html
+/usr/share/gtk-doc/html/pygtkmozembed/index.sgml
+/usr/share/gtk-doc/html/pygtkmozembed/pygtkmozembed.devhelp
+
+ldd /usr/lib/python2.5/site-packages/gtk-2.0/gtkmozembed.so | grep embed
+	libgtkembedmoz.so => /usr/lib/firefox-2.0.0.12/libgtkembedmoz.so (0x0011a000)
+
+export MOZILLA_FIVE_HOME=/usr/lib/firefox-2.0.0.12
+
 then you are able to run ./adaptivertc_viewer.py without any problems
 
 

@@ -241,7 +241,7 @@ void *maintain_log(void *data)
 
 int main(int argc, char *argv[])
 {
-  char *fname = "record_config.txt";
+  char *fname = "../config_files/record_config.txt";
   FILE *fp = fopen(fname, "r");
   if (fp == NULL)
   {

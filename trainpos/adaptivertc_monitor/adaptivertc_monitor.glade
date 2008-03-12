@@ -32,7 +32,7 @@
 	<widget class="Custom" id="browser1">
 	  <property name="visible">True</property>
 	  <property name="creation_function">make_browser1</property>
-	  <property name="string1">http://localhost/~gorozco/trainpos/Line1.html</property>
+	  <property name="string1">http://localhost/trainpos/Line1.html</property>
 	  <property name="int1">0</property>
 	  <property name="int2">0</property>
 	  <property name="last_modification_time">Tue, 11 Mar 2008 01:16:39 GMT</property>
@@ -48,7 +48,7 @@
 	<widget class="Custom" id="browser2">
 	  <property name="visible">True</property>
 	  <property name="creation_function">make_browser2</property>
-	  <property name="string1">http://localhost/~gorozco/trainpos/line1_table.html</property>
+	  <property name="string1">http://localhost/trainpos/line1_table.html</property>
 	  <property name="int1">0</property>
 	  <property name="int2">0</property>
 	  <property name="last_modification_time">Tue, 11 Mar 2008 01:16:58 GMT</property>
@@ -64,7 +64,7 @@
 	<widget class="Custom" id="browser3">
 	  <property name="visible">True</property>
 	  <property name="creation_function">make_browser3</property>
-	  <property name="string1">http://localhost/~gorozco/trainpos/line1_perf.html</property>
+	  <property name="string1">http://localhost/trainpos/line1_perf.html</property>
 	  <property name="int1">0</property>
 	  <property name="int2">0</property>
 	  <property name="last_modification_time">Tue, 11 Mar 2008 01:20:50 GMT</property>
