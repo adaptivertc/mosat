@@ -72,7 +72,4 @@ export MOZILLA_FIVE_HOME=/usr/lib/firefox-2.0.0.12
 then you are able to run ./adaptivertc_viewer.py without any problems
 
 
-NOTES: (You have to have apache running and trainpos directory pointing to
-trainpos)
-
 NOTE2: I have to be more specific on this documentation.... :S
