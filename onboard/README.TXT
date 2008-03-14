@@ -2,7 +2,19 @@ This is the program to run onboard of each train and enforce the speed limits on
 
 This is in development for pilot testing at SITEUR (Light Rail System Guadalajara).
 
-To run in simulation mode, type "./speed -s"
+Requirements:
+
+gnuplot
+
+To install under ubuntu/debian type on command line:
+apt-get install gnuplot
+
+Command line options:
+
+  1) '-s' to run the program in simulation mode.
+  2) '-cp' to save the profiles to disk and display a graph with gnuplot after each seccion its completed.
+  3) '-f <station_number>' to set the starting station.
+  4) '
 
 After you are running, there are options such as:
 
@@ -15,5 +27,3 @@ After you are running, there are options such as:
 You can resize the text window, and the diagram will resize automatically to fit.
 
 This program likely be expanded to work with radios and do collision avoidance, tell the operator about crossing guards, operation like a poor mans CBTC.
-
-
