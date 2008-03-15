@@ -51,7 +51,7 @@ export LD_LIBRARY_PATH=/usr/lib/firefox
 export MOZILLA_FIVE_HOME=/usr/lib/firefox
 
 
-Fedora 8
+Fedora 8 (WEREWOLF)
 
 
 

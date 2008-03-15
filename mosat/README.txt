@@ -16,13 +16,13 @@ powerpc-linux-gcc
 
 When you have this requirements the you are ready to start.
 
-The first step is to copy the include files in /usr/local/include or anywhere
-your compiler can find the libraries, then you're ready to run make on the lib
-directory, this is in order to obtain the library librtcommon.so. When this
-library is generated you need to copy it into /usr/local/lib, then append this
-line to the file /etc/ld.so.conf:
-/usr/local/lib and run ldconfig. Ever command but the make are meant to be
-runned as root.
+The first step is to copy the include files in /usr/local/include or anywhere your compiler can find the libraries, then you're ready to run make on the lib directory, this is in order to obtain the library librtcommon.so. When this library is generated you need to copy it into /usr/local/lib, then append this line to the file /etc/ld.so.conf:
+/usr/local/lib and run ldconfig. Ever command but the make are meant to be runned as root.
 
-After having the last steps done you can 
+When this steps are done you're ready to compile.
 
+Type make on the trunk directory.
+
+When compilation is finished you need to do an ftp to the rtu's and copy ppc_recordi, dump_events and mosat_sync files on the /bin directory and copy the script on siteur.h from the script directory to <place directory here> directory in the rtu.
+
+You also need to make some configuration files no the rtu to make work
