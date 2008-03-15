@@ -43,7 +43,7 @@ above, the last section would be "Chennai Fort".
 
 Next, you must create the timetable file which has the form:
 
-<train name or id><tab><time>
+<train name or id><tab><time-HH:MM:SS>
 
 BVL1    6:05:00
 BVL3    6:20:00
@@ -76,9 +76,9 @@ Important: the number of sections MUST match with the timetable file.
 
 Design issues.
 
-How to select the correct timetable. We really need to make the selection of the timetable to use a function of the location, since each country has different holidays and circumstances that affect how many schedules they will have and how to select them. Furthere, there may be special events, so, there must be a way to override the selection of timetables. For now, we are taking the easy way out, and just simulating one schedule type for each day.
+How to select the correct timetable. We really need to make the selection of the timetable to use a function of the location, since each country has different holidays and circumstances that affect how many schedules they will have and how to select them. Furthere, there may be special events, so, there must be a way to override the selection of timetables. For now, we are taking the easy way out, and just simulating one schedule type for each location.
 
-We need to completely separate the display generation from the position calculations.
+We need to completely separate the display generation from the position calculations. (this is in process)
 
 The file format for the sections file. We need a generic file format that will work for all locations if possible. Since all light rail systems have stations, we can define the sections based on passenger stations. Then we will allow 0 or more sensors per section. The current assumption is exactly two sensors per section.
 

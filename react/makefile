@@ -1,5 +1,5 @@
 # Makefile for react.
-OBJ1 = reactmain.o db.o di.o do.o ao.o data.o scan.o dcalc.o shutdown.o alarmwin.o pointstate.o 
+OBJ1 = reactmain.o db.o di.o do.o ao.o data.o file_logger.o scan.o dcalc.o shutdown.o alarmwin.o pointstate.o 
 OBJ2 = secuencia.o iodriver.o pid.o secuencia_step.o logfile.o control.o web.o config.o displaydata.o script_support.o gen_case.o gen_script.o conio.o
 OBJ3 =	int.o pci.o ldiodriver.o timeaccum.o error.o eval.o expr.o exprlist.o exprtree.o point.o  calc.o lddbpoint.o analog.o discrete.o pump.o level.o
 OBJS =  $(OBJ1) $(OBJ2) $(OBJ3)

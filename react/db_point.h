@@ -411,6 +411,32 @@ public:
   static data_point_t **read(int *cnt, const char * home_dir);
 };
 
+/*#SCRIPT_OBJECT#(FILE_LOGGER)*/
+class file_logger_t : public discrete_point_t
+{
+public:
+  char base_name[50];
+  int num_points;
+  analog_point_t **analog_points;
+  bool collecting;
+  int sample_interval;
+  bool instantaneous_enable;
+  bool hour_enable;
+  bool day_enable;
+  bool week_enable;
+  time_t last_log_time;
+  bool month_enable;
+  FILE *instantaneous_fp;
+  void update(void);
+/*#SCRIPT_FUNCTION#*/
+  void start(void);
+/*#SCRIPT_FUNCTION#*/
+  void stop(void);
+  void write_to_file(void);
+  point_type_t point_type(void) {return DATA_POINT;};
+  static file_logger_t **read(int *cnt, const char * home_dir);
+};
+
 /*#SCRIPT_OBJECT#(SCAN_POINT)*/
 class scan_point_t : public discrete_point_t
 {

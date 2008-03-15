@@ -111,6 +111,8 @@ public:
   int num_level;
   data_point_t **data_points;
   int num_data;
+  file_logger_t **file_logger_points;
+  int num_file_logger;
   scan_point_t **scan_points;
   int num_scan;
   web_point_t **web_points;
