@@ -10,6 +10,8 @@ Also you need some extra software you might not have:
 gcc
 make
 powerpc-linux-gcc
+apache web server
+gnuplot
 ...
 <list of software>
 ...
@@ -23,6 +25,17 @@ When this steps are done you're ready to compile.
 
 Type make on the trunk directory.
 
-When compilation is finished you need to do an ftp to the rtu's and copy ppc_recordi, dump_events and mosat_sync files on the /bin directory and copy the script on siteur.h from the script directory to <place directory here> directory in the rtu.
+When compilation is finished you need to do an ftp to the rtu's and copy ppc_recordi, dump_events, elogfile and mosat_sync files on the /bin directory and copy the script on siteur.sh from the script directory to <place directory here> directory in the rtu.
 
-You also need to make some configuration files no the rtu to make work
+You also need to make some configuration files no the rtu to make work. This
+files are:
+rtu_channel_config.txt
+recordlog.txt
+<here will be a description of every file, its contents and its location>
+
+Before you can run this application you need to write (or get) the files with the departures for every kind of workday (laboral.txt, sabado.txt, domingo.txt), and place them in their respective directories inside the apache home directory.
+<here will be a description of every file, its contents and its location>
+
+<some steps skiped>
+
+to start generating the reports you need to run ./runit ./ntt and ./autoreport and then open your web browser and look for the html report on <your ip><directori>
