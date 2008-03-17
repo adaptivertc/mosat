@@ -25,7 +25,7 @@ When this steps are done you're ready to compile.
 
 Type make on the trunk directory.
 
-When compilation is finished you need to do an ftp to the rtu's and copy ppc_recordi, dump_events, elogfile and mosat_sync files on the /bin directory and copy the script on siteur.sh from the script directory to <place directory here> directory in the rtu.
+When compilation is finished you need to do an ftp to the rtu's and copy ppc_recordi, dump_events and mosat_sync files on the /bin directory and copy the script on siteur.sh from the script directory to <place directory here> directory in the rtu.
 
 You also need to make some configuration files no the rtu to make work. This
 files are:
