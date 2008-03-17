@@ -56,6 +56,25 @@ void file_logger_t::write_to_file(void)
 
 /**********************************************************************/
 
+static bool hour_changed(time_t t1, time_t t2)
+{
+  struct tm mytm1;
+  struct tm mytm2;
+  localtime_r(&t1, &mytm1);
+  localtime_r(&t2, &mytm2);
+  if (mytm1.tm_hour == mytm2.tm_hour)
+  {
+    return false;
+  }
+  else 
+  {
+    printf("********* Hour Changed\n");
+    return true;
+  }
+}
+
+/**********************************************************************/
+
 static bool day_changed(time_t t1, time_t t2)
 {
   struct tm mytm1;
@@ -69,6 +88,65 @@ static bool day_changed(time_t t1, time_t t2)
   else 
   {
     printf("********* Day Changed\n");
+    return true;
+  }
+}
+
+/**********************************************************************/
+
+static bool week_changed(time_t t1, time_t t2)
+{
+  struct tm mytm1;
+  struct tm mytm2;
+  localtime_r(&t1, &mytm1);
+  localtime_r(&t2, &mytm2);
+  // This works no matter which order the times are given in
+  if ( ((mytm1.tm_wday == 0) && (mytm1.tm_wday == 6)) ||
+     ((mytm2.tm_wday == 0) && (mytm1.tm_wday == 6)) ) 
+  {
+    printf("********* Week Changed\n");
+    return true;
+  }
+  else 
+  {
+    return false;
+  }
+}
+
+/**********************************************************************/
+
+static bool month_changed(time_t t1, time_t t2)
+{
+  struct tm mytm1;
+  struct tm mytm2;
+  localtime_r(&t1, &mytm1);
+  localtime_r(&t2, &mytm2);
+  if (mytm1.tm_mon == mytm2.tm_mon)
+  {
+    return false;
+  }
+  else 
+  {
+    printf("********* Month Changed\n");
+    return true;
+  }
+}
+
+/**********************************************************************/
+
+static bool year_changed(time_t t1, time_t t2)
+{
+  struct tm mytm1;
+  struct tm mytm2;
+  localtime_r(&t1, &mytm1);
+  localtime_r(&t2, &mytm2);
+  if (mytm1.tm_year == mytm2.tm_year)
+  {
+    return false;
+  }
+  else 
+  {
+    printf("********* Year Changed\n");
     return true;
   }
 }
@@ -129,12 +207,23 @@ void file_logger_t::update(void)
   }
   bool day_change = day_changed(now, last_log_time);
 
+  if (hour_changed(now, last_log_time))
+  {
+  }
   if (day_change)
   {
     instantaneous_fp = open_day_history_file(base_name, 
                          ".txt", instantaneous_fp);
   }
-  last_log_time = now;
+  if (week_changed(now, last_log_time))
+  {
+  }
+  if (month_changed(now, last_log_time))
+  {
+  }
+  if (year_changed(now, last_log_time))
+  {
+  }
 
   char buf[30];
   struct tm mytm;
@@ -156,7 +245,7 @@ void file_logger_t::update(void)
   }
   fprintf(instantaneous_fp, "\n");
   fflush(instantaneous_fp);
-
+  last_log_time = now;
 }
 
 /**********************************************************************/
