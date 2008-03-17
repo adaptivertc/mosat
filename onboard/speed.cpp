@@ -702,6 +702,8 @@ int main(int argc, char *argv[])
     
       if ((j == 0) || (dirname[0] == '\0'))
       {
+      	if (!dir_exists("profiles"))
+      		system("mkdir profiles");
         for (int k=1; true; k++)
         {
           snprintf(dirname, sizeof(dirname), "profiles/profile%d", k);
