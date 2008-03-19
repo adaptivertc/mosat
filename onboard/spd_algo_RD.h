@@ -2,7 +2,9 @@
 class speed_algorithm_RD_t : public speed_algorithm_base_t 
 {
 private:
-  speed_command_t check_speed(time_t now, double actual, 
+	time_t warning_beginning;
+	speed_state_t previous_state;
+	speed_state_t current_state(time_t now, double actual, 
     double the_lo_limit, double the_hi_limit, double shutdown_limit);
 
 public:

@@ -34,7 +34,7 @@ speed_algorithm_DC_t::speed_algorithm_DC_t(void)
 
 /**************************************************************************************************/
 
-speed_command_t speed_algorithm_DC_t::check_speed(time_t now, double actual, 
+speed_state_t speed_algorithm_DC_t::check_speed(time_t now, double actual, 
 		 double the_lo_limit, double the_hi_limit, double shutdown_limit)
 {
   double hi_limit = the_hi_limit - 0.001; 
@@ -95,7 +95,7 @@ speed_command_t speed_algorithm_DC_t::check_speed(time_t now, double actual,
 void speed_algorithm_DC_t::evaluate(time_t now, double actual_speed, double actual_distance,
 		                current_speed_limits_t limits, speed_results_t *results)
 {
-  speed_command_t state;
+  speed_state_t state;
   state = check_speed(now, actual_speed, limits.low, limits.high, limits.very_high);
 
   mvprintw(27,2,"  Actual: %5.1lf", actual_speed);
@@ -105,7 +105,7 @@ void speed_algorithm_DC_t::evaluate(time_t now, double actual_speed, double actu
 
   mvprintw(31,2,"   State: %-10s, time: %8d", state_to_string(state), now);
 
-  results->command = state;
+  results->state = state;
 }
 
 /*****************************************************************************/
