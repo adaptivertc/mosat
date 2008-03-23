@@ -423,10 +423,13 @@ public:
   bool instantaneous_enable;
   bool hour_enable;
   bool day_enable;
+  double *hour_averages;
+  int n_hour_samples;
   bool week_enable;
   time_t last_log_time;
   bool month_enable;
   FILE *instantaneous_fp;
+  FILE *hour_fp;
   void update(void);
 /*#SCRIPT_FUNCTION#*/
   void start(void);

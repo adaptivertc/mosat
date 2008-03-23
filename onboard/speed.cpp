@@ -432,6 +432,7 @@ void print_profile(int n)
 
 double calc_speed(double t, double t1, double s1, double t2, double s2)
 {
+  // Here, we do a simple interpolation between two points.
   double conversion_factor, raw_span;
   raw_span = t2 - t1;
   if (raw_span == 0)

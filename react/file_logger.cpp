@@ -189,8 +189,7 @@ static FILE *open_day_history_file(const char * pre, const char *post, FILE *fp)
   return fp;
 }
 
-
-/**********************************************************************/
+/**********************************************************************/ 
 
 void file_logger_t::update(void)
 {
@@ -209,11 +208,22 @@ void file_logger_t::update(void)
 
   if (hour_changed(now, last_log_time))
   {
+    if (hour_fp != NULL)
+    {
+      for (int i=0; i < num_points; i++)
+      {
+        fprintf(hour_fp, "\t%lf", hour_averages[i] / n_hour_samples);
+        hour_averages[i] = 0;
+      }
+      fprintf(hour_fp, "\n");
+    }
   }
   if (day_change)
   {
     instantaneous_fp = open_day_history_file(base_name, 
                          ".txt", instantaneous_fp);
+    hour_fp = open_day_history_file(base_name, 
+                         "_hour.txt", hour_fp);
   }
   if (week_changed(now, last_log_time))
   {
@@ -225,6 +235,7 @@ void file_logger_t::update(void)
   {
   }
 
+
   char buf[30];
   struct tm mytm;
   localtime_r(&now, &mytm);
@@ -234,15 +245,16 @@ void file_logger_t::update(void)
 
   for (int i=0; i < num_points; i++)
   {
+    double val = 0.0;
     if (analog_points[i] != NULL)
     {
-      fprintf(instantaneous_fp, "\t%lf", analog_points[i]->get_pv());
+      val = analog_points[i]->get_pv();
     }
-    else
-    {
-      fprintf(instantaneous_fp, "\t0.0");
-    }
+    fprintf(instantaneous_fp, "\t%lf", val);
+    hour_averages[i] += val;
   }
+  n_hour_samples++;
+
   fprintf(instantaneous_fp, "\n");
   fflush(instantaneous_fp);
   last_log_time = now;
@@ -356,6 +368,20 @@ file_logger_t **file_logger_t::read(int *cnt, const char *home_dir)
       printf("analog pint %d: %s\n", j-9, temp_tag);
     }
     p->last_log_time = time(NULL);
+    p->n_hour_samples = 0;
+    if (p->hour_enable)
+    {
+      p->hour_averages = new double[p->num_points];
+      p->hour_fp = open_day_history_file(p->base_name, "_hour.txt", NULL);
+      if (p->hour_fp == NULL)
+      {
+        perror("Opening Hour File");
+      } 
+    }
+    else
+    {
+      p->hour_averages = NULL;
+    }
 
     logger_points[count] = p;
     count++;
