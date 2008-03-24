@@ -24,7 +24,7 @@ char *state_string(int state)
 {
 	switch(state)
 	{
-		case SPD_STATE_SHUTDOWN : return "SHUTDONW";
+		case SPD_STATE_SHUTDOWN : return "SHUTDOWN";
 		case SPD_STATE_WARN_HI : return "HIGH SPEED";
 		case SPD_STATE_NORMAL : return "NORMAL";
 		case SPD_STATE_WARN_LO : return "LOW SPEED";
@@ -47,14 +47,48 @@ speed_state_t speed_algorithm_RD_t::current_state(time_t now, double actual_spee
 		
 	if(actual_speed >= shutdown_limit)
 	{
+		mvprintw(32,40,"Time to slowdown: 0      ");
 		previous_state = SPD_STATE_SHUTDOWN;
 		return SPD_STATE_SHUTDOWN;
 	}
 	else
 		if(actual_speed >= actual_high_limit)
 		{
-			
+			mvprintw(32,40,"Time to slowdown: %d",SPD_MAX_WARN_TIME - (now - warning_beginning));
+			if(previous_state == SPD_STATE_WARN_HI)
+			{
+				if((now - warning_beginning) > SPD_MAX_WARN_TIME)
+				{
+					mvprintw(32,40,"Time to slowdown: 0      ");
+					previous_state = SPD_STATE_SHUTDOWN;
+					return SPD_STATE_SHUTDOWN;
+				}
+				else
+					return SPD_STATE_WARN_HI;
+			}
+			else
+			{
+				previous_state = SPD_STATE_WARN_HI;
+				warning_beginning = now;
+				return SPD_STATE_WARN_HI;
+			}
 		}
+		else
+			if(actual_speed > actual_low_limit)
+			{
+				if(previous_state == SPD_STATE_WARN_HI)
+				{
+					warning_beginning = 0;
+					mvprintw(32,40,"                        ");
+				}
+				previous_state = SPD_STATE_NORMAL;
+				return SPD_STATE_NORMAL;
+			}
+			else
+			{
+				previous_state = SPD_STATE_WARN_LO;
+				return SPD_STATE_WARN_LO;
+			}
 	
 	return SPD_STATE_WARN_LO;
 
