@@ -405,7 +405,8 @@ void web_point_t::read_file(void)
       char *argv[10];
       printf("%s\n", tmp);
       argc = get_delim_args(tmp, argv, '|', 10);
-      if ((argc == 1) || (argc == 4))
+      printf("Args for AI = %d\n", argc);
+      if ((argc == 1) || (argc == 4) || (argc == 9))
       {
         rtrim(argv[0]);
         ltrim(argv[0]);
@@ -441,8 +442,36 @@ void web_point_t::read_file(void)
             r->bar = strdup(argv[1]);
             r->half_off = strdup(argv[2]);
             r->half_on = strdup(argv[3]);
+            r->bar_top = 30;
+            r->bar_left = 710;
+            r->bar_length = 400;
+            r->bar_min = 0;
+            r->bar_max = 500;
             r->is_bar = true;
+            printf("-- 4 parameter bar\n");
             printf("Bar: %s, %s, %s\n", r->bar, r->half_off, r->half_on);
+          }
+          else if (argc == 9)
+          {
+            rtrim(argv[1]);
+            ltrim(argv[1]);
+            rtrim(argv[2]);
+            ltrim(argv[2]);
+            rtrim(argv[3]);
+            ltrim(argv[3]);
+            r->bar = strdup(argv[1]);
+            r->half_off = strdup(argv[2]);
+            r->half_on = strdup(argv[3]);
+            r->bar_top = atol(argv[4]);
+            r->bar_left = atol(argv[5]);
+            r->bar_length = atol(argv[6]);
+            r->bar_min = atol(argv[7]); 
+            r->bar_max = atol(argv[8]);
+            r->is_bar = true;
+            printf("-- 9 parameter bar\n");
+            printf("Bar: %s, %s, %s, %d, %d, %d, %d, %d\n", 
+                r->bar, r->half_off, r->half_on,
+                r->bar_top, r->bar_left, r->bar_length, r->bar_min, r->bar_max);
           }
         }
       }
@@ -575,13 +604,10 @@ void web_point_t::update_file_and_write(void)
     if (ar->is_bar)
     {
       char buf[220];
-      int top = 30;
-      int left = 710;
-      int length = 400;
       gen_bar(buf, sizeof(buf), 
              ar->bar, ar->half_on, ar->half_off, 
-             top, left, length,
-             0, 500, current_aval); 
+             ar->bar_top, ar->bar_left, ar->bar_length,
+             ar->bar_min, ar->bar_max, current_aval); 
       //printf("%s\n", buf);
       subst_string(ar->str, buf, ar->size);
     }

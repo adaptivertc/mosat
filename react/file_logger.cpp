@@ -204,12 +204,18 @@ void file_logger_t::update(void)
   {
     return;
   }
+
+  char buf[30];
+  struct tm mytm;
+  localtime_r(&now, &mytm);
+  strftime(buf, sizeof(buf), "%F\t%T", &mytm);
   bool day_change = day_changed(now, last_log_time);
 
   if (hour_changed(now, last_log_time))
   {
     if (hour_fp != NULL)
     {
+      fprintf(hour_fp, "%s", buf);
       for (int i=0; i < num_points; i++)
       {
         fprintf(hour_fp, "\t%lf", hour_averages[i] / n_hour_samples);
@@ -235,14 +241,9 @@ void file_logger_t::update(void)
   {
   }
 
-
-  char buf[30];
-  struct tm mytm;
-  localtime_r(&now, &mytm);
-  strftime(buf, sizeof(buf), "%F\t%T", &mytm);
-
   fprintf(instantaneous_fp, "%s", buf);
 
+  printf("Hr avgs so far: %s", buf);
   for (int i=0; i < num_points; i++)
   {
     double val = 0.0;
@@ -252,8 +253,10 @@ void file_logger_t::update(void)
     }
     fprintf(instantaneous_fp, "\t%lf", val);
     hour_averages[i] += val;
+    printf(" %lf", hour_averages[i] / (n_hour_samples + 1));
   }
   n_hour_samples++;
+  printf("\n");
 
   fprintf(instantaneous_fp, "\n");
   fflush(instantaneous_fp);
@@ -377,9 +380,14 @@ file_logger_t **file_logger_t::read(int *cnt, const char *home_dir)
       {
         perror("Opening Hour File");
       } 
+      for (int i=0; i < p->num_points; i++)
+      {
+        p->hour_averages[i] = 0.0;
+      }
     }
     else
     {
+      p->hour_fp = NULL;
       p->hour_averages = NULL;
     }
 

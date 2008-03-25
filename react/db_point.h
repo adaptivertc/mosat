@@ -631,6 +631,11 @@ struct analog_ref_t
   char *bar;
   char *half_on; 
   char *half_off;
+  int bar_top;
+  int bar_left;
+  int bar_length; 
+  int bar_min; 
+  int bar_max; 
   analog_point_t *ap;
   analog_ref_t *next;
 };
