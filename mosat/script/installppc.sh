@@ -1,12 +1,12 @@
 #!/bin/bash
 echo "making sixnet directory type your password (using sudo don't use root password)"
-sudo mkdir -p /opt/sixnet;echo "...done"
+sudo mkdir -p /opt/sixnet3; echo "...done"
 echo "copying files..."
 sudo cp sxiadk.tar.gz /opt/sixnet/;echo "sxiadk.tar.gz ...done"
 sudo cp sxlib.tar.gz /opt/sixnet/;echo "sxlib.tar.gz ...done"
 sudo cp sxsamples.tar.gz /opt/sixnet/;echo "sxsamples.tar.gz ...done"
 echo "Moving to /opt/sixnet directory"
-cd /opt/sixnet2/; echo " ...done"
+cd /opt/sixnet/; echo " ...done"
 echo "Uncompressing files"
 sudo tar zxvf sxiadk.tar.gz
 sudo tar zxvf sxlib.tar.gz
