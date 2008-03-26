@@ -6,9 +6,9 @@ struct tsecdata_t
 {
   int section_time;
   int n_sensors;
-  int sensor_locs[TP_MAX_SENSORS];
-  int departure_sensor_loc;
-  int arival_sensor_loc;
+  int sensor_location[TP_MAX_SENSORS];
+  //int departure_sensor_loc;
+  //int arival_sensor_loc;
   int time_to_start;
   char station[20];
 };

@@ -1,7 +1,7 @@
 
 export CPATH=../include
 
-CC=g++ -Wall
+CC=g++ -g -Wall
 
 INCLUDES=tcontrol.h alg1.h train_sim.h event_alg.h dc_evalg.h gp_evalg.h ri_evalg.h ag_evalg.h sim_msg.h tpconfig.h trainpos.h
 

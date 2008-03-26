@@ -52,7 +52,7 @@ int section_reader_t::get_sensor_loc(int section_number,
        __FILE__, __LINE__, sensor_number, section_number);
     exit(1);
   }
-  return (sections[section_number].sensor_locs[sensor_number]);
+  return (sections[section_number].sensor_location[sensor_number]);
 }
 
 /********************************************************/
@@ -64,7 +64,7 @@ int section_reader_t::get_departure_sensor_loc(int section_number)
        __FILE__, __LINE__, section_number);
     exit(1);
   }
-  return sections[section_number].departure_sensor_loc;
+  return sections[section_number].sensor_location[0];
 }
 
 /********************************************************/
@@ -77,7 +77,8 @@ int section_reader_t::get_arival_sensor_loc(int section_number)
        __FILE__, __LINE__, section_number);
     exit(1);
   }
-  return sections[section_number].arival_sensor_loc;
+  int n_sensors = sections[section_number].n_sensors;
+  return sections[section_number].sensor_location[n_sensors-1];
 }
 
 /********************************************************/
@@ -157,25 +158,41 @@ void section_reader_t::read_section_file(void)
     //printf("--- %s\n", line);
     safe_strcpy(tmp, line, sizeof(tmp));
     argc = get_delim_args(tmp, argv, '\t', 4);
-    if (argc != 4)
+    if ((argc < 4) || (argc > (TP_MAX_SENSORS + 2)))
     {
-      printf("Wrong: %s\n", line);
+      printf("Wrong number of args, must be between 4 and %d: %s\n", TP_MAX_SENSORS + 2, line);
       continue;
     }
+    
+    sections[n_lines].n_sensors = argc - 2;
 
     safe_strcpy(sections[n_lines].station, argv[0], sizeof(sections[n_lines].station));
     sections[n_lines].section_time = atol(argv[1]);
-    sections[n_lines].departure_sensor_loc = atol(argv[2]);
-    sections[n_lines].arival_sensor_loc = atol(argv[3]);
+    for (int i=0; i < (argc-2); i++)
+    {
+      sections[n_lines].sensor_location[i] = atol(argv[i+2]);
+    }
+    /***
+    //sections[n_lines].departure_sensor_loc = atol(argv[2]);
+    sections[n_lines].sensor_location[0] = atol(argv[2]);
+    //sections[n_lines].arival_sensor_loc = atol(argv[3]);
+    sections[n_lines].sensor_location[1] = atol(argv[3]);
+    ****/
     sections[n_lines].time_to_start = total_time;
-    printf("%20s(%d): %d %d %d %d\n",
+    printf("%20s(%d): %d, %d, sensors: [",
       sections[n_lines].station,
-      n_lines,
-      sections[n_lines].section_time,
-      sections[n_lines].departure_sensor_loc,
-      sections[n_lines].arival_sensor_loc,
-      sections[n_lines].time_to_start );
-    total_time += sections[n_lines].section_time;
+      n_lines, 
+      sections[n_lines].time_to_start, 
+      sections[n_lines].section_time); 
+    for (int i=0; i <  sections[n_lines].n_sensors; i++) 
+    { 
+      if (i != 0) printf(", ");
+      printf("%d", sections[n_lines].sensor_location[i]); 
+    } 
+    printf("]\n"); 
+    //sections[n_lines].sensor_location[0], 
+    //sections[n_lines].sensor_location[1], 
+    total_time += sections[n_lines].section_time; 
     if (n_lines != 0) total_time += RT_DWELL_TIME;
     n_lines++;
     if (n_lines >= max)
