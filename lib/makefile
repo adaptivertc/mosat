@@ -5,7 +5,7 @@ CC=g++
 %.o:    %.cpp $(INCLUDES)
 	$(CC) -c -fpic -o $@ -Wall $<
 
-all: librtcommon.so librtcommon.a ppcall
+all: librtcommon.so librtcommon.a 
 
 librtcommon.so: arg.o common.o safestr.o utimer.o memfail.o
 	g++  -shared -o librtcommon.so arg.o common.o safestr.o utimer.o memfail.o
