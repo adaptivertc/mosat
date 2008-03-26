@@ -41,6 +41,7 @@ DEALINGS IN THE SOFTWARE.
 #include "spd_algo.h"
 #include "spd_algo_DC.h"
 #include "spd_algo_RD.h"
+#include "spd_algo_VV.h"
 
 #include "spd_display.h"
 #include "spd_comm.h"
@@ -560,6 +561,7 @@ int main(int argc, char *argv[])
   //
   speed_algorithm_DC_t spd_DC;
   speed_algorithm_RD_t spd_RD;
+  speed_algorithm_VV_t spd_VV;
 
   sim_mode = false;
   bool pick_mode = false;
@@ -768,6 +770,7 @@ int main(int argc, char *argv[])
       speed_results_t results;
       spd_DC.evaluate((time_t) now, actual, distance, limits, &results);  
       spd_RD.evaluate((time_t) now, actual, distance, limits, &results);  
+      spd_VV.evaluate((time_t) now, actual, distance, limits, &results);  
 
       time_in_section++;
 
