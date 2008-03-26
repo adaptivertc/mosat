@@ -1,0 +1,46 @@
+<html>
+   <title>CONFIGURING THE RTU</title>
+    <body>
+      <table width ="100%">
+        <tr>
+          <td>
+            <h1>CONFIGURING THE RTU</h1>
+          </td>
+          <td>
+            <h2><a href="../es/rtuconf.html"><div align="right">Espa&#241;ol</div></a></h2>
+          </td>
+        </tr>
+      </table>
+      <hr size="10" NOSHADE/>
+      <p align="justify"><font face="sans" size="4">Now we will describe how to load and configure everything on the RTU</font></p>
+      <p align="justify"><font face="sans" size="4">These instruccions are specific for the SIXNET&#39;s RTU&#44; but&#44; would be very similar on other platforms running Linux or other Unix like embedded Operating System.</font></p>
+      <p align="justify"><font face="sans" size="4">All the files should be copyied via ftp.</font></p>
+      <ol type="i">
+        <li><font face="sans" size="4">Copy <font face="monospace" size="5">librtcommon.so</font> from the <font face="monospace" size="5">lib/ppc/</font> directory to <font face="monospace" size="5">/usr/lib/</font> on the RTU.</font></li>
+        <li><font face="sans" size="4">Copy <font face="monospace" size="5">ppc_record</font>&#44; <font face="monospace" size="5">dump_events</font> and <font face="monospace" size="5">mosatsync</font> from the <font face="monospace" size="5">main/ppc</font> directory to <font face="monospace" size="5">/usr/local/bin</font> on the RTU.</font></li>
+        <li><font face="sans" size="4">Make the files executable&#58; <font face="monospace" size="5">chmod &#43;x ppc_record</font>, <font face="monospace" size="5"> chmod &#43;x dump_events</font> and <font face="monospace" size="5">chmod &#43;x mosatsync</font>.</font></li>
+        <li><font face="sans" size="4">You might have to run <font face="monospace" size="5">ldconfig</font> &#40;from telnet&#41; to eliminate problems with the libraries. It is recommended to usr the <font face="monospace" size="5">-v</font> option to see what's going on.</font></li>
+        <li><font face="sans" size="4">Create the directory <font face="monospace" size="5">/nvram/siteur</font> and <font face="monospace" size="5">/home/carr</font> on the RTU.</font></li>
+        <li><font face="sans" size="4">In the <font face="monospace" size="5">/home/carr</font> directory, create the file <font face="monospace" size="5">rtu_channel_config.txt</font>.<br />
+        This file must look as follows&#58;<br />
+        <font face="monospace" size="5">
+        X&#124;1&#124;7&#124;1&#124;<br />
+        X&#124;2&#124;9&#124;3&#124;<br />
+        E&#124;1&#124;2&#124;&#45;1&#124;7&#124;9&#124;&#45;1&#124; </font><br />
+        Now we'll explain the contents.<br />
+        If the first character is <font face="monospace" size="5">X</font> then&#58;<br />
+        The first number on each line is the sensor number.<br />
+        The second number is the analog register where the count is held.<br />
+        The last number is the discrete channel where the disconect input is wired &#40;<font face="monospace" size="5">&#45;1</font> if not present&#41;.<br />
+        The <font face="monospace" size="5">X</font> is ONLY for recording crossing events, but are not identified as arrivals or departures.</font></li>
+      </ol>
+      <table width="100%">
+        <tr>
+          <td><div align="left"><a href="installing.html"><big>Back</big></a></div></td>
+          <td><div align="right"><a href="../README.html"><big>Home</big></a></div></td>
+        </tr>
+      </table>
+      <hr />
+      <h4> Questions, comentaries and bug report <a href="mailto:ga.poncec@gmail.com">ga.poncec@gmail.com</a></h4>
+    </body>
+<html>
