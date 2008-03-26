@@ -565,6 +565,7 @@ int main(int argc, char *argv[])
 
   sim_mode = false;
   bool pick_mode = false;
+  bool free_running_mode = false;
   int current_arg;
   bool create_profiles = false;
   for (current_arg=1; current_arg < argc; current_arg++)
@@ -578,6 +579,11 @@ int main(int argc, char *argv[])
     {
       printf("Setting pick mode . . \n");
       pick_mode = true;
+    } 
+    else if (0 == strcasecmp(argv[current_arg], "-l"))
+    {
+      printf("Setting free running mode (libre) . . \n");
+      free_running_mode = true;
     } 
     else if (0 == strcasecmp(argv[current_arg], "-L1"))
     {
@@ -740,10 +746,13 @@ int main(int argc, char *argv[])
     utimer.set_start_time();
     for (int i=0; true; i++)
     {
-      utimer.wait_next();
-      if (utimer.late_time() > 1.0)
+      if (!free_running_mode)
       {
-        utimer.set_start_time();
+        utimer.wait_next();
+        if (utimer.late_time() > 1.0)
+        {
+          utimer.set_start_time();
+        }
       }
       double now = (double) i / 1.0;
      
