@@ -80,15 +80,15 @@ void display_data_t::read(const char *base_name)
 
 /*************************************************************************************************/
 // This is special for India, we need to make it an installable plugin!!
-void switch_direction(train_data_t *t, train_calcs_t *calcs)
+void switch_direction(train_data_t *train, train_calcs_t *calcs)
 {
-  if (0 == strncmp(t->train_id, "BVL", 3))
+  if (0 == strncasecmp(train->train_id, "BVL", 3))
   {
-    const char * p = t->train_id;
+    const char * p = train->train_id;
     for (; (*p != '\0') && (!isdigit(*p)); p++);  
     if (*p == '\0') return;
     int num = atol(p);
-    snprintf(t->train_id, sizeof(t->train_id), "VLB%d\n", num + 1);
+    snprintf(train->train_id, sizeof(train->train_id), "VLB%d\n", num + 1);
   }
   calcs->switched_direction = true;
 }
@@ -227,10 +227,12 @@ void display_data_t::gen_html(time_t now, train_data_t *trains, train_calcs_t *c
         switch_direction(&trains[i], &calcs[i]);
       }
       y_diff_for_text = text_offset_y1;//-26;
+      //printf("--------------------comming back: %s\n", trains[i].train_id ); 
     }
     else
     {
       y_diff_for_text = text_offset_y2;//19;
+      //printf("+++++++++++++++++++NOT comming back: %s\n", trains[i].train_id ); 
     }
 
     fprintf(fp, "<div style=\"position:absolute; top:%dpx; left:%dpx; z-index:2\">\n",
@@ -372,6 +374,7 @@ void display_alg_t::add_train(time_t time_now, const char *train_id)
   for (int i=(n_trains - 1); i >= 0; i--)
   {
     trains[i+1] = trains[i];
+    calcs[i+1] = calcs[i]; // must copy both calcs and trains up one space in the array.
   }
   trains[0].section = 0;
   trains[0].num = train_number;
