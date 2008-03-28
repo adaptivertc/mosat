@@ -229,8 +229,6 @@ void read_sim_data(void)
 
 /*********************************************************************/
 
-
-                                                                                
 int read_profile(sdef_t the_profile[], int max)
 {
   int argc, line_num;
@@ -407,7 +405,7 @@ typedef struct sdef_t
   return n_segments;
 }
 
-/********************************************************************/
+/********************************************************************
 
 void print_profile(int n)
 {
@@ -429,7 +427,7 @@ void print_profile(int n)
   }
 }
 
-/***********************************************************************************************************/
+***********************************************************************************************************/
 
 double calc_speed(double t, double t1, double s1, double t2, double s2)
 {
@@ -480,6 +478,10 @@ void calc_desired(int a_section, double a_speed, double a_distance,
   double distance_to_next = vel_profile[a_section].dist[my_index+1] - a_distance; 
   double distance_in_5_sec = a_speed * (1.0/3.6) * 5.5;
   if (distance_to_next < distance_in_5_sec) 
+       /* The idea is to warn the driver 5 seconds BEFORE he needs to decelerate. 
+          We believe there is currently a lot of wasted time with drivers braking before it is needed.
+          If we can tell them exactly when to start braking, we might save some seconds in each segment.
+          This obviously needs some work before it is a final design! */
   {
     *warn = true;
   }
@@ -502,10 +504,10 @@ void calc_desired(int a_section, double a_speed, double a_distance,
     *warn = false;
   }
 
-  //mvprintw(15,2,"Section: %2d, index: %2d, spd1: %5.0lf, spd2: %5.1lf, d1: %8.1lf, d2: %8.1lf, n: %d", a_section, my_index, 
-   //        profile[a_section].speed[my_index], profile[a_section].speed[my_index + 1],
-    //       profile[a_section].dist[my_index], profile[a_section].dist[my_index + 1],
-     //                                 profile[a_section].n);
+  /*mvprintw(15,2,"Section: %2d, index: %2d, spd1: %5.0lf, spd2: %5.1lf, d1: %8.1lf, d2: %8.1lf, n: %d", a_section, my_index, 
+          profile[a_section].speed[my_index], profile[a_section].speed[my_index + 1],
+          profile[a_section].dist[my_index], profile[a_section].dist[my_index + 1],
+                                      profile[a_section].n); */
   double spd = calc_speed(a_distance, vel_profile[a_section].dist[my_index],
               vel_profile[a_section].speed[my_index], 
               vel_profile[a_section].dist[my_index+1], 
