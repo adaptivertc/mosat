@@ -276,6 +276,7 @@ bool jl_algorithm_t::request_entry(int section)
     }
     return false;
     ENDCRITIC
+    return false;
 }
 
 /******************************************************************/
@@ -311,6 +312,7 @@ int jl_algorithm_t::get_prior(int section)
         return section-1;
     }
     ENDCRITIC   
+    return -1;
 }
 /******************************************************************/
 
@@ -330,6 +332,7 @@ int jl_algorithm_t::get_next(int section)
         return section+1;
     }
     ENDCRITIC   
+    return -1;
 }
 /******************************************************************/
 
