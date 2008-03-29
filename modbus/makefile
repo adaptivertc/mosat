@@ -43,3 +43,5 @@ install:
 clean:	
 	rm -fv *.o modsim myconnect librtmodbus.so librtmodbus.a 
 
+ppcall:
+	echo "not implemented yet"
