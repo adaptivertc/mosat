@@ -8,44 +8,6 @@
 #include "spd_algo.h"
 #include "profile_reader.h"
 
-typedef struct sdef_t
-{
-  int n;
-  char st1[13];
-  double *dist;
-  double *speed;
-  double *low;
-  double *high;
-  double *very_high;
-  double total_dist;
-  double total_time;
-};
-
-class profile_reader_t
-{
-private:  
-  int n_sections;
-  sdef_t section_profile[RT_MAX_SECTIONS];
-
-  int last_section;
-  int my_index;
-  int last_type;
-  int type;
-  bool all_profiles;
-  int the_line;
-public:
- profile_reader_t(void);
-  /******
- double get_desired(double dist, int section, int index);
- double get_low(int section, int index);
- double get_high(int section, int index);
- double get__very_high(int section, int index);
-  ********/
- int read_profiles(void);
- void calc_limits(int a_section, double a_speed, double a_distance,
-      current_speed_limits_t *limits, int *mode, bool *warn);
-};
-
 /*******************************************************/
 
 profile_reader_t::profile_reader_t(void)
@@ -61,7 +23,7 @@ profile_reader_t::profile_reader_t(void)
 /*******************************************************/
 
 
-double calc_speed(double t, double t1, double s1, double t2, double s2)
+static double calc_speed(double t, double t1, double s1, double t2, double s2)
 {
   // Here, we do a simple interpolation between two points.
   double conversion_factor, raw_span;
@@ -131,7 +93,7 @@ int profile_reader_t::read_profiles(void)  //sdef_t the_profile[], int max)
       printf("Wrong number of args (first line): %d\n", argc);
       exit(0);
     }
-    //printf("%s: %s\n", argv[0], argv[1]);
+    printf("%s: %s\n", argv[0], argv[1]);
     safe_strcpy(section_profile[i].st1, argv[0], sizeof(section_profile[i].st1));
     section_profile[i].total_dist = atof(argv[1]);
     argv = df.next(&argc, &line_num);
@@ -223,17 +185,7 @@ int profile_reader_t::read_profiles(void)  //sdef_t the_profile[], int max)
     argv = df.next(&argc, &line_num);
     n_segments++;
   }
-  /****
-typedef struct sdef_t
-{
-  int n;
-  char st1[13];
-  double *dist;
-  double *speed;
-  double total_dist;
-  double total_time;
-};
-******/
+
   double mydiff[4] = {-6, 0, 5, 8};
   FILE *fp = fopen("junk.txt", "w");
   for (int i=0; i < n_segments; i++)
@@ -253,13 +205,14 @@ typedef struct sdef_t
       fprintf(fp, "\n");
     }
   }
+  n_sections = n_segments;
   return n_segments;
 }
 
 
 /*********************************************************************/
 
-void profile_reader_t::calc_limits(int a_section, 
+void profile_reader_t::calc_desired(int a_section, 
        double a_speed, double a_distance, 
       current_speed_limits_t *limits, int *mode, bool *warn)
 {
@@ -311,7 +264,7 @@ void profile_reader_t::calc_limits(int a_section,
     *warn = false;
   }
 
-  /*mvprintw(15,2,"Section: %2d, index: %2d, spd1: %5.0lf, spd2: %5.1lf, d1: %8.1lf, d2: %8.1lf, n: %d", a_section, my_index, 
+ /*mvprintw(15,2,"Section: %2d, index: %2d, spd1: %5.0lf, spd2: %5.1lf, d1: %8.1lf, d2: %8.1lf, n: %d", a_section, my_index, 
           profile[a_section].speed[my_index], profile[a_section].speed[my_index + 1],
           profile[a_section].dist[my_index], profile[a_section].dist[my_index + 1],
                                       profile[a_section].n); */
@@ -344,5 +297,28 @@ void profile_reader_t::calc_limits(int a_section,
   *mode = type;
   last_type = type;
 }
+
+/********************************************************************
+
+void print_profile(int n)
+{
+  FILE *fp;
+  fp = fopen("line1_profile.txt", "w");
+  for (int i=0; i < n; i++)
+  {
+    fprintf(fp, "%s|%0.0lf|\n", vel_profile[i].st1, vel_profile[i].total_dist);
+    for (int j=0; j < vel_profile[i].n; j++)
+    {
+      fprintf(fp, "%0.1lf|", vel_profile[i].dist[j]);
+    }
+    fprintf(fp, "\n");
+    for (int j=0; j < vel_profile[i].n; j++)
+    {
+      fprintf(fp, "%0.1lf|", vel_profile[i].speed[j]);
+    }
+    fprintf(fp, "\n");
+  }
+}
+**************************************/
 
 /**********************************************************************/

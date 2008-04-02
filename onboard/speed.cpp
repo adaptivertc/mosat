@@ -46,7 +46,7 @@ DEALINGS IN THE SOFTWARE.
 #include "spd_display.h"
 #include "spd_comm.h"
 
-
+#include "profile_reader.h"
                                                                                 
 #define DIF_LEN (100)
 #define DRIVER_DELAY (10)
@@ -128,30 +128,6 @@ struct spd_sim_data_t
   double dist[500];
 };
 
-/*****
-struct current_speed_limits_t
-{
-  double desired;
-  double low; 
-  double high;
-  double very_high;
-};
-***/
-typedef struct sdef_t
-{
-  int n;
-  char st1[13];
-  double *dist;
-  double *speed;
-  double *low;
-  double *high;
-  double *very_high;
-  double total_dist;
-  double total_time;
-};
-
-
-static sdef_t vel_profile[60];
 static int n_sections;
 static spd_sim_data_t sim_data[MAXS];
 static int the_line = 1;
@@ -229,317 +205,6 @@ void read_sim_data(void)
 
 /*********************************************************************/
 
-int read_profile(sdef_t the_profile[], int max)
-{
-  int argc, line_num;
-    argc = 7;
-    if (argc < 3)
-    {
-      printf("xWrong number of args: %d\n", argc);
-      exit(0);
-    }
-  delim_file_t df(300, 20, '|', '#');
-    if (argc < 3)
-    {
-      printf("xxWrong number of args: %d\n", argc);
-      exit(0);
-    }
-  char **argv;
-  int n_segments = 0;
-  if (all_profiles)
-  {
-    if (the_line == 1)
-    {
-      argv = df.first("line1_profile_all.txt", &argc, &line_num);
-    }
-    else
-    {
-      argv = df.first("line2_profile_all.txt", &argc, &line_num);
-    }
-  }
-  else
-  {
-    if (the_line == 1)
-    {
-      argv = df.first("line1_profile.txt", &argc, &line_num);
-    }
-    else
-    {
-      argv = df.first("line2_profile.txt", &argc, &line_num);
-    }
-  }
-  if (argc != 2)
-  {
-    printf("xxxWrong number of args: %d\n", argc);
-    exit(0);
-  }
-  for (int i=0; (argv != NULL) && (i < max); i++)
-  {
-    if (argc != 2)
-    {
-      printf("Wrong number of args (first line): %d\n", argc);
-      exit(0);
-    }
-    //printf("%s: %s\n", argv[0], argv[1]);
-    safe_strcpy(the_profile[i].st1, argv[0], sizeof(the_profile[i].st1));
-    the_profile[i].total_dist = atof(argv[1]);
-    argv = df.next(&argc, &line_num);
-    //printf("argc = %d, %s, %d\n", argc, __FILE__, __LINE__);
-    if (argc < 3)
-    {
-      printf("Wrong number of args: %d\n", argc);
-      exit(0);
-    }
-
-    if (argv == NULL)
-    {
-      printf("No more args after %s\n", argv[0]);
-      exit(0);
-    }
-
-
-    if (argc < 3)
-    {
-      printf("Wrong number of args: %d\n", argc);
-      exit(0);
-    }
-    //printf("argc = %d, %s, %d\n", argc, __FILE__, __LINE__);
-
-    if (argc < 3)
-    {
-      printf("Wrong number of args: %d\n", argc);
-      exit(0);
-    }
-
-    the_profile[i].n = argc;
-    the_profile[i].dist = new double[argc];
-    the_profile[i].speed = new double[argc];
-    the_profile[i].low = new double[argc];
-    the_profile[i].high = new double[argc];
-    the_profile[i].very_high = new double[argc];
-    for (int j=0; j < argc; j++)
-    {
-      the_profile[i].dist[j] = atof(argv[j]);
-    } 
-    argv = df.next(&argc, &line_num);
-    if ((argv == NULL) || (argc != the_profile[i].n))
-    {
-      printf("Wrong number of args: %d, expected %d\n", argc, the_profile[i].n);
-      exit(0);
-    }
-    for (int j=0; j < argc; j++)
-    {
-      the_profile[i].speed[j] = atof(argv[j]);
-    } 
-
-    if (all_profiles)
-    {
-      argv = df.next(&argc, &line_num);
-      if ((argv == NULL) || (argc != the_profile[i].n))
-      {
-        printf("Wrong number of args: %d, expected %d\n", argc, the_profile[i].n);
-        exit(0);
-      }
-      for (int j=0; j < argc; j++)
-      {
-        the_profile[i].low[j] = atof(argv[j]);
-      } 
-      
-      argv = df.next(&argc, &line_num);
-      if ((argv == NULL) || (argc != the_profile[i].n))
-      {
-        printf("Wrong number of args: %d, expected %d\n", argc, the_profile[i].n);
-        exit(0);
-      }
-      for (int j=0; j < argc; j++)
-      {
-        the_profile[i].high[j] = atof(argv[j]);
-      } 
-      
-      argv = df.next(&argc, &line_num);
-      if ((argv == NULL) || (argc != the_profile[i].n))
-      {
-        printf("Wrong number of args: %d, expected %d\n", argc, the_profile[i].n);
-        exit(0);
-      }
-      for (int j=0; j < argc; j++)
-      {
-        the_profile[i].very_high[j] = atof(argv[j]);
-      } 
-      
-    }
-
-    argv = df.next(&argc, &line_num);
-    n_segments++;
-  }
-  /****
-typedef struct sdef_t
-{
-  int n;
-  char st1[13];
-  double *dist;
-  double *speed;
-  double total_dist;
-  double total_time;
-};
-******/
-  double mydiff[4] = {-6, 0, 5, 8};
-  FILE *fp = fopen("junk.txt", "w");
-  for (int i=0; i < n_segments; i++)
-  {
-    fprintf(fp, "%s|%0.1lf|\n", the_profile[i].st1, the_profile[i].total_dist);
-    for (int j=0; j < the_profile[i].n; j++)
-    {
-      fprintf(fp, "%0.1lf|", the_profile[i].dist[j]);
-    }
-    fprintf(fp, "\n");
-    for (int cnt=0; cnt < 4; cnt++)
-    {
-      for (int j=0; j < the_profile[i].n; j++)
-      {
-        fprintf(fp, "%0.1lf|", the_profile[i].speed[j] + mydiff[cnt]);
-      }
-      fprintf(fp, "\n");
-    }
-  }
-  return n_segments;
-}
-
-/********************************************************************
-
-void print_profile(int n)
-{
-  FILE *fp;
-  fp = fopen("line1_profile.txt", "w");
-  for (int i=0; i < n; i++)
-  {
-    fprintf(fp, "%s|%0.0lf|\n", vel_profile[i].st1, vel_profile[i].total_dist);
-    for (int j=0; j < vel_profile[i].n; j++)
-    {
-      fprintf(fp, "%0.1lf|", vel_profile[i].dist[j]);
-    }
-    fprintf(fp, "\n");
-    for (int j=0; j < vel_profile[i].n; j++)
-    {
-      fprintf(fp, "%0.1lf|", vel_profile[i].speed[j]);
-    }
-    fprintf(fp, "\n");
-  }
-}
-
-***********************************************************************************************************/
-
-double calc_speed(double t, double t1, double s1, double t2, double s2)
-{
-  // Here, we do a simple interpolation between two points.
-  double conversion_factor, raw_span;
-  raw_span = t2 - t1;
-  if (raw_span == 0)
-  {
-    conversion_factor = 0.0;
-  }
-  else
-  {
-    conversion_factor = (s2 - s1) / (t2 - t1);
-  }
-  return ((t - t1) * conversion_factor) + s1;
-}
-
-/***********************************************************************************************************/
-
-static int last_section = -1;
-static int my_index = 0;
-static int last_type = 1;
-static int type = 1;
-
-
-void calc_desired(int a_section, double a_speed, double a_distance, 
-      current_speed_limits_t *limits, int *mode, bool *warn)
-{
-  if (a_section != last_section)
-  {
-    my_index = 0;
-    last_section = a_section;
-    spd_beep();
-  }
-
-  //mvprintw(16,2,"ind: %2d, n: %2d, %6.0lf %6.0lf", my_index + 2, profile[a_section].n,
-   //                a_distance, profile[a_section].dist[my_index+1]);
-
-  if (a_distance > vel_profile[a_section].dist[my_index+1])
-  {
-    if ((my_index + 2) < vel_profile[a_section].n)
-    {
-      my_index++;
-      spd_beep();
-    }
-  } 
-  *warn = false;
-  double distance_to_next = vel_profile[a_section].dist[my_index+1] - a_distance; 
-  double distance_in_5_sec = a_speed * (1.0/3.6) * 5.5;
-  if (distance_to_next < distance_in_5_sec) 
-       /* The idea is to warn the driver 5 seconds BEFORE he needs to decelerate. 
-          We believe there is currently a lot of wasted time with drivers braking before it is needed.
-          If we can tell them exactly when to start braking, we might save some seconds in each segment.
-          This obviously needs some work before it is a final design! */
-  {
-    *warn = true;
-  }
-
-  if (vel_profile[a_section].speed[my_index+1] < vel_profile[a_section].speed[my_index])
-  {
-    type = 0;
-  }
-  else if (vel_profile[a_section].speed[my_index+1] > vel_profile[a_section].speed[my_index])
-  {
-    type = 2;
-  }
-  else
-  {
-    type = 1;
-  }
-
-  if (type != 1) 
-  {
-    *warn = false;
-  }
-
-  /*mvprintw(15,2,"Section: %2d, index: %2d, spd1: %5.0lf, spd2: %5.1lf, d1: %8.1lf, d2: %8.1lf, n: %d", a_section, my_index, 
-          profile[a_section].speed[my_index], profile[a_section].speed[my_index + 1],
-          profile[a_section].dist[my_index], profile[a_section].dist[my_index + 1],
-                                      profile[a_section].n); */
-  double spd = calc_speed(a_distance, vel_profile[a_section].dist[my_index],
-              vel_profile[a_section].speed[my_index], 
-              vel_profile[a_section].dist[my_index+1], 
-              vel_profile[a_section].speed[my_index+1]);
-  if (spd < 0.0) spd = 0.0;
-  double low = calc_speed(a_distance, vel_profile[a_section].dist[my_index],
-              vel_profile[a_section].low[my_index], 
-              vel_profile[a_section].dist[my_index+1], 
-              vel_profile[a_section].low[my_index+1]);
-  if (low < -1.0) low = -1.0;
-  double high = calc_speed(a_distance, vel_profile[a_section].dist[my_index],
-              vel_profile[a_section].high[my_index], 
-              vel_profile[a_section].dist[my_index+1], 
-              vel_profile[a_section].high[my_index+1]);
-  if (high < 5.0) high = 5.0;
-  double very_high = calc_speed(a_distance, vel_profile[a_section].dist[my_index],
-              vel_profile[a_section].very_high[my_index], 
-              vel_profile[a_section].dist[my_index+1], 
-              vel_profile[a_section].very_high[my_index+1]);
-  if (very_high < 8.0) very_high = 8.0;
-  mvprintw(16,2,"%4.1lf < %4.1lf > %4.1lf >> %4.1lf", low, spd, high, very_high); 
-  limits->desired = spd;
-  limits->low = low;
-  limits->high = high;
-  limits->very_high = very_high;
-  //*speed = spd;
-  *mode = type;
-  last_type = type;
-}
-
-/***********************************************************************************************************/
-
 double past_speed[DRIVER_DELAY];
 
 /**********************************************************************/
@@ -570,6 +235,7 @@ int main(int argc, char *argv[])
   bool free_running_mode = false;
   int current_arg;
   bool create_profiles = false;
+  profile_reader_t preader;
   for (current_arg=1; current_arg < argc; current_arg++)
   {
     if (0 == strcasecmp(argv[current_arg], "-s"))
@@ -643,8 +309,12 @@ int main(int argc, char *argv[])
     }
   }
 
-  int n_seg = read_profile(vel_profile, 
-           sizeof(vel_profile) / sizeof(vel_profile[0]));
+
+//  int n_seg = read_profile(vel_profile, 
+ //          sizeof(vel_profile) / sizeof(vel_profile[0]));
+
+  preader.read_profiles();
+  int n_seg = preader.get_n_sections();
 
   if (!sim_mode)
   {
@@ -680,8 +350,8 @@ int main(int argc, char *argv[])
     double total_distance;
     double total_time;
 
-    total_distance = vel_profile[j].total_dist;//get_total_dist(j);
-    total_time = vel_profile[j].total_time;
+    total_distance = preader.get_total_distance(j); //get_total_dist(j);
+    total_time = preader.get_total_time(j);
 
     //mvprintw(20,2,"Cargando y Descargando Pasajeros"); 
     //refresh();
@@ -699,7 +369,8 @@ int main(int argc, char *argv[])
       //mvprintw(20,2,"%-36s", " "); 
     }
     continue_mode = false;
-    spd_init_segment(vel_profile[j].st1, vel_profile[next].st1); 
+    //spd_init_segment(vel_profile[j].st1, vel_profile[next].st1); 
+    spd_init_segment(preader.get_station_name(j), preader.get_station_name(next)); 
     //beep();
     //mvprintw(18,2,"%d: total dist = %lf", j, total_distance); 
     //refresh();
@@ -775,7 +446,9 @@ int main(int argc, char *argv[])
       //dispatch_algorithms(time_t now, int command, double speed, double distance)
 
       struct current_speed_limits_t limits;
-      calc_desired(j, actual, distance, &limits, &type, &warn);
+      //calc_desired(j, actual, distance, &limits, &type, &warn);
+      preader.calc_desired(j,  actual, distance, &limits, &type, &warn);
+ 
       desired = limits.desired;
 
       speed_results_t results;
@@ -829,7 +502,8 @@ int main(int argc, char *argv[])
       pfp = NULL;
       char gtitle[50];
       snprintf(gtitle, sizeof(gtitle), "%s-%s", 
-           vel_profile[j].st1, vel_profile[next].st1);   
+           preader.get_station_name(j), preader.get_station_name(next));
+           //vel_profile[j].st1, vel_profile[next].st1);   
       mvprintw(23,2,"graph: %s %s", base_name, gtitle);
       spd_create_image(base_name, gtitle, false);
       spd_create_image(base_name, gtitle, true);

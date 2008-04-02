@@ -1,9 +1,9 @@
 
 export CPATH=../include
 
-CC=g++
+CC=g++ -g
 
-CPP=g++
+CPP=g++ -g
 
 RTCOMMON=../lib/librtcommon.a
 RTMODBUS=../modbus/librtmodbus.a
@@ -14,12 +14,12 @@ RTMODBUS=../modbus/librtmodbus.a
 %.o:    %.c $(INCLUDES)
 	$(CC) -c -o $@ -Wall $<
 
-all: speed speed_2x24 
+all: speed
 
 
-speed:	speed.o spd_display.o spd_comm.o spd_select.o spd_algo_DC.o spd_algo_RD.o  spd_algo_VV.o
+speed:	speed.o spd_display.o spd_comm.o spd_select.o spd_algo_DC.o spd_algo_RD.o spd_algo_VV.o profile_reader.o
 	g++ -g -o speed -lncurses speed.o spd_display.o spd_comm.o spd_select.o \
-			spd_algo_DC.o spd_algo_RD.o  spd_algo_VV.o $(RTMODBUS) $(RTCOMMON)
+			spd_algo_DC.o spd_algo_RD.o  spd_algo_VV.o $ profile_reader.o $(RTMODBUS) $(RTCOMMON)
 
 speed_4x40:	speed.o spd_display_4x40.o spd_comm.o spd_select.o
 	g++ -g -o speed_4x40 -lncurses -lpthread speed.o spd_display_4x40.o \
@@ -40,6 +40,9 @@ keypad: keypad.c
 
 check_speed:	check_speed.o
 	g++ -o  check_speed check_speed.o -lncurses
+
+#profile_reader: profile_reader.cpp profile_reader.h
+#	g++ -o profile_reader profile_reader.cpp  $(RTCOMMON)
 		
 clean:
 	rm -fv $(DIR)*.o
