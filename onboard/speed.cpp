@@ -130,6 +130,7 @@ struct spd_sim_data_t
 
 static int n_sections;
 static spd_sim_data_t sim_data[MAXS];
+
 static int the_line = 1;
 static bool all_profiles = false;
 
@@ -236,6 +237,8 @@ int main(int argc, char *argv[])
   int current_arg;
   bool create_profiles = false;
   profile_reader_t preader;
+  preader.set_all(false);
+  preader.set_line(1);
   for (current_arg=1; current_arg < argc; current_arg++)
   {
     if (0 == strcasecmp(argv[current_arg], "-s"))
@@ -256,11 +259,13 @@ int main(int argc, char *argv[])
     else if (0 == strcasecmp(argv[current_arg], "-L1"))
     {
       printf("Setting to line 1 . . \n");
+      preader.set_line(1);
       the_line = 1;
     } 
     else if (0 == strcasecmp(argv[current_arg], "-L2"))
     {
       printf("Setting to line 2 . . \n");
+      preader.set_line(2);
       the_line = 2;
     } 
     else if (0 == strcasecmp(argv[current_arg], "-f"))
@@ -284,6 +289,7 @@ int main(int argc, char *argv[])
     else if (0 == strcasecmp(argv[current_arg], "-a"))
     {
       all_profiles = true;
+      preader.set_all(true);
       printf("All profiles ON\n");
     }
   }
@@ -295,6 +301,7 @@ int main(int argc, char *argv[])
     char *line_list[2] = {"Linea 1", "Linea 2"};
     int opt = select_from_list(2, line_list, "Selecionar la Linea");
     the_line = opt + 1;
+    preader.set_line(opt+1);
     if (the_line == 1)
     {
       int ns = sizeof(sim_names1) / sizeof(sim_names1[0]);
