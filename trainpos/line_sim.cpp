@@ -36,7 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "tpconfig.h"
 
-tp_config_t tpconfig;
+/********************************************************/
 
 class my_notify_t : public sim_ev_notify_t
 {

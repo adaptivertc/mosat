@@ -25,6 +25,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "arg.h"
 #include "tpconfig.h"
 
+tp_config_t tpconfig;
+
 /**********************************************************************/
 
 tp_config_t::tp_config_t(void)

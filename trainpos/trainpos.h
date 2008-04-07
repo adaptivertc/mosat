@@ -22,5 +22,19 @@ struct train_data_t
 		// If the next sensor to cross = n, then the next sensor to cross is in the next section.
 };
 
+struct train_calcs_t
+{
+// This is data that can be calculated, and should not be in the shared structure. 
+   int seconds_late; // seconds late for this train?
+   int seconds_in_section; // seconds in the current section 
+   double fraction_of_section_traveled; // Fraction of the section travelled
+   int seconds_to_next_train; // number of seconds to next train in the system
+   bool departed; // Has departed the station.
+   time_t arival_time;  // time of last station arrival - I think.
+   time_t section_entry_time; // or time of last station departure;
+   bool unexpected; // This train is unexpected.
+   bool switched_direction; // This train arrived at the final station and is coming back.
+};
+
 #endif
 

@@ -18,108 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 ***********************************************************************/
 
 #include "time_table.h"
-
-struct train_calcs_t
-{
-// This is data that can be calculated, and should not be in the shared structure. 
-  int seconds_late; // seconds late for this train?
-  int seconds_in_section; // seconds in the current section 
-  double fraction_of_section_traveled; // Fraction of the section travelled
-  int seconds_to_next_train; // number of seconds to next train in the system
-  bool departed; // Has departed the station.
-  time_t arival_time;  // time of last station arrival - I think.
-  time_t section_entry_time; // or time of last station departure;
-  bool unexpected; // This train is unexpected.
-  bool switched_direction; // This train arrived at the final station and is coming back.
-};
-
-
-/**
-struct tsecdata_t
-{
-  int section_time;
-  int departure_sensor_loc;
-  int arival_sensor_loc;
-  int time_to_start;
-  char station[20];
-};
-****/
-
-struct display_info_t // For reading the display info from a file
-{
-  char background[80];
-  char square[80];
-  char square_unexpected[80];
-  char html_out[80];
-  int n_sections;
-  int x1;
-  int x2;
-  int y1;
-  int y2;
-  int text_offset_y1;
-  int text_offset_y2;
-};
-
-class display_reader_t
-{
-  int n_displays;
-  display_info_t *displays[20];
-public:
-  display_reader_t(void);
-  int get_n_displays(void) {return n_displays;};
-  const display_info_t *get_display_data(int n);
-  void read_file(const char *fname);
-};
-
-
-
-class display_dist_t
-{
-/***
-       x1                                      x2
-       |                                       |
-    y1 ------------------------------------------
-       ------------------------------------------
-       |                                       |
-       |                                       |
-    y2 ------------------------------------------
-       ------------------------------------------
-****/
-private:
-  int x1;
-  int x2;
-  int y1;
-  int y2;
-  int total_x_pixels;
-  int n_sections;
-  int n_squares;
-  int return_start;
-public:
-  display_dist_t(int a_x1, int a_x2, int a_y1, int a_y2, int n_sections);
-  void calc_xy(int section, double fraction, int *x, int *y, bool *coming_back);
-};
-
-class display_data_t
-{
-private:
-  bool valid;
-  FILE *fp;
-  int  fd;
-  display_dist_t *dd;
-  const char *square;
-  const char *square_unexpected;
-  const char *background;
-  const char *fname;
-  int text_offset_y1;
-  int text_offset_y2;
-public:
-  void set(const char *a_background, const char *a_square, 
-       const char *a_unexpected, const char *a_fname, 
-       int a_x1, int a_x2, int a_y1, int a_y2, 
-        int text_offset_y1, int text_offset_y2, int n_sections);
-  void read(const char *base_name);
-  void gen_html(time_t now, train_data_t *trains, train_calcs_t *calcs, int n_trains);
-};
+#include "gen_displays.h"
 
 class display_alg_t : public event_alg_t
 {
@@ -127,22 +26,14 @@ private:
   int train_number;
   int n_trains;
   int n_sections;
-  int n_displays;
   time_t when_last_train_entered;
 
   train_data_t trains[50];
   train_calcs_t calcs[50];
   //section_reader_t sections;
   time_table_t time_table;
+  gen_displays_t gen_displays;
   void update_train(time_t ts, int n);
-  display_data_t *ddata;
-  FILE *fp;
-  int fd;
-  FILE *table_fp;
-  int table_fd;
-
-  FILE *perf_fp;
-  int perf_fd;
 
   alarm_entry_t actual_alarms[RT_MAX_ALARMS]; 
   alarm_entry_t alarm_history[RT_MAX_ALARMS]; 
@@ -155,10 +46,10 @@ public:
   void process_departure(int section, time_t now);
   void process_arival(int section, time_t now);
   void process_arrival(crossing_event_t ev);
-  void gen_display(time_t now);
-  void gen_html(time_t now);
-  void gen_table(time_t now);
-  void gen_performance(time_t now);
+  //void gen_display(time_t now);
+  //void gen_html(time_t now);
+  //void gen_table(time_t now);
+  //void gen_performance(time_t now);
   void gen_alarms(time_t now);
 };
 

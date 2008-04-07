@@ -38,10 +38,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gp_evalg.h"
 #include "ag_evalg.h"
 #include "ri_evalg.h"
-
 #include "tpconfig.h"
 
-tp_config_t tpconfig;
+/***********************************/
 
 void print_help(void)
 {
