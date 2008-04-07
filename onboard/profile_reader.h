@@ -1,6 +1,4 @@
 
-#define RT_MAX_SECTIONS (60)
-
 
 struct sdef_t
 {

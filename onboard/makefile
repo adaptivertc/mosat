@@ -17,8 +17,9 @@ RTMODBUS=../modbus/librtmodbus.a
 all: speed
 
 
-speed:	speed.o spd_display.o spd_comm.o spd_select.o spd_algo_DC.o spd_algo_RD.o spd_algo_VV.o profile_reader.o
-	g++ -g -o speed -lncurses speed.o spd_display.o spd_comm.o spd_select.o \
+speed:	speed.o spd_display.o spd_comm.o spd_select.o spd_algo_DC.o spd_algo_RD.o spd_algo_VV.o \
+		profile_reader.o  sim_reader.o 
+	g++ -g -o speed -lncurses speed.o spd_display.o spd_comm.o spd_select.o sim_reader.o \
 			spd_algo_DC.o spd_algo_RD.o  spd_algo_VV.o $ profile_reader.o $(RTMODBUS) $(RTCOMMON)
 
 speed_4x40:	speed.o spd_display_4x40.o spd_comm.o spd_select.o

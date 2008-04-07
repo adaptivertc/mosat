@@ -38,6 +38,7 @@ DEALINGS IN THE SOFTWARE.
 #include "rtcommon.h"
 #include "utimer.h"
 
+#include "onboard.h"
 #include "spd_algo.h"
 #include "spd_algo_DC.h"
 #include "spd_algo_RD.h"
@@ -47,168 +48,19 @@ DEALINGS IN THE SOFTWARE.
 #include "spd_comm.h"
 
 #include "profile_reader.h"
+#include "sim_reader.h"
                                                                                 
 #define DIF_LEN (100)
 #define DRIVER_DELAY (10)
 #define RT_FACTOR (100)
-#define MAXS (100)
-//#define DISTANCE
 
 #include "arg.h"
 
-char *sim_names2[] = 
-{
-  "Tetlan-Aurora",
-  "Aurora-SanJacinto",
-  "SanJacinto-SanAndres",
-  "SanAndres-Cristobal",
-  "Cristobal-Oblatos",
-  "Oblatos-Belisario",
-  "Belisario-SnJuan",
-  "SnJuan-PUniver",
-  "PUniver-Juarez",
-  "Juarez-AreaManiobras",
-  "AreaManiobras-Juarez",
-  "Juarez-PUniver",
-  "PUniver-SnJuan",
-  "SnJuan-Belisario",
-  "Belisario-Oblatos",
-  "Oblatos-Cristobal",
-  "Cristobal-SanAndres",
-  "SanAndres-SanJacinto",
-  "SanJacinto-Aurora",
-  "Aurora-Tetlan",
-  "Tetlan-AreaManiobras"
-};
-
-char *sim_names1[] = 
-{
-  "PerifericoSur-Tesoro",
-  "Tesoro-Espana",
-  "Espana-PatriaSur",
-  "PatriaSur-IslaRaza",
-  "IslaRaza-18deMarzo",
-  "18deMarzo-Urdaneta",
-  "Urdaneta-UnidadDeportivo",
-  "UnidadDeportivo-SantaFilomena",
-  "SantaFilomena-Washington",
-  "Washington-Mexicaltzingo",
-  "Mexicaltzingo-Juarez",
-  "Juarez-ElRefugio",
-  "ElRefugio-Mezquitan",
-  "Mezquitan-AvilaComacho",
-  "AvilaComacho-DivisionNorte",
-  "DivisionNorte-Atemajac",
-  "Atemajac-Dermatologico",
-  "Dermatologico-PerifericoNorte",
-  "PerifericoNorte-Dermatologico",
-  "Dermatologico-Atemajac",
-  "Atemajac-DivisionNorte",
-  "DivisionNorte-AvilaComacho",
-  "AvilaComacho-Mezquitan",
-  "Mezquitan-ElRefugio",
-  "ElRefugio-Juarez",
-  "Juarez-Mexicaltzingo",
-  "Mexicaltzingo-Washington",
-  "Washington-SantaFilomena",
-  "SantaFilomena-UnidadDeportivo",
-  "UnidadDeportivo-Urdaneta",
-  "Urdaneta-18deMarzo",
-  "18deMarzo-IslaRaza",
-  "IslaRazaPatriaSur",
-  "PatriaSur-Espana",
-  "Espana-Tesoro",
-  "Tesoro-PerifericoSur"
-};
-
-struct spd_sim_data_t
-{
-  int n;
-  double speed[500];
-  double dist[500];
-};
-
 static int n_sections;
-static spd_sim_data_t sim_data[MAXS];
-
 static int the_line = 1;
 static bool all_profiles = false;
 
 /*******************************************************************/
-
-double get_total_dist(int section)
-{
-  int i = sim_data[section].n - 1;
-  return sim_data[section].dist[i] - sim_data[section].dist[0];
-}
-
-/*********************************************************************/
-
-void get_sim_speed_dist(int section, int t, double *dist, double *speed)
-{
-  if (t >= sim_data[section].n)
-  {
-    *dist = sim_data[section].dist[sim_data[section].n-1] - sim_data[section].dist[0];
-    *speed = 0.0;
-    return;
-  }
-  *dist = sim_data[section].dist[t] - sim_data[section].dist[0];
-  *speed = sim_data[section].speed[t];
-}
-
-/*********************************************************************/
-
-void read_sim_data(void)
-{
-  if (the_line == 1)
-  {
-    n_sections = sizeof(sim_names1) / sizeof(sim_names1[0]); 
-  }
-  else
-  {
-    n_sections = sizeof(sim_names2) / sizeof(sim_names2[0]); 
-  }
-  delim_file_t df(300, 5, '\t', '#');
-  for (int i=0; i < n_sections; i++)
-  {
-    char **argv;
-    int argc, line_num;
-    char fname[200];
-    if (the_line == 1)
-    {
-      snprintf(fname, sizeof(fname), "vfiles_line1/%s.txt", sim_names1[i]);
-    }
-    else
-    {
-      snprintf(fname, sizeof(fname), "vfiles_line2/%s.txt", sim_names2[i]);
-    }
-    printf("Reading: %s\n", fname);
-
-    argv = df.first(fname, &argc, &line_num);
-    sim_data[i].n = 0; 
-    for (int j=0; argv != NULL; j++)
-    {
-      if (argc == 2)
-      {
-        sim_data[i].dist[j] = atof(argv[0]); 
-        sim_data[i].speed[j] = atof(argv[1]); 
-        sim_data[i].n++; 
-        //printf("'%lf' '%lf'\n", sim_data[i].dist[j], sim_data[i].speed[j]); 
-      }
-      else
-      {
-        printf("Wrong number of args: %d, line %d\n", argc, line_num);
-      }
-      argv = df.next(&argc, &line_num);
-    }
-  }
-}
-
-/*********************************************************************/
-
-double past_speed[DRIVER_DELAY];
-
-/**********************************************************************/
 
 void dispatch_algorithms(time_t now, int command, double speed, double distance)
 {
@@ -226,7 +78,6 @@ int main(int argc, char *argv[])
 
   //print_profile();
   //react_trace.set_level(5);
-  //
   speed_algorithm_DC_t spd_DC;
   speed_algorithm_RD_t spd_RD;
   speed_algorithm_VV_t spd_VV;
@@ -236,6 +87,8 @@ int main(int argc, char *argv[])
   bool free_running_mode = false;
   int current_arg;
   bool create_profiles = false;
+  sim_reader_t sreader;
+  sreader.set_line(1);
   profile_reader_t preader;
   preader.set_all(false);
   preader.set_line(1);
@@ -260,12 +113,14 @@ int main(int argc, char *argv[])
     {
       printf("Setting to line 1 . . \n");
       preader.set_line(1);
+      sreader.set_line(1);
       the_line = 1;
     } 
     else if (0 == strcasecmp(argv[current_arg], "-L2"))
     {
       printf("Setting to line 2 . . \n");
       preader.set_line(2);
+      sreader.set_line(2);
       the_line = 2;
     } 
     else if (0 == strcasecmp(argv[current_arg], "-f"))
@@ -295,6 +150,7 @@ int main(int argc, char *argv[])
   }
 
   //spd_init_screen();
+  /**
   if (pick_mode)
   {
     printf("Picking line . . .\n");
@@ -302,6 +158,7 @@ int main(int argc, char *argv[])
     int opt = select_from_list(2, line_list, "Selecionar la Linea");
     the_line = opt + 1;
     preader.set_line(opt+1);
+    sreader.set_line(opt+1);
     if (the_line == 1)
     {
       int ns = sizeof(sim_names1) / sizeof(sim_names1[0]);
@@ -315,6 +172,7 @@ int main(int argc, char *argv[])
       start = opt;
     }
   }
+  */
 
 
 //  int n_seg = read_profile(vel_profile, 
@@ -329,7 +187,7 @@ int main(int argc, char *argv[])
   }
   else
   {
-    read_sim_data();
+    sreader.read_sim_data();
   }
 
   spd_init_screen();
@@ -442,7 +300,7 @@ int main(int argc, char *argv[])
       if (sim_mode)
       {
         //mvprintw(22,2,"Sim Mode"); 
-        get_sim_speed_dist(j, time_in_section, &distance, &actual);
+        sreader.get_sim_speed_dist(j, time_in_section, &distance, &actual);
       } 
       else
       {

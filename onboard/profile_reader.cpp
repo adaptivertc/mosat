@@ -5,6 +5,7 @@
 #include "../include/rtcommon.h"
 #include "../include/arg.h"
 
+#include "onboard.h"
 #include "spd_algo.h"
 #include "profile_reader.h"
 
