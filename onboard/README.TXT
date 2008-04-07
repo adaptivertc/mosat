@@ -9,6 +9,10 @@ gnuplot
 To install under ubuntu/debian type on command line:
 apt-get install gnuplot
 
+The main program is "onboard" to run it type:
+
+onboard <options>
+
 Command line options:
 
   1) '-s' to run the program in simulation mode.

@@ -14,20 +14,21 @@ RTMODBUS=../modbus/librtmodbus.a
 %.o:    %.c $(INCLUDES)
 	$(CC) -c -o $@ -Wall $<
 
-all: speed
+all: onboard onboard_2x24
 
 
-speed:	speed.o spd_display.o spd_comm.o spd_select.o spd_algo_DC.o spd_algo_RD.o spd_algo_VV.o \
+onboard:	onboard.o spd_display.o spd_comm.o spd_select.o spd_algo_DC.o spd_algo_RD.o spd_algo_VV.o \
 		profile_reader.o  sim_reader.o 
-	g++ -g -o speed -lncurses speed.o spd_display.o spd_comm.o spd_select.o sim_reader.o \
-			spd_algo_DC.o spd_algo_RD.o  spd_algo_VV.o $ profile_reader.o $(RTMODBUS) $(RTCOMMON)
+	g++ -g -o onboard -lncurses onboard.o spd_display.o spd_comm.o spd_select.o sim_reader.o \
+			spd_algo_DC.o spd_algo_RD.o  spd_algo_VV.o profile_reader.o $(RTMODBUS) $(RTCOMMON)
 
-speed_4x40:	speed.o spd_display_4x40.o spd_comm.o spd_select.o
-	g++ -g -o speed_4x40 -lncurses -lpthread speed.o spd_display_4x40.o \
+onboard_4x40:	onboard.o spd_display_4x40.o spd_comm.o spd_select.o
+	g++ -g -o onboard_4x40 -lncurses -lpthread onboard.o spd_display_4x40.o \
 		spd_comm.o spd_select.o spd_algo_DC.o spd_algo_RD.o  spd_algo_VV.o $(RTMODBUS) $(RTCOMMON)
 
-speed_2x24:	speed.o spd_display_2x24.o spd_comm.o d2x24_curses.o spd_select.o
-	g++ -g -o speed_2x24 -lncurses speed.o spd_display_2x24.o spd_comm.o \
+onboard_2x24:	onboard.o spd_display_2x24.o spd_comm.o d2x24_curses.o spd_select.o sim_reader.o \
+		spd_algo_DC.o spd_algo_RD.o  spd_algo_VV.o profile_reader.o
+	g++ -g -o onboard_2x24 -lncurses onboard.o spd_display_2x24.o spd_comm.o sim_reader.o profile_reader.o \
 		d2x24_curses.o spd_select.o  spd_algo_DC.o spd_algo_RD.o  spd_algo_VV.o $(RTMODBUS) $(RTCOMMON)
 
 lcdmesg: lcdmesg.c
@@ -47,7 +48,7 @@ check_speed:	check_speed.o
 		
 clean:
 	rm -fv $(DIR)*.o
-	rm -fv $(DIR)speed
-	rm -fv $(DIR)speed_2x24
+	rm -fv $(DIR)onboard
+	rm -fv $(DIR)onboard_2x24
 	rm -fv $(DIR)lcdmesg
 	rm -fv $(DIR)keypad

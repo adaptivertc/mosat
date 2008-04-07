@@ -10,12 +10,12 @@ RTCOMMON=../lib/librtcommon.a
 %.o:    %.cpp $(INCLUDES)
 	$(CC) -c -g -o $@ $<
 
-all: main line_sim sim_error disp_curses rtautogen
+all: trainpos line_sim sim_error disp_curses rtautogen
 
-main: main.o event_dispatch.o alg1.o alarm_notify.o alarm_admin.o \
+trainpos: trainpos.o event_dispatch.o alg1.o alarm_notify.o alarm_admin.o \
       msg_queue.o dc_evalg.o gp_evalg.o ag_evalg.o ri_evalg.o time_table.o \
       display_reader.o tpconfig.o section_reader.o gen_displays.o $(INCLUDES) 
-	$(CC) -o main main.o event_dispatch.o alg1.o \
+	$(CC) -o trainpos trainpos.o event_dispatch.o alg1.o \
                  alarm_notify.o alarm_admin.o msg_queue.o dc_evalg.o \
                  gp_evalg.o ag_evalg.o ri_evalg.o time_table.o display_reader.o \
 		tpconfig.o section_reader.o gen_displays.o $(RTCOMMON)
@@ -30,7 +30,7 @@ sim_error: sim_error.o $(INCLUDES)
 disp_curses: disp_curses.cpp
 	$(CC) -o disp_curses -lncurses disp_curses.cpp
 clean:
-	rm -fv main line_sim sim_error disp_curses *.o rtautogen
+	rm -fv trainpos line_sim sim_error disp_curses *.o rtautogen
 
 rtautogen:	rtautogen.cpp
 	g++ -Wall -o rtautogen rtautogen.cpp $(RTCOMMON)
