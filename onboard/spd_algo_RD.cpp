@@ -39,6 +39,9 @@ speed_state_t speed_algorithm_RD_t::current_state(time_t now, double actual_spee
 	double actual_low_limit = low_limit;
 	double actual_high_limit = high_limit;
 	
+	if(previous_state == SPD_STATE_SHUTDOWN)
+		return SPD_STATE_SHUTDOWN;
+	
 	if(previous_state == SPD_STATE_WARN_LO)
 		actual_low_limit += SPD_STATE_DEADBAND;
 	
@@ -54,9 +57,10 @@ speed_state_t speed_algorithm_RD_t::current_state(time_t now, double actual_spee
 	else
 		if(actual_speed >= actual_high_limit)
 		{
-			mvprintw(32,40,"Time to slowdown: %d",SPD_MAX_WARN_TIME - (now - warning_beginning));
 			if(previous_state == SPD_STATE_WARN_HI)
 			{
+				mvprintw(32,40,"Time to slowdown: %2d",(SPD_MAX_WARN_TIME - (now - warning_beginning)));
+				
 				if((now - warning_beginning) > SPD_MAX_WARN_TIME)
 				{
 					mvprintw(32,40,"Time to slowdown: 0      ");
@@ -77,10 +81,8 @@ speed_state_t speed_algorithm_RD_t::current_state(time_t now, double actual_spee
 			if(actual_speed > actual_low_limit)
 			{
 				if(previous_state == SPD_STATE_WARN_HI)
-				{
 					warning_beginning = 0;
-					mvprintw(32,40,"                        ");
-				}
+				mvprintw(32,40,"                        ");
 				previous_state = SPD_STATE_NORMAL;
 				return SPD_STATE_NORMAL;
 			}

@@ -52,7 +52,7 @@ int profile_reader_t::read_profiles(void)  //sdef_t the_profile[], int max)
       printf("xWrong number of args: %d\n", argc);
       exit(0);
     }
-  delim_file_t df(300, 20, '|', '#');
+  delim_file_t df(600, 50, '|', '#');
     if (argc < 3)
     {
       printf("xxWrong number of args: %d\n", argc);
