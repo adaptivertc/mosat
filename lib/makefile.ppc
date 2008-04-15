@@ -1,4 +1,6 @@
 
+export CPATH=../include
+
 CC= powerpc-linux-g++ -I/usr/local/include
 
 DIR=ppc/

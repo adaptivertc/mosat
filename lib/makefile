@@ -1,5 +1,6 @@
 
 export CPATH=../include
+
 CC=g++
 
 %.o:    %.cpp $(INCLUDES)
