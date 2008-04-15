@@ -141,8 +141,8 @@ public:
   db_point_t(void);
   void trip_shutdown(char *reason);
 
-  const char *get_tag(void) {return description;};
-  const char *get_description(void) {return tag;};
+  const char *get_tag(void) {return tag;};
+  const char *get_description(void) {return description;};
   virtual ~db_point_t(void) {};
 };
 
@@ -438,6 +438,21 @@ public:
   void write_to_file(void);
   point_type_t point_type(void) {return DATA_POINT;};
   static file_logger_t **read(int *cnt, const char * home_dir);
+};
+
+class discrete_logger_t : public discrete_point_t
+{
+public:
+  char base_name[50];
+  int num_points;
+  discrete_point_t **discrete_points;
+  bool *last_discrete_vals;
+  FILE *instantaneous_fp;
+  bool collecting;
+  time_t last_log_time;
+  void update(void);
+  point_type_t point_type(void) {return DATA_POINT;};
+  static discrete_logger_t **read(int *cnt, const char * home_dir);
 };
 
 /*#SCRIPT_OBJECT#(SCAN_POINT)*/

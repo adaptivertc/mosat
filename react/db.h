@@ -113,6 +113,8 @@ public:
   int num_data;
   file_logger_t **file_logger_points;
   int num_file_logger;
+  discrete_logger_t **discrete_logger_points;
+  int num_discrete_logger;
   scan_point_t **scan_points;
   int num_scan;
   web_point_t **web_points;

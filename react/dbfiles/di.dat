@@ -7,8 +7,8 @@ MIXER|Mescladora ON|1|1|5|ON|OFF|H|N|
 VPUMP2_ON|Bomba V2 ON|1|1|6|ON|OFF|H|N|
 VPUMP1_ON|Bomba V1 ON|1|1|7|ON|OFF|H|N|
 PUMP1_ON|Bomba 1 ON|1|1|8|ON|OFF|H|N|
-PUMP2_ON|Bomba 1 ON|1|1|9|ON|OFF|H|N|
-PUMP3_ON|Bomba 1 ON|1|1|10|ON|OFF|H|N|
+PUMP2_ON|Bomba 2 ON|1|1|9|ON|OFF|H|N|
+PUMP3_ON|Bomba 3 ON|1|1|10|ON|OFF|H|N|
 
 #    Tag
 #    Description

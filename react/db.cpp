@@ -102,6 +102,8 @@ void react_t::exit_clean_up(void)
     file_logger_points[i]->write_to_file();
   }
 
+
+
 #ifdef __REACT_MSG__
   delete_msg_queue();
 #endif
@@ -171,6 +173,10 @@ void react_t::print_all_points(void)
   for (int i=0; i < num_file_logger; i++)
   {
     printf("FileLogger: %s\n", file_logger_points[i]->tag);
+  }
+  for (int i=0; i < num_discrete_logger; i++)
+  {
+    printf("DiscreteLogger: %s\n", discrete_logger_points[i]->tag);
   }
   for (int i=0; i < num_scan; i++)
   {
@@ -253,6 +259,11 @@ void react_t::read_inputs(void)
   for (int i=0; i < num_file_logger; i++)
   {
     file_logger_points[i]->update();
+  }
+
+  for (int i=0; i < num_discrete_logger; i++)
+  {
+    discrete_logger_points[i]->update();
   }
 
   j++;
@@ -436,6 +447,8 @@ react_t::react_t()
   data_points = NULL;
   num_file_logger = 0;
   file_logger_points = NULL;
+  num_discrete_logger = 0;
+  discrete_logger_points = NULL;
   num_scan = 0;
   scan_points = NULL;
   num_web = 0;
@@ -680,6 +693,9 @@ void react_t::read_all_points(const char *a_home_dir)
 
   printf("Reading file logger ........\n");
   file_logger_points = file_logger_t::read(&num_file_logger, a_home_dir);
+
+  printf("Reading discrete logger ........\n");
+  discrete_logger_points = discrete_logger_t::read(&num_discrete_logger, a_home_dir);
 
   printf("Reading scan ........\n");
   scan_points = scan_point_t::read(&num_scan, a_home_dir);
@@ -1287,6 +1303,14 @@ db_point_t *react_t::get_db_point(char *tag)
     if (!strcasecmp(file_logger_points[i]->tag, tag))
     {
       return file_logger_points[i];
+    }
+  }
+
+  for (i=0; i < num_discrete_logger; i++)
+  {
+    if (!strcasecmp(discrete_logger_points[i]->tag, tag))
+    {
+      return discrete_logger_points[i];
     }
   }
 
