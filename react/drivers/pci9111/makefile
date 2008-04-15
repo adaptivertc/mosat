@@ -1,10 +1,15 @@
-export CPATH=../../../include
 
-libpci9111.so: pci9111.o 
-	g++ -o libpci9111.so -shared pci9111.o 
+export CPATH=../../../include:../..
 
-pci9111.o:	pci9111.cpp pci9111.h
-	g++ -fpic -c pci9111.cpp 
+CPP=powerpc-linux-g++ -Wall
+
+libsixnet_rtu.so: sixnet_rtu.o 
+	$(CPP) -o libsixnet_rtu.so -shared sixnet_rtu.o 
+
+#/opt/sixnet/powerpc-linux/lib/libsxio.a  /opt/sixnet/powerpc-linux/lib/libsxiodb.a 
+
+sixnet_rtu.o:	sixnet_rtu.cpp
+	$(CPP) -fpic -c sixnet_rtu.cpp 
 
 clean:
 	rm *.o *.so
