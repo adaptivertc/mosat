@@ -308,8 +308,8 @@ void spd_create_image(char *base_name, char *gtitle, bool window)
   }
   fprintf(fp, "%s\n", "set output\n");
   fprintf(fp, "plot \"%s.txt\" using 1:2 with lines lw 2 title \"actual\"", base_name);
-  fprintf(fp, ", \"%s.txt\" using 1:3 with lines lw 2 title \"deseable\"", base_name);
-  fprintf(fp, ", \"%s.txt\" using 1:4 with lines lw 2 title \"low\"", base_name);
+  fprintf(fp, ", \"%s.txt\" using 1:3 with lines lw 2 title \"low\"", base_name);
+  fprintf(fp, ", \"%s.txt\" using 1:4 with lines lw 2 title \"deseable\"", base_name);
   fprintf(fp, ", \"%s.txt\" using 1:5 with lines lw 2 title \"high\"", base_name);
   fprintf(fp, ", \"%s.txt\" using 1:6 with lines lw 2 title \"vhigh\"", base_name);
   fprintf(fp, "\n");

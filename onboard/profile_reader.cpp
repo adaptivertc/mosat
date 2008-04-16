@@ -187,7 +187,7 @@ int profile_reader_t::read_profiles(void)  //sdef_t the_profile[], int max)
     n_segments++;
   }
 
-  double mydiff[4] = {-6, 0, 5, 8};
+  double mydiff[4] = {-6, 0, 5, 12};
   FILE *fp = fopen("junk.txt", "w");
   for (int i=0; i < n_segments; i++)
   {
