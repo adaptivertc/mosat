@@ -356,6 +356,7 @@ int main(int argc, char *argv[])
       else if (ch == 'q') {done = true; break;} 
       else if (ch == 'a') {auto_mode = true; spd_print_auto(true);} 
       else if (ch == 'm') {auto_mode = false; spd_print_auto(false);} 
+      else spd_set_key(ch);
       //if (!fast) usleep(1000000);
       //else usleep(200000);
       dif_index++;
