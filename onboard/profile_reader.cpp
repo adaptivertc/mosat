@@ -135,6 +135,21 @@ int profile_reader_t::read_profiles(void)  //sdef_t the_profile[], int max)
     {
       section_profile[i].dist[j] = atof(argv[j]);
     } 
+
+    if (all_profiles)
+    {
+      argv = df.next(&argc, &line_num);
+      if ((argv == NULL) || (argc != section_profile[i].n))
+      {
+        printf("Wrong number of args: %d, expected %d\n", argc, section_profile[i].n);
+        exit(0);
+      }
+      for (int j=0; j < argc; j++)
+      {
+        section_profile[i].low[j] = atof(argv[j]);
+      } 
+    }
+
     argv = df.next(&argc, &line_num);
     if ((argv == NULL) || (argc != section_profile[i].n))
     {
@@ -156,17 +171,6 @@ int profile_reader_t::read_profiles(void)  //sdef_t the_profile[], int max)
       }
       for (int j=0; j < argc; j++)
       {
-        section_profile[i].low[j] = atof(argv[j]);
-      } 
-      
-      argv = df.next(&argc, &line_num);
-      if ((argv == NULL) || (argc != section_profile[i].n))
-      {
-        printf("Wrong number of args: %d, expected %d\n", argc, section_profile[i].n);
-        exit(0);
-      }
-      for (int j=0; j < argc; j++)
-      {
         section_profile[i].high[j] = atof(argv[j]);
       } 
       
@@ -180,9 +184,7 @@ int profile_reader_t::read_profiles(void)  //sdef_t the_profile[], int max)
       {
         section_profile[i].very_high[j] = atof(argv[j]);
       } 
-      
     }
-
     argv = df.next(&argc, &line_num);
     n_segments++;
   }
