@@ -208,6 +208,7 @@ void spd_print_current(double desired, double actual, int type, bool warn,
   char a1[200];
   char a2[200];
   char a3[200];
+  char a4[200];
   int maxcols = COLS - 5;
   int dcols = (int) ((double) maxcols * desired / 100.0); 
   int acols = (int) ((double) maxcols * actual / 100.0); 
@@ -215,6 +216,7 @@ void spd_print_current(double desired, double actual, int type, bool warn,
   memset(a1, ' ', sizeof (a1));
   memset(a2, ' ', sizeof (a2));
   memset(a3, ' ', sizeof (a2));
+  memset(a4, ' ', sizeof (a4));
   if (dcols > 0)
   {
     memset(a1, 'a', dcols);
@@ -246,12 +248,35 @@ void spd_print_current(double desired, double actual, int type, bool warn,
   move(0,0);
 
   double left = total_distance * (1.0 - (pct/100.0));
+  double my_left = left;
   if (left < 1.0) left = 0.0;
   mvprintw(12,2,"Tiempo: %3.0lf, Distancia: %6.1lf", 
            now, (pct/100.0) * total_distance);
   if (COLS < 70) mvprintw(13,2, "");
   else printw(", ");
   printw("Falta: %4.0lf, Porciento: %3.0lf%%", left, pct);
+  int lcols;
+  if (my_left < 100.0)
+  {
+    if (my_left < -30.0) my_left = -30.0; 
+    double lpct = (100.0 - my_left) / 100.0;
+    lcols = (int) ((double)( maxcols - 10) * lpct ); 
+  }
+  else
+  {
+    lcols = 0;
+  }
+  if (lcols > 0)
+  {
+    memset(a4, 'a', lcols);
+  }
+  a4[maxcols] = '\0';
+  attron(A_ALTCHARSET);
+  mvprintw(13,2,"%s", a4);
+  attroff(A_ALTCHARSET);
+  mvprintw(14,2 + maxcols - 10,"^");
+    if (my_left < -5.0) mvprintw(15,maxcols - 10,"**CRRAAASH**");
+    else mvprintw(15,maxcols - 10,"            ");
   refresh();
 
 }
