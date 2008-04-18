@@ -30,4 +30,20 @@ After you are running, there are options such as:
 
 You can resize the text window, and the diagram will resize automatically to fit.
 
-This program likely be expanded to work with radios and do collision avoidance, tell the operator about crossing guards, operation like a poor mans CBTC.
+There is now a new "drive" feature that allows you to "drive the train". We are trying to mimic the functionality of the train, where positions of the shift lever are a fixed acceleration. For now, we support four accelerations and a "coast" mode that has light deceleration due to wind resistance and friction losses. Here are the commands:
+
+0 - coast, light deceleration.
+1 - 0.5 m/s² acceleration
+2 - 1.0 m/s² acceleration
+9 - 0.5 m/s² deceleration
+8 - 1.0 m/s² deceleration
+
+This simulates the actual train control, where there is no "hold speed" position, and the driver must switch between light acceleration and coast to maintain for example 50 km/h.
+
+There is also a fast moving bar that appears when you are within 100 meters of the stopping point, to simulate the driver being able to visually see the platform when approaching and ease into a stop. There is a '^' to mark the point where the nose of the train should stop.
+
+To "drive" the train and then see how you did at the end of each section, run the following from the onboard directory:
+
+./drive -cp -a
+
+This program likely will be expanded to work with radios and do collision avoidance, tell the operator about crossing guards, operation like a poor mans CBTC.
