@@ -11,8 +11,7 @@ SRC4 =	pci.cpp ldiodriver.cpp timeaccum.cpp error.cpp eval.cpp expr.cpp exprlist
 SRCS =  $(SRC1) $(SRC2) $(SRC3) $(SRC4)
 
 export CPATH=../include
-
-#export PATH= /opt/crosstool/gcc-4.0.1-glibc-2.3.5/arm-unknown-linux-gnu/bin/:$(PATH)
+export PATH= /opt/crosstool/gcc-4.0.1-glibc-2.3.5/arm-unknown-linux-gnu/bin/:$${PATH}
 
 RTCOMMON=-lrtcommon
 
