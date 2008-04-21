@@ -55,6 +55,14 @@ check_speed:	check_speed.o
 clean:
 	rm -fv $(DIR)*.o
 	rm -fv $(DIR)onboard
+	rm -fv $(DIR)drive
 	rm -fv $(DIR)onboard_2x24
 	rm -fv $(DIR)lcdmesg
 	rm -fv $(DIR)keypad
+
+armall:
+	make -f makefile.arm
+
+armclean:
+	make -f makefile.arm clean
+

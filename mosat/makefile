@@ -10,6 +10,9 @@ all:
 
 ppcall:
 	for i in $(DIRS); do cd "$$i"; $(MAKEPPC); cd ..; done
+
+ppcclean:
+	for i in $(DIRS); do cd "$$i"; $(MAKEPPC) clean; cd ..; done
 	
 
 clean:

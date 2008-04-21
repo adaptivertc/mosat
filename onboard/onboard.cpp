@@ -33,7 +33,9 @@ DEALINGS IN THE SOFTWARE.
 #include <errno.h>
 #include <math.h>
 
+#ifndef ARM
 #include <curses.h>
+#endif
 
 #include "rtcommon.h"
 #include "utimer.h"
@@ -263,7 +265,9 @@ int main(int argc, char *argv[])
             system(cmd);
             snprintf(cmd, sizeof(cmd), "date >%s/date.txt", dirname);
             system(cmd);
+            #ifndef ARM
             mvprintw(25,2,"Using: %s", dirname);
+            #endif
             break;
           }
         }
@@ -271,7 +275,9 @@ int main(int argc, char *argv[])
 
       snprintf(fname, sizeof(fname), "%s/p%02d.txt", dirname, j);
       snprintf(base_name, sizeof(base_name), "%s/p%02d", dirname, j);
+      #ifndef ARM
       mvprintw(26,2,"File: %s %s", fname, base_name);
+      #endif
       pfp = fopen(fname, "w");
 
     }
@@ -369,14 +375,18 @@ int main(int argc, char *argv[])
       char gtitle[50];
       snprintf(gtitle, sizeof(gtitle), "%s-%s", 
            preader.get_station_name(j), preader.get_station_name(next));
-           //vel_profile[j].st1, vel_profile[next].st1);   
+            //vel_profile[j].st1, vel_profile[next].st1);   
+      #ifndef ARM
       mvprintw(23,2,"graph: %s %s", base_name, gtitle);
+      #endif
       spd_create_image(base_name, gtitle, false);
       spd_create_image(base_name, gtitle, true);
     }
     else
     {
+      #ifndef ARM
       mvprintw(23,2,"graph: pfp is NULL");
+      #endif
     }
 
     if (done) break;

@@ -1,8 +1,10 @@
 
-
 #include <stdio.h>
 #include <time.h>
-#include <curses.h>
+
+#ifndef ARM
+#include <ncurses.h>
+#endif
 
 
 #include "spd_algo.h"
@@ -58,7 +60,9 @@ speed_state_t speed_algorithm_DC_t::check_speed(time_t now, double actual,
     if (last_state == SPD_STATE_WARN_HI)
     {
       int time_left = SPD_MAX_WARN_TIME - (now - warn_start_time);
+      #ifndef ARM
       mvprintw(32,2,"Time left to slow down: %2d", time_left);
+      #endif
       if ((now - warn_start_time) > SPD_MAX_WARN_TIME)
       {
         last_state = SPD_STATE_SHUTDOWN;
@@ -78,7 +82,9 @@ speed_state_t speed_algorithm_DC_t::check_speed(time_t now, double actual,
   }
   else if (actual > lo_limit)
   {
+    #ifndef ARM
     if (last_state == SPD_STATE_WARN_HI) mvprintw(32,2,"                                      ");
+    #endif
     last_state = SPD_STATE_NORMAL;
     return SPD_STATE_NORMAL;
   }
@@ -98,12 +104,14 @@ void speed_algorithm_DC_t::evaluate(time_t now, double actual_speed, double actu
   speed_state_t state;
   state = check_speed(now, actual_speed, limits.low, limits.high, limits.very_high);
 
+  #ifndef ARM
   mvprintw(27,2,"  Actual: %5.1lf", actual_speed);
   mvprintw(28,2,"     Low: %5.1lf", limits.low);
   mvprintw(29,2,"    High: %5.1lf", limits.high);
   mvprintw(30,2,"Shutdown: %5.1lf", limits.very_high);
 
   mvprintw(31,2,"   State: %-10s, time: %8d", state_to_string(state), now);
+  #endif
 
   results->state = state;
 }

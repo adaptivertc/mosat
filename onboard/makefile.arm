@@ -1,19 +1,26 @@
 
-CC=arm-linux-gcc -mcpu=arm9 -Wall 
 
-CPP=arm-linux-g++ -mcpu=arm9 -Wall
+export CPATH=../include
+
+RTMODBUS=../modbus/arm/librtmodbus.a
+
+#CC=arm-linux-gcc -mcpu=arm9 -Wall 
+CC=arm-unknown-linux-gnu-gcc -mcpu=arm9 -Wall
+
+#CPP=arm-linux-g++ -mcpu=arm9  -mcpu=arm9-Wall
+CPP=arm-unknown-linux-gnu-g++ -Wall
 
 DIR=arm/
 
 ALL_FILES= $(DIR)lcdmesg $(DIR)keypad $(DIR)connect_wireless $(DIR)test_both $(DIR)test_lcd $(DIR)test_keypad \
-	$(DIR)speed $(DIR)xdio  $(DIR)xdio_pwm $(DIR)dio24  $(DIR)nvram2 $(DIR)lcdmesg $(DIR)tempSensor  $(DIR)nvram2_read \
-	$(DIR)frtimer_test $(DIR)speed_4x40 $(DIR)autonomous_mode
+	$(DIR)onboard $(DIR)xdio  $(DIR)xdio_pwm $(DIR)dio24  $(DIR)nvram2 $(DIR)lcdmesg $(DIR)tempSensor  $(DIR)nvram2_read \
+	$(DIR)frtimer_test $(DIR)onboard_4x40 $(DIR)autonomous_mode
 
 $(DIR)%.o:    %.c $(INCLUDES)
-	$(CC) -c -o $@ $<
+	$(CC) -c -DARM -o $@ $<
 
 $(DIR)%.o:    %.cpp $(INCLUDES)
-	$(CPP) -c -o $@ $<
+	$(CPP) -c -DARM -o $@ $<
 
 all:	$(ALL_FILES)
 
@@ -23,19 +30,23 @@ $(DIR)keypad_tsarmp.o: keypad_tsarm.c
 $(DIR)d2x24_tsarm.o: d2x24_tsarm.c 
 	$(CPP) -c -o $(DIR)d2x24_tsarm.o d2x24_tsarm.c
 
-$(DIR)speed:	$(DIR)speed.o $(DIR)spd_display_2x24.o $(DIR)spd_com_tsarm.o \
+$(DIR)onboard:	$(DIR)onboard.o $(DIR)spd_display_2x24.o $(DIR)spd_com_tsarm.o\
+		$(DIR)spd_algo_DC.o $(DIR)spd_algo_RD.o $(DIR)spd_algo_VV.o  $(DIR)profile_reader.o $(DIR)sim_reader.o\
 		$(DIR)d2x24_tsarm.o $(DIR)keypad_tsarm.o  $(DIR)spd_select.o $(DIR)frtimer.o
-	$(CPP) -o $(DIR)speed -lrtcommon -lpthread $(DIR)speed.o $(DIR)spd_display_2x24.o \
+	$(CPP) -o $(DIR)onboard -lrtcommon -lpthread $(DIR)onboard.o $(DIR)spd_display_2x24.o\
+		$(DIR)spd_algo_DC.o $(DIR)spd_algo_RD.o $(DIR)spd_algo_VV.o $(DIR)profile_reader.o $(DIR)sim_reader.o\
 		$(DIR)spd_com_tsarm.o $(DIR)d2x24_tsarm.o $(DIR)keypad_tsarm.o  $(DIR)spd_select.o $(DIR)frtimer.o
 
-$(DIR)speed_4x40:	$(DIR)speed.o $(DIR)spd_display_4x40.o $(DIR)spd_com_tsarm.o \
+$(DIR)onboard_4x40:	$(DIR)onboard.o $(DIR)spd_display_4x40.o $(DIR)spd_com_tsarm.o\
+		$(DIR)spd_algo_DC.o $(DIR)spd_algo_RD.o $(DIR)spd_algo_VV.o $(DIR)profile_reader.o $(DIR)sim_reader.o\
 		$(DIR)spd_select.o $(DIR)frtimer.o
-	$(CPP) -o $(DIR)speed_4x40 -lrtcommon -lrtmodbus -lpthread $(DIR)speed.o $(DIR)spd_display_4x40.o \
-		$(DIR)spd_com_tsarm.o $(DIR)spd_select.o $(DIR)frtimer.o 
+	$(CPP) -o $(DIR)onboard_4x40 -lrtcommon -lpthread $(DIR)onboard.o $(DIR)spd_display_4x40.o\
+		$(DIR)spd_algo_DC.o $(DIR)spd_algo_RD.o $(DIR)spd_algo_VV.o $(DIR)profile_reader.o $(DIR)sim_reader.o\
+		$(DIR)spd_com_tsarm.o $(DIR)spd_select.o $(DIR)frtimer.o $(RTMODBUS) 
 
-$(DIR)status:	$(DIR)status.o $(DIR)spd_display_4x40.o $(DIR)spd_com_tsarm.o \
+$(DIR)status:	$(DIR)status.o $(DIR)spd_display_4x40.o $(DIR)spd_com_tsarm.o\
 		$(DIR)spd_select.o $(DIR)frtimer.o
-	$(CPP) -o $(DIR)status -lrtcommon -lrtmodbus -lpthread $(DIR)status.o $(DIR)spd_display_4x40.o \
+	$(CPP) -o $(DIR)status -lrtcommon -lrtmodbus -lpthread $(DIR)status.o $(DIR)spd_display_4x40.o\
 		$(DIR)spd_com_tsarm.o $(DIR)spd_select.o $(DIR)frtimer.o 
 
 $(DIR)test_lcd:	$(DIR)test_lcd.o $(DIR)d2x24_tsarm.o  $(DIR)keypad_tsarm.o

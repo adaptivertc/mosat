@@ -135,7 +135,7 @@ ai.so:	ai.cpp
 clean:
 	rm -fv *.o *.so react rconsole rdisplay reactcgi gen utest integrate
 	rm -fv rtshmmain gen_case.cpp gen_script.cpp gen_script.h
-	for i in $(DRIVERDIRS); do cd "$$i"; $(MAKE) clean; cd ../..; done
+	for i in $(DRIVERDIRS) drivers/sixnet_rtu ; do cd "$$i"; $(MAKE) clean; cd ../..; done
 
 
 install:
@@ -144,4 +144,17 @@ install:
 	cp rconsole /usr/local/bin
 	cp rdisplay /usr/local/bin
 	cp ai.so /usr/local/lib
+
+ppcall:
+	make -f makefile.ppc
+
+ppcclean:
+	make -f makefile.ppc clean
+
+armall:
+	make -f makefile.arm
+
+armclean:
+	make -f makefile.arm clean
+
 

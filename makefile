@@ -1,7 +1,9 @@
 
 DIRS= librtcommon modbus mosat react trainpos onboard classic_tcontrol
 
-PPCDIRS= librtcommon mosat modbus
+PPCDIRS= librtcommon mosat react 
+
+ARMDIRS= lib modbus onboard react
 
 MAKE= make
 
@@ -18,3 +20,11 @@ tp:
 ppcall:
 	for i in $(PPCDIRS); do cd "$$i"; $(MAKE) ppcall; cd ..; done
 
+ppcclean:
+	for i in $(PPCDIRS); do cd "$$i"; $(MAKE) ppcclean; cd ..; done
+
+armall:
+	for i in $(ARMDIRS); do cd "$$i"; $(MAKE) armall; cd ..; done
+
+armclean:
+	for i in $(ARMDIRS); do cd "$$i"; $(MAKE) armclean; cd ..; done

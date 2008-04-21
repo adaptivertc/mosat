@@ -44,4 +44,15 @@ clean:
 	rm -fv *.o modsim myconnect librtmodbus.so librtmodbus.a 
 
 ppcall:
-	echo "not implemented yet"
+	make -f makefile.ppc
+
+ppcclean:
+	make -f makefile.ppc clean
+
+armall:
+	make -f makefile.arm
+
+armclean:
+	make -f makefile.arm clean
+
+

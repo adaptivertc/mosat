@@ -1,8 +1,8 @@
-
-
 #include <stdio.h>
 #include <time.h>
-#include <curses.h>
+#ifndef ARM
+#include <ncurses.h>
+#endif
 
 
 #include "spd_algo.h"
@@ -50,7 +50,9 @@ speed_state_t speed_algorithm_RD_t::current_state(time_t now, double actual_spee
 		
 	if(actual_speed >= shutdown_limit)
 	{
+                #ifndef ARM
 		mvprintw(32,40,"Time to slowdown: 0      ");
+		#endif
 		previous_state = SPD_STATE_SHUTDOWN;
 		return SPD_STATE_SHUTDOWN;
 	}
@@ -59,11 +61,15 @@ speed_state_t speed_algorithm_RD_t::current_state(time_t now, double actual_spee
 		{
 			if(previous_state == SPD_STATE_WARN_HI)
 			{
+                		#ifndef ARM
 				mvprintw(32,40,"Time to slowdown: %2d",(SPD_MAX_WARN_TIME - (now - warning_beginning)));
+				#endif
 				
 				if((now - warning_beginning) > SPD_MAX_WARN_TIME)
 				{
+                			#ifndef ARM
 					mvprintw(32,40,"Time to slowdown: 0      ");
+					#endif
 					previous_state = SPD_STATE_SHUTDOWN;
 					return SPD_STATE_SHUTDOWN;
 				}
@@ -82,7 +88,9 @@ speed_state_t speed_algorithm_RD_t::current_state(time_t now, double actual_spee
 			{
 				if(previous_state == SPD_STATE_WARN_HI)
 					warning_beginning = 0;
+               			#ifndef ARM
 				mvprintw(32,40,"                        ");
+				#endif
 				previous_state = SPD_STATE_NORMAL;
 				return SPD_STATE_NORMAL;
 			}
@@ -103,11 +111,13 @@ void speed_algorithm_RD_t::evaluate(time_t now, double actual_speed, double actu
 {
 	results->state = current_state(now,actual_speed,limits.low,limits.high,limits.very_high);
 	
+	#ifndef ARM
 	mvprintw(27,40,"  Actual: %5.1lf", actual_speed);
 	mvprintw(28,40,"     Low: %5.1lf", limits.low);
 	mvprintw(29,40,"    High: %5.1lf", limits.high);
 	mvprintw(30,40,"Shutdown: %5.1lf", limits.very_high);
 	mvprintw(31,40,"   State: %-10s, time: %8d", state_string(results->state), now);
+        #endif
 }
 
 /*****************************************************************************/
