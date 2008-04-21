@@ -34,7 +34,7 @@ DEALINGS IN THE SOFTWARE.
 #include <math.h>
 
 #ifndef ARM
-#include <curses.h>
+#include <ncurses.h>
 #endif
 
 #include "rtcommon.h"

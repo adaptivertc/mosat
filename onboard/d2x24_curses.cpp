@@ -1,6 +1,6 @@
 
 #include <stdio.h>
-#include <curses.h>
+#include <ncurses.h>
 
 #include "d2x24.h"
 

@@ -37,7 +37,7 @@ This object will also set off alarms, or caution for late arivals, or early ariv
 ******/
 #include <stdio.h>
 #include <stdlib.h>
-#include <curses.h>
+#include <ncurses.h>
 
 #include "section.h"
 #include "sim.h"

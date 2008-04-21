@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <stdio.h>
 #include <stdlib.h>
 
-//#include <curses.h>
+//#include <ncurses.h>
 #include <time.h>
 #include <string.h>
 #include <ctype.h>

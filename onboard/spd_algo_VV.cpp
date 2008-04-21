@@ -4,7 +4,7 @@
 #include <time.h>
 
 #ifndef ARM
-#include <curses.h>
+#include <ncurses.h>
 #endif
 
 

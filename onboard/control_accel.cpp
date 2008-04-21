@@ -3,7 +3,7 @@
 #include <time.h>
 #include <unistd.h>
 #include <stdlib.h>
-#include <curses.h>
+#include <ncurses.h>
 #include <math.h>
 
 

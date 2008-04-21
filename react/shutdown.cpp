@@ -28,7 +28,7 @@ Procedures for trigering shutdown.
 
 #include <stdio.h>
 #include <stdlib.h>
-//#include <curses.h>
+//#include <ncurses.h>
 
 #include "rtcommon.h"
 #include "db.h"

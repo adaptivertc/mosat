@@ -27,7 +27,7 @@ Code for the pulse count input member functions.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-//#include <curses.h>
+//#include <ncurses.h>
 #include <math.h>
 #include <malloc.h>
 #include <float.h>

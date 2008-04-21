@@ -3,7 +3,7 @@
 #include <time.h>
 #include <unistd.h>
 #include <stdlib.h>
-#include <curses.h>
+#include <ncurses.h>
 
 static const int STATE_SHUTDOWN = 3;
 static const int STATE_WARN_HI = 2;

@@ -23,7 +23,7 @@ DEALINGS IN THE SOFTWARE.
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <curses.h>
+#include <ncurses.h>
 #include <string.h>
 
 #include <errno.h>
