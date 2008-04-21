@@ -30,11 +30,16 @@ clean:
 	make -f makefile.arm clean
 
 ppcall:
-	make librtcommon.a
 	make -f makefile.ppc
-
-
-armcall:
 	make librtcommon.a
+
+armall:
 	make -f makefile.arm
+	make librtcommon.a
+
+ppcclean:
+	make -f makefile.ppc clean
+
+armclean:
+	make -f makefile.arm clean
 

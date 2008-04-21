@@ -3,7 +3,7 @@ DIRS= librtcommon modbus mosat react trainpos onboard classic_tcontrol
 
 PPCDIRS= librtcommon mosat react 
 
-ARMDIRS= lib modbus onboard react
+ARMDIRS= librtcommon modbus onboard react
 
 MAKE= make
 
