@@ -72,7 +72,7 @@ dbpoint_util.so: analog.cpp discrete.cpp
 	$(CC) -fpic -o dbpoint_util.so -shared analog.cpp discrete.cpp 
 
 gen:	generate_script.cpp 
-	g++ -o gen -Wall generate_script.cpp  ../lib/librtcommon.a
+	g++ -o gen -Wall generate_script.cpp  ../librtcommon/librtcommon.a
 
 $(GENFILES):	gen db_point.h
 	./gen

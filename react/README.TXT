@@ -1,3 +1,17 @@
+If you want to build for arm/ppc processors you must build librtcommon.so for
+those processors.. 
+
+read librtcommon/README.TXT
+
+arm  processors build steps:
+
+make -f makefile.arm
+
+
+ppc processors build steps:
+
+make -f makefile.ppc
+
 
 To see an example, run the following:
 

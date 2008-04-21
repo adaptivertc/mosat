@@ -1,7 +1,7 @@
 
-DIRS= lib modbus mosat react trainpos onboard classic_tcontrol
+DIRS= librtcommon modbus mosat react trainpos onboard classic_tcontrol
 
-PPCDIRS= lib mosat modbus
+PPCDIRS= librtcommon mosat modbus
 
 MAKE= make
 
@@ -12,7 +12,7 @@ clean:
 	for i in $(DIRS); do cd "$$i"; $(MAKE) clean; cd ..; done
 
 tp:
-	cd lib; $(MAKE); cd ..
+	cd librtcommon; $(MAKE); cd ..
 	cd trainpos; $(MAKE); cd ..
 
 ppcall:

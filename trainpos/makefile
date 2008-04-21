@@ -5,7 +5,7 @@ CC=g++ -g -Wall
 
 INCLUDES=tcontrol.h alg1.h train_sim.h event_alg.h dc_evalg.h gp_evalg.h ri_evalg.h ag_evalg.h sim_msg.h tpconfig.h trainpos.h
 
-RTCOMMON=../lib/librtcommon.a
+RTCOMMON=../librtcommon/librtcommon.a
 
 %.o:    %.cpp $(INCLUDES)
 	$(CC) -c -g -o $@ $<

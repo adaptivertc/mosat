@@ -17,14 +17,24 @@ librtcommon.a: arg.o common.o safestr.o utimer.o memfail.o
 
 install:
 	cp librtcommon.so /usr/local/lib
+
+installppc:
 	make -f makefile.ppc install
+
+installarm:
+	make -f makefile.arm install
 
 clean:
 	rm -fv *.o librtcommon.so librtcommon.a
-	make -f makefile.ppc clean
-
+	make -f makefile.ppc clean 
+	make -f makefile.arm clean
 
 ppcall:
+	make librtcommon.a
 	make -f makefile.ppc
 
+
+armcall:
+	make librtcommon.a
+	make -f makefile.arm
 

@@ -2,7 +2,7 @@ INCLUDES = hp2mod.h  hprtu.h  modio.h  modsim.h  mtype.h  trace.h
 
 export CPATH=../../include
 
-RTCOMMON=../../lib/librtcommon.a
+RTCOMMON=../../librtcommon/librtcommon.a
 
 CC = g++ -Wall
 

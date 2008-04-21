@@ -5,7 +5,7 @@ CC=g++ -g
 
 CPP=g++ -g
 
-RTCOMMON=../lib/librtcommon.a
+RTCOMMON=../librtcommon/librtcommon.a
 RTMODBUS=../modbus/librtmodbus.a
 
 %.o:    %.cpp $(INCLUDES)

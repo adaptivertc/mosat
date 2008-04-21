@@ -12,7 +12,7 @@ SRCS =  $(SRC1) $(SRC2) $(SRC3) $(SRC4)
 
 export CPATH=../include
 
-RTCOMMON=../lib/librtcommon.a
+RTCOMMON=../librtcommon/librtcommon.a
 
 INCLUDES = db.h db_point.h iodriver.h logfile.h\
 error.h exp.h reactpoint.h secuencia.h displaydata.h timeaccum.h gen_script.h
