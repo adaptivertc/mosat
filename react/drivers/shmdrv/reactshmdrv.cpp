@@ -34,11 +34,11 @@ Contains code for shared memory driver.
 #include <sys/time.h>
 #include <sys/types.h>
 
-#include "../../reactpoint.h"
-#include "../../reactshmio.h"
-#include "../../db_point.h"
-#include "../../db.h"
-#include "../../iodriver.h"
+#include "reactpoint.h"
+#include "reactshmio.h"
+#include "db_point.h"
+#include "db.h"
+#include "iodriver.h"
 
 #include "reactshmdrv.h"
 

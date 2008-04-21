@@ -1,4 +1,5 @@
-export CPATH=../../../include
+
+export CPATH=../../../include:../../
 
 libsimdriver.so: simdriver.o burnersim.o simiodriver.h
 	g++ -o libsimdriver.so -shared simdriver.o burnersim.o

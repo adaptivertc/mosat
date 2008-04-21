@@ -1,4 +1,6 @@
-export CPATH=../../../include
+
+export CPATH=../../../include:../../
+
 
 CPP=arm-unknown-linux-gnu-g++ -mcpu=arm9
 

@@ -1,4 +1,6 @@
-export CPATH=../../../include
+
+export CPATH=../../../include:../../
+
 
 libsimpumpdrv.so: simpumpdrv.o simpumpdrv.h
 	g++ -o libsimpumpdrv.so -shared simpumpdrv.o 

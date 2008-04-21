@@ -1,4 +1,4 @@
-export CPATH=../../../include
+export CPATH=../../../include:../../
 
 libreactmodbusdrv.so: reactmodbusdrv.o 
 	g++ -o libreactmodbusdrv.so -shared reactmodbusdrv.o

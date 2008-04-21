@@ -36,10 +36,10 @@ Contains code for pci9111 io card
 #include <sys/types.h>
 
 #include "dask.h"
-#include "../../reactpoint.h"
-#include "../../db_point.h"
-#include "../../db.h"
-#include "../../iodriver.h"
+#include "reactpoint.h"
+#include "db_point.h"
+#include "db.h"
+#include "iodriver.h"
 
 #include "pci9111.h"
 

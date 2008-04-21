@@ -1,4 +1,5 @@
 
+export CPATH=../../../include:../../
 
 libpci9111.so: pci9111.o 
 	g++ -o libpci9111.so -shared pci9111.o 

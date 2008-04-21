@@ -36,10 +36,10 @@ Contains code for pci7248 io card
 #include <sys/types.h>
 
 #include "dask.h"
-#include "../../reactpoint.h"
-#include "../../db_point.h"
-#include "../../db.h"
-#include "../../iodriver.h"
+#include "reactpoint.h"
+#include "db_point.h"
+#include "db.h"
+#include "iodriver.h"
 #include "pci7248.h"
 
 static const U16 ports[6] = {Channel_P1A, Channel_P1B, Channel_P1C,

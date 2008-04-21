@@ -1,4 +1,4 @@
-export CPATH=../../../include
+export CPATH=../../../include:../../
 
 libpci7248.so: pci7248.o
 	g++ -o libpci7248.so -shared pci7248.o

@@ -1,4 +1,5 @@
-export CPATH=../../../include
+
+export CPATH=../../../include:../../
 
 libreactshmdrv.so: reactshmdrv.o reactshmio.o
 	g++ -o libreactshmdrv.so -shared reactshmdrv.o reactshmio.o 

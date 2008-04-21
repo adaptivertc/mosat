@@ -36,10 +36,10 @@ Contains code for input/output drivers.
 #include <sys/types.h>
 #include <string.h>
 
-#include "../../reactpoint.h"
-#include "../../db_point.h"
-#include "../../db.h"
-#include "../../iodriver.h"
+#include "reactpoint.h"
+#include "db_point.h"
+#include "db.h"
+#include "iodriver.h"
 
 #include "simpumpdrv.h"
 

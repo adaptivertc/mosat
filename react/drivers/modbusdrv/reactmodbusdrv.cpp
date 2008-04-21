@@ -39,10 +39,10 @@ Contains code for react modbus driver.
 
 #include "rtmodbus.h"
 
-#include "../../reactpoint.h"
-#include "../../db_point.h"
-#include "../../db.h"
-#include "../../iodriver.h"
+#include "reactpoint.h"
+#include "db_point.h"
+#include "db.h"
+#include "iodriver.h"
 
 #include "reactmodbusdrv.h"
 
