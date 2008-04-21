@@ -1,0 +1,52 @@
+
+
+
+export CPATH=../include
+
+
+CC=arm-unknown-linux-gnu-gcc -mcpu=arm9 -Wall
+
+CPP=arm-unknown-linux-gnu-g++ -Wall
+
+AR=arm-unknown-linux-gnu-ar
+
+DIR=arm/
+
+
+INCLUDES = hp2mod.h hprtu.h modio.h modsim.h mtype.h trace.h evlog.h
+
+%.o:	%.cpp $(INCLUDES)
+	$(CPP) -c -o $@ -Wall $<
+
+all:	 $(DIR)librtmodbus.so $(DIR)librtmodbus.a
+
+$(DIR)%.o:    %.c $(INCLUDES)
+	$(CC) -c -o $@ $<
+
+$(DIR)%.o:    %.cpp $(INCLUDES)
+	$(CPP) -c -o $@ $<
+
+modsim:	$(DIR)myservice.o $(DIR)modsim.o trace.h 
+	$(CPP) -o modsim -lpthread  $(DIR)myservice.o $(RTMODBUS) $(RTCOMMON) 
+
+myconnect:	myconnect.o
+	$(CPP)g++ -o myconnect myconnect.o  $(RTMODBUS) $(RTCOMMON) 
+
+ $(DIR)librtmodbus.so:  $(DIR)trace.o  $(DIR)modsim.o  $(DIR)crc.o  $(DIR)swap.o  $(DIR)modtcpip_client.o\
+                 $(DIR)modtcpip.o  $(DIR)hexascii.o  $(DIR)crc.o  $(DIR)rtmodbus.o  $(DIR)modio.o \
+                 $(DIR)evlog.o  $(DIR)rt_serial.o  $(DIR)rt_mod_serial_client.o  $(DIR)rt_modreplysize.o $(INCLUDES)
+	$(CPP)g++ -o  $(DIR)librtmodbus.so -shared  $(DIR)modsim.o  $(DIR)trace.o  $(DIR)crc.o  $(DIR)swap.o \
+		  $(DIR)modtcpip.o  $(DIR)hexascii.o  $(DIR)rtmodbus.o  $(DIR)modio.o  $(DIR)modtcpip_client.o \
+		 $(DIR)evlog.o $(DIR)rt_serial.o  $(DIR)rt_mod_serial_client.o  $(DIR)rt_modreplysize.o
+
+$(DIR)librtmodbus.a: $(DIR)trace.o $(DIR)modsim.o trace.h $(DIR)crc.o $(DIR)swap.o $(DIR)modtcpip_client.o\
+                $(DIR)modtcpip.o $(DIR)hexascii.o $(DIR)crc.o $(DIR)rtmodbus.o $(DIR)modio.o \
+                $(DIR)evlog.o $(DIR)rt_serial.o $(DIR)rt_mod_serial_client.o $(DIR)rt_modreplysize.o $(INCLUDES)
+	$(AR) r $(DIR)librtmodbus.a $(DIR)modsim.o $(DIR)trace.o $(DIR)crc.o $(DIR)swap.o \
+		 $(DIR)modtcpip.o $(DIR)hexascii.o $(DIR)rtmodbus.o $(DIR)modio.o $(DIR)modtcpip_client.o \
+		$(DIR)evlog.o $(DIR)rt_serial.o $(DIR)rt_mod_serial_client.o $(DIR)rt_modreplysize.o
+
+
+clean:	
+	rm -fv $(DIR)*.o $(DIR)modsim myconnect $(DIR)librtmodbus.so $(DIR)librtmodbus.a 
+
