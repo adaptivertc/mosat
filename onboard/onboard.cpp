@@ -196,6 +196,7 @@ int main(int argc, char *argv[])
 
   bool done = false;
   bool auto_mode = false;
+  bool auto_end = true;
   bool fast = false;
   bool continue_mode = false;
 
@@ -353,7 +354,7 @@ int main(int argc, char *argv[])
       ****/
       if (((distance / total_distance) > 0.99) && (actual == 0))
       {
-        break;
+        if (auto_end) break;
       }
       int ch = spd_getch();
       if (ch == 'f') {fast = true; utimer.set_interval(200000);}
@@ -362,6 +363,7 @@ int main(int argc, char *argv[])
       else if (ch == 'q') {done = true; break;} 
       else if (ch == 'a') {auto_mode = true; spd_print_auto(true);} 
       else if (ch == 'm') {auto_mode = false; spd_print_auto(false);} 
+      else if (ch == 'e') {auto_end = !auto_end;} 
       else spd_set_key(ch);
       //if (!fast) usleep(1000000);
       //else usleep(200000);
