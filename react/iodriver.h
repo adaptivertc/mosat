@@ -47,7 +47,7 @@ public:
 class io_driver_t
 {
 public:
-  char *driver_name;
+  const char *driver_name;
   int driver;
   int card;
   int base_addr;

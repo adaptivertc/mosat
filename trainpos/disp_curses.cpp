@@ -124,7 +124,7 @@ void rt_curses_display_t::update(double pct)
   int add;
   int draw_col;
   int row;
-  char *arrow;
+  const char *arrow;
   double dcols = double(n_line_cols);
   double ddc;
   pct /= 100.0;

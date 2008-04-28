@@ -14,7 +14,7 @@ static FILE *fp1 = NULL;
 static FILE *fp2 = NULL;
 static int theday = -1;
 
-void file_name(char *post, char *buf, int sz);
+void file_name(const char *post, char *buf, int sz);
 int get_day(void);
 
 void reopen_evlog_files(void)
@@ -104,7 +104,7 @@ int get_day(void)
 
 /******************************************************/
 
-void file_name(char *post, char *buf, int sz)
+void file_name(const char *post, char *buf, int sz)
 {
   time_t now;
   now = time(NULL);

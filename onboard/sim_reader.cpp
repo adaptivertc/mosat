@@ -8,7 +8,7 @@
 #include "onboard.h"
 #include "sim_reader.h"
 
-char *sim_names2[] =
+const char *sim_names2[] =
 {
   "Tetlan-Aurora",
   "Aurora-SanJacinto",
@@ -33,7 +33,7 @@ char *sim_names2[] =
   "Tetlan-AreaManiobras"
 };
 
-char *sim_names1[] =
+const char *sim_names1[] =
 {
   "PerifericoSur-Tesoro",
   "Tesoro-Espana",

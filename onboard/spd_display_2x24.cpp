@@ -38,7 +38,7 @@ static char station2[20];
 
 /*******************************************************************/
 
-int spd_prompt_user(char *msg1, char *msg2)
+int spd_prompt_user(const char *msg1, const char *msg2)
 {
   int mych;
   d2x24_printf(0,"%-24s", msg1);
@@ -62,7 +62,7 @@ int spd_prompt_user(char *msg1, char *msg2)
 
 /*******************************************************************/
 
-int spd_wait_key(char *msg)
+int spd_wait_key(const char *msg)
 {
   int mych;
   d2x24_printf(1,"%-24s", msg); 
@@ -108,7 +108,7 @@ void spd_redraw_segment(void)
 
 /*********************************************************************/
 
-void spd_init_segment(char *st1, char *st2)
+void spd_init_segment(const char *st1, const char *st2)
 {
   safe_strcpy(station1, st1, sizeof(station1));
   safe_strcpy(station2, st2, sizeof(station2));
@@ -137,7 +137,7 @@ static int count_down = 0;
 void spd_print_current(double desired, double actual, int type, bool warn, 
       double pct, double total_distance, double now, double total_time)
 { 
-  char *str = "-";
+  const char *str = "-";
   char cnt_str[5];
   if (type == 0)
   {
@@ -222,10 +222,10 @@ int spd_getch(void)
 
 /*********************************************************************/
 
-void spd_create_image(char *base_name, char *gtitle, bool window)
+void spd_create_image(const char *base_name, const char *gtitle, bool window)
 {
   return;
-  char *fname = "gnuplotoptions.txt";
+  const char *fname = "gnuplotoptions.txt";
   FILE *fp = fopen(fname, "w");
   if (fp == NULL)
   {

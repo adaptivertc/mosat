@@ -607,7 +607,7 @@ int MODSerial::receive(uint8 *buf, int size)
       break;
     default:
       react_trace.print_buf(5, "*** Bad MODBUS Device reply\n", buf, 3);
-      char *errstr = "";
+      const char *errstr = "";
       switch (buf[2])
       {
         case 0x1:

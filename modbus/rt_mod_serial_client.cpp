@@ -119,7 +119,7 @@ int rt_mod_serial_client_t::send_message(void)
 
 /***************/
 
-rt_mod_serial_client_t::rt_mod_serial_client_t(uint8 a_unit_id, char *a_dev_name, int a_baudrate, float a_timeout)
+rt_mod_serial_client_t::rt_mod_serial_client_t(uint8 a_unit_id, const char *a_dev_name, int a_baudrate, float a_timeout)
 {
   unit_id = a_unit_id;
   snprintf(device_name, sizeof(device_name), "%s", a_dev_name);

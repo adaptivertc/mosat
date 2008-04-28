@@ -10,7 +10,7 @@
 #include "spd_algo.h"
 #include "spd_algo_DC.h"
 
-char *state_to_string(int mode)
+const char *state_to_string(int mode)
 {
   switch (mode)
   {

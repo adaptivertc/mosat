@@ -205,7 +205,7 @@ int d4x40_printf(int row, int col, char *fmt, ...)
 
 /*******************************************************************/
 
-int spd_prompt_user(char *msg1, char *msg2)
+int spd_prompt_user(const char *msg1, const char *msg2)
 {
   int mych;
   printf("In 4x40 prompt user\n");
@@ -232,7 +232,7 @@ int spd_prompt_user(char *msg1, char *msg2)
 
 /*******************************************************************/
 
-int spd_wait_key(char *msg)
+int spd_wait_key(const char *msg)
 {
   int mych;
   d4x40_printf(1,1,"%-36s", msg); 
@@ -281,7 +281,7 @@ void spd_redraw_segment(void)
 
 /*********************************************************************/
 
-void spd_init_segment(char *st1, char *st2)
+void spd_init_segment(const char *st1, const char *st2)
 {
   safe_strcpy(station1, st1, sizeof(station1));
   safe_strcpy(station2, st2, sizeof(station2));

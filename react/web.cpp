@@ -332,14 +332,14 @@ void web_point_t::read_file(void)
     }
     else if (0 == strncasecmp(&file_buf[i], "$$$$DI(", 7))
     {
-      discrete_ref_t *r = new discrete_ref_t;
-      r->next = drefs;
-      drefs = r;
-      r->str = &file_buf[i];
+      discrete_ref_t *tmp_r = new discrete_ref_t;
+      tmp_r->next = drefs;
+      drefs = tmp_r;
+      tmp_r->str = &file_buf[i];
       int j;
       for (j = i; file_buf[j] != ')'; j++);
-      r->size = j - i + 1;
-      int len = r->size-7;
+      tmp_r->size = j - i + 1;
+      int len = tmp_r->size-7;
       char *tmp = new char[len+1];
       strncpy(tmp, file_buf + i + 7, len);
       tmp[len] = '\0';
@@ -359,45 +359,45 @@ void web_point_t::read_file(void)
           argv[2][strlen(argv[2])-1] = '\0';
         }
         rtrim(argv[2]);
-        r->true_string = argv[1];
-        r->false_string = argv[2];
-        //r->dp = NULL;
+        tmp_r->true_string = argv[1];
+        tmp_r->false_string = argv[2];
+        //tmp_r->dp = NULL;
 
         db_point_t *db_point;
         db_point = db->get_db_point(argv[0]);
         if (db_point == NULL)
         {
-          r->dp = NULL;
+          tmp_r->dp = NULL;
           printf("%s - NOT a database point: %s\n", source_file, argv[0]);
         }
         else if (db_point->pv_type() != DISCRETE_VALUE)
         {
-          r->dp = NULL;
+          tmp_r->dp = NULL;
           printf("%s - NOT a discrete point: %s\n", source_file, argv[0]);
         }
         else
         {
-          r->dp = (discrete_point_t *) db_point;
+          tmp_r->dp = (discrete_point_t *) db_point;
         }
       }
       else
       {
-        r->true_string = "255,255,153";
-        r->false_string = "192,192,192";
-        r->dp = NULL;
+        tmp_r->true_string = "255,255,153";
+        tmp_r->false_string = "192,192,192";
+        tmp_r->dp = NULL;
       }
     }
     else if (0 == strncasecmp(&file_buf[i], "$$$$AI(", 7))
     {
-      analog_ref_t *r = new analog_ref_t;
-      r->next = arefs;
-      arefs = r;
-      r->str = &file_buf[i];
-      r->is_bar = false;
+      analog_ref_t *tmp_r = new analog_ref_t;
+      tmp_r->next = arefs;
+      arefs = tmp_r;
+      tmp_r->str = &file_buf[i];
+      tmp_r->is_bar = false;
       int j;
       for (j = i; file_buf[j] != ')'; j++);
-      r->size = j - i + 1;
-      int len = r->size-7;
+      tmp_r->size = j - i + 1;
+      int len = tmp_r->size-7;
       char *tmp = new char[len+1];
       strncpy(tmp, file_buf + i + 7, len);
       tmp[len] = '\0';
@@ -420,17 +420,17 @@ void web_point_t::read_file(void)
         db_point = db->get_db_point(argv[0]);
         if (db_point == NULL)
         {
-          r->ap = NULL;
+          tmp_r->ap = NULL;
           printf("%s - NOT a database point: %s\n", source_file, argv[0]);
         }
         else if (db_point->pv_type() != ANALOG_VALUE)
         {
-          r->ap = NULL;
+          tmp_r->ap = NULL;
           printf("%s - NOT an analog point: %s\n", source_file, argv[0]);
         }
         else
         {
-          r->ap = (analog_point_t *) db_point;
+          tmp_r->ap = (analog_point_t *) db_point;
           if (argc == 4)
           {
             rtrim(argv[1]);
@@ -439,17 +439,17 @@ void web_point_t::read_file(void)
             ltrim(argv[2]);
             rtrim(argv[3]);
             ltrim(argv[3]);
-            r->bar = strdup(argv[1]);
-            r->half_off = strdup(argv[2]);
-            r->half_on = strdup(argv[3]);
-            r->bar_top = 30;
-            r->bar_left = 710;
-            r->bar_length = 400;
-            r->bar_min = 0;
-            r->bar_max = 500;
-            r->is_bar = true;
+            tmp_r->bar = strdup(argv[1]);
+            tmp_r->half_off = strdup(argv[2]);
+            tmp_r->half_on = strdup(argv[3]);
+            tmp_r->bar_top = 30;
+            tmp_r->bar_left = 710;
+            tmp_r->bar_length = 400;
+            tmp_r->bar_min = 0;
+            tmp_r->bar_max = 500;
+            tmp_r->is_bar = true;
             printf("-- 4 parameter bar\n");
-            printf("Bar: %s, %s, %s\n", r->bar, r->half_off, r->half_on);
+            printf("Bar: %s, %s, %s\n", tmp_r->bar, tmp_r->half_off, tmp_r->half_on);
           }
           else if (argc == 9)
           {
@@ -459,25 +459,25 @@ void web_point_t::read_file(void)
             ltrim(argv[2]);
             rtrim(argv[3]);
             ltrim(argv[3]);
-            r->bar = strdup(argv[1]);
-            r->half_off = strdup(argv[2]);
-            r->half_on = strdup(argv[3]);
-            r->bar_top = atol(argv[4]);
-            r->bar_left = atol(argv[5]);
-            r->bar_length = atol(argv[6]);
-            r->bar_min = atol(argv[7]); 
-            r->bar_max = atol(argv[8]);
-            r->is_bar = true;
+            tmp_r->bar = strdup(argv[1]);
+            tmp_r->half_off = strdup(argv[2]);
+            tmp_r->half_on = strdup(argv[3]);
+            tmp_r->bar_top = atol(argv[4]);
+            tmp_r->bar_left = atol(argv[5]);
+            tmp_r->bar_length = atol(argv[6]);
+            tmp_r->bar_min = atol(argv[7]); 
+            tmp_r->bar_max = atol(argv[8]);
+            tmp_r->is_bar = true;
             printf("-- 9 parameter bar\n");
             printf("Bar: %s, %s, %s, %d, %d, %d, %d, %d\n", 
-                r->bar, r->half_off, r->half_on,
-                r->bar_top, r->bar_left, r->bar_length, r->bar_min, r->bar_max);
+                tmp_r->bar, tmp_r->half_off, tmp_r->half_on,
+                tmp_r->bar_top, tmp_r->bar_left, tmp_r->bar_length, tmp_r->bar_min, tmp_r->bar_max);
           }
         }
       }
       else
       {
-        r->ap = NULL;
+        tmp_r->ap = NULL;
       }
     }
   }
@@ -485,7 +485,7 @@ void web_point_t::read_file(void)
 
 /********************************************************************/
 
-void web_point_t::subst_string(char *sdest, char *snew, int len)
+void web_point_t::subst_string(char *sdest, const char *snew, int len)
 {
   /* This function copies at most len characters into sdest from snew, and then space pads */
   bool end = false;
@@ -574,7 +574,7 @@ void web_point_t::update_file_and_write(void)
     {
       current_val = false;
     }
-    char *src;
+    const char *src;
     if (current_val)
     {
       src = dr->true_string;

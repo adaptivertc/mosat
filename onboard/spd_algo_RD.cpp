@@ -20,7 +20,7 @@ speed_algorithm_RD_t::speed_algorithm_RD_t(void)
 
 /**************************************************************************************************/
 
-char *state_string(int state)
+const char *state_string(int state)
 {
 	switch(state)
 	{

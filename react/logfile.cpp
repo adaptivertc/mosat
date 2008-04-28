@@ -373,7 +373,7 @@ char png_file[500];
 
 static void my_create_image(const char *data, const char *png, bool window)
 {
-  char *fname = "gnuplotoptions.txt";
+  const char *fname = "gnuplotoptions.txt";
   FILE *fp = fopen(fname, "w");
   if (fp == NULL)
   {

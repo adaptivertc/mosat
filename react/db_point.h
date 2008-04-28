@@ -81,7 +81,7 @@ public:
   virtual db_point_t *new_point(int argc, char *argv[], char *err, int esz) = 0;
   virtual void delete_point(db_point_t *) = 0;
   // Following is the name of the config file, example "ai.dat"
-  virtual char *get_config_name(void) = 0;
+  virtual const char *get_config_name(void) = 0;
   // The folowing are class descriptions.
   virtual const char * long_description(void) = 0; // multiple lines
   virtual const char * short_description(void) = 0; // less than 60 chars
@@ -272,7 +272,7 @@ class discrete_point_t : public db_point_t
 {
 public:
   bool pv;
-  char *pv_string;
+  const char *pv_string;
   char hi_desc[12];
   char lo_desc[12];
   void display(void);
@@ -632,8 +632,8 @@ struct discrete_ref_t
 {
   char *str;
   int size;
-  char *true_string;
-  char *false_string;
+  const char *true_string;
+  const char *false_string;
   discrete_point_t *dp;
   discrete_ref_t *next;
 };
@@ -679,7 +679,7 @@ private:
   discrete_ref_t *drefs;
   analog_ref_t *arefs;
   int_ref_t *irefs;
-  void subst_string(char *sdest, char *snew, int len);
+  void subst_string(char *sdest, const char *snew, int len);
   void read_file(void);
   void update_file_and_write(void);
   double last_time;

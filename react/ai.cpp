@@ -44,7 +44,7 @@ public:
   db_point_t *new_point (int argc, char *argv[], char *err, int esz)
     {return ai_point_t::read_one(argc, argv, err, esz);};
   void delete_point(db_point_t *dbp) {delete (ai_point_t *)dbp;};
-  char *get_config_name(void) {return "ai.dat";};
+  const char *get_config_name(void) {return "ai.dat";};
   virtual const char * long_description(void) {return "Analog Input";};
   virtual const char * short_description(void) {return "Analog Input";};
   virtual const char * abbreviation(void) {return "AI";};

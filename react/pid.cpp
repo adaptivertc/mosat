@@ -217,7 +217,7 @@ void pid_point_t::tune_update(void)
     printf("Tune finished, calculating gains\n");
     calc_tune_coef(tune_data, tune_n_samples,
              1.0 / db->get_sample_rate(), TUNE_PID);
-    char *fname = "tuneout.txt";
+    const char *fname = "tuneout.txt";
     FILE *fp = fopen(fname, "w");
     printf("Writing tune data to %s\n", fname);
     for (int i=0; i < tune_n_samples; i++)

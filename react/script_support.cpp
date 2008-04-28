@@ -160,7 +160,7 @@ void log_int(int val, bool first)
 void log_bool(bool val, bool first)
 {
   //logfile->vprint("\n(log_bool)\n");
-  char *s;
+  const char *s;
   if (val)
   {
     s = "T";

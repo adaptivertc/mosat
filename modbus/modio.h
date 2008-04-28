@@ -32,7 +32,7 @@ private:
   int total_read;
   int total_written;
 public:  
-  rt_mod_serial_client_t(uint8 unit_id, char *dev_name, int baudrate, float timeout); 
+  rt_mod_serial_client_t(uint8 unit_id, const char *dev_name, int baudrate, float timeout); 
   int wait_message(void);
   int get_buffer(uint8 *buf, int n);
   int put_buffer(uint8 *buf, int max);

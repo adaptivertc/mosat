@@ -92,7 +92,7 @@ simpumpdrv_t::simpumpdrv_t(react_drv_base_t *r)
 {
   //printf("Read: ");
   printf("Creating sim pump driver . . . .\n");
-  char *fname = "didata.txt";
+  const char *fname = "didata.txt";
   driver_name = "File";
   driver = 1;
   card = 1;

@@ -121,7 +121,7 @@ int main(int argc, char *argv[])
   printf("%s\n", "<body style=\"color: rgb(0, 0, 0); background-color: rgb(204, 204, 204);\"");
   printf("%s\n", "link=\"#000099\" vlink=\"#990099\" alink=\"#000099\">");
   printf("<h2>Comando Ejecutado</h2>");
-  char *qidfile = "/home/carr/control/react/reactqid.txt";
+  const char *qidfile = "/home/carr/control/react/reactqid.txt";
   FILE *fp = fopen( qidfile, "r");
   if (fp == NULL)
   {
@@ -145,7 +145,7 @@ int main(int argc, char *argv[])
   {
     strip_slash(argv[i]);
     printf("%s<br>\n", argv[i]);
-    char buf[50];
+    //char buf[50];
     //printf("Enter a command ('q' to quit): ");
     //fgets(buf, sizeof(buf), stdin);
     //if (buf[0] == 'q')

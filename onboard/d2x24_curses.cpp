@@ -25,7 +25,7 @@ void d2x24_init_screen(void)
 
 static bool d2x24_curses_init = false;
 
-int d2x24_printf(int line, char *fmt, ...)
+int d2x24_printf(int line, const char *fmt, ...)
 {
   if (!d2x24_curses_init)
   {

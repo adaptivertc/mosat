@@ -129,7 +129,7 @@ public:
 class step_if_t : public secuencia_step_t
 {
 private:
-  char *expr_string;
+  const char *expr_string;
   discrete_expr_t expression;
 public:
   step_if_t(int argc, char *argv[], char *error, int esize);
@@ -146,7 +146,7 @@ private:
   double timeout;
   double end_time;
   bool first_time;
-  char *expr_string;
+  const char *expr_string;
   discrete_expr_t expression;
 public:
   step_wait_until_t(int argc, char *argv[], char *error, int esize);

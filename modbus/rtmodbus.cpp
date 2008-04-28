@@ -27,14 +27,14 @@
 #define DEST_PORT 502 
 //#define DEST_PORT 80 
 
-rtmodbus_t *rt_create_modbus_serial(char *device_name, int baudrate, float timeout)
+rtmodbus_t *rt_create_modbus_serial(const char *device_name, int baudrate, float timeout)
 {
   rt_mod_serial_client_t *msc = new rt_mod_serial_client_t(1, device_name, baudrate, timeout);
   MODSerial *modc = new MODSerial(msc);
   return modc;
 }
 
-rtmodbus_t *rt_create_modbus(char *device)
+rtmodbus_t *rt_create_modbus(const char *device)
 {
   // For right now, it only works with TCP/IP, but we need
   // to make it work with serial devices as well.
@@ -42,7 +42,7 @@ rtmodbus_t *rt_create_modbus(char *device)
   char dstr[100];
   safe_strcpy(dstr, device, sizeof(dstr));
   char *p = dstr;
-  char *dest_port = "502";
+  const char *dest_port = "502";
   char *dest_ip = dstr;
   while (*p != '\0')
   {

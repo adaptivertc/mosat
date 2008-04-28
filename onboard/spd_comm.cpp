@@ -20,11 +20,11 @@ static rtmodbus_t *modc;
 static double total_distance = 0.0;
 //static const double circ = 0.694 * M_PI;
 //static const double circ = 0.695 * M_PI;
-static const double circ = 0.691 * M_PI; //  la motriz M033 se reperfilo el 08/Nov/2005,
+static const double circ = 0.665 * M_PI; //  la motriz M033 se reperfilo el 08/Nov/2005,
 // se reperfila cada 50 mil a 60 mil kms (de 5 a 6 meses).
 const double meters_per_pulse = (circ / 110.0);
 //static const double meters_per_pulse = 10.0;
-static const int count_channel = 2;
+static const int count_channel = 8;
 static const  int speed_channel = 0;
 
 static long last_count;
@@ -32,6 +32,8 @@ static int count_history[3];
 //static struct timeval time_history[3]; 
 static int hindex;
 static const int hsize = sizeof(count_history) / sizeof(count_history[0]);
+
+static FILE *fp = NULL;
 
 //#define DEST_IP   "10.25.50.27"
 //#define DEST_IP   "10.25.50.46"
@@ -89,53 +91,12 @@ void reset_distance(int section)
 
 void connect_modbus(void)
 {
-  /***
-  int sockfd;
-  struct sockaddr_in dest_addr;   // will hold the destination addr 
 
-  sockfd = socket(AF_INET, SOCK_STREAM, 0); // do some error checking! 
-  if (sockfd < 0)
-  {
-    perror("Can't create socket");
-    exit(0);
-  }
-  struct timeval tv;
-  tv.tv_sec = 2;
-  tv.tv_usec = 0;
-  int err = setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
-  if (err != 0)
-  {
-    perror("setsockopt");
-  }
-  err = setsockopt(sockfd, SOL_SOCKET, SO_SNDTIMEO, &tv, sizeof(tv));
-  if (err != 0)
-  {
-    perror("setsockopt");
-  }
-
-  dest_addr.sin_family = AF_INET;        // host byte order 
-  dest_addr.sin_port = htons(DEST_PORT); // short, network byte order 
-  dest_addr.sin_addr.s_addr = inet_addr(DEST_IP);
-  printf("Using %s\n", DEST_IP);
-  memset(&(dest_addr.sin_zero), 8, 0);       // zero the rest of the struct 
-
-  printf("Connecting on %d\n", DEST_PORT);
-  int n = connect(sockfd, (struct sockaddr *)&dest_addr,
-                  sizeof(struct sockaddr));
-  if (n < 0)
-  {
-    perror("Can't connect to port");
-    exit(0);
-  }
-  mtp = new mod_tcpip_client_t(sockfd, &dest_addr);
-  modc = new MODSerial(mtp);
-  ***/
-
-  modc = rt_create_modbus("10.1.0.5");
+  modc = rt_create_modbus("172.16.115.99");
   modc->set_debug_level(10);
-  modc->set_address(5);
+  modc->set_address(0);
 
-
+  //fp = fopen("readings.txt", "w");
   reset_distance(0);
 }
 

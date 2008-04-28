@@ -41,8 +41,8 @@ public:
   //           "mycomputer.mydomain.com:1000" would first look up the host, 
   //              then use port 1000.
 
-rtmodbus_t *rt_create_modbus(char *device); 
-rtmodbus_t *rt_create_modbus_serial(char *device, int baudrate, float timeout);
+rtmodbus_t *rt_create_modbus(const char *device); 
+rtmodbus_t *rt_create_modbus_serial(const char *device, int baudrate, float timeout);
 
 
 #endif
