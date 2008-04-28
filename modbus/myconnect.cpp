@@ -56,12 +56,13 @@ int main(int argc, char *argv[])
   //rtmodbus_t *modc = rt_create_modbus("172.16.115.32:502");
   //rtmodbus_t *modc = rt_create_modbus("172.16.115.27:502");
   //rtmodbus_t *modc = rt_create_modbus("127.0.0.1");
-  rtmodbus_t *modc = rt_create_modbus("192.168.0.100");
+  //rtmodbus_t *modc = rt_create_modbus("192.168.0.100");
+  rtmodbus_t *modc = rt_create_modbus("172.16.115.99");
   //rtmodbus_t *modc = rt_create_modbus("172.16.115.37");
   //rtmodbus_t *modc = rt_create_modbus("10.1.0.5");
   //rtmodbus_t *modc = rt_create_modbus("10.0.0.0");
   modc->set_debug_level(0);
-  modc->set_address(1);
+  modc->set_address(0);
   printf("myconnect %s:%d\n", __FILE__, __LINE__);
  
   while (true)

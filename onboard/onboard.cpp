@@ -207,6 +207,7 @@ int main(int argc, char *argv[])
   //FILE *fp = fopen("out.txt", "w");
   char dirname[100];
   dirname[0] = '\0';
+  printf("starting loop ....\n");
   for (int j=start; true; j = (j+1) % n_seg)
   {
     int next = (j + 1) % n_seg;
@@ -228,10 +229,12 @@ int main(int argc, char *argv[])
     {
       if (auto_mode)
       {
+        printf("show loading ....\n");
         spd_show_loading(fast?2:4);
       }
       else
       {
+        printf("press key to exit ....\n");
         spd_wait_key("Pres. tecla para salir"); 
       }
       //mvprintw(20,2,"%-36s", " "); 

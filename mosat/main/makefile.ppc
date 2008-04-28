@@ -28,7 +28,7 @@ $(DIR)ppc_record: $(DIR)ppc_record.o  $(DIR)train_detect.o $(DIR)ppc_logger.o $(
 	$(CC) -o $(DIR)ppc_record -lpthread $(DIR)ppc_record.o $(DIR)event_detect.o \
 	$(DIR)train_detect.o $(DIR)ppc_logger.o -lrtcommon -lsxiodb -lsxio
 
-$(DIR)mosatsync:
+$(DIR)mosatsync: mosatsync.cpp
 	$(CC) -o $(DIR)mosatsync mosatsync.cpp
 
 #$(DIR)oem_iodb_cpp.o:	oem_iodb_cpp.cpp

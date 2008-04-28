@@ -33,8 +33,6 @@ static int count_history[3];
 static int hindex;
 static const int hsize = sizeof(count_history) / sizeof(count_history[0]);
 
-//static FILE *fp = NULL;
-
 //#define DEST_IP   "10.25.50.27"
 //#define DEST_IP   "10.25.50.46"
 //#define DEST_IP   "172.16.115.27"
@@ -91,12 +89,9 @@ void reset_distance(int section)
 
 void connect_modbus(void)
 {
-
   modc = rt_create_modbus("172.16.115.99");
   modc->set_debug_level(10);
   modc->set_address(0);
-
-  //fp = fopen("readings.txt", "w");
   reset_distance(0);
 }
 

@@ -302,7 +302,8 @@ void spd_init_screen()
     return;
   }
   //serial_fd = rt_open_serial("/dev/ttyUSB0", 19200, 0);
-  serial_fd = rt_open_serial("/dev/ttyTS0", 19200, 0); // COM3 on the board.
+  //serial_fd = rt_open_serial("/dev/ttyTS0", 19200, 0); // COM3 on the board.
+  serial_fd = rt_open_serial("/dev/ttyT8S5", 19200, 0); // COM3 on the board.
   buf[0] = 0xFE;
   buf[1] = 'h'; // Horizontal bar graph mode. 
   write(serial_fd, buf, 2);
