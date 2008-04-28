@@ -33,7 +33,7 @@ static int count_history[3];
 static int hindex;
 static const int hsize = sizeof(count_history) / sizeof(count_history[0]);
 
-static FILE *fp = NULL;
+//static FILE *fp = NULL;
 
 //#define DEST_IP   "10.25.50.27"
 //#define DEST_IP   "10.25.50.46"

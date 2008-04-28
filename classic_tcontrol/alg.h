@@ -31,7 +31,7 @@ DEALINGS IN THE SOFTWARE.
 class alg_notify_object_t
 {
 public:
-  virtual void estop(int key, char *reason) = 0;
+  virtual void estop(int key, const char *reason) = 0;
   virtual void permit_section_entry(int section, int key) = 0;
   virtual void prohibit_section_entry(int section, int key) = 0;
   virtual void permit_system_entry(int section, int key) = 0;

@@ -25,7 +25,7 @@ DEALINGS IN THE SOFTWARE.
 
 #include "alg.h"
 
-void alg_notify_object_t::estop(int key, char *reason)
+void alg_notify_object_t::estop(int key, const char *reason)
 {
 }
 

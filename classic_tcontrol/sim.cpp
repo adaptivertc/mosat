@@ -359,7 +359,7 @@ private:
   int n;
 public:
   my_alg_notify_object_t(int num) {n = num;};
-  void estop(int key, char *reason);
+  void estop(int key, const char *reason);
   void permit_section_entry(int section, int key);
   void prohibit_section_entry(int section, int key);
   void permit_system_entry(int section, int key);
@@ -368,7 +368,7 @@ public:
 
 /*********************************************************************/
 
-void my_alg_notify_object_t::estop(int key, char *reason)
+void my_alg_notify_object_t::estop(int key, const char *reason)
 {
   char cmd[200];
   snprintf(cmd,sizeof(cmd), "echo \"Estop called at %0.1lf (key%d, alg %d): %s\" >> err.log", 

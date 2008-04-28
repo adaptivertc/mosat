@@ -51,7 +51,7 @@ public:
   void send_to_next_neighbor(short mtype){};
   void send_to_last_neighbor(short mtype){};
   void send_to_central(short mtype){};
-  void alarm_detected(short type, char *msg){};
+  void alarm_detected(short type, const char *msg){};
   message_t *get_message(void){};
 };
 
