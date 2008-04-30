@@ -52,7 +52,7 @@ int get_ip_address(char ip[10][100],char dir[10][100])
  int cont = 0;
  char line[300];
  char *args[10];
- fd = fopen("/home/react/modbus/record_config1.txt","r");
+ fd = fopen("/home/react/modbus/sync_list.txt","r");
  if(fd!=NULL)
  {
   clearerr(fd);
@@ -109,12 +109,12 @@ int main()
 //    char mybuf[200];
 //    printf("Enter a string: ");
 //    fgets(mybuf, sizeof(mybuf), stdin);
-    int xxx = read(sockfd, buf,sizeof(buf));
+/*    int xxx = read(sockfd, buf,sizeof(buf));
     if(xxx == -1) 
     {
       printf("Reading Error\n");
       continue;
-    }
+    }*/
     printf("%i Sending this message: %s\n", a,mybuf);
     write(sockfd, mybuf, strlen(mybuf) + 1);
     read(sockfd, buf, sizeof(buf));
