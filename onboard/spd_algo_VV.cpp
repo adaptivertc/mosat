@@ -74,6 +74,11 @@ speed_state_t speed_algorithm_VV_t::current_state(time_t now, double v_actual,do
 			mvprintw(32,78,"                           ");
 			#endif
 		}
+		if(previous_state == SPD_STATE_WARN_LO){
+			#ifndef ARM
+			mvprintw(32,78,"                           ");
+			#endif
+		}
 		previous_state = SPD_STATE_NORMAL;
 		return previous_state;
 	}
