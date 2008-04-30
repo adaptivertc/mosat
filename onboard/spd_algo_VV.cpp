@@ -8,7 +8,7 @@
 #include "spd_algo_VV.h"
 
 
-char *states(int mode)
+const char *states(int mode)
 {
   switch (mode)
   {
