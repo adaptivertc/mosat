@@ -11,14 +11,11 @@ typedef enum speed_state_t
   SPD_STATE_WARN_LO
 };
 
-
-
 struct speed_results_t
 {
   bool stop_train;
   speed_state_t state;
 };
-
 
 struct current_speed_limits_t
 {
@@ -50,7 +47,7 @@ public:
 		  current_speed_limits_t limits, speed_results_t *results);
 };
 
-
+void alg_compare(speed_results_t *results, int n);
 
 
 

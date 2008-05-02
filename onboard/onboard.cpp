@@ -326,10 +326,11 @@ int main(int argc, char *argv[])
  
       desired = limits.desired;
 
-      speed_results_t results;
-      spd_DC.evaluate((time_t) now, actual, distance, limits, &results);  
-      spd_RD.evaluate((time_t) now, actual, distance, limits, &results);  
-      spd_VV.evaluate((time_t) now, actual, distance, limits, &results);  
+      speed_results_t results[3];
+      spd_DC.evaluate((time_t) now, actual, distance, limits, &results[0]);  
+      spd_RD.evaluate((time_t) now, actual, distance, limits, &results[1]);  
+      spd_VV.evaluate((time_t) now, actual, distance, limits, &results[2]);  
+      alg_compare(results, 3);
 
       time_in_section++;
 
