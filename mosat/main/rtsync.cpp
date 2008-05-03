@@ -28,7 +28,7 @@ void gen_log(char newhour[],char actualhour[],char dir[])
  char date[50];
  strftime(date,sizeof(date),"%d/%m/%Y",&ttm);
  printf("Fecha: %s\n",date);
- char path[50];
+ char path[200];
  strcpy(path,dir);
  strcat(path,"/sync_log.txt");
  printf("Path = \"%s\"\n",path);
