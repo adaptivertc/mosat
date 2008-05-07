@@ -109,6 +109,9 @@ speed_state_t speed_algorithm_RD_t::current_state(time_t now, double actual_spee
 void speed_algorithm_RD_t::evaluate(time_t now, double actual_speed, double actual_distance,
 		                current_speed_limits_t limits, speed_results_t *results)
 {
+	if(actual_distance == 0)
+		reset_state();	
+	
 	results->state = current_state(now,actual_speed,limits.low,limits.high,limits.very_high);
 	
 	#ifndef ARM
@@ -121,3 +124,8 @@ void speed_algorithm_RD_t::evaluate(time_t now, double actual_speed, double actu
 }
 
 /*****************************************************************************/
+
+void speed_algorithm_RD_t::reset_state()
+{
+	previous_state = SPD_STATE_NORMAL;
+}

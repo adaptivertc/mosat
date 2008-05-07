@@ -33,17 +33,6 @@ static int count_history[3];
 static int hindex;
 static const int hsize = sizeof(count_history) / sizeof(count_history[0]);
 
-//#define DEST_IP   "10.25.50.27"
-//#define DEST_IP   "10.25.50.46"
-//#define DEST_IP   "172.16.115.27"
-//#define DEST_IP   "172.16.115.99"
-#define DEST_IP   "10.1.0.5"
-//#define DEST_IP   "127.0.0.1"
-//#define DEST_IP   "216.109.112.135"
-
-//#define DEST_PORT 3490
-#define DEST_PORT 502
-//#define DEST_PORT 80
 
 double time_dif(struct timeval tv1, struct timeval atv)
 {

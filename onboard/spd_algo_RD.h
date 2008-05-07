@@ -6,6 +6,7 @@ private:
 	speed_state_t previous_state;
 	speed_state_t current_state(time_t now, double actual, 
     double the_lo_limit, double the_hi_limit, double shutdown_limit);
+    void reset_state();
 
 public:
   speed_algorithm_RD_t(void);
