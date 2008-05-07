@@ -306,6 +306,7 @@ int main(int argc, char *argv[])
      
       double actual = 0;
       double desired = 0;
+      spd_discrete_t discretes;
 
       if (sim_mode)
       {
@@ -315,7 +316,7 @@ int main(int argc, char *argv[])
       else
       {
         //mvprintw(22,2,"Live Mode"); 
-        get_actual_speed_dist(j, time_in_section, &distance, &actual);
+        get_actual_speed_dist(j, time_in_section, &distance, &actual, &discretes);
       } 
       
       //dispatch_algorithms(time_t now, int command, double speed, double distance)

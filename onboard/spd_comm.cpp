@@ -97,7 +97,7 @@ void connect_modbus(void)
 
 /***********************************************************************/
 
-void get_actual_speed_dist(int section, int t, double *dist, double *speed)
+void get_actual_speed_dist(int section, int t, double *dist, double *speed, spd_discrete_t *descretes)
 {
   int current_count;
   int speed_count;

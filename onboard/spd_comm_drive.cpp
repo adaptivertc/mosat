@@ -25,7 +25,7 @@ void reset_distance(int section)
 
 /*********************************************************************/
 
-void get_actual_speed_dist(int section, int t, double *a_dist, double *a_speed)
+void get_actual_speed_dist(int section, int t, double *a_dist, double *a_speed, spd_discrete_t *discretes)
 {
   double last_speed = speed;
   speed += accell * 3.6;

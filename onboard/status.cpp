@@ -74,8 +74,9 @@ int main(int argc, char *argv[])
    
     double actual = 0;
     double distance = 0;
+    spd_discrete_t discretes;
 
-    get_actual_speed_dist(0, 0, &distance, &actual);
+    get_actual_speed_dist(0, 0, &distance, &actual, &discretes);
       
     spd_print_current(0, actual, 0, false, 0, distance, now, 0);
 
