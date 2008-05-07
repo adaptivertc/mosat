@@ -96,6 +96,7 @@ void connect_modbus(void)
 }
 
 /***********************************************************************/
+#define DOOR_CH (2)
 
 void get_actual_speed_dist(int section, int t, double *dist, double *speed, spd_discrete_t *descretes)
 {
@@ -116,7 +117,13 @@ void get_actual_speed_dist(int section, int t, double *dist, double *speed, spd_
     buf[i] = dvals[i] ? '1' : '0';
     buf[i+1] = '\0';
   }
-  mvprintw(17,2,"%s", buf);
+  mvprintw(17,2,"%s %s", buf, dvals[DOOR_CH] ? "OPEN" : "CLOSED");
+  descretes->doors_open = dvals[DOOR_CH];
+  // When we have the inputs, we need to fix the following:
+  descretes->left_open = false;
+  descretes->right_open = false;
+  descretes->master = false;
+  
 
   /***
   for (int i=0; i < 16; i++)

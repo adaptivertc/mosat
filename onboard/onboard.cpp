@@ -58,7 +58,7 @@ DEALINGS IN THE SOFTWARE.
 
 #include "arg.h"
 
-static int n_sections;
+//static int n_sections;
 static int the_line = 1;
 static bool all_profiles = false;
 
@@ -89,6 +89,7 @@ int main(int argc, char *argv[])
   bool free_running_mode = false;
   int current_arg;
   bool create_profiles = false;
+  bool detect_with_doors = false;
   sim_reader_t sreader;
   sreader.set_line(1);
   profile_reader_t preader;
@@ -148,6 +149,11 @@ int main(int argc, char *argv[])
       all_profiles = true;
       preader.set_all(true);
       printf("All profiles ON\n");
+    }
+    else if (0 == strcasecmp(argv[current_arg], "-door"))
+    {
+      detect_with_doors = true;
+      printf("using doors to detect arrival/departure\n");
     }
   }
 
@@ -306,17 +312,18 @@ int main(int argc, char *argv[])
      
       double actual = 0;
       double desired = 0;
-      spd_discrete_t discretes;
+      spd_discrete_t descretes;
+      descretes.doors_open = false;
 
       if (sim_mode)
       {
         //mvprintw(22,2,"Sim Mode"); 
-        sreader.get_sim_speed_dist(j, time_in_section, &distance, &actual);
+        sreader.get_sim_speed_dist(j, time_in_section, &distance, &actual, &descretes);
       } 
       else
       {
         //mvprintw(22,2,"Live Mode"); 
-        get_actual_speed_dist(j, time_in_section, &distance, &actual, &discretes);
+        get_actual_speed_dist(j, time_in_section, &distance, &actual, &descretes);
       } 
       
       //dispatch_algorithms(time_t now, int command, double speed, double distance)
@@ -357,7 +364,11 @@ int main(int argc, char *argv[])
       printw("Falta: %4.0lf, Porciento: %3.0lf%%", left, (distance / total_distance) * 100.0);
       refresh();
       ****/
-      if (((distance / total_distance) > 0.99) && (actual == 0))
+      if (detect_with_doors)
+      {
+        if (descretes.doors_open && (distance > 100)) break;
+      }
+      else if (((distance / total_distance) > 0.99) && (actual == 0))
       {
         if (auto_end) break;
       }

@@ -78,6 +78,7 @@ const char *sim_names1[] =
 sim_reader_t::sim_reader_t(void)
 {
   the_line = 1;
+  end_count = 0;
 } 
 
 /*********************************************************************/
@@ -90,14 +91,21 @@ double sim_reader_t::get_total_dist(int section)
 
 /*********************************************************************/
 
-void sim_reader_t::get_sim_speed_dist(int section, int t, double *dist, double *speed)
+void sim_reader_t::get_sim_speed_dist(int section, int t, double *dist, double *speed, spd_discrete_t *des)
 {
+  des->left_open = false;
+  des->right_open = false;
+  des->master = false;
   if (t >= sim_data[section].n)
   {
     *dist = sim_data[section].dist[sim_data[section].n-1] - sim_data[section].dist[0];
     *speed = 0.0;
+    end_count++;
+    if (end_count > 2) des->doors_open = true; else des->doors_open = false;
     return;
   }
+  end_count = 0;
+  des->doors_open = false;
   *dist = sim_data[section].dist[t] - sim_data[section].dist[0];
   *speed = sim_data[section].speed[t];
 }
