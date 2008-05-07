@@ -1,7 +1,10 @@
 
 #include <stdio.h>
 #include <time.h>
-#include <curses.h>
+
+#ifndef ARM
+#include <ncurses.h>
+#endif
 
 
 #include "spd_algo.h"

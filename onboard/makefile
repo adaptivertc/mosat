@@ -48,6 +48,9 @@ keypad: keypad.c
 check_speed:	check_speed.o
 	g++ -o  check_speed check_speed.o -lncurses
 
+mo_test: mo_test.cpp
+	g++ -o mo_test mo_test.cpp  $(RTMODBUS) $(RTCOMMON)
+
 #profile_reader: profile_reader.cpp profile_reader.h
 #	g++ -o profile_reader profile_reader.cpp  $(RTCOMMON)
 		

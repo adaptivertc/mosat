@@ -420,6 +420,7 @@ public:
   analog_point_t **analog_points;
   bool collecting;
   int sample_interval;
+  int n_days_of_history;
   bool instantaneous_enable;
   bool hour_enable;
   bool day_enable;
@@ -438,6 +439,7 @@ public:
   void write_to_file(void);
   point_type_t point_type(void) {return DATA_POINT;};
   static file_logger_t **read(int *cnt, const char * home_dir);
+  void delete_old_files(time_t now);
 };
 
 class discrete_logger_t : public discrete_point_t

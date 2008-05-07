@@ -44,6 +44,12 @@ static char station2[20];
 static int serial_fd = -1;
 
 /*********************************************************************/
+ 
+void spd_create_image(const char *base_name, const char *gtitle, bool window)
+{
+}
+
+/*********************************************************************/
 
 void draw_numbers(void)
 {
@@ -157,7 +163,7 @@ void d4x40_cls(void)
 
 /***************************************************************/
 
-int d4x40_printf(int row, int col, char *fmt, ...)
+int d4x40_printf(int row, int col, const char *fmt, ...)
 {
   char buf[5];
   char myline[41];

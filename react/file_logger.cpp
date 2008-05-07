@@ -38,6 +38,8 @@ Member functions for data collection points.
 #include "arg.h"
 #include "config.h"
 
+#define FL_MIN_ARGS (11)
+
 /**********************************************************************/
 
 void file_logger_t::write_to_file(void)
@@ -153,13 +155,8 @@ static bool year_changed(time_t t1, time_t t2)
 
 /**********************************************************************/
 
-static FILE *open_day_history_file(const char * pre, const char *post, FILE *fp)
+static void make_day_file_name(time_t the_time, char *fname, int size_fname, const char *pre, const char *post)
 {
-  char fname[500];
-  if (fp != NULL)
-  {
-    fclose(fp);
-  }
   const char *loghome = react_config->get_config("LogHome");
   if (loghome == NULL)
   {
@@ -174,12 +171,25 @@ static FILE *open_day_history_file(const char * pre, const char *post, FILE *fp)
   {
     post = "";
   }
-  time_t now = time(NULL);
   char buf1[30];
   struct tm mytm;
-  localtime_r(&now, &mytm);
+  localtime_r(&the_time, &mytm);
   strftime(buf1, sizeof(buf1), "%Y%m%d", &mytm);
-  snprintf(fname, sizeof(fname), "%s/%s%s%s", loghome, pre, buf1, post);
+  snprintf(fname, size_fname, "%s/%s%s%s", loghome, pre, buf1, post);
+}
+
+/**********************************************************************/
+
+static FILE *open_day_history_file(const char * pre, const char *post, FILE *fp)
+{
+  char fname[500];
+  if (fp != NULL)
+  {
+    fclose(fp);
+  }
+  time_t now = time(NULL);
+  make_day_file_name(now, fname, sizeof(fname), pre, post);
+
   printf("Opening %s\n", fname);
   fp = fopen(fname, "a");
   if (fp == NULL)
@@ -187,6 +197,51 @@ static FILE *open_day_history_file(const char * pre, const char *post, FILE *fp)
     printf("**** Error Opening %s\n", fname);
   }
   return fp;
+}
+
+/**********************************************************************/ 
+
+void file_logger_t::delete_old_files(time_t now)
+{
+  char fname[500];
+  make_day_file_name(now, fname, sizeof(fname), base_name, "_del_log.txt");
+  FILE *fp = fopen(fname, "w");
+  if (fp != NULL) fprintf(fp, "Delete Log\n");
+  if (fp != NULL) fprintf(fp, "keeping %d days of history\n", n_days_of_history);
+  if (n_days_of_history <= 0)
+  {
+    if (fp != NULL) fprintf(fp, "Nothing to do, exiting . . . \n");
+    if (fp != NULL) fclose(fp);
+    return;
+  }
+  for (int i = n_days_of_history; i < (n_days_of_history + 10); i++)
+  {
+    int ret;
+    time_t day_time = now - ((i+1) * (60*60*24));
+    make_day_file_name(day_time, fname, sizeof(fname), base_name, ".txt");
+    if (fp != NULL) fprintf(fp, "Checking file: %s\n", fname);
+    if (file_exists(fname))
+    {
+      ret = unlink(fname);
+      if (fp != NULL) fprintf(fp, "Deleted file: %s, ret = %d\n\n", fname, ret);
+    }
+    else
+    {
+      if (fp != NULL) fprintf(fp, " DOES NOT EXIST\n\n");
+    }
+    make_day_file_name(day_time, fname, sizeof(fname), base_name, "_hour.txt");
+    if (fp != NULL) fprintf(fp, "Checking file: %s\n", fname);
+    if (file_exists(fname))
+    {
+      ret = unlink(fname);
+      if (fp != NULL) fprintf(fp, "Deleted file: %s, ret = %d\n\n", fname, ret);
+    }
+    else
+    {
+      if (fp != NULL) fprintf(fp, " DOES NOT EXIST\n\n");
+    }
+  }
+  if (fp != NULL) fclose(fp);
 }
 
 /**********************************************************************/ 
@@ -230,6 +285,7 @@ void file_logger_t::update(void)
                          ".txt", instantaneous_fp);
     hour_fp = open_day_history_file(base_name, 
                          "_hour.txt", hour_fp);
+    delete_old_files(now);
   }
   if (week_changed(now, last_log_time))
   {
@@ -305,7 +361,6 @@ file_logger_t **file_logger_t::read(int *cnt, const char *home_dir)
     char tmp[300];
     int argc;
     char *argv[25];
-    //DI1|Discrete Input 1|0|0|1|HI|LO|N|N|
     safe_strcpy(tmp, (const char*) line, sizeof(tmp));
     argc = get_delim_args(tmp, argv, '|', 25);
     if (argc == 0)
@@ -316,9 +371,9 @@ file_logger_t **file_logger_t::read(int *cnt, const char *home_dir)
     {
       continue;
     }
-    else if (argc < 10)
+    else if (argc <  FL_MIN_ARGS)
     {
-      printf("%s: Wrong number of args (minimum 10), line %d\n", path, i+1);
+      printf("%s: Wrong number of args (minimum %d), line %d\n", path, FL_MIN_ARGS, i+1);
       continue;
     }
 
@@ -329,13 +384,14 @@ file_logger_t **file_logger_t::read(int *cnt, const char *home_dir)
     safe_strcpy(p->description, (const char*) argv[1], sizeof(p->description));
     safe_strcpy(p->base_name, (const char*) argv[2], sizeof(p->base_name));
     p->sample_interval = atol(argv[3]);
+    p->n_days_of_history = atol(argv[4]);
 
 
-    p->instantaneous_enable = (argv[4][0] == '1');
-    p->hour_enable = (argv[5][0] == '1');
-    p->day_enable = (argv[6][0] == '1');
-    p->week_enable = (argv[7][0] == '1');
-    p->month_enable = (argv[8][0] == '1');
+    p->instantaneous_enable = (argv[5][0] == '1');
+    p->hour_enable = (argv[6][0] == '1');
+    p->day_enable = (argv[7][0] == '1');
+    p->week_enable = (argv[8][0] == '1');
+    p->month_enable = (argv[9][0] == '1');
     p->collecting = true;
     //p->instantaneous_fp = fopen(p->base_name, "w");
     p->instantaneous_fp = open_day_history_file(p->base_name, ".txt", NULL);
@@ -349,10 +405,10 @@ file_logger_t **file_logger_t::read(int *cnt, const char *home_dir)
       printf("collection is on for %s\n", p->tag);
     }
 
-    p->num_points = argc - 9;
+    p->num_points = argc - (FL_MIN_ARGS - 1);
     p->analog_points = new analog_point_t *[p->num_points + 1];
 
-    for (int j=9; j < argc; j++)
+    for (int j=(FL_MIN_ARGS - 1); j < argc; j++)
     {
       char temp_tag[50];
       db_point_t *db_point;
@@ -361,14 +417,14 @@ file_logger_t **file_logger_t::read(int *cnt, const char *home_dir)
       db_point = db->get_db_point(temp_tag);
       if ((db_point == NULL) || (db_point->pv_type() != ANALOG_VALUE))
       {
-        p->analog_points[j-9] = NULL;
+        p->analog_points[j-(FL_MIN_ARGS - 1)] = NULL;
         printf("Bad analog point: %s\n", temp_tag);
       }
       else
       {
-        p->analog_points[j-9] = (analog_point_t *) db_point;
+        p->analog_points[j-(FL_MIN_ARGS - 1)] = (analog_point_t *) db_point;
       }
-      printf("analog pint %d: %s\n", j-9, temp_tag);
+      printf("analog pint %d: %s\n", j-(FL_MIN_ARGS - 1), temp_tag);
     }
     p->last_log_time = time(NULL);
     p->n_hour_samples = 0;
