@@ -8,7 +8,7 @@ RTMODBUS=../modbus/arm/librtmodbus.a
 CC=arm-unknown-linux-gnu-gcc -mcpu=arm9 -Wall
 
 #CPP=arm-linux-g++ -mcpu=arm9  -mcpu=arm9-Wall
-CPP=arm-unknown-linux-gnu-g++ -Wall
+CPP=arm-unknown-linux-gnu-g++ -Wall -mcpu=arm9
 
 DIR=arm/
 
@@ -43,10 +43,10 @@ $(DIR)onboard:	$(DIR)onboard.o $(DIR)spd_display_2x24.o $(DIR)spd_com_tsarm.o\
 
 $(DIR)onboard_4x40:	$(DIR)onboard.o $(DIR)spd_display_4x40.o $(DIR)spd_com_tsarm.o\
 		$(DIR)spd_algo_DC.o $(DIR)spd_algo_RD.o $(DIR)spd_algo_VV.o $(DIR)profile_reader.o $(DIR)sim_reader.o\
-		$(DIR)spd_select.o $(DIR)frtimer.o $(DIR)alg_compare.o
+		$(DIR)spd_select.o $(DIR)frtimer.o $(DIR)alg_compare.o $(DIR)ob_config.o
 	$(CPP) -o $(DIR)onboard_4x40 -lrtcommon -lpthread $(DIR)onboard.o $(DIR)spd_display_4x40.o\
 		$(DIR)spd_algo_DC.o $(DIR)spd_algo_RD.o $(DIR)spd_algo_VV.o $(DIR)profile_reader.o $(DIR)sim_reader.o\
-		$(DIR)spd_com_tsarm.o $(DIR)spd_select.o $(DIR)frtimer.o $(DIR)alg_compare.o $(RTMODBUS) 
+		$(DIR)spd_com_tsarm.o $(DIR)spd_select.o $(DIR)frtimer.o $(DIR)alg_compare.o $(DIR)ob_config.o $(RTMODBUS) 
 
 $(DIR)status:	$(DIR)status.o $(DIR)spd_display_4x40.o $(DIR)spd_com_tsarm.o\
 		$(DIR)spd_select.o $(DIR)frtimer.o

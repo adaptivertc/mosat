@@ -57,10 +57,13 @@ DEALINGS IN THE SOFTWARE.
 #define RT_FACTOR (100)
 
 #include "arg.h"
+#include "ob_config.h"
 
 //static int n_sections;
 static int the_line = 1;
 static bool all_profiles = false;
+
+onboard_config_t *onboard_config = NULL;
 
 /*******************************************************************/
 
@@ -83,6 +86,8 @@ int main(int argc, char *argv[])
   speed_algorithm_DC_t spd_DC;
   speed_algorithm_RD_t spd_RD;
   speed_algorithm_VV_t spd_VV;
+
+  const char *config_file = "onboard_config.txt";
 
   sim_mode = false;
   bool pick_mode = false;
@@ -155,7 +160,23 @@ int main(int argc, char *argv[])
       detect_with_doors = true;
       printf("using doors to detect arrival/departure\n");
     }
+    else if (0 == strcasecmp(argv[current_arg], "-c"))
+    {
+      if (argc > (current_arg + 1))
+      {
+        current_arg++;
+        config_file = argv[current_arg];
+        printf("Setting the config file name to %s \n", config_file);
+      }
+      else
+      {
+        printf("Can't read the config file name, not enough args\n");
+      }
+    }
   }
+
+  onboard_config = new onboard_config_t();
+  onboard_config->read_file(config_file);
 
   //spd_init_screen();
   /**

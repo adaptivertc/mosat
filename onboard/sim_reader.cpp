@@ -101,7 +101,7 @@ void sim_reader_t::get_sim_speed_dist(int section, int t, double *dist, double *
     *dist = sim_data[section].dist[sim_data[section].n-1] - sim_data[section].dist[0];
     *speed = 0.0;
     end_count++;
-    if (end_count > 2) des->doors_open = true; else des->doors_open = false;
+    if (end_count > 1) des->doors_open = true; else des->doors_open = false;
     return;
   }
   end_count = 0;
