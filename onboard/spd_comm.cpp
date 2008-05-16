@@ -34,6 +34,7 @@ static double meters_per_pulse = (circ / 110.0);
 //static const double meters_per_pulse = 10.0;
 static int count_channel = 8;
 static int door_channel = 2;
+static bool door_invert = false;
 static const  int speed_channel = 0;
 
 static long last_count;
@@ -163,6 +164,19 @@ void connect_modbus(void)
   }
   door_channel = atol(door_ch);
 
+  const char *door_inv = onboard_config->get_config("door_invert");
+  if (door_ch == NULL)
+  {
+    door_invert = false;
+    printf("No door invert specified, using positive logic");
+  }
+  else
+  {
+    door_invert = (door_inv[0] == '1') || (door_inv[0] == 't') || (door_inv[0] == 'T') || (door_inv[0] == 'Y') || (door_inv[0] == 'y');
+    printf("Door inver specified: %s, %s logic\n", door_inv, door_invert ? "negative": "positive");
+  }
+
+  door_channel = atol(door_ch);
   modc = rt_create_modbus(ip_address);
   modc->set_debug_level(10);
   modc->set_address(atol(modbus_address));
@@ -194,6 +208,7 @@ void get_actual_speed_dist(int section, int t, double *dist, double *speed, spd_
   mvprintw(17,2,"%s %s", buf, dvals[door_channel] ? "OPEN" : "CLOSED");
   #endif
   descretes->doors_open = dvals[door_channel];
+  if (door_invert)  descretes->doors_open = !descretes->doors_open;
   // When we have the inputs, we need to fix the following:
   descretes->left_open = false;
   descretes->right_open = false;
