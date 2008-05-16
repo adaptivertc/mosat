@@ -96,7 +96,7 @@ int d4x40_printf(int row, int col, const char *fmt, ...)
 }
 
 /***************************************************************/
-static const char *serial_device = "/dev/ttyT8S5";
+static const char *serial_device = "/dev/ttyT8S3";
 
 void spd_init_screen()
 {
@@ -109,7 +109,9 @@ void spd_init_screen()
   {
     return;
   }
+  printf("Opening %s\n", serial_device);
   serial_fd = rt_open_serial(serial_device, 19200, 0);
+  printf("serial_fd = %d\n", serial_fd);
   //serial_fd = rt_open_serial("/dev/ttyUSB0", 19200, 0);
   //serial_fd = rt_open_serial("/dev/ttyTS0", 19200, 0); // COM3 on the board.
   //serial_fd = rt_open_serial("/dev/ttyT8S5", 19200, 0); // COM3 on the board.
@@ -185,7 +187,7 @@ void spd_init_screen()
     write(serial_fd, buf, 4);
     write(serial_fd, str, 6);
 
-    snprintf(str, sizeof(str), "Des %2d", i);
+   snprintf(str, sizeof(str), "Des %2d", i);
     buf[3] = 4;
     write(serial_fd, buf, 4);
     write(serial_fd, str, 6);
@@ -257,14 +259,29 @@ int main(int argc, char *argv[])
   spd_init_screen();
   
   sleep(1);
+  printf("printing line 1 . . .\n");
   d4x40_printf(1, 1, "This is line one");
   sleep(1);
+  printf("printing line 2 . . .\n");
   d4x40_printf(2, 1, "This is line two");
   sleep(1);
+  printf("printing line 3 . . .\n");
   d4x40_printf(3, 1, "This is line three");
   sleep(1);
+  printf("printing line 4 . . .\n");
   d4x40_printf(4, 1, "This is line four");
+  while (true)
+  {
+    char buf[5];
+    printf("Ok, type something on the funny little touchpad\n");
+    int n = read(serial_fd, buf, sizeof(buf) - 1);
+    if (n > 0)
+    {
+      printf("%c", buf[n-1]);
+    }
+  } 
   close(serial_fd);
+
 }
 
 

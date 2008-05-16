@@ -38,7 +38,7 @@ DEALINGS IN THE SOFTWARE.
 
 static char station1[20];
 static char station2[20];
-
+static bool doors_open = false;
 
 
 static int serial_fd = -1;
@@ -86,6 +86,29 @@ void draw_numbers(void)
 
 char d4x40_trans_char(char ch)
 {
+  /* Version 2 */
+  switch (ch)
+  {
+    case 'X': return('1'); /* 1 R1C1 */
+    case 'U': return('2'); /* 2 R1C2 */
+    case 'V': return('3'); /* 3 R1C3 */
+    case 'S': return('4'); /* 4 R2C1 */
+    case 'P': return('5'); /* 5 R2C2 */
+    case 'Q': return('6'); /* 6 R2C3 */
+    case 'N': return('7'); /* 7 R3C1 */
+    case 'K': return('8'); /* 8 R3C2 */
+    case 'L': return('9'); /* 9 R3C3 */
+    case 'F': return('0'); /* 0 R4C2 */
+
+    case 'W': return('f'); /* A R1C4 */
+    case 'R': return('s'); /* B R2C4 */
+    case 'M': return('a'); /* C R3C4 */
+    case 'H': return('m'); /* D R4C4 */
+
+    case 'I': return('q'); /* + R4C1 */
+    case 'G': return('c'); /* - R4C3 */
+  }
+  /* Versoin 1
   switch (ch)
   {
     case 19: return('1');
@@ -107,6 +130,7 @@ char d4x40_trans_char(char ch)
     case 22: return('q');
     case 44: return('c');
   }
+  ****/
   return ' ';
 }
 
@@ -280,6 +304,7 @@ void spd_redraw_segment(void)
   d4x40_printf(1,1,"%s", st);
   snprintf(st, sizeof(st), "%-10s", station2);
   d4x40_printf(1,31,"%s", st);
+  d4x40_printf(2,39,"%c", doors_open ? 'O' : '-');
 
   //d4x40_printf(1,6,"%s-%s", station1, station2);
    
@@ -309,7 +334,7 @@ void spd_init_screen()
   }
   //serial_fd = rt_open_serial("/dev/ttyUSB0", 19200, 0);
   //serial_fd = rt_open_serial("/dev/ttyTS0", 19200, 0); // COM3 on the board.
-  serial_fd = rt_open_serial("/dev/ttyT8S5", 19200, 0); // COM3 on the board.
+  serial_fd = rt_open_serial("/dev/ttyT8S3", 19200, 0); // COM3 on the board.
   buf[0] = 0xFE;
   buf[1] = 'h'; // Horizontal bar graph mode. 
   write(serial_fd, buf, 2);
@@ -467,15 +492,17 @@ void horizontal_bar_graph(int row, int col, int pix)
 /**********************************************************************/
 
 void spd_print_current(double desired, double actual, int type, bool warn, 
-      double pct, double total_distance, double now, double total_time)
+      double pct, double total_distance, double now, double total_time,  spd_discrete_t *discretes)
 { 
+  doors_open = discretes->doors_open;
+
   if (actual > 99) actual = 99;
   if (desired > 99) desired = 99;
   if (actual < 0) actual = 0;
   if (desired < 0) desired = 0;
 
-  d4x40_printf(3,1,"De %2.1lf", desired);
-  d4x40_printf(4,1,"Ac %2.1lf", actual);
+  d4x40_printf(3,1,"De %04.1lf", desired);
+  d4x40_printf(4,1,"Ac %04.1lf", actual);
 
   int act_pix = (int) (actual + 0.5);
   int des_pix = (int) (desired + 0.5);

@@ -125,7 +125,7 @@ static bool last_warn = false;
 static int count_down = 0;
 
 void spd_print_current(double desired, double actual, int type, bool warn, 
-      double pct, double total_distance, double now, double total_time)
+      double pct, double total_distance, double now, double total_time,  spd_discrete_t *discretes)
 { 
   if (last_col != COLS)
   {

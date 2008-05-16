@@ -2,7 +2,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+
+#ifndef ARM
 #include <ncurses.h>
+#endif
+
 #include <string.h>
 #include <stdint.h>
 
@@ -29,6 +33,7 @@ static double circ = wheel_diameter * M_PI; //  la motriz M038?
 static double meters_per_pulse = (circ / 110.0);
 //static const double meters_per_pulse = 10.0;
 static int count_channel = 8;
+static int door_channel = 2;
 static const  int speed_channel = 0;
 
 static long last_count;
@@ -133,6 +138,7 @@ void connect_modbus(void)
   {
     printf("diameter specified: %s\n", diameter);
   }
+
   const char *cnt = onboard_config->get_config("count_channel");
   if (cnt == NULL)
   {
@@ -145,6 +151,18 @@ void connect_modbus(void)
   }
   set_calculation_information(atof(diameter), atol(cnt));
 
+  const char *door_ch = onboard_config->get_config("door_channel");
+  if (door_ch == NULL)
+  {
+    door_ch = "2";
+    printf("No door channel specified, using: %s\n", door_ch);
+  }
+  else
+  {
+    printf("Door channel specified: %s\n", door_ch);
+  }
+  door_channel = atol(door_ch);
+
   modc = rt_create_modbus(ip_address);
   modc->set_debug_level(10);
   modc->set_address(atol(modbus_address));
@@ -152,7 +170,6 @@ void connect_modbus(void)
 }
 
 /***********************************************************************/
-#define DOOR_CH (2)
 
 void get_actual_speed_dist(int section, int t, double *dist, double *speed, spd_discrete_t *descretes)
 {
@@ -173,8 +190,10 @@ void get_actual_speed_dist(int section, int t, double *dist, double *speed, spd_
     buf[i] = dvals[i] ? '1' : '0';
     buf[i+1] = '\0';
   }
-  mvprintw(17,2,"%s %s", buf, dvals[DOOR_CH] ? "OPEN" : "CLOSED");
-  descretes->doors_open = dvals[DOOR_CH];
+  #ifndef ARM
+  mvprintw(17,2,"%s %s", buf, dvals[door_channel] ? "OPEN" : "CLOSED");
+  #endif
+  descretes->doors_open = dvals[door_channel];
   // When we have the inputs, we need to fix the following:
   descretes->left_open = false;
   descretes->right_open = false;

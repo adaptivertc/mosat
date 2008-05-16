@@ -1,4 +1,6 @@
 
+#include "onboard.h"
+
 int spd_beep(void);
 int spd_getch(void);
 int spd_endwin(void);
@@ -10,7 +12,7 @@ void spd_init_segment(const char *st1, const char *st2);
 void spd_init_screen();
 void spd_redraw_all();
 void spd_print_current(double desired, double actual, int type, bool warn, 
-       double pct, double total_distance, double now, double total_time);
+       double pct, double total_distance, double now, double total_time, spd_discrete_t *discretes);
 void spd_show_loading(int time);
 void spd_create_image(const char *base_name, const char *gtitle, bool window);
 int select_from_list(int n, const char *list[], const char *prompt);

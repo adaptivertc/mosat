@@ -374,7 +374,7 @@ int main(int argc, char *argv[])
 
       spd_print_current(desired, actual, type, warn, 
         100.0 * distance / total_distance, total_distance,
-           now, total_time);
+           now, total_time, &descretes);
 
       /*****
       double left = total_distance - distance;

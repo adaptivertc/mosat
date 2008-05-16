@@ -186,8 +186,9 @@ void spd_redraw_all()
 //void spd_print_current(double desired, double actual, int type, bool warn,
 //       double pct, double total_distance, double now, double total_time);
 
+//spd_print_current(double, double, int, bool, double, double, double, double, spd_discrete_t*)
 void spd_print_current(double desired, double actual, int type, bool warn, 
-      double pct, double total_distance, double now, double total_time)
+      double pct, double total_distance, double now, double total_time, spd_discrete_t *discretes)
 { 
   if (last_col != COLS)
   {

@@ -14,7 +14,7 @@ DIR=arm/
 
 ALL_FILES= $(DIR)lcdmesg $(DIR)keypad \
 	$(DIR)onboard_4x40 $(DIR)xdio  $(DIR)xdio_pwm $(DIR)dio24  $(DIR)nvram2 $(DIR)lcdmesg $(DIR)tempSensor  $(DIR)nvram2_read \
-	$(DIR)frtimer_test $(DIR)onboard_4x40 $(DIR)autonomous_mode $(DIR)mo_test
+	$(DIR)frtimer_test $(DIR)onboard_4x40 $(DIR)onboard_4x40_mod $(DIR)autonomous_mode $(DIR)mo_test
 
 #ALL_FILES= $(DIR)lcdmesg $(DIR)keypad $(DIR)connect_wireless $(DIR)test_both $(DIR)test_lcd $(DIR)test_keypad \
 #	$(DIR)onboard $(DIR)xdio  $(DIR)xdio_pwm $(DIR)dio24  $(DIR)nvram2 $(DIR)lcdmesg $(DIR)tempSensor  $(DIR)nvram2_read \
@@ -47,6 +47,13 @@ $(DIR)onboard_4x40:	$(DIR)onboard.o $(DIR)spd_display_4x40.o $(DIR)spd_com_tsarm
 	$(CPP) -o $(DIR)onboard_4x40 -lrtcommon -lpthread $(DIR)onboard.o $(DIR)spd_display_4x40.o\
 		$(DIR)spd_algo_DC.o $(DIR)spd_algo_RD.o $(DIR)spd_algo_VV.o $(DIR)profile_reader.o $(DIR)sim_reader.o\
 		$(DIR)spd_com_tsarm.o $(DIR)spd_select.o $(DIR)frtimer.o $(DIR)alg_compare.o $(DIR)ob_config.o $(RTMODBUS) 
+
+$(DIR)onboard_4x40_mod:	$(DIR)onboard.o $(DIR)spd_display_4x40.o $(DIR)spd_comm.o\
+		$(DIR)spd_algo_DC.o $(DIR)spd_algo_RD.o $(DIR)spd_algo_VV.o $(DIR)profile_reader.o $(DIR)sim_reader.o\
+		$(DIR)spd_select.o $(DIR)frtimer.o $(DIR)alg_compare.o $(DIR)ob_config.o
+	$(CPP) -o $(DIR)onboard_4x40_mod -lrtcommon -lpthread $(DIR)onboard.o $(DIR)spd_display_4x40.o\
+		$(DIR)spd_algo_DC.o $(DIR)spd_algo_RD.o $(DIR)spd_algo_VV.o $(DIR)profile_reader.o $(DIR)sim_reader.o\
+		$(DIR)spd_comm.o $(DIR)spd_select.o $(DIR)frtimer.o $(DIR)alg_compare.o $(DIR)ob_config.o $(RTMODBUS) 
 
 $(DIR)status:	$(DIR)status.o $(DIR)spd_display_4x40.o $(DIR)spd_com_tsarm.o\
 		$(DIR)spd_select.o $(DIR)frtimer.o
