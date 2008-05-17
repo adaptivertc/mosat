@@ -228,6 +228,7 @@ void react_t::read_inputs(void)
     pci_points[i]->update(val);
   }
   taa[j].stop();
+  io_driver->end_read();
 
 
   j++;

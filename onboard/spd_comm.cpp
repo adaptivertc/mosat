@@ -38,7 +38,7 @@ static bool door_invert = false;
 static const  int speed_channel = 0;
 
 static long last_count;
-static int count_history[3];
+static int count_history[2];
 //static struct timeval time_history[3]; 
 static int hindex;
 static const int hsize = sizeof(count_history) / sizeof(count_history[0]);
@@ -173,7 +173,7 @@ void connect_modbus(void)
   else
   {
     door_invert = (door_inv[0] == '1') || (door_inv[0] == 't') || (door_inv[0] == 'T') || (door_inv[0] == 'Y') || (door_inv[0] == 'y');
-    printf("Door inver specified: %s, %s logic\n", door_inv, door_invert ? "negative": "positive");
+    printf("Door invert specified: %s, %s logic\n", door_inv, door_invert ? "negative": "positive");
   }
 
   door_channel = atol(door_ch);

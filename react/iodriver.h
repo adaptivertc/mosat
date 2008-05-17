@@ -53,7 +53,8 @@ public:
   int base_addr;
 
   io_driver_t(void){};
-  virtual void read(void){printf("default\n");};
+  virtual void read(void){};
+  virtual void end_read(void){};
   virtual bool get_di(int channel){return false;};
   virtual double get_ai(int channel){return 0.0;};
   virtual long get_count(int channel){return 0;};

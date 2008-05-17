@@ -137,12 +137,27 @@ reactmodbus_driver_t::reactmodbus_driver_t(react_drv_base_t *react)
 /* Ok, we really need a configuration file to configure modbus, to start
  * it will be all hard-coded 
  */
+
   driver_name = "reactmodbus";
   di_offset = 0;
   do_offset = 0;
   ai_offset = 0;
   ao_offset = 0;
 
+  read_values = false;
+  wake_him_up = true;
+  printf("initializing modbus\n");
+  //modbus = rt_create_modbus("127.0.0.1:502");
+  //modbus = rt_create_modbus("192.168.1.104:502");
+  modbus = rt_create_modbus("127.0.0.1:502");
+  if (modbus == NULL)
+  {
+    exit(0);
+  }
+  modbus->set_debug_level(3);
+  printf("DONE initializing modbus\n");
+
+  printf("Initializing semaphores\n");
   if (0 != sem_init(&read_mutex_sem, 0, 1))
   {
     perror("sem_init");
@@ -151,7 +166,9 @@ reactmodbus_driver_t::reactmodbus_driver_t(react_drv_base_t *react)
   {
     perror("sem_init");
   }
+  printf("DONE Initializing semaphores\n");
   
+  printf("Creating thread\n");
   pthread_t thr;
   int retval;
   retval = pthread_create(&thr, NULL, rtmodbus_start_read_thread, this);
@@ -166,15 +183,8 @@ reactmodbus_driver_t::reactmodbus_driver_t(react_drv_base_t *react)
     perror("can't detach thread");
     exit(0);
   }
+  printf("DONE Creating thread\n");
 
-  //modbus = rt_create_modbus("127.0.0.1:502");
-  modbus = rt_create_modbus("127.0.0.1:502");
-  if (modbus == NULL)
-  {
-    exit(0);
-  }
-  modbus->set_debug_level(3);
-  printf("reactmodbus initialized\n");
 }
 
 /***********************************************************************/
@@ -209,11 +219,12 @@ void reactmodbus_driver_t::send_do(int ch, bool val)
 
 double reactmodbus_driver_t::get_ai(int channel)
 {
+  double read_val;
   if ((channel >= 0) && (channel < 64))
   {
-    sem_wait(&read_mutex_sem);
-    return (double) ai_vals[channel];
-    sem_post(&read_mutex_sem);
+    read_val = (double) ai_vals[channel];
+    printf("AI %d, read %lf\n", channel, read_val);
+    return read_val;
   }
   else
   {
@@ -225,11 +236,12 @@ double reactmodbus_driver_t::get_ai(int channel)
 
 bool reactmodbus_driver_t::get_di(int channel)
 {
+  bool read_val;
   if ((channel >= 0) && (channel < 64))
   {
-    sem_wait(&read_mutex_sem);
-    return di_vals[channel];
-    sem_post(&read_mutex_sem);
+    read_val = di_vals[channel];
+    printf("DI %d, read %s\n", channel, read_val ? "T" : "F");
+    return read_val;
   }
   else
   {
@@ -252,20 +264,28 @@ long reactmodbus_driver_t::get_count(int channel)
 }
 
 /***********************************************************************/
+static int mycounter = 0;
 
 void reactmodbus_driver_t::read_thread(void)
 {
   while(true)
   {
+    printf("read thread reading modbus values . . .\n");
     modbus->read_ai(0, 16, tmp_ai_vals);
     modbus->read_di(0, 16, tmp_di_vals);
+    printf("read thread DONE reading modbus values . . .\n");
 
+    printf("read thread copying values . . .\n");
     sem_wait(&read_mutex_sem);
+      printf("  -- read thread in critical section . . .\n");
       memcpy(ai_vals, tmp_ai_vals, sizeof(ai_vals));
       memcpy(di_vals, tmp_di_vals, sizeof(di_vals));
+      read_values = true;
+      printf("  -- read thread leaving critical section . . .\n");
     sem_post(&read_mutex_sem);
+    printf("read thread DONE copying values . . .\n");
 
-    printf("read thread waiting\n");
+    printf("read thread waiting %d\n", mycounter++);
     sem_wait(&read_wait_sem);
     printf("thread woke up\n");
   }
@@ -275,14 +295,38 @@ void reactmodbus_driver_t::read_thread(void)
 
 void reactmodbus_driver_t::read(void)
 {
-  printf("reading\n");
-
-  sem_post(&read_wait_sem); // wake up the read thread to read the next values.
+    sem_wait(&read_mutex_sem);
+    printf("  -- main thread in critical section . . .\n");
+    if (read_values)
+    {
+      wake_him_up = true;
+    }
+    else
+    {
+      // Either the reader is slow or the link is down
+      wake_him_up = false;
+    }
   //modbus->read_ai(0, 16, ai_vals);
   //modbus->read_di(0, 16, di_vals);
 }
 
 /***********************************************************************/
 
+void reactmodbus_driver_t::end_read(void)
+{
+  read_values = false;
+  printf("  -- main thread leaving critical section . . .\n");
+  sem_post(&read_mutex_sem);
+  if (wake_him_up)
+  {
+    printf("waking up reader\n");
+    sem_post(&read_wait_sem); // wake up the read thread to read the next values.
+    printf("DONE waking up reader\n");
+  }
+  else
+  {
+    printf("The read thread is hosed, no reason to keep incrementing . . .\n");
+  } 
+}
 
-
+/***********************************************************************/

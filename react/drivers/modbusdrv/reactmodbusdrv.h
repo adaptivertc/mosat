@@ -21,6 +21,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class reactmodbus_driver_t : public io_driver_t
 {
 private:
+  bool read_values;
+  bool wake_him_up;
   rtmodbus_t *modbus;
   unsigned short ai_vals[32];
   bool di_vals[32];
@@ -35,6 +37,7 @@ private:
 public:
   reactmodbus_driver_t(react_drv_base_t *react);
   void read(void);
+  void end_read(void);
   void read_thread(void);
   bool get_di(int channel);
   double get_ai(int channel);

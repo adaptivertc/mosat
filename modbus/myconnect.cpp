@@ -57,7 +57,8 @@ int main(int argc, char *argv[])
   //rtmodbus_t *modc = rt_create_modbus("172.16.115.27:502");
   //rtmodbus_t *modc = rt_create_modbus("127.0.0.1");
   //rtmodbus_t *modc = rt_create_modbus("192.168.0.100");
-  rtmodbus_t *modc = rt_create_modbus("172.16.115.99");
+  //rtmodbus_t *modc = rt_create_modbus("172.16.115.99");
+  rtmodbus_t *modc = rt_create_modbus("192.168.1.104");
   //rtmodbus_t *modc = rt_create_modbus("172.16.115.37");
   //rtmodbus_t *modc = rt_create_modbus("10.1.0.5");
   //rtmodbus_t *modc = rt_create_modbus("10.0.0.0");
@@ -113,6 +114,18 @@ int main(int argc, char *argv[])
           printf("%d ", (int) uvals[i]);
         }
         printf("\n");
+        for (int i=0; i < 2; i++)
+        {
+          float f;
+          char * p = (char *) &f;
+          memcpy(p, &uvals[2*i] ,2);
+          memcpy(p+2, &uvals[(2*i)+1] ,2);
+          printf("%d: %f\t", i, f);
+          memcpy(p+2, &uvals[2*i] ,2);
+          memcpy(p, &uvals[(2*i)+1] ,2);
+          printf("%d: %f\t", i, f);
+        }
+        printf("\n");
         break;
       case '4':
 	printf("Enter the start di: ");
@@ -141,6 +154,18 @@ int main(int argc, char *argv[])
         for (int i=0; i < 16; i++)
         {
           printf("%d ", (int) uvals[i]);
+        }
+        printf("\n");
+        for (int i=0; i < 8; i++)
+        {
+          long n;
+          char * p = (char *) &n;
+          memcpy(p, &uvals[2*i] ,2);
+          memcpy(p+2, &uvals[(2*i)+1] ,2);
+          printf("%d: %ld\t", i, n);
+          memcpy(p+2, &uvals[2*i] ,2);
+          memcpy(p, &uvals[(2*i)+1] ,2);
+          printf("%d: %ld\t", i, n);
         }
         printf("\n");
         break;
