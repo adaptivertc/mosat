@@ -15,5 +15,6 @@ struct spd_discrete_t
   bool master;     // This computer is the master
 };
 
+void create_profile_dir(const char *base_dir, char *dirname, int dir_sz);
 
 #endif

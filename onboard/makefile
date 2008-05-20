@@ -51,6 +51,10 @@ check_speed:	check_speed.o
 mo_test: mo_test.cpp
 	g++ -o mo_test mo_test.cpp  $(RTMODBUS) $(RTCOMMON)
 
+autonomous_mode: autonomous_mode.o spd_comm.o make_profile_dir.o  ob_config.o
+	g++ -o autonomous_mode autonomous_mode.o spd_comm.o make_profile_dir.o  ob_config.o\
+	  -lncurses $(RTMODBUS) $(RTCOMMON)
+
 #profile_reader: profile_reader.cpp profile_reader.h
 #	g++ -o profile_reader profile_reader.cpp  $(RTCOMMON)
 		

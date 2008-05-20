@@ -252,24 +252,41 @@ int mainxx(int argc, char *argv[])
 
 int main(int argc, char *argv[])
 {
+  char buf[10];
+ 
   if (argc > 1)
   {
     serial_device = argv[1];
   }
   spd_init_screen();
   
+  buf[0] = 0xFE;
+  buf[1] = 0x57;  
+  buf[2] = 0x01;
+  write(serial_fd, buf, 3);
   sleep(1);
+  buf[1] = 0x56; 
+  write(serial_fd, buf, 3);
   printf("printing line 1 . . .\n");
-  d4x40_printf(1, 1, "This is line one");
+  d4x40_printf(1, 1, "This is line one, buzzer off");
   sleep(1);
+  buf[1] = 0x57; 
+  write(serial_fd, buf, 3);
   printf("printing line 2 . . .\n");
-  d4x40_printf(2, 1, "This is line two");
+  d4x40_printf(2, 1, "This is line two, buzzer ON");
   sleep(1);
+  buf[1] = 0x56; 
+  write(serial_fd, buf, 3);
   printf("printing line 3 . . .\n");
-  d4x40_printf(3, 1, "This is line three");
+  d4x40_printf(3, 1, "This is line three, buzzer off");
   sleep(1);
+  buf[1] = 0x57;
+  write(serial_fd, buf, 3);
   printf("printing line 4 . . .\n");
-  d4x40_printf(4, 1, "This is line four");
+  d4x40_printf(4, 1, "This is line four, buzzer ON");
+  sleep(1);
+  buf[1] = 0x56;
+  write(serial_fd, buf, 3);
   while (true)
   {
     char buf[5];

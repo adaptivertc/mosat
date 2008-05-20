@@ -89,9 +89,12 @@ $(DIR)connect_ip: connect_ip.c
 		
 $(DIR)xdio: $(DIR)xdio.o $(DIR)frtimer.o frtimer.h
 	$(CPP) -o $(DIR)xdio -lrtcommon $(DIR)xdio.o $(DIR)frtimer.o
-		
-$(DIR)autonomous_mode: $(DIR)autonomous_mode.o $(DIR)frtimer.o frtimer.h
-	$(CPP) -o $(DIR)autonomous_mode -lrtcommon $(DIR)autonomous_mode.o $(DIR)frtimer.o
+
+$(DIR)autonomous_mode: $(DIR)autonomous_mode.o $(DIR)spd_comm.o\
+     $(DIR)make_profile_dir.o  $(DIR)ob_config.o 
+	$(CPP) -o $(DIR)autonomous_mode -lrtcommon $(DIR)autonomous_mode.o\
+            $(DIR)spd_comm.o $(DIR)make_profile_dir.o $(DIR)ob_config.o\
+              $(RTMODBUS) $(RTCOMMON)
 		
 $(DIR)xdio_pwm: $(DIR)xdio_pwm.o $(DIR)frtimer.o frtimer.h
 	$(CPP) -o $(DIR)xdio_pwm -lrtcommon $(DIR)xdio_pwm.o $(DIR)frtimer.o

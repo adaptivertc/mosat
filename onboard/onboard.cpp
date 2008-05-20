@@ -78,7 +78,7 @@ int main(int argc, char *argv[])
 {
   FILE *pfp = NULL;
   bool sim_mode;
-  char base_name[100];
+  char base_name[200];
   int start = 0;
 
   //print_profile();
@@ -179,7 +179,7 @@ int main(int argc, char *argv[])
   onboard_config->read_file(config_file);
 
   //spd_init_screen();
-  /**
+  #ifdef XXXARM
   if (pick_mode)
   {
     printf("Picking line . . .\n");
@@ -190,18 +190,18 @@ int main(int argc, char *argv[])
     sreader.set_line(opt+1);
     if (the_line == 1)
     {
-      int ns = sizeof(sim_names1) / sizeof(sim_names1[0]);
+      int ns = 36;
       int opt = select_from_list(ns, sim_names1, "Selecionar la estacion");
       start = opt;
     }
     else
     {
-      int ns = sizeof(sim_names2) / sizeof(sim_names2[0]);
+      int ns = 18;
       int opt = select_from_list(ns, sim_names2, "Selecionar la estacion");
       start = opt;
     }
   }
-  */
+  #endif
 
 
 //  int n_seg = read_profile(vel_profile, 
@@ -232,7 +232,7 @@ int main(int argc, char *argv[])
   utimer.set_interval(1000000);
 
   //FILE *fp = fopen("out.txt", "w");
-  char dirname[100];
+  char dirname[200];
   dirname[0] = '\0';
   //printf("starting loop ....\n");
   for (int j=start; true; j = (j+1) % n_seg)
@@ -249,6 +249,11 @@ int main(int argc, char *argv[])
     total_distance = preader.get_total_distance(j); //get_total_dist(j);
     total_time = preader.get_total_time(j);
 
+    double distance = 0.0;
+    double actual = 0;
+    double desired = 0;
+    spd_discrete_t descretes;
+    descretes.doors_open = false;
     //mvprintw(20,2,"Cargando y Descargando Pasajeros"); 
     //refresh();
 
@@ -261,8 +266,20 @@ int main(int argc, char *argv[])
       }
       else
       {
-        //printf("press key to exit ....\n");
-        spd_wait_key("Pres. tecla para salir"); 
+        if (detect_with_doors && !sim_mode)
+        {
+          while(true)
+          {
+            get_actual_speed_dist(-1, -1, &distance, &actual, &descretes);
+            if (!descretes.doors_open) break;
+            usleep(100000);
+          }
+        }
+        else
+        {
+          //printf("press key to exit ....\n");
+          spd_wait_key("Pres. tecla para salir"); 
+        }
       }
       //mvprintw(20,2,"%-36s", " "); 
     }
@@ -272,7 +289,6 @@ int main(int argc, char *argv[])
     //beep();
     //mvprintw(18,2,"%d: total dist = %lf", j, total_distance); 
     //refresh();
-    double distance = 0.0;
     int time_in_section = 0;
     if (!sim_mode) reset_distance(j);
 
@@ -280,7 +296,7 @@ int main(int argc, char *argv[])
     if (create_profiles)
     {
 
-      char fname[100];
+      char fname[200];
     
       if ((j == 0) || (dirname[0] == '\0'))
       {
@@ -291,7 +307,7 @@ int main(int argc, char *argv[])
           snprintf(dirname, sizeof(dirname), "profiles/profile%d", k);
           if (!dir_exists(dirname)) 
           {
-            char cmd[100];
+            char cmd[200];
             snprintf(cmd, sizeof(cmd), "mkdir %s", dirname);
             system(cmd);
             snprintf(cmd, sizeof(cmd), "date >%s/date.txt", dirname);
@@ -331,10 +347,6 @@ int main(int argc, char *argv[])
       }
       double now = (double) i / 1.0;
      
-      double actual = 0;
-      double desired = 0;
-      spd_discrete_t descretes;
-      descretes.doors_open = false;
 
       if (sim_mode)
       {
@@ -387,11 +399,12 @@ int main(int argc, char *argv[])
       ****/
       if (detect_with_doors)
       {
-        if (descretes.doors_open && (distance > 100)) break;
+        if (descretes.doors_open &&  
+          ((distance / total_distance) > 0.95)) break;
       }
-      else if (((distance / total_distance) > 0.99) && (actual == 0))
+      else if (auto_end) 
       {
-        if (auto_end) break;
+        if (((distance / total_distance) > 0.99) && (actual == 0)) break;
       }
       int ch = spd_getch();
       if (ch == 'f') {fast = true; utimer.set_interval(200000);}

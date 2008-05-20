@@ -1,263 +1,294 @@
 
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <math.h>
 #include <sys/time.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <sys/mman.h>
 
-//#include <stdio.h>
-//#include <stdlib.h>
-//#include <unistd.h>
 #include <string.h>
 
-//#include "rtcommon.h"
+#include "rtcommon.h"
 
 #include "utimer.h"
 
-#include "frtimer.h"
+#include "onboard.h"
+
+#include "spd_comm.h"
+
+#include "ob_config.h"
+
+#define MAX_MAINTENANCE_SPEED (35)
+#define MAX_TIME_AT_MAINTENANCE (18)
+#define MAX_TIME_AT_ZERO (18)
+#define RECORD_SIZE (300)
 
 enum service_mode_t
 {
   MAINTENANCE_STOPPED,
   MAINTENANCE_MOVING,
-  IN_SERVICE_MOVING,
-  IN_SERVICE_AT_STATION 
+  IN_SERVICE,
 };
-
-static const int MAX_STATIONS = 30;
-static const int N_LINES = 2;
-static const int N_STATIONS[N_LINES] = {19, 10}; 
-int n_seconds[N_LINES][MAX_STATIONS];
-
-//Adeline 12:30 pm
-//Ricardo 2:00 pm
-
-/******************************************************************/
-
-static unsigned char *page_start;
-
-static unsigned char *xdio_0_start;
-static unsigned char *xdio_0_r0;
-static unsigned char *xdio_0_r1;
-static unsigned char *xdio_0_r2;
-static unsigned char *xdio_0_r3;
-
-static unsigned char *xdio_1_start;
-static unsigned char *xdio_1_r0;
-static unsigned char *xdio_1_r1;
-static unsigned char *xdio_1_r2;
-static unsigned char *xdio_1_r3;
 
 struct record_data_t
 {
   time_t time;
-  unsigned short count;
   double speed;
   double distance;
+  bool door_open;
 };
-
-static int record_pos = 0;
-
-static record_data_t record_data[60];
-
-static unsigned long long  fr_lastcount;
-static unsigned long long  fr_currentcount;
-
-static const double circ = 0.691 * M_PI; //  la motriz M033 se reperfilo el 08/Nov/2005,
-// se reperfila cada 50 mil a 60 mil kms (de 5 a 6 meses).
-//const double meters_per_pulse = (circ / 110.0);
-const double meters_per_pulse = (circ / 220.0); // this box counts edges!
-
 
 #define TV_ELAPSED_US(x, y)     ((((x).tv_sec - (y).tv_sec) * 1000000) + \
         ((x).tv_usec - (y).tv_usec))
 
-/*********************************************************************/
+onboard_config_t *onboard_config = NULL;
 
-long calc_dif(long count, long last)
+/**
+void connect_modbus(void);
+void get_actual_speed_dist(int section, int t, double *dist, double *speed, spd_discrete_t *discretes);
+void init_io(void);
+***/
+static double speeds[] = 
+          {0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 40.0, 45.0, 50.0, 
+             -1.0, 50, 40, 30, 20, 10, -1, 0, -1};
+static int speeds_sz = sizeof(speeds) / sizeof(speeds[0]);
+static int sidx = 0;
+static double last;
+static bool maintain_on = false;
+static int maintain_counter = 0;
+
+const char *get_mode_text(service_mode_t service_mode)
 {
-  if (last > count)
+  switch (service_mode)
   {
-    // Ok, we rolled over
-    return count + 65536 - last;
+    case MAINTENANCE_STOPPED:
+      return "MAINTENANCE_STOPPED";
+    case MAINTENANCE_MOVING:
+      return "MAINTENANCE_MOVING";
+    case IN_SERVICE:
+      return "IN_SERVICE";
   }
-  else
-  {
-    return count - last;
-  }
+  return "";
 }
 
-
-/*********************************************************************/
-
-unsigned short tsarm_read_count(long *usecs)
+void xxget_actual_speed_dist(int a, int b, 
+  double *distance, double *actual_speed, spd_discrete_t *discretes)
 {
-  unsigned char byte3 = *xdio_0_r3;
-  unsigned char byte2 = *xdio_0_r2;
-  unsigned char byte3_2 = *xdio_0_r3;
-  unsigned char byte2_2 = *xdio_0_r2;
-  if (byte3 != byte3_2) // rollover use second readings 
+  *distance = 0.0;
+  if (maintain_on)
   {
-    byte3 = byte3_2;
-    byte2 = byte2_2;
+    maintain_counter++;
+    if (maintain_counter > 20)
+    {
+      maintain_on = false;
+    }
+    *actual_speed = last;
+    return;
   }
-  fr_currentcount = GetFRTimer();
-
-  long elapsed_us =  frt_us_diff(fr_currentcount, fr_lastcount);
-
-  unsigned short count16;
-  count16 = ((unsigned short) byte3) << 8;
-  count16 = count16 + ((unsigned short) byte2);
-
-  fr_lastcount = fr_currentcount;
-  if (usecs != NULL)
+  else if (speeds[sidx] < 0.0)
   {
-    *usecs = elapsed_us;
-  }
-  return (count16);
+    maintain_on = true;
+    maintain_counter = 0;
+    sidx = (sidx + 1) % speeds_sz;
+    *actual_speed = last;
+    return;
+  }  
+  last = speeds[sidx]; 
+  sidx = (sidx + 1) % speeds_sz;
+  *actual_speed = last;
+  return;
 }
 
 /*********************************************************************/
 
-void init_io(void)
+static int file_number = 0;
+
+FILE *open_next_file(char *dir)
 {
-  printf("Initializing tsarm to read high speed counter\n");
-  int fd = open("/dev/mem", O_RDWR|O_SYNC);
-  //xdio at 0x12c00000-0x12c00003
-  page_start = (unsigned char *) mmap(0, getpagesize(), PROT_READ|PROT_WRITE, MAP_SHARED, fd,   0x72000000);
-  //page_start = (unsigned char *) mmap(0, getpagesize(), PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0x12C00000);
+  char fname[250];
+  snprintf(fname, sizeof(fname), "%s/p%02d.txt", dir, file_number++);
+  printf("Opening File: %s\n", fname);
+  FILE *fp = fopen(fname, "w");
+  return fp;
+}
 
-  xdio_0_start = page_start + 0x40;
-  xdio_1_start = page_start + 0x44;
+/*********************************************************************/
 
-  xdio_0_r0 = (unsigned char *) (xdio_0_start + 0);
-  xdio_0_r1 = (unsigned char *) (xdio_0_start + 1);
-  xdio_0_r2 = (unsigned char *) (xdio_0_start + 2);
-  xdio_0_r3 = (unsigned char *) (xdio_0_start + 3);
+void write_past_data(FILE *fp, record_data_t *data, int position, int n)
+{
+  if (fp == NULL) return;
+  int idx = position;
+  printf("Writing past data, position = %d . . . \n", position);
+  for(int i=0; i < (n-1); i ++)
+  {
+    if (data[idx].speed == 0.0)
+    {
+      break; 
+    }
+    idx--;
+    if (idx < 0) idx = n - 1; 
+  }
+  printf("Found zero at %d\n", idx);
+  for (; true; idx++)
+  {
+    if (idx >= n) idx = 0;
 
-  xdio_1_r0 = (unsigned char *) (xdio_1_start + 0);
-  xdio_1_r1 = (unsigned char *) (xdio_1_start + 1);
-  xdio_1_r2 = (unsigned char *) (xdio_1_start + 2);
-  xdio_1_r3 = (unsigned char *) (xdio_1_start + 3);
+    struct tm mytm;
+    char buf[20];
+    localtime_r(&data[idx].time, &mytm);
+    strftime(buf, sizeof(buf), "%T", &mytm);
+    char linebuf[200];
+    snprintf(linebuf, sizeof(linebuf), "%s\t%lf\t%lf\t%s\n", 
+        buf, data[idx].distance, data[idx].speed, 
+        data[idx].door_open ? "1" : "0");
+    printf("%s", linebuf);
+    fprintf(fp, "%s", linebuf);
 
-  // Set xdio core #0 as a counter input
-  *xdio_0_r0 = 0x41;
-  *xdio_0_r1 = 0x00;
-
-  // Set xdio core #1 as a PWM output
-  *xdio_1_r0 = 0x00;
-  *xdio_1_r1 = 0xff;
-  *xdio_1_r0 = 0xC0;
-  *xdio_1_r1 = 0x00;
-  *xdio_1_r2 = 0x0F; // 0x0f = 15 + 2 = 17 ticks
-  *xdio_1_r3 = 0x0F; // 0x0f = 15 + 2 = 17 ticks
-  *xdio_1_r0 = 0xC3; // 32.768 khz clock.
-
-  InitFRTimer();
-  ResetFRTimer();
-  fr_lastcount = GetFRTimer();
-} 
+    if (idx == position) break;
+  }
+}
 
 /*********************************************************************/
 
 int main(int argc, char *argv[]) 
 {
+  const char *config_file = "onboard_config.txt";
 
-/***/
+  int current_arg;
+  for (current_arg=1; current_arg < argc; current_arg++)
+  {
+    if (0 == strcasecmp(argv[current_arg], "-c"))
+    {
+      if (argc > (current_arg + 1))
+      {
+        current_arg++;
+        config_file = argv[current_arg];
+        printf("Setting the config file name to %s \n", config_file);
+      }
+      else
+      {
+        printf("Can't read the config file name, not enough args\n");
+      }
+    }
+  }
+
+  onboard_config = new onboard_config_t();
+  onboard_config->read_file(config_file);
+
   utimer_t utimer;
   utimer.set_busy_wait(false);
   utimer.set_interval(1000000);
   utimer.set_start_time();
-/****/
+  spd_discrete_t discretes;
+  double distance;
+  double actual_speed; 
+  discretes.doors_open = false;
+
+  int time_below_speed = 0;
+  int time_at_zero = 0;;
+
+  char dirname[200];
+
+  create_profile_dir("./raw_profiles/", dirname, sizeof(dirname));
+
+
+  //init_io();
+  //reset_distance(0);
+
+  time_t the_time = time(NULL);
+  record_data_t record_data[RECORD_SIZE];
+  for (int i=0; i < RECORD_SIZE; i++)
+  {
+    record_data[i].time = the_time;
+    record_data[i].speed = 0.0;
+    record_data[i].distance = 0.0;
+    record_data[i].door_open = false;
+  }
+  int record_pos = 0;
+  FILE *pfp = NULL;
 
   service_mode_t service_mode = MAINTENANCE_STOPPED;
-  int line_number = -1;
-  int section_number= -1;
-  bool door_is_open = false;
-  double speed_kmh = 0.0;
-  double distance_km = 0.0;
-
-  unsigned short count16;
-  unsigned short last_count;
-  init_io();
-  last_count = tsarm_read_count(NULL);
-
-
+  printf("Starting state is MAINTENANCE STOPPED\n"); 
   while (1)
   {
     utimer.wait_next();
+    the_time++;
+ 
+    xxget_actual_speed_dist(0, 0, &distance, &actual_speed, &discretes); 
+    printf("%d: Distance: %lf, Speed: %lf, %s\n", record_pos, distance, actual_speed, get_mode_text(service_mode));
 
-    long usecs;
+    record_data[record_pos].time = the_time;
+    record_data[record_pos].speed = actual_speed;
+    record_data[record_pos].distance = distance;
+    record_data[record_pos].door_open = discretes.doors_open;
 
-    count16 = tsarm_read_count(&usecs);
+    if ((service_mode == IN_SERVICE) && (pfp != NULL))
+    {
+      struct tm mytm;
+      char buf[20];
+      localtime_r(&the_time, &mytm);
+      strftime(buf, sizeof(buf), "%T", &mytm);
+      fprintf(pfp, "%s\t%lf\t%lf\t%s\n", buf, distance, actual_speed, discretes.doors_open ? "1" : "0");
+    }
 
-    long n_pulses = calc_dif((long) count16, (long) last_count);
-
-    double frequency = ((double) n_pulses) / (((double) usecs) / 500000.0);
-    
-    distance_km += ((double) n_pulses) * meters_per_pulse;
-
-    speed_kmh = frequency * meters_per_pulse * 3.6;
-
-    printf("Speed: %5.1lf, Distance: %5.0lf\n", speed_kmh, distance_km);
-    //printf("--- %02hhx %02hhx %02hhx %02hhx -  %hx %hu  %ld %ld %0.1lf\n", 
-    //     byte0, byte1, byte2, byte3, count16, count16, n_pulses, elapsed_us, frequency);
-
-
-    record_data[record_pos].time = time(NULL);
-    record_data[record_pos].count = count16;
-    record_data[record_pos].speed = speed_kmh;
-    record_data[record_pos].distance = distance_km;
 
     switch(service_mode)
     {
       case MAINTENANCE_STOPPED:
-        if (speed_kmh > 0.0)
+        if (actual_speed > 0.0)
         {
           service_mode = MAINTENANCE_MOVING;
+          printf("Switching to MAINTENANCE MOVING\n"); 
+          time_at_zero = 0;
         }
         break;
       case MAINTENANCE_MOVING:
-        if (speed_kmh > 35.0)
+        if (actual_speed > 35.0)
         {
-          service_mode = IN_SERVICE_MOVING; 
-          section_number = 0;
-          line_number = -1;
+          service_mode = IN_SERVICE; 
+          printf("Switching to IN SERVICE\n");
+          pfp = open_next_file(dirname);
+          write_past_data(pfp, record_data, record_pos, RECORD_SIZE);
+          time_below_speed = 0;
+        }
+        else if (time_at_zero > MAX_TIME_AT_ZERO)
+        {
+          printf("Switching BACK to MAINTENANCE STOPPED\n"); 
+          service_mode = MAINTENANCE_STOPPED;
+        }
+        else if (actual_speed ==  0.0)
+        {
+          time_at_zero++;
         }
         break;
-      case IN_SERVICE_MOVING:
-        if ((speed_kmh == 0.0) && (door_is_open))
+      case IN_SERVICE:
+        if (actual_speed <  MAX_MAINTENANCE_SPEED)
         {
-          service_mode = IN_SERVICE_AT_STATION;
-          if (section_number == 0)
-          {
-             // Determine which line by the distance to the first station.
-             
-          }
-          int last_station = 36; // should be calculated based on line!!
-          if (section_number == last_station) // 
-          {
-            // close out files for rount trip here
-            service_mode = MAINTENANCE_STOPPED;
-          }
+          time_below_speed++;
         }
-        break;
-      case IN_SERVICE_AT_STATION:
-        if ((speed_kmh > 0.0) && (!door_is_open))
+        else
         {
-          service_mode = IN_SERVICE_MOVING;
+          time_below_speed = 0;
+        }
+
+        if (actual_speed ==  0.0)
+        {
+          time_at_zero++;
+        }
+        else
+        {
+          time_at_zero = 0;
+        }
+
+        if (time_below_speed > MAX_TIME_AT_MAINTENANCE)
+        {
+          printf("Switching BACK to MAINTENANCE MOVING - closing log file\n"); 
+          fclose(pfp);
+          service_mode = MAINTENANCE_MOVING;
         }
         break;
     } 
-    
-    fr_lastcount = fr_currentcount;
-    last_count = count16;
-    //last_time = now;
-
+    record_pos = (record_pos + 1) % RECORD_SIZE;
   }
 }
 
