@@ -272,7 +272,7 @@ int main(int argc, char *argv[])
           {
             get_actual_speed_dist(-1, -1, &distance, &actual, &descretes);
             if (!descretes.doors_open) break;
-            usleep(100000);
+            spd_show_loading(1);
           }
         }
         else
@@ -371,6 +371,16 @@ int main(int argc, char *argv[])
       spd_DC.evaluate((time_t) now, actual, distance, limits, &results[0]);  
       spd_RD.evaluate((time_t) now, actual, distance, limits, &results[1]);  
       spd_VV.evaluate((time_t) now, actual, distance, limits, &results[2]);  
+      if ( (results[0].state == SPD_STATE_SHUTDOWN) || 
+                 (results[0].state == SPD_STATE_WARN_HI))
+      {
+        warn = true;
+      }
+      else
+      {
+        warn = false;
+      }
+
       alg_compare(results, 3);
 
       time_in_section++;
@@ -399,12 +409,16 @@ int main(int argc, char *argv[])
       ****/
       if (detect_with_doors)
       {
+        /***
+        printf("checking doors: %lf, %s\n", (distance / total_distance) * 100,
+                 descretes.doors_open ? "Open" : "Closed");
+        **/
         if (descretes.doors_open &&  
-          ((distance / total_distance) > 0.05)) break;
+          ((distance / total_distance) > 0.95)) break;
       }
       else if (auto_end) 
       {
-        if (((distance / total_distance) > 0.99) && (actual == 0)) break;
+        if (((distance / total_distance) > 0.98) && (actual == 0)) break;
       }
       int ch = spd_getch();
       if (ch == 'f') {fast = true; utimer.set_interval(200000);}

@@ -18,9 +18,13 @@
 
 #include "ob_config.h"
 
-#define MAX_MAINTENANCE_SPEED (0.5)
-#define MAX_TIME_AT_MAINTENANCE (18)
-#define MAX_TIME_AT_ZERO (18)
+//#define MAX_MAINTENANCE_SPEED (35.0)
+
+static double max_maintenance_speed = 30.0;
+static int auto_timeout_time = 40;
+
+//#define MAX_TIME_AT_MAINTENANCE (40)
+//#define MAX_TIME_AT_ZERO (40)
 #define RECORD_SIZE (300)
 
 enum service_mode_t
@@ -182,6 +186,32 @@ int main(int argc, char *argv[])
   onboard_config = new onboard_config_t();
   onboard_config->read_file(config_file);
 
+  const char *max_maintain = onboard_config->get_config("max_maintain");
+  if (max_maintain == NULL)
+  {
+    max_maintain = "30.0";
+    printf("No max maintain specified, using: %s\n", max_maintain);
+  }
+  else
+  {
+    printf("max maintain specified: %s\n", max_maintain);
+  }
+  max_maintenance_speed = atof(max_maintain);
+  printf("maximimum maintain: %lf\n", max_maintenance_speed);
+
+  const char *auto_timeout = onboard_config->get_config("auto_timeout");
+  if (auto_timeout == NULL)
+  {
+    auto_timeout = "40";
+    printf("No auto timeout specified, using: %s\n", auto_timeout);
+  }
+  else
+  {
+    printf("auto timeout specified: %s\n", auto_timeout);
+  }
+  auto_timeout_time = atol(auto_timeout);
+  printf("auto timeout: %d\n", auto_timeout_time);
+
   utimer_t utimer;
   utimer.set_busy_wait(false);
   utimer.set_interval(1000000);
@@ -223,9 +253,11 @@ int main(int argc, char *argv[])
     the_time++;
  
     get_actual_speed_dist(0, 0, &distance, &actual_speed, &discretes); 
+    /**
     printf("%d: Distance: %lf, Speed: %lf, %s, %s\n", 
       record_pos, distance, actual_speed, 
       get_mode_text(service_mode), discretes.doors_open ? "open" : "closed");
+    ***/
 
     record_data[record_pos].time = the_time;
     record_data[record_pos].speed = actual_speed;
@@ -263,7 +295,7 @@ int main(int argc, char *argv[])
         }
         break;
       case MAINTENANCE_MOVING:
-        if (actual_speed >  MAX_MAINTENANCE_SPEED)
+        if (actual_speed >  max_maintenance_speed)
         {
           service_mode = IN_SERVICE; 
           printf("Switching to IN SERVICE\n");
@@ -271,7 +303,7 @@ int main(int argc, char *argv[])
           write_past_data(pfp, record_data, record_pos, RECORD_SIZE);
           time_below_speed = 0;
         }
-        else if (time_at_zero > MAX_TIME_AT_ZERO)
+        else if (time_at_zero > auto_timeout_time)
         {
           printf("Switching BACK to MAINTENANCE STOPPED\n"); 
           service_mode = MAINTENANCE_STOPPED;
@@ -282,7 +314,7 @@ int main(int argc, char *argv[])
         }
         break;
       case IN_SERVICE:
-        if (actual_speed <  MAX_MAINTENANCE_SPEED)
+        if (actual_speed <  max_maintenance_speed)
         {
           time_below_speed++;
         }
@@ -300,7 +332,7 @@ int main(int argc, char *argv[])
           time_at_zero = 0;
         }
 
-        if (time_below_speed > MAX_TIME_AT_MAINTENANCE)
+        if (time_below_speed > auto_timeout_time)
         {
           printf("Switching BACK to MAINTENANCE MOVING - closing log file\n"); 
           fclose(pfp);

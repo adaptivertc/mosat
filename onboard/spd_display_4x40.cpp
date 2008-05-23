@@ -520,6 +520,32 @@ void horizontal_bar_graph(int row, int col, int pix)
   write(serial_fd, buf, 6);
 }
 
+
+/**********************************************************************/
+
+void buzzer_off(void)
+{
+  char buf[3];
+  buf[0] = 0xFE;
+  buf[1] = 0x56;
+  buf[2] = 0x01;
+  write(serial_fd, buf, 3);
+}
+
+/**********************************************************************/
+static bool buzzon = false;
+
+void buzzer_toggle(void)
+{
+  char buf[3];
+  buf[0] = 0xFE;
+  buf[1] = 0x57;
+  buf[2] = 0x01;
+  if (!buzzon) buf[1] = 0x56;
+  buzzon = !buzzon;
+  write(serial_fd, buf, 3);
+}
+
 /**********************************************************************/
 
 void spd_print_current(double desired, double actual, int type, bool warn, 
@@ -531,6 +557,15 @@ void spd_print_current(double desired, double actual, int type, bool warn,
   if (desired > 99) desired = 99;
   if (actual < 0) actual = 0;
   if (desired < 0) desired = 0;
+
+  if (warn)
+  {
+    buzzer_toggle();
+  }
+  else
+  {
+    buzzer_off();
+  }
 
   d4x40_printf(3,1,"De %04.1lf", desired);
   d4x40_printf(4,1,"Ac %04.1lf", actual);
