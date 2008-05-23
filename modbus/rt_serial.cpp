@@ -188,7 +188,7 @@ int rt_open_serial(const char *port, int baud_rate, float timeout)
   }
 
   /* flush the serial port */
-  tcflush(fd, TCIFLUSH);
+  tcflush(fd, TCIOFLUSH);
 
   if (-1 == fcntl(fd, F_SETFL, FASYNC))
   {

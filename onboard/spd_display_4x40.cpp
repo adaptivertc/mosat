@@ -22,6 +22,7 @@ DEALINGS IN THE SOFTWARE.
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <termios.h>
 #include <unistd.h>
 #include <string.h>
 #include <stdarg.h>
@@ -35,6 +36,8 @@ DEALINGS IN THE SOFTWARE.
 #include "rtmodbus.h"
 #include "rt_serial.h"
 #include "spd_display.h"
+
+#include "ob_config.h"
 
 static char station1[20];
 static char station2[20];
@@ -139,6 +142,8 @@ static int key_hit = -1;
 
 void *check_for_keys(void *param)
 {
+  key_hit = -1;
+  tcflush(serial_fd, TCIOFLUSH);
   while (true)
   {
     char buf[5];
@@ -332,9 +337,35 @@ void spd_init_screen()
   {
     return;
   }
+
+  const char *serial_device = onboard_config->get_config("4x40_serial_dev");
+  if (serial_device == NULL)
+  {
+    serial_device = "/dev/ttyT8S0"; // Default to com3 on the TS7300
+    printf("No serial device specified for 4x40 display, using: %s\n", 
+               serial_device);
+  }
+  else
+  {
+    printf("4x40 serial device specified: %s\n", serial_device);
+  }
+
+  const char *baudrate_str = onboard_config->get_config("4x40_baudrate");
+  if (baudrate_str == NULL)
+  {
+    baudrate_str = " 19200";
+    printf("No baudrate specified for 4x40 display, using: %s\n", 
+               baudrate_str);
+  }
+  else
+  {
+    printf("4x40 baudrate specified: %s\n", baudrate_str);
+  }
+  int baudrate = atol(baudrate_str);
+
   //serial_fd = rt_open_serial("/dev/ttyUSB0", 19200, 0);
   //serial_fd = rt_open_serial("/dev/ttyTS0", 19200, 0); // COM3 on the board.
-  serial_fd = rt_open_serial("/dev/ttyT8S3", 19200, 0); // COM3 on the board.
+  serial_fd = rt_open_serial(serial_device, baudrate, 0); 
   buf[0] = 0xFE;
   buf[1] = 'h'; // Horizontal bar graph mode. 
   write(serial_fd, buf, 2);

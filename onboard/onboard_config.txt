@@ -5,3 +5,5 @@ modbus_address|0
 count_channel|8
 door_channel|2
 door_invert|F
+4x40_serial_dev|/dev/ttyT8S3
+4x40_baudrate|19200

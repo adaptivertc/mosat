@@ -15,41 +15,7 @@
 //#include "hp2mod.h"
 #include "rtmodbus.h"
 
-//#define DEST_IP   "10.25.50.46"
-//#define DEST_IP   "10.1.0.5"
-//#define DEST_IP   "172.16.115.32"
-#define DEST_IP   "172.16.115.37"
-//#define DEST_IP   "10.25.50.27"
-//#define DEST_IP   "127.0.0.1"
-//#define DEST_IP   "216.109.112.135"
-
-//#define DEST_PORT 3490 
-#define DEST_PORT 502 
-//#define DEST_PORT 80 
-
-  /***Here are the new functions to convert symbolic addresses.
-       int getaddrinfo(const char *node, const char *service,
-                       const struct addrinfo *hints,
-                       struct addrinfo **res);
-
-       void freeaddrinfo(struct addrinfo *res);
-
-       const char *gai_strerror(int errcode);
-       struct addrinfo {
-           int     ai_flags;
-           int     ai_family;
-           int     ai_socktype;
-           int     ai_protocol;
-           size_t  ai_addrlen;
-           struct sockaddr *ai_addr;
-           char   *ai_canonname;
-           struct addrinfo *ai_next;
-       };
-
-}
-***/
-
-
+// ssh dcarr@coyote2.dyndns.org:52483
 int main(int argc, char *argv[])
 {
   printf("myconnect %s:%d\n", __FILE__, __LINE__);
@@ -58,7 +24,9 @@ int main(int argc, char *argv[])
   //rtmodbus_t *modc = rt_create_modbus("127.0.0.1");
   //rtmodbus_t *modc = rt_create_modbus("192.168.0.100");
   //rtmodbus_t *modc = rt_create_modbus("172.16.115.99");
-  rtmodbus_t *modc = rt_create_modbus("192.168.1.104");
+  //rtmodbus_t *modc = rt_create_modbus("192.168.1.104");
+  //rtmodbus_t *modc = rt_create_modbus("coyote2.dyndns.org:502");
+  rtmodbus_t *modc = rt_create_modbus("189.162.54.98:502");
   //rtmodbus_t *modc = rt_create_modbus("172.16.115.37");
   //rtmodbus_t *modc = rt_create_modbus("10.1.0.5");
   //rtmodbus_t *modc = rt_create_modbus("10.0.0.0");

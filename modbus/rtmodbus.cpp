@@ -17,16 +17,6 @@
 #include "hp2mod.h"
 #include "trace.h"
 
-//#define DEST_IP   "10.25.50.46"
-#define DEST_IP   "172.16.115.99"
-//#define DEST_IP   "10.25.50.27"
-//#define DEST_IP   "127.0.0.1"
-//#define DEST_IP   "216.109.112.135"
-
-//#define DEST_PORT 3490 
-#define DEST_PORT 502 
-//#define DEST_PORT 80 
-
 rtmodbus_t *rt_create_modbus_serial(const char *device_name, int baudrate, float timeout)
 {
   rt_mod_serial_client_t *msc = new rt_mod_serial_client_t(1, device_name, baudrate, timeout);

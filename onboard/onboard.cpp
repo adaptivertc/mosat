@@ -400,7 +400,7 @@ int main(int argc, char *argv[])
       if (detect_with_doors)
       {
         if (descretes.doors_open &&  
-          ((distance / total_distance) > 0.95)) break;
+          ((distance / total_distance) > 0.05)) break;
       }
       else if (auto_end) 
       {

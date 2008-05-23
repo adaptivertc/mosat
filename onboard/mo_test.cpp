@@ -96,14 +96,11 @@ int d4x40_printf(int row, int col, const char *fmt, ...)
 }
 
 /***************************************************************/
-static const char *serial_device = "/dev/ttyT8S3";
+static const char *serial_device = "/dev/ttyT8S0";
 
 void spd_init_screen()
 {
   char buf[10];
-  unsigned char buf2[10]; 
-  unsigned char buf3[10]; 
-  char buf4[10]; 
 
   if (serial_fd != -1)
   {
@@ -129,126 +126,10 @@ void spd_init_screen()
   buf[1] = 'X'; // Clear the screen. 
   write(serial_fd, buf, 2);
 
-  /**********
-  write(serial_fd, "L1 PerifericoSur-Tesoro 45%", 27);
 
-  buf[1] = '5'; // Read Serial Number. 
-  write(serial_fd, buf, 2);
-  buf[1] = '6'; // Read Version Number. 
-  write(serial_fd, buf, 2);
-
-  buf2[0] = 0xFE;  
-  buf2[1] = 0x7C; // horizontal bar graph. 
-  buf2[2] = 8;
-  buf2[3] = 3;
-  buf2[4] = 0;
-
-  buf3[0] = 0xFE;
-  buf3[1] = 0x7C; // horizontal bar graph. 
-  buf3[2] = 8;
-  buf3[3] = 4;
-  buf3[4] = 0;
-
-  buf4[0] = 0xFE;  
-  buf4[1] = 0x7C; // horizontal bar graph. 
-  buf4[2] = 8 + 23;
-  buf4[3] = 4;
-  buf4[4] = 1;
-
-  buf[0] = 0xFE;  // goto xy
-  buf[1] = 0x47;
-  buf[2] = 1; // column
-  buf[3] = 3; // row
-
-  draw_numbers();
-
-  pthread_t thr;
-  int retval = pthread_create(&thr, NULL, check_for_keys, NULL);
-  if (retval != 0)
-  {
-    perror("can't create thread");
-    spd_endwin(); exit(0);
-  }
-***/
-
-/********
-  char str[10];
-  for (int i=0; i <= 80; i++)
-  {
-    buf2[5] = i;
-    buf3[5] = i;
-    buf4[5] = 120 - i - 5;
-    write(serial_fd, buf2, 6);
-    write(serial_fd, buf3, 6);
-    //write(serial_fd, buf4, 6);
-
-    snprintf(str, sizeof(str), "Act %2d", i);
-    buf[3] = 3;
-    write(serial_fd, buf, 4);
-    write(serial_fd, str, 6);
-
-   snprintf(str, sizeof(str), "Des %2d", i);
-    buf[3] = 4;
-    write(serial_fd, buf, 4);
-    write(serial_fd, str, 6);
-
-    if (((i + 10) %10) == 0)
-    {
-      sleep(1);
-    }
-    usleep(100000);
-  }
-  for (int i=80; i >= 0; i--)
-  {
-    buf2[5] = i;
-    buf3[5] = i;
-    buf4[5] = 120 - i - 5;
-    write(serial_fd, buf2, 6);
-    write(serial_fd, buf3, 6);
-    //write(serial_fd, buf4, 6);
-    snprintf(str, sizeof(str), "Act %2d", i);
-    buf[3] = 3;
-    write(serial_fd, buf, 4);
-    write(serial_fd, str, 6);
-
-    snprintf(str, sizeof(str), "Des %2d", i);
-    buf[3] = 4;
-    write(serial_fd, buf, 4);
-    write(serial_fd, str, 6);
-
-    usleep(100000);
-  }
-
-  ********/
-
-  //spd_redraw_all();
 };
 
-/*********************************************************************
-
-int mainxx(int argc, char *argv[])
-{
-  spd_init_screen();
-
-  while (1)
-  {
-    int buf[5];
-    int n = read(serial_fd, buf, sizeof(buf) - 1);
-    if (n > 0)
-    {
-      for (int i=0; i < n; i++)
-      {
-        buf[i] &= 0x7F;
-        printf("%d 0x%02x\t", (int) buf[i], (int) buf[i]);
-        if (buf[i] == 0x16) spd_endwin(); exit(0);
-      }
-      printf("\n");
-      buf[n] = '\0';
-    }
-  }
-}
-
-*********************************************************************/
+/*********************************************************************/
 
 int main(int argc, char *argv[])
 {
@@ -268,12 +149,12 @@ int main(int argc, char *argv[])
   buf[1] = 0x56; 
   write(serial_fd, buf, 3);
   printf("printing line 1 . . .\n");
-  d4x40_printf(1, 1, "This is line one, buzzer off");
+  d4x40_printf(1, 1, "Hello Cesar, buzzer off");
   sleep(1);
   buf[1] = 0x57; 
   write(serial_fd, buf, 3);
   printf("printing line 2 . . .\n");
-  d4x40_printf(2, 1, "This is line two, buzzer ON");
+  d4x40_printf(2, 1, "This is cool, buzzer ON");
   sleep(1);
   buf[1] = 0x56; 
   write(serial_fd, buf, 3);

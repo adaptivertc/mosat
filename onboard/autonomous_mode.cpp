@@ -18,7 +18,7 @@
 
 #include "ob_config.h"
 
-#define MAX_MAINTENANCE_SPEED (35)
+#define MAX_MAINTENANCE_SPEED (0.5)
 #define MAX_TIME_AT_MAINTENANCE (18)
 #define MAX_TIME_AT_ZERO (18)
 #define RECORD_SIZE (300)
@@ -36,6 +36,7 @@ struct record_data_t
   double speed;
   double distance;
   bool door_open;
+  bool raw_bits[16];
 };
 
 #define TV_ELAPSED_US(x, y)     ((((x).tv_sec - (y).tv_sec) * 1000000) + \
@@ -137,10 +138,16 @@ void write_past_data(FILE *fp, record_data_t *data, int position, int n)
     char buf[20];
     localtime_r(&data[idx].time, &mytm);
     strftime(buf, sizeof(buf), "%T", &mytm);
+    char tbuf[20];
+    for (int j=0; j < 16; j++)
+    {
+      tbuf[j] = data->raw_bits[j] ? '1' : '0';
+      tbuf[j+1] = '\0';
+    }
     char linebuf[200];
-    snprintf(linebuf, sizeof(linebuf), "%s\t%lf\t%lf\t%s\n", 
+    snprintf(linebuf, sizeof(linebuf), "%s\t%lf\t%lf\t%s\t%s\n", 
         buf, data[idx].distance, data[idx].speed, 
-        data[idx].door_open ? "1" : "0");
+        tbuf, data[idx].door_open ? "1" : "0");
     printf("%s", linebuf);
     fprintf(fp, "%s", linebuf);
 
@@ -192,8 +199,8 @@ int main(int argc, char *argv[])
   create_profile_dir("./raw_profiles/", dirname, sizeof(dirname));
 
 
-  //init_io();
-  //reset_distance(0);
+  init_io();
+  reset_distance(0);
 
   time_t the_time = time(NULL);
   record_data_t record_data[RECORD_SIZE];
@@ -203,6 +210,7 @@ int main(int argc, char *argv[])
     record_data[i].speed = 0.0;
     record_data[i].distance = 0.0;
     record_data[i].door_open = false;
+    memset(record_data[i].raw_bits, 0, sizeof(record_data[i].raw_bits));
   }
   int record_pos = 0;
   FILE *pfp = NULL;
@@ -214,13 +222,17 @@ int main(int argc, char *argv[])
     utimer.wait_next();
     the_time++;
  
-    xxget_actual_speed_dist(0, 0, &distance, &actual_speed, &discretes); 
-    printf("%d: Distance: %lf, Speed: %lf, %s\n", record_pos, distance, actual_speed, get_mode_text(service_mode));
+    get_actual_speed_dist(0, 0, &distance, &actual_speed, &discretes); 
+    printf("%d: Distance: %lf, Speed: %lf, %s, %s\n", 
+      record_pos, distance, actual_speed, 
+      get_mode_text(service_mode), discretes.doors_open ? "open" : "closed");
 
     record_data[record_pos].time = the_time;
     record_data[record_pos].speed = actual_speed;
     record_data[record_pos].distance = distance;
     record_data[record_pos].door_open = discretes.doors_open;
+    memcpy(record_data[record_pos].raw_bits, discretes.raw_bits,
+         sizeof(record_data[record_pos].raw_bits));
 
     if ((service_mode == IN_SERVICE) && (pfp != NULL))
     {
@@ -228,7 +240,15 @@ int main(int argc, char *argv[])
       char buf[20];
       localtime_r(&the_time, &mytm);
       strftime(buf, sizeof(buf), "%T", &mytm);
-      fprintf(pfp, "%s\t%lf\t%lf\t%s\n", buf, distance, actual_speed, discretes.doors_open ? "1" : "0");
+      char tbuf[20];
+      for (int i=0; i < 16; i++)
+      {
+        tbuf[i] = discretes.raw_bits[i] ? '1' : '0';
+        tbuf[i+1] = '\0';
+      }
+
+      fprintf(pfp, "%s\t%lf\t%lf\t%s\t%s\n", buf, distance, actual_speed, 
+        tbuf, discretes.doors_open ? "1" : "0");
     }
 
 
@@ -243,7 +263,7 @@ int main(int argc, char *argv[])
         }
         break;
       case MAINTENANCE_MOVING:
-        if (actual_speed > 35.0)
+        if (actual_speed >  MAX_MAINTENANCE_SPEED)
         {
           service_mode = IN_SERVICE; 
           printf("Switching to IN SERVICE\n");
@@ -285,6 +305,7 @@ int main(int argc, char *argv[])
           printf("Switching BACK to MAINTENANCE MOVING - closing log file\n"); 
           fclose(pfp);
           service_mode = MAINTENANCE_MOVING;
+          reset_distance(0);
         }
         break;
     } 

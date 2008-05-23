@@ -43,18 +43,6 @@ static int count_history[2];
 static int hindex;
 static const int hsize = sizeof(count_history) / sizeof(count_history[0]);
 
-//#define DEST_IP   "10.25.50.27"
-//#define DEST_IP   "10.25.50.46"
-//#define DEST_IP   "172.16.115.27"
-//#define DEST_IP   "172.16.115.99"
-#define DEST_IP   "10.1.0.5"
-//#define DEST_IP   "127.0.0.1"
-//#define DEST_IP   "216.109.112.135"
-
-//#define DEST_PORT 3490
-#define DEST_PORT 502
-//#define DEST_PORT 80
-
 double time_dif(struct timeval tv1, struct timeval atv)
 {
   /*
@@ -190,19 +178,21 @@ void get_actual_speed_dist(int section, int t, double *dist, double *speed, spd_
   int current_count;
   int speed_count;
   uint16_t uvals[20];
-  bool dvals[12];
+  bool dvals[20];
   char buf[100];
 
 
-  modc->read_di(0, 12, dvals);
+  modc->read_di(0, 16, dvals);
   modc->read_ai(0, 16, uvals);
 
   current_count = uvals[count_channel];
   speed_count = uvals[speed_channel]; 
-  for (int i=0; i < 12; i++)
+
+  for (int i=0; i < 16; i++)
   {
     buf[i] = dvals[i] ? '1' : '0';
     buf[i+1] = '\0';
+    descretes->raw_bits[i] = dvals[i];
   }
   #ifndef ARM
   mvprintw(17,2,"%s %s", buf, dvals[door_channel] ? "OPEN" : "CLOSED");
@@ -213,7 +203,6 @@ void get_actual_speed_dist(int section, int t, double *dist, double *speed, spd_
   descretes->left_open = false;
   descretes->right_open = false;
   descretes->master = false;
-  
 
   /***
   for (int i=0; i < 16; i++)
