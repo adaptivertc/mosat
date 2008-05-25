@@ -338,30 +338,8 @@ void spd_init_screen()
     return;
   }
 
-  const char *serial_device = onboard_config->get_config("4x40_serial_dev");
-  if (serial_device == NULL)
-  {
-    serial_device = "/dev/ttyT8S0"; // Default to com3 on the TS7300
-    printf("No serial device specified for 4x40 display, using: %s\n", 
-               serial_device);
-  }
-  else
-  {
-    printf("4x40 serial device specified: %s\n", serial_device);
-  }
-
-  const char *baudrate_str = onboard_config->get_config("4x40_baudrate");
-  if (baudrate_str == NULL)
-  {
-    baudrate_str = " 19200";
-    printf("No baudrate specified for 4x40 display, using: %s\n", 
-               baudrate_str);
-  }
-  else
-  {
-    printf("4x40 baudrate specified: %s\n", baudrate_str);
-  }
-  int baudrate = atol(baudrate_str);
+  const char *serial_device = onboard_config->get_config("4x40_serial_dev", "/dev/ttyT8S0");
+  int baudrate = onboard_config->get_int("4x40_baudrate", 19200);
 
   //serial_fd = rt_open_serial("/dev/ttyUSB0", 19200, 0);
   //serial_fd = rt_open_serial("/dev/ttyTS0", 19200, 0); // COM3 on the board.
@@ -589,7 +567,7 @@ void spd_print_current(double desired, double actual, int type, bool warn,
   horizontal_bar_graph(3, 8, des_pix);
   horizontal_bar_graph(4, 8, act_pix);
 
-  char *accel_str;
+  const char *accel_str;
   if (type == 0)
   {
     accel_str = "<<<";
