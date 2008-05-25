@@ -32,10 +32,16 @@ static double circ = wheel_diameter * M_PI; //  la motriz M038?
 // se reperfila cada 50 mil a 60 mil kms (de 5 a 6 meses).
 static double meters_per_pulse = (circ / 110.0);
 //static const double meters_per_pulse = 10.0;
+
 static int count_channel = 8;
+static const  int speed_channel = 0;
+
 static int door_channel = 2;
 static bool door_invert = false;
-static const  int speed_channel = 0;
+static bool use_left_right_doors = false;
+static int left_door_channel = 5;
+static int right_door_channel = 6;
+
 
 static long last_count;
 static int count_history[2];
@@ -97,83 +103,24 @@ void set_calculation_information(double the_diameter, int the_count_channel)
 
 void connect_modbus(void)
 {
-  const char *ip_address = onboard_config->get_config("modbus_ip");
-  if (ip_address == NULL)
-  {
-    ip_address = "172.16.115.99";
-    printf("No ip address specified, using: %s\n", ip_address);
-  }
-  else
-  {
-    printf("ip_address specified: %s\n", ip_address);
-  }
-  const char *modbus_address = onboard_config->get_config("modbus_address");
-  if (modbus_address == NULL)
-  {
-    modbus_address = "0";
-    printf("No modbus address specified, using: %s\n", modbus_address);
-  }
-  else
-  {
-    printf("modbus address specfied: %s\n", modbus_address);
-  }
-  const char *diameter = onboard_config->get_config("diameter");
-  if (diameter == NULL)
-  {
-    diameter = "0.665";
-    printf("No diameter specified, using: %s\n", diameter);
-  }
-  else
-  {
-    printf("diameter specified: %s\n", diameter);
-  }
+  set_calculation_information(onboard_config->get_double("diameter", 0.665),
+                              onboard_config->get_int("count_channel", 8));
+  door_channel = onboard_config->get_int("door_channel", 2);
+  door_invert =  onboard_config->get_bool("door_invert", false); 
+  use_left_right_doors = onboard_config->get_bool("use_left_right_doors", false);
+  left_door_channel = onboard_config->get_int("left_door_channel", 9);
+  right_door_channel = onboard_config->get_int("right_door_channel", 10);
 
-  const char *cnt = onboard_config->get_config("count_channel");
-  if (cnt == NULL)
-  {
-    cnt = "8";
-    printf("No count channel specified, using: %s\n", cnt);
-  }
-  else
-  {
-    printf("Count channel specified: %s\n", cnt);
-  }
-  set_calculation_information(atof(diameter), atol(cnt));
 
-  const char *door_ch = onboard_config->get_config("door_channel");
-  if (door_ch == NULL)
-  {
-    door_ch = "2";
-    printf("No door channel specified, using: %s\n", door_ch);
-  }
-  else
-  {
-    printf("Door channel specified: %s\n", door_ch);
-  }
-  door_channel = atol(door_ch);
-
-  const char *door_inv = onboard_config->get_config("door_invert");
-  if (door_ch == NULL)
-  {
-    door_invert = false;
-    printf("No door invert specified, using positive logic");
-  }
-  else
-  {
-    door_invert = (door_inv[0] == '1') || (door_inv[0] == 't') || (door_inv[0] == 'T') || (door_inv[0] == 'Y') || (door_inv[0] == 'y');
-    printf("Door invert specified: %s, %s logic\n", door_inv, door_invert ? "negative": "positive");
-  }
-
-  door_channel = atol(door_ch);
-  modc = rt_create_modbus(ip_address);
+  modc = rt_create_modbus(onboard_config->get_config("modbus_ip", "172.16.115.99"));
   modc->set_debug_level(10);
-  modc->set_address(atol(modbus_address));
+  modc->set_address(onboard_config->get_int("modbus_address", 0));
   reset_distance(0);
 }
 
 /***********************************************************************/
 
-void get_actual_speed_dist(int section, int t, double *dist, double *speed, spd_discrete_t *descretes)
+void get_actual_speed_dist(int section, int t, double *dist, double *speed, spd_discrete_t *discretes)
 {
   int current_count;
   int speed_count;
@@ -192,17 +139,28 @@ void get_actual_speed_dist(int section, int t, double *dist, double *speed, spd_
   {
     buf[i] = dvals[i] ? '1' : '0';
     buf[i+1] = '\0';
-    descretes->raw_bits[i] = dvals[i];
+    discretes->raw_bits[i] = dvals[i];
   }
   #ifndef ARM
   mvprintw(17,2,"%s %s", buf, dvals[door_channel] ? "OPEN" : "CLOSED");
   #endif
-  descretes->doors_open = dvals[door_channel];
-  if (door_invert)  descretes->doors_open = !descretes->doors_open;
+  if (use_left_right_doors)
+  {
+    bool ltopen = dvals[left_door_channel];
+    if (door_invert) ltopen = !ltopen; 
+    bool rtopen = dvals[right_door_channel];
+    if (door_invert) rtopen = !rtopen; 
+    discretes->doors_open = ltopen | rtopen;
+  }
+  else
+  {
+    discretes->doors_open = dvals[door_channel];
+    if (door_invert)  discretes->doors_open = !discretes->doors_open;
+  }
   // When we have the inputs, we need to fix the following:
-  descretes->left_open = false;
-  descretes->right_open = false;
-  descretes->master = false;
+  discretes->left_open = false;
+  discretes->right_open = false;
+  discretes->master = false;
 
   /***
   for (int i=0; i < 16; i++)

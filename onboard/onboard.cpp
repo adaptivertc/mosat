@@ -252,8 +252,8 @@ int main(int argc, char *argv[])
     double distance = 0.0;
     double actual = 0;
     double desired = 0;
-    spd_discrete_t descretes;
-    descretes.doors_open = false;
+    spd_discrete_t discretes;
+    discretes.doors_open = false;
     //mvprintw(20,2,"Cargando y Descargando Pasajeros"); 
     //refresh();
 
@@ -270,8 +270,8 @@ int main(int argc, char *argv[])
         {
           while(true)
           {
-            get_actual_speed_dist(-1, -1, &distance, &actual, &descretes);
-            if (!descretes.doors_open) break;
+            get_actual_speed_dist(-1, -1, &distance, &actual, &discretes);
+            if (!discretes.doors_open) break;
             spd_show_loading(1);
           }
         }
@@ -351,12 +351,12 @@ int main(int argc, char *argv[])
       if (sim_mode)
       {
         //mvprintw(22,2,"Sim Mode"); 
-        sreader.get_sim_speed_dist(j, time_in_section, &distance, &actual, &descretes);
+        sreader.get_sim_speed_dist(j, time_in_section, &distance, &actual, &discretes);
       } 
       else
       {
         //mvprintw(22,2,"Live Mode"); 
-        get_actual_speed_dist(j, time_in_section, &distance, &actual, &descretes);
+        get_actual_speed_dist(j, time_in_section, &distance, &actual, &discretes);
       } 
       
       //dispatch_algorithms(time_t now, int command, double speed, double distance)
@@ -396,7 +396,7 @@ int main(int argc, char *argv[])
 
       spd_print_current(desired, actual, type, warn, 
         100.0 * distance / total_distance, total_distance,
-           now, total_time, &descretes);
+           now, total_time, &discretes);
 
       /*****
       double left = total_distance - distance;
@@ -411,9 +411,9 @@ int main(int argc, char *argv[])
       {
         /***
         printf("checking doors: %lf, %s\n", (distance / total_distance) * 100,
-                 descretes.doors_open ? "Open" : "Closed");
+                 discretes.doors_open ? "Open" : "Closed");
         **/
-        if (descretes.doors_open &&  
+        if (discretes.doors_open &&  
           ((distance / total_distance) > 0.95)) break;
       }
       else if (auto_end) 

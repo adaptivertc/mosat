@@ -175,7 +175,7 @@ int main(int argc, char *argv[])
     int n = read(serial_fd, buf, sizeof(buf) - 1);
     if (n > 0)
     {
-      printf("%c", buf[n-1]);
+      printf("Char recieved: %c\n", buf[n-1]);
     }
   } 
   close(serial_fd);

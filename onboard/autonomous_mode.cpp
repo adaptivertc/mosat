@@ -186,31 +186,8 @@ int main(int argc, char *argv[])
   onboard_config = new onboard_config_t();
   onboard_config->read_file(config_file);
 
-  const char *max_maintain = onboard_config->get_config("max_maintain");
-  if (max_maintain == NULL)
-  {
-    max_maintain = "30.0";
-    printf("No max maintain specified, using: %s\n", max_maintain);
-  }
-  else
-  {
-    printf("max maintain specified: %s\n", max_maintain);
-  }
-  max_maintenance_speed = atof(max_maintain);
-  printf("maximimum maintain: %lf\n", max_maintenance_speed);
-
-  const char *auto_timeout = onboard_config->get_config("auto_timeout");
-  if (auto_timeout == NULL)
-  {
-    auto_timeout = "40";
-    printf("No auto timeout specified, using: %s\n", auto_timeout);
-  }
-  else
-  {
-    printf("auto timeout specified: %s\n", auto_timeout);
-  }
-  auto_timeout_time = atol(auto_timeout);
-  printf("auto timeout: %d\n", auto_timeout_time);
+  max_maintenance_speed = onboard_config->get_double("max_maintain", 30);
+  auto_timeout_time = onboard_config->get_int("auto_timeout", 40);
 
   utimer_t utimer;
   utimer.set_busy_wait(false);

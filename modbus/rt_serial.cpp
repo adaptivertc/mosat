@@ -8,10 +8,26 @@
 #include <unistd.h>
 #include <termios.h>
 
+#include <sys/signal.h>
+#include <sys/types.h>
+
+#include <semaphore.h>
+
 #include "rt_serial.h"
+
+#define USE_SIGNALS 0
+
+bool wait_flag = true;
+sem_t wait_sem;
 
 struct termios saved_tty_parameters; /* saved serial port setting */
 int rt_verbose;
+
+void signal_handler_IO (int status)
+{
+//    printf("received SIGIO signal.\n");
+  wait_flag = false;
+}
 
 int rt_read_serial(int fd, void *data, int sz)
 {
@@ -19,7 +35,15 @@ int rt_read_serial(int fd, void *data, int sz)
   char *dp = (char *) data;
   while (total_read < sz)
   {
+  #ifdef USE_SIGNALS
+    if (wait_flag)
+    {
+      printf("Looping . . . \n");
+      continue;
+    }
+  #endif
     int n = read(fd, dp + total_read, sz - total_read); 
+    wait_flag = true;
     if (n == 0)
     {
       // we timed out waiting for our characters.
@@ -51,6 +75,11 @@ int rt_open_serial(const char *port, int baud_rate, float timeout)
 
   int fd;
   struct termios rt_tio; 
+
+  #ifdef USE_SIGNALS
+  signal(SIGIO, signal_handler_IO);
+  sem_init(&wait_sem, 0, 0);
+  #endif
 
   /* open the serial port */
   fd = open(port,O_RDWR | O_NOCTTY | O_NONBLOCK | O_NDELAY) ;

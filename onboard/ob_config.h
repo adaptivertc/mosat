@@ -29,10 +29,14 @@ private:
   char *val[100];
 
 public:
-  const char *get_config(const char *);
-  int get_int(const char *);
-  double get_double(const char *);
-  void read_file(const char * path);
+  const char *get_config(const char *key);
+  const char *get_config(const char *key, const char *default_value);
+  bool get_bool(const char *key, bool default_value);
+  int get_int(const char *key);
+  int get_int(const char *key, int default_value);
+  double get_double(const char *key);
+  double get_double(const char *key, double default_value);
+  void read_file(const char *path);
   const char *first(void);
   const char *next(void);
   onboard_config_t();

@@ -36,15 +36,33 @@ onboard_config_t::onboard_config_t(void)
 
 /**********************************************************************/
 
+int onboard_config_t::get_int(const char *aKey, int default_value)
+{
+  for (int i=0; i < n_keys; i++)
+  {
+    if (0 == strcasecmp(aKey, key[i]))
+    {
+      printf("Found: %s, using %s\n", aKey, val[i]);
+      return atol(val[i]);
+    }
+  }
+  printf("NOT found: %s, returning default: %d\n", aKey, default_value);
+  return default_value;
+}
+
+/**********************************************************************/
+
 int onboard_config_t::get_int(const char *aKey)
 {
   for (int i=0; i < n_keys; i++)
   {
     if (0 == strcasecmp(aKey, key[i]))
     {
+      printf("Found: %s, using %s\n", aKey, val[i]);
       return atol(val[i]);
     }
   }
+  printf("NOT found: %s, returning -1\n", aKey);
   return -1;
 }
 
@@ -56,10 +74,28 @@ double onboard_config_t::get_double(const char *aKey)
   {
     if (0 == strcasecmp(aKey, key[i]))
     {
+      printf("Found: %s, using %s\n", aKey, val[i]);
       return atof(val[i]);
     }
   }
+  printf("NOT found: %s, returning 0.0\n", aKey);
   return 0.0;
+}
+
+/**********************************************************************/
+
+double onboard_config_t::get_double(const char *aKey, double default_value)
+{
+  for (int i=0; i < n_keys; i++)
+  {
+    if (0 == strcasecmp(aKey, key[i]))
+    {
+      printf("Found: %s, using %s\n", aKey, val[i]);
+      return atof(val[i]);
+    }
+  }
+  printf("NOT found: %s, using default: %lf\n", aKey, default_value);
+  return default_value;
 }
 
 /**********************************************************************/
@@ -70,10 +106,48 @@ const char *onboard_config_t::get_config(const char *aKey)
   {
     if (0 == strcasecmp(aKey, key[i]))
     {
+      printf("Found: %s, using %s\n", aKey, val[i]);
       return val[i];
     }
   }
+  printf("NOT found: %s, returning NULL\n", aKey);
   return NULL;
+}
+
+/**********************************************************************/
+
+const char *onboard_config_t::get_config(const char *aKey, const char *default_value)
+{
+  for (int i=0; i < n_keys; i++)
+  {
+    if (0 == strcasecmp(aKey, key[i]))
+    {
+      printf("Found: %s, using %s\n", aKey, val[i]);
+      return val[i];
+    }
+  }
+  printf("NOT found: %s, using default: %s\n", aKey, default_value);
+  return default_value;
+}
+
+/**********************************************************************/
+
+bool onboard_config_t::get_bool(const char *aKey, bool default_value)
+{
+  for (int i=0; i < n_keys; i++)
+  {
+    if (0 == strcasecmp(aKey, key[i]))
+    {
+      printf("Found: %s, using %s\n", aKey, val[i]);
+      return ( (val[i][0] == 'T') || 
+               (val[i][0] == 'T') ||
+               (val[i][0] == '1') ||
+               (val[i][0] == 'y') ||
+               (val[i][0] == 'Y') );
+    }
+  }
+  printf("NOT found: %s, using default: %s\n", aKey, default_value ? "true" : "false");
+  return default_value;
 }
 
 /**********************************************************************/
