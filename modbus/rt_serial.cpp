@@ -15,19 +15,21 @@
 
 #include "rt_serial.h"
 
-#define USE_SIGNALS 0
-
-bool wait_flag = true;
-sem_t wait_sem;
-
 struct termios saved_tty_parameters; /* saved serial port setting */
 int rt_verbose;
+
+#define XXXSERIAL_USE_SIGNALS 0
+
+#ifdef SERIAL_USE_SIGNALS
+bool wait_flag = true;
+sem_t wait_sem;
 
 void signal_handler_IO (int status)
 {
 //    printf("received SIGIO signal.\n");
   wait_flag = false;
 }
+#endif
 
 int rt_read_serial(int fd, void *data, int sz)
 {
@@ -35,15 +37,17 @@ int rt_read_serial(int fd, void *data, int sz)
   char *dp = (char *) data;
   while (total_read < sz)
   {
-  #ifdef USE_SIGNALS
+    #ifdef USE_SIGNALS
     if (wait_flag)
     {
       printf("Looping . . . \n");
       continue;
     }
-  #endif
+    #endif
     int n = read(fd, dp + total_read, sz - total_read); 
+    #ifdef SERIAL_USE_SIGNALS
     wait_flag = true;
+    #endif
     if (n == 0)
     {
       // we timed out waiting for our characters.
@@ -83,6 +87,7 @@ int rt_open_serial(const char *port, int baud_rate, float timeout)
 
   /* open the serial port */
   fd = open(port,O_RDWR | O_NOCTTY | O_NONBLOCK | O_NDELAY) ;
+  //fd = open(port, O_RDWR | O_NOCTTY | O_NDELAY);
   if(fd < 0)
   {
     char buf[60];
