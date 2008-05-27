@@ -18,12 +18,12 @@ all: onboard onboard_2x24 onboard_4x40 drive
 
 
 onboard:	onboard.o spd_display.o spd_comm.o spd_select.o spd_algo_DC.o spd_algo_RD.o spd_algo_VV.o \
-		profile_reader.o  sim_reader.o alg_compare.o ob_config.o
+		profile_reader.o  sim_reader.o alg_compare.o ob_config.o 
 	g++ -g -o onboard -lncurses onboard.o spd_display.o spd_comm.o spd_select.o sim_reader.o alg_compare.o ob_config.o\
-			spd_algo_DC.o spd_algo_RD.o  spd_algo_VV.o profile_reader.o -lrt $(RTMODBUS) $(RTCOMMON)
+			spd_algo_DC.o spd_algo_RD.o  spd_algo_VV.o profile_reader.o  -lrt $(RTMODBUS) $(RTCOMMON)
 
 onboard_4x40:	onboard.o spd_display_4x40.o spd_comm.o spd_select.o spd_algo_DC.o spd_algo_RD.o spd_algo_VV.o \
-		profile_reader.o  sim_reader.o alg_compare.o ob_config.o
+		profile_reader.o  sim_reader.o alg_compare.o ob_config.o 
 	g++ -g -o onboard_4x40 -lncurses onboard.o spd_display_4x40.o spd_comm.o spd_select.o sim_reader.o alg_compare.o ob_config.o\
 			spd_algo_DC.o spd_algo_RD.o  spd_algo_VV.o profile_reader.o -lpthread $(RTMODBUS) $(RTCOMMON)
 

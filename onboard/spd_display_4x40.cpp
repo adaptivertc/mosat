@@ -44,7 +44,7 @@ static char station2[20];
 static bool doors_open = false;
 
 
-static int serial_fd = -1;
+static int serial_fd1 = -1;
 
 /*********************************************************************/
  
@@ -70,18 +70,18 @@ void draw_numbers(void)
     {
       snprintf(str, sizeof(str), "%2d", (i * 2 * 10) - 10);
       buf[2] = 5 + (i*4);
-      write(serial_fd, buf, 4);
-      write(serial_fd, str, 2);
+      write(serial_fd1, buf, 4);
+      write(serial_fd1, str, 2);
     }
 
     buf[2] = 4 + (i*4);
-    write(serial_fd, buf, 4);
+    write(serial_fd1, buf, 4);
     buf2[0] = 1;
-    write(serial_fd, buf2, 1);
+    write(serial_fd1, buf2, 1);
     buf[2] = 3 + (i*4);
-    write(serial_fd, buf, 4);
+    write(serial_fd1, buf, 4);
     buf2[0] = 5;
-    write(serial_fd, buf2, 1);
+    write(serial_fd1, buf2, 1);
   }
 }
 
@@ -143,11 +143,11 @@ static int key_hit = -1;
 void *check_for_keys(void *param)
 {
   key_hit = -1;
-  tcflush(serial_fd, TCIOFLUSH);
+  tcflush(serial_fd1, TCIOFLUSH);
   while (true)
   {
     char buf[5];
-    int n = read(serial_fd, buf, sizeof(buf) - 1);
+    int n = read(serial_fd1, buf, sizeof(buf) - 1);
     if (n > 0)
     {
       key_hit = buf[n-1]; 
@@ -164,7 +164,7 @@ int d4x40_getch(void)
   //char ch = 'm';
   //return ch;
 
-  if (serial_fd == -1)
+  if (serial_fd1 == -1)
   {
     spd_init_screen();
   }
@@ -187,7 +187,7 @@ void d4x40_cls(void)
 
   buf[0] = 0xFE; // command byte 
   buf[1] = 'X';  // Clear the screen. 
-  write(serial_fd, buf, 2);
+  write(serial_fd1, buf, 2);
 }
 
 /***************************************************************/
@@ -213,7 +213,7 @@ int d4x40_printf(int row, int col, const char *fmt, ...)
   {
     row = 1;
   }
-  if (serial_fd == -1)
+  if (serial_fd1 == -1)
   {
     spd_init_screen();
   }
@@ -231,8 +231,8 @@ int d4x40_printf(int row, int col, const char *fmt, ...)
   buf[2] = col; // column
   buf[3] = row; // row
 
-  write(serial_fd, buf, 4);
-  write(serial_fd, myline, strlen(myline));
+  write(serial_fd1, buf, 4);
+  write(serial_fd1, myline, strlen(myline));
   return n;
 }
 
@@ -286,7 +286,7 @@ int spd_wait_key(const char *msg)
     d4x40_printf(1,1,"%-36s", " "); 
 
     mych = d4x40_getch();
-    if ((mych ==  'q') || (mych == 'Q')) {spd_endwin(); exit(0);}
+    //if ((mych ==  'q') || (mych == 'Q')) {spd_endwin(); exit(0);}
     if (mych != -1)
     {
       break;
@@ -333,7 +333,7 @@ void spd_init_screen()
   unsigned char buf3[10]; 
   char buf4[10]; 
 
-  if (serial_fd != -1)
+  if (serial_fd1 != -1)
   {
     return;
   }
@@ -341,29 +341,29 @@ void spd_init_screen()
   const char *serial_device = onboard_config->get_config("4x40_serial_dev", "/dev/ttyT8S0");
   int baudrate = onboard_config->get_int("4x40_baudrate", 19200);
 
-  //serial_fd = rt_open_serial("/dev/ttyUSB0", 19200, 0);
-  //serial_fd = rt_open_serial("/dev/ttyTS0", 19200, 0); // COM3 on the board.
-  serial_fd = rt_open_serial(serial_device, baudrate, 0); 
+  //serial_fd1 = rt_open_serial("/dev/ttyUSB0", 19200, 0);
+  //serial_fd1 = rt_open_serial("/dev/ttyTS0", 19200, 0); // COM3 on the board.
+  serial_fd1 = rt_open_serial(serial_device, baudrate, 0); 
   buf[0] = 0xFE;
   buf[1] = 'h'; // Horizontal bar graph mode. 
-  write(serial_fd, buf, 2);
+  write(serial_fd1, buf, 2);
   buf[1] = 'E'; // Clear keypad buffer. 
-  write(serial_fd, buf, 2);
+  write(serial_fd1, buf, 2);
   buf[1] = 'D'; // Auto Line Wrap Off. 
-  write(serial_fd, buf, 2);
+  write(serial_fd1, buf, 2);
   buf[1] = 'R'; // Auto Scroll Off. 
-  write(serial_fd, buf, 2);
+  write(serial_fd1, buf, 2);
   buf[1] = 'A'; // Auto transmit keypress on. 
-  write(serial_fd, buf, 2);
+  write(serial_fd1, buf, 2);
   buf[1] = 'X'; // Clear the screen. 
-  write(serial_fd, buf, 2);
+  write(serial_fd1, buf, 2);
 
-  write(serial_fd, "L1 PerifericoSur-Tesoro 45%", 27);
+  write(serial_fd1, "L1 PerifericoSur-Tesoro 45%", 27);
 
   buf[1] = '5'; // Read Serial Number. 
-  write(serial_fd, buf, 2);
+  write(serial_fd1, buf, 2);
   buf[1] = '6'; // Read Version Number. 
-  write(serial_fd, buf, 2);
+  write(serial_fd1, buf, 2);
 
   buf2[0] = 0xFE;  
   buf2[1] = 0x7C; // horizontal bar graph. 
@@ -460,7 +460,7 @@ int mainxx(int argc, char *argv[])
   while (1)
   {
     int buf[5];
-    int n = read(serial_fd, buf, sizeof(buf) - 1);
+    int n = read(serial_fd1, buf, sizeof(buf) - 1);
     if (n > 0)
     {
       for (int i=0; i < n; i++)
@@ -495,7 +495,7 @@ void horizontal_bar_graph(int row, int col, int pix)
   buf[3] = row;
   buf[4] = 0;
   buf[5] = pix;
-  write(serial_fd, buf, 6);
+  write(serial_fd1, buf, 6);
 }
 
 
@@ -507,7 +507,7 @@ void buzzer_off(void)
   buf[0] = 0xFE;
   buf[1] = 0x56;
   buf[2] = 0x01;
-  write(serial_fd, buf, 3);
+  write(serial_fd1, buf, 3);
 }
 
 /**********************************************************************/
@@ -521,7 +521,7 @@ void buzzer_toggle(void)
   buf[2] = 0x01;
   if (!buzzon) buf[1] = 0x56;
   buzzon = !buzzon;
-  write(serial_fd, buf, 3);
+  write(serial_fd1, buf, 3);
 }
 
 /**********************************************************************/
@@ -558,11 +558,11 @@ void spd_print_current(double desired, double actual, int type, bool warn,
   buf[3] = 3;
   buf[4] = 0;
   buf[5] = des_pix;
-  write(serial_fd, buf, 6);
+  write(serial_fd1, buf, 6);
 
   buf[3] = 4;
   buf[5] = act_pix;
-  write(serial_fd, buf, 6);
+  write(serial_fd1, buf, 6);
   ****/
   horizontal_bar_graph(3, 8, des_pix);
   horizontal_bar_graph(4, 8, act_pix);
@@ -636,19 +636,21 @@ int spd_endwin(void)
   d4x40_printf(1,1,"Exiting . . .");
   printf("Exiting . . .");
   sleep(1);
-  close(serial_fd);
+  close(serial_fd1);
   return 0;
 }
 
 /*********************************************************************/
 int spd_beep(void)
 {
+ /**
   char buf[2];
   buf[0] = 0xFE; 
   buf[1] = 'V'; // GPO On
-  write(serial_fd, buf, 2);
+  write(serial_fd1, buf, 2);
   buf[1] = 'W'; // GPO On
-  write(serial_fd, buf, 2);
+  write(serial_fd1, buf, 2);
+  ***/
   return 0;
 }
 /*********************************************************************/
@@ -661,7 +663,7 @@ int spd_getch(void)
 
 void spd_create_image(char *base_name, char *gtitle, bool window)
 {
-  char *fname = "gnuplotoptions.txt";
+  const char *fname = "gnuplotoptions.txt";
   FILE *fp = fopen(fname, "w");
   if (fp == NULL)
   {

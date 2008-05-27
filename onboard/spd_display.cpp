@@ -38,6 +38,33 @@ static char station2[20];
 
 /*******************************************************************/
 
+int xspd_wait_key(const char *msg)
+{
+  int mych;
+  mvprintw(24, 2,"%-36s", msg); 
+  refresh();
+  while (-1 != getch());
+  
+  while (1)
+  {
+    mych = getch();
+    //if ((mych ==  'q') || (mych == 'Q')) {endwin(); exit(0);}
+    if (mych != -1)
+    {
+      break;
+    } 
+    usleep(10000);
+    //if ((mych ==  'q') || (mych == 'Q')) {endwin(); exit(0);}
+  }
+  mvprintw(24,2,"got %c      ", mych); 
+  refresh();
+  mvprintw(15,2,"%-36s", ""); 
+  refresh();
+  return mych;
+}
+
+/*******************************************************************/
+
 int spd_wait_key(const char *msg)
 {
   int mych;
@@ -48,7 +75,7 @@ int spd_wait_key(const char *msg)
   while (1)
   {
     mych = getch();
-    if ((mych ==  'q') || (mych == 'Q')) {endwin(); exit(0);}
+    //if ((mych ==  'q') || (mych == 'Q')) {endwin(); exit(0);}
     if (mych != -1)
     {
       break;
@@ -57,7 +84,7 @@ int spd_wait_key(const char *msg)
     mvprintw(15,2,"%-36s", " "); 
     refresh();
     mych = getch();
-    if ((mych ==  'q') || (mych == 'Q')) {endwin(); exit(0);}
+    //if ((mych ==  'q') || (mych == 'Q')) {endwin(); exit(0);}
     if (mych != -1)
     {
       break;
@@ -396,7 +423,9 @@ int spd_beep(void)
 
 int spd_prompt_user(const char *msg1, const char *msg2)
 {
-  return 0;
+  char buf[60];
+  snprintf(buf, sizeof(buf), "%s: %s", msg1, msg2); 
+  return xspd_wait_key(buf);
 }
 
 /*********************************************************************/

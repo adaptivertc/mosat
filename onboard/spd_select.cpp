@@ -31,12 +31,13 @@ DEALINGS IN THE SOFTWARE.
 #include "rtcommon.h"
 #include "spd_display.h"
 
-int select_from_list(int n, char *list[], char *prompt)
+int select_from_list(int n, const char *list[], const char *prompt)
 {
   int i = 0;
-  printf("In select from list\n");
+  //printf("In select from list\n");
   while (1) 
   {
+    //printf("%s, %s\n", prompt, list[i]);
     int key = spd_prompt_user(list[i], prompt);
     if ((key == '#') || (key == 'm'))
     {

@@ -65,11 +65,169 @@ static bool all_profiles = false;
 
 onboard_config_t *onboard_config = NULL;
 
+const char *L2V1_names[] = {
+"Tetlan-Aurora", 
+"Aurora-SanJacinto", 
+"SanJacinto-SanAndres", 
+"SanAndres-CristobalDeO", 
+"CristobalDeO-Obaltos", 
+"Obaltos-BelisarioDom", 
+"BelisarioDom-SanJuanDeDio", 
+"SanJuanDeDio-PlazaUnivers", 
+"PlazaUnivers-Juarez"
+};
+
+const char *L2V2_names[] = {
+"Juarez-PlazaUnivers", 
+"PlazaUnivers-SanJuanDeDio", 
+"SanJuanDeDio-BelisarioDom", 
+"BelisarioDom-Oblatos", 
+"Oblatos-CristobalDe0", 
+"CristobalDe0-SanAndres", 
+"SanAndres-SanJacinto", 
+"SanJacinto-Aurora", 
+"Aurora-Tetlan"
+};
+
+
+const char *L1V1_names[] = {
+"Per.Sur-Tesoro", 
+"Tesoro-Espana", 
+"Espana-PatriaSur", 
+"PatriaSur-IslaRaza", 
+"IslaRaza-18deMarzo", 
+"18deMarzo-Urdaneta", 
+"Urdaneta-UdDeportivo", 
+"UdDeportivo-StaFilomena", 
+"StaFilomena-Washington", 
+"Washington-Mexicaltzing", 
+"Mexicaltzing-Juarez", 
+"Juarez-Refugio", 
+"Refugio-Mezquitan", 
+"Mezquitan-AvCamacho", 
+"AvCamacho-DivNorte", 
+"DivNorte-Atemajac", 
+"Atemajac-Dermatologi", 
+"Dermatologi-Per.Norte", 
+};
+
+const char *L1V2_names[] = {
+"Per.Norte-Dermatologi", 
+"Dermatologi-Atemajac", 
+"Atemajac-DivNorte", 
+"DivNorte-AvCamacho", 
+"AvCamacho-Mezquitan", 
+"Mezquitan-Refugio", 
+"Refugio-Juarez", 
+"Juarez-Mexicaltzing", 
+"Mexicaltzing-Washington", 
+"Washington-StaFilomena", 
+"StaFilomena-UdDeportivo", 
+"UdDeportivo-Urdaneta", 
+"Urdaneta-18deMarzo", 
+"18deMarzo-IslaRaza", 
+"IslaRaza-PatriaSur", 
+"PatriaSur-Espana", 
+"Espana-Tesoro", 
+"Tesoro-Per.Sur", 
+};
+
+
 /*******************************************************************/
 
 void dispatch_algorithms(time_t now, int command, double speed, double distance)
 {
 
+}
+
+/*******************************************************************/
+
+sim_reader_t sreader_1;
+sim_reader_t sreader_2;
+sim_reader_t *sreader = &sreader_1;
+profile_reader_t preader_1;
+profile_reader_t preader_2;
+profile_reader_t *preader = &preader_1;
+int n_seg;
+
+void pick_station(int *line_via, int *station)
+{
+  //if (pick_mode)
+  {
+    //printf("Picking line . . .\n");
+    const char *line_list[4] = {
+          "Linea 1, Via 1 (Per Sur)", 
+          "Linea 1, Via 2 (Per Nte)", 
+          "Linea 2, Via 1 (Tetlán)",
+          "Linea 2, Via 2 (Juárez)"
+         };
+    int opt = select_from_list(4, line_list, "Selecionar la Linea");
+    *line_via = opt; 
+    //the_line = opt + 1;
+    //preader->set_line(opt+1);
+    //sreader->set_line(opt+1);
+    if (opt == 0)
+    {
+      preader = &preader_1;
+      sreader = &sreader_1;
+      int ns = 18;
+      int opt = select_from_list(ns, L1V1_names, "Selecionar la estacion");
+      *station = opt;
+    }
+    if (opt == 1)
+    {
+      *station = opt;
+      preader = &preader_1;
+      sreader = &sreader_1;
+      int ns = 18;
+      int opt = select_from_list(ns, L1V2_names, "Selecionar la estacion");
+      *station = opt + 18;
+    }
+    else if (opt == 2)
+    {
+      preader = &preader_2;
+      sreader = &sreader_2;
+      int ns = 9;
+      int opt = select_from_list(ns, L2V1_names, "Selecionar la estacion");
+      *station = opt;
+    }
+    else if (opt == 3)
+    {
+      preader = &preader_2;
+      sreader = &sreader_2;
+      int ns = 9;
+      int opt = select_from_list(ns, L2V2_names, "Selecionar la estacion");
+      *station = opt + 11;
+    }
+    n_seg = preader->get_n_sections();
+  }
+
+/*****
+  if (line_via == 0) // Line1 Via1
+  {
+    preader = &preader_1;
+    sreader = &sreader_1;
+    start = start_station;
+  }
+  else if (line_via == 1) // Line1 Via2
+  {
+    preader = &preader_1;
+    sreader = &sreader_1;
+    start = start_station + 18;
+  }
+  else if (line_via == 2) // Line1 Via2
+  {
+    preader = &preader_2;
+    sreader = &sreader_2;
+    start = start_station;
+  }
+  else if (line_via == 3) // Line1 Via2
+  {
+    preader = &preader_2;
+    sreader = &sreader_2;
+    start = start_station + 11;
+  }
+******/
 }
 
 /**********************************************************************/
@@ -95,11 +253,13 @@ int main(int argc, char *argv[])
   int current_arg;
   bool create_profiles = false;
   bool detect_with_doors = false;
-  sim_reader_t sreader;
-  sreader.set_line(1);
-  profile_reader_t preader;
-  preader.set_all(false);
-  preader.set_line(1);
+  sreader_1.set_line(1);
+  sreader_2.set_line(2);
+  preader_1.set_all(false);
+  preader_1.set_line(1);
+  preader_2.set_all(false);
+  preader_2.set_line(2);
+
   for (current_arg=1; current_arg < argc; current_arg++)
   {
     if (0 == strcasecmp(argv[current_arg], "-s"))
@@ -120,15 +280,15 @@ int main(int argc, char *argv[])
     else if (0 == strcasecmp(argv[current_arg], "-L1"))
     {
       printf("Setting to line 1 . . \n");
-      preader.set_line(1);
-      sreader.set_line(1);
+      preader = &preader_1;
+      sreader = &sreader_1;
       the_line = 1;
     } 
     else if (0 == strcasecmp(argv[current_arg], "-L2"))
     {
       printf("Setting to line 2 . . \n");
-      preader.set_line(2);
-      sreader.set_line(2);
+      preader = &preader_2;
+      sreader = &sreader_2;
       the_line = 2;
     } 
     else if (0 == strcasecmp(argv[current_arg], "-f"))
@@ -152,7 +312,8 @@ int main(int argc, char *argv[])
     else if (0 == strcasecmp(argv[current_arg], "-a"))
     {
       all_profiles = true;
-      preader.set_all(true);
+      preader_1.set_all(true);
+      preader_2.set_all(true);
       printf("All profiles ON\n");
     }
     else if (0 == strcasecmp(argv[current_arg], "-door"))
@@ -179,36 +340,13 @@ int main(int argc, char *argv[])
   onboard_config->read_file(config_file);
 
   //spd_init_screen();
-  #ifdef XXXARM
-  if (pick_mode)
-  {
-    printf("Picking line . . .\n");
-    char *line_list[2] = {"Linea 1", "Linea 2"};
-    int opt = select_from_list(2, line_list, "Selecionar la Linea");
-    the_line = opt + 1;
-    preader.set_line(opt+1);
-    sreader.set_line(opt+1);
-    if (the_line == 1)
-    {
-      int ns = 36;
-      int opt = select_from_list(ns, sim_names1, "Selecionar la estacion");
-      start = opt;
-    }
-    else
-    {
-      int ns = 18;
-      int opt = select_from_list(ns, sim_names2, "Selecionar la estacion");
-      start = opt;
-    }
-  }
-  #endif
 
 
 //  int n_seg = read_profile(vel_profile, 
  //          sizeof(vel_profile) / sizeof(vel_profile[0]));
 
-  preader.read_profiles();
-  int n_seg = preader.get_n_sections();
+  preader_1.read_profiles();
+  preader_2.read_profiles();
 
   if (!sim_mode)
   {
@@ -216,10 +354,18 @@ int main(int argc, char *argv[])
   }
   else
   {
-    sreader.read_sim_data();
+    sreader_1.read_sim_data();
+    sreader_2.read_sim_data();
   }
 
   spd_init_screen();
+
+  int line_via = 1;
+  int start_station = 0;
+
+  pick_station(&line_via, &start_station);
+  start = start_station;
+
 
   bool done = false;
   bool auto_mode = false;
@@ -235,7 +381,9 @@ int main(int argc, char *argv[])
   char dirname[200];
   dirname[0] = '\0';
   //printf("starting loop ....\n");
-  for (int j=start; true; j = (j+1) % n_seg)
+  int j;
+  n_seg = preader->get_n_sections();
+  for (j=start; true; j = (j+1) % n_seg)
   {
     int next = (j + 1) % n_seg;
     int dif_index = 0; 
@@ -246,8 +394,8 @@ int main(int argc, char *argv[])
     double total_distance;
     double total_time;
 
-    total_distance = preader.get_total_distance(j); //get_total_dist(j);
-    total_time = preader.get_total_time(j);
+    total_distance = preader->get_total_distance(j); //get_total_dist(j);
+    total_time = preader->get_total_time(j);
 
     double distance = 0.0;
     double actual = 0;
@@ -257,6 +405,7 @@ int main(int argc, char *argv[])
     //mvprintw(20,2,"Cargando y Descargando Pasajeros"); 
     //refresh();
 
+    spd_init_segment(preader->get_station_name(j), preader->get_station_name(next)); 
     if (!continue_mode)
     {
       if (auto_mode)
@@ -278,14 +427,20 @@ int main(int argc, char *argv[])
         else
         {
           //printf("press key to exit ....\n");
-          spd_wait_key("Pres. tecla para salir"); 
+          int key = spd_wait_key("Pres. tecla para salir"); 
+          if ((key == 'q') || (key == 'Q'))
+          {
+            pick_station(&line_via, &start_station);
+            j = start_station;
+            continue;
+          }
         }
       }
       //mvprintw(20,2,"%-36s", " "); 
     }
+    spd_init_segment(preader->get_station_name(j), preader->get_station_name(next)); 
     continue_mode = false;
     //spd_init_segment(vel_profile[j].st1, vel_profile[next].st1); 
-    spd_init_segment(preader.get_station_name(j), preader.get_station_name(next)); 
     //beep();
     //mvprintw(18,2,"%d: total dist = %lf", j, total_distance); 
     //refresh();
@@ -351,7 +506,7 @@ int main(int argc, char *argv[])
       if (sim_mode)
       {
         //mvprintw(22,2,"Sim Mode"); 
-        sreader.get_sim_speed_dist(j, time_in_section, &distance, &actual, &discretes);
+        sreader->get_sim_speed_dist(j, time_in_section, &distance, &actual, &discretes);
       } 
       else
       {
@@ -363,7 +518,7 @@ int main(int argc, char *argv[])
 
       struct current_speed_limits_t limits;
       //calc_desired(j, actual, distance, &limits, &type, &warn);
-      preader.calc_desired(j,  actual, distance, &limits, &type, &warn);
+      preader->calc_desired(j,  actual, distance, &limits, &type, &warn);
  
       desired = limits.desired;
 
@@ -424,7 +579,13 @@ int main(int argc, char *argv[])
       if (ch == 'f') {fast = true; utimer.set_interval(200000);}
       else if (ch == 's') {fast = false; utimer.set_interval(1000000);}
       else if (ch == 'c') {continue_mode = false; break;} 
-      else if (ch == 'q') {done = true; break;} 
+      else if (ch == 'q') 
+      {
+        pick_station(&line_via, &start_station);
+        j = start_station;
+        //done = true; 
+        break;
+      } 
       else if (ch == 'a') {auto_mode = true; spd_print_auto(true);} 
       else if (ch == 'm') {auto_mode = false; spd_print_auto(false);} 
       else if (ch == 'e') {auto_end = !auto_end;} 
@@ -440,7 +601,7 @@ int main(int argc, char *argv[])
       pfp = NULL;
       char gtitle[50];
       snprintf(gtitle, sizeof(gtitle), "%s-%s", 
-           preader.get_station_name(j), preader.get_station_name(next));
+           preader->get_station_name(j), preader->get_station_name(next));
             //vel_profile[j].st1, vel_profile[next].st1);   
       #ifndef ARM
       mvprintw(23,2,"graph: %s %s", base_name, gtitle);
