@@ -54,6 +54,61 @@ void spd_create_image(const char *base_name, const char *gtitle, bool window)
 
 /*********************************************************************/
 
+void initialize_all(void)
+{
+  char buf[10];
+
+  buf[0] = 0xFE;
+  buf[1] = 'h'; // Horizontal bar graph mode. 
+  write(serial_fd1, buf, 2);
+  buf[1] = 'E'; // Clear keypad buffer. 
+  write(serial_fd1, buf, 2);
+  buf[1] = 'D'; // Auto Line Wrap Off. 
+  write(serial_fd1, buf, 2);
+  buf[1] = 'R'; // Auto Scroll Off. 
+  write(serial_fd1, buf, 2);
+  buf[1] = 'A'; // Auto transmit keypress on. 
+  write(serial_fd1, buf, 2);
+  buf[1] = 'X'; // Clear the screen. 
+  write(serial_fd1, buf, 2);
+
+  //write(serial_fd1, "L1 PerifericoSur-Tesoro 45%", 27);
+
+/***
+  buf[1] = '5'; // Read Serial Number. 
+  write(serial_fd1, buf, 2);
+  buf[1] = '6'; // Read Version Number. 
+  write(serial_fd1, buf, 2);
+****/
+
+/****
+  buf2[0] = 0xFE;  
+  buf2[1] = 0x7C; // horizontal bar graph. 
+  buf2[2] = 8;
+  buf2[3] = 3;
+  buf2[4] = 0;
+
+  buf3[0] = 0xFE;
+  buf3[1] = 0x7C; // horizontal bar graph. 
+  buf3[2] = 8;
+  buf3[3] = 4;
+  buf3[4] = 0;
+
+  buf4[0] = 0xFE;  
+  buf4[1] = 0x7C; // horizontal bar graph. 
+  buf4[2] = 8 + 23;
+  buf4[3] = 4;
+  buf4[4] = 1;
+
+  buf[0] = 0xFE;  // goto xy
+  buf[1] = 0x47;
+  buf[2] = 1; // column
+  buf[3] = 3; // row
+****/
+}
+
+/*********************************************************************/
+
 void draw_numbers(void)
 {
   char buf[10];
@@ -344,6 +399,7 @@ void spd_init_screen()
   //serial_fd1 = rt_open_serial("/dev/ttyUSB0", 19200, 0);
   //serial_fd1 = rt_open_serial("/dev/ttyTS0", 19200, 0); // COM3 on the board.
   serial_fd1 = rt_open_serial(serial_device, baudrate, 0); 
+
   buf[0] = 0xFE;
   buf[1] = 'h'; // Horizontal bar graph mode. 
   write(serial_fd1, buf, 2);
@@ -388,6 +444,7 @@ void spd_init_screen()
   buf[2] = 1; // column
   buf[3] = 3; // row
 
+  initialize_all();
   draw_numbers();
 
   pthread_t thr;
@@ -479,7 +536,7 @@ int mainxx(int argc, char *argv[])
 
 void spd_redraw_all()
 {
-  d4x40_cls();
+  initialize_all();
   draw_numbers();
 }
 

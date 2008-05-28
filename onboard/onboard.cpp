@@ -158,8 +158,8 @@ void pick_station(int *line_via, int *station)
     const char *line_list[4] = {
           "Linea 1, Via 1 (Per Sur)", 
           "Linea 1, Via 2 (Per Nte)", 
-          "Linea 2, Via 1 (Tetlán)",
-          "Linea 2, Via 2 (Juárez)"
+          "Linea 2, Via 1 (Tetlan)",
+          "Linea 2, Via 2 (Juarez)"
          };
     int opt = select_from_list(4, line_list, "Selecionar la Linea");
     *line_via = opt; 
@@ -415,11 +415,18 @@ int main(int argc, char *argv[])
       }
       else
       {
-        if (detect_with_doors && !sim_mode)
+        if (detect_with_doors)
         {
           while(true)
           {
-            get_actual_speed_dist(-1, -1, &distance, &actual, &discretes);
+            if (sim_mode)
+            {
+              sreader->get_sim_speed_dist(j, -1, &distance, &actual, &discretes);
+            } 
+            else
+            {
+              get_actual_speed_dist(-1, -1, &distance, &actual, &discretes);
+            }
             if (!discretes.doors_open) break;
             spd_show_loading(1);
           }
@@ -432,7 +439,7 @@ int main(int argc, char *argv[])
           {
             pick_station(&line_via, &start_station);
             j = start_station;
-            j--;
+            j--; // This is because starting the next loop will increment.
             if (j < 0) j = n_seg - 1;
             continue;
           }
@@ -440,6 +447,7 @@ int main(int argc, char *argv[])
       }
       //mvprintw(20,2,"%-36s", " "); 
     }
+    spd_redraw_all();
     spd_init_segment(preader->get_station_name(j), preader->get_station_name(next)); 
     continue_mode = false;
     //spd_init_segment(vel_profile[j].st1, vel_profile[next].st1); 
@@ -585,7 +593,7 @@ int main(int argc, char *argv[])
       {
         pick_station(&line_via, &start_station);
         j = start_station;
-        j--;
+        j--; // This is because starting the next loop will increment.
         if (j < 0) j = n_seg - 1;
         //done = true; 
         break;

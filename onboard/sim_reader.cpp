@@ -79,6 +79,7 @@ sim_reader_t::sim_reader_t(void)
 {
   the_line = 1;
   end_count = 0;
+  start_count = 0;
 } 
 
 /*********************************************************************/
@@ -96,6 +97,22 @@ void sim_reader_t::get_sim_speed_dist(int section, int t, double *dist, double *
   des->left_open = false;
   des->right_open = false;
   des->master = false;
+  if (t < 0)
+  {
+    if (start_count < 10)
+    {
+      des->doors_open = true;
+    } 
+    else
+    {
+      des->doors_open = false;
+    } 
+    start_count++;
+    *dist = 0.0;
+    *speed = 0.0;
+    return;
+  }
+  start_count = 0;
   if (t >= sim_data[section].n)
   {
     *dist = sim_data[section].dist[sim_data[section].n-1] - sim_data[section].dist[0];

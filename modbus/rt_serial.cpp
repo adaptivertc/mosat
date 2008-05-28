@@ -18,7 +18,7 @@
 struct termios saved_tty_parameters; /* saved serial port setting */
 int rt_verbose;
 
-#define XXXSERIAL_USE_SIGNALS 0
+#define SERIAL_USE_SIGNALS
 
 #ifdef SERIAL_USE_SIGNALS
 bool wait_flag = true;
@@ -37,7 +37,7 @@ int rt_read_serial(int fd, void *data, int sz)
   char *dp = (char *) data;
   while (total_read < sz)
   {
-    #ifdef USE_SIGNALS
+    #ifdef SERIAL_USE_SIGNALS
     if (wait_flag)
     {
       printf("Looping . . . \n");
@@ -80,7 +80,7 @@ int rt_open_serial(const char *port, int baud_rate, float timeout)
   int fd;
   struct termios rt_tio; 
 
-  #ifdef USE_SIGNALS
+  #ifdef SERIAL_USE_SIGNALS
   signal(SIGIO, signal_handler_IO);
   sem_init(&wait_sem, 0, 0);
   #endif

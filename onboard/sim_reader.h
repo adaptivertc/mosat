@@ -19,6 +19,7 @@ private:
   int the_line;
   spd_sim_data_t sim_data[RT_MAX_SECTIONS];
   int end_count; // Used to simulate doors opening;
+  int start_count; // Used to simulate doors opening
 public:
   sim_reader_t(void);
   int get_n_sections(void) {return n_sections;};
