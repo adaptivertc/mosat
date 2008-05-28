@@ -432,6 +432,8 @@ int main(int argc, char *argv[])
           {
             pick_station(&line_via, &start_station);
             j = start_station;
+            j--;
+            if (j < 0) j = n_seg - 1;
             continue;
           }
         }
@@ -583,6 +585,8 @@ int main(int argc, char *argv[])
       {
         pick_station(&line_via, &start_station);
         j = start_station;
+        j--;
+        if (j < 0) j = n_seg - 1;
         //done = true; 
         break;
       } 
