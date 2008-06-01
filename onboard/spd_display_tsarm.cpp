@@ -273,3 +273,8 @@ void spd_create_image(const char *base_name, const char *gtitle, bool window)
 
 /*********************************************************************/
 
+void spd_show_performance(const onboard_performance_t *perf)
+{
+}
+
+

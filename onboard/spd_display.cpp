@@ -154,6 +154,7 @@ void spd_init_screen()
 
 void spd_redraw_all()
 {
+  erase();
   box(stdscr, 0, 0);
                                                                                 
   mvhline(2, 0, 0, COLS);
@@ -429,3 +430,15 @@ int spd_prompt_user(const char *msg1, const char *msg2)
 }
 
 /*********************************************************************/
+void spd_show_performance(const onboard_performance_t *perf)
+{
+  erase();
+  spd_redraw_all();
+  mvprintw(3, 10, "----------- Esta Segmento -------------");
+  mvprintw(4, 10, "Typ.: 98., Act.: 104, -6 segundos      ");
+  mvprintw(5, 10, "--------------- Total -----------------");
+  mvprintw(6, 10, "Typ.: 22:35, Act.: 23:09, -34 segundos ");
+  refresh();
+}
+
+

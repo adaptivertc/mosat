@@ -43,6 +43,7 @@ static int left_door_channel = 5;
 static int right_door_channel = 6;
 
 
+static long total_count;
 static long last_count;
 static int count_history[2];
 //static struct timeval time_history[3]; 
@@ -82,6 +83,7 @@ long calc_dif(long count, long last)
 void reset_distance(int section)
 {
   total_distance = 0.0;
+  total_count = 0;
   uint16_t uvals[20];
   modc->read_ai(0, 16, uvals);
   last_count = uvals[count_channel];
@@ -179,12 +181,16 @@ void get_actual_speed_dist(int section, int t, double *dist, double *speed, spd_
   **/
   double ai_speed = (((double) speed_count) / 6553.5) * 0.5; /* This gives you the value in volts */
   ai_speed *= 10.0; /* Now 1 volt = 10 km/h */
-  total_distance += calc_dif(current_count, last_count) * meters_per_pulse;
+  long count_diff = calc_dif(current_count, last_count); 
+  total_count += count_diff;
+  total_distance += double(count_diff) * meters_per_pulse;
   double fdistance = calc_dif(current_count, count_history[hindex]) * meters_per_pulse;
   double fspeed = ((fdistance / (double) hsize) * 3600.0) / 1000.0; 
   //fprintf(fp, "\t%lf\t%lf", total_distance, speed);
   //fprintf(fp, "\n");
   //fflush(fp);
+  discretes->total_count = total_count;
+  discretes->current_count = current_count;
   last_count = current_count;
   count_history[hindex] = current_count;
   hindex = (hindex + 1) % hsize;

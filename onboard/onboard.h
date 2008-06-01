@@ -14,6 +14,8 @@ struct spd_discrete_t
   bool right_open; // Right doors are open
   bool master;     // This computer is the master
   bool raw_bits[16];
+  long total_count;
+  long current_count;
 };
 
 void create_profile_dir(const char *base_dir, char *dirname, int dir_sz);

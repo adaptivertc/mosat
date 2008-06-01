@@ -394,8 +394,8 @@ int main(int argc, char *argv[])
     double total_distance;
     double total_time;
 
-    total_distance = preader->get_total_distance(j); //get_total_dist(j);
-    total_time = preader->get_total_time(j);
+    total_distance = preader->get_distance(j); //get_total_dist(j);
+    total_time = preader->get_time(j);
 
     double distance = 0.0;
     double actual = 0;
@@ -406,12 +406,14 @@ int main(int argc, char *argv[])
     //refresh();
 
     spd_init_segment(preader->get_station_name(j), preader->get_station_name(next)); 
+    spd_show_performance(NULL);
     if (!continue_mode)
     {
       if (auto_mode)
       {
-        printf("show loading ....\n");
-        spd_show_loading(fast?2:4);
+       // printf("show loading ....\n");
+        //spd_show_loading(fast?2:4);
+        sleep(fast?2:4);
       }
       else
       {
@@ -428,7 +430,8 @@ int main(int argc, char *argv[])
               get_actual_speed_dist(-1, -1, &distance, &actual, &discretes);
             }
             if (!discretes.doors_open) break;
-            spd_show_loading(1);
+            //spd_show_loading(1);
+            usleep(100000);
           }
         }
         else

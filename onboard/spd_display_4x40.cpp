@@ -765,4 +765,16 @@ void spd_create_image(char *base_name, char *gtitle, bool window)
   system(command);
 }
 
+/*********************************************************************/
+
+void spd_show_performance(const onboard_performance_t *perf)
+{
+  d4x40_cls();
+  d4x40_printf(1, 1, "----------- Esta Segmento -------------");
+  d4x40_printf(2, 1, "Typ: 98, Act: 104, -6 segundos      ");
+  d4x40_printf(3, 1, "--------------- Total -----------------");
+  d4x40_printf(4, 1, "Typ: 22:35, Act: 23:09, -34 segundos ");
+}
+    
+/*********************************************************************/
 

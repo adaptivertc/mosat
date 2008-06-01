@@ -9,7 +9,9 @@ struct sdef_t
   double *low;
   double *high;
   double *very_high;
-  double total_dist;
+  double distance; 
+  double time;
+  double total_distance; 
   double total_time;
 };
 
@@ -38,8 +40,10 @@ public:
  void set_all(bool all_profiles_on) {all_profiles = all_profiles_on;};
  void calc_desired(int a_section, double a_speed, double a_distance,
       current_speed_limits_t *limits, int *mode, bool *warn);
- double get_total_distance(int a_section) {return section_profile[a_section].total_dist;};
+ double get_distance(int a_section) {return section_profile[a_section].distance;};
+ double get_time(int a_section) {return section_profile[a_section].time;};
  double get_total_time(int a_section) {return section_profile[a_section].total_time;};
+ double get_total_distance(int a_section) {return section_profile[a_section].total_distance;};
  char *get_station_name(int a_section) {return section_profile[a_section].st1;};
  int get_n_sections(void) {return n_sections;};
 };

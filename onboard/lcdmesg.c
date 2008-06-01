@@ -32,7 +32,7 @@ volatile unsigned int *padr;
 volatile unsigned int *paddr;
 
 void command(unsigned int);
-void writechars(unsigned char *);
+void writechars(const char *);
 unsigned int lcdwait(void);
 void lcdinit(void);
 
@@ -59,7 +59,7 @@ int main(int argc, char **argv) {
 	if (argc >= 2) return 0;
 
 	while(!feof(stdin)) {
-		unsigned char buf[512];
+		char buf[512];
 
 		lcdwait();
 		if (i) {
@@ -182,7 +182,7 @@ void command(unsigned int cmd) {
 	COUNTDOWN(i);
 }
 
-void writechars(unsigned char *dat) {
+void writechars(const char *dat) {
 	int i;
 	unsigned int ctrl = *phdr;
 

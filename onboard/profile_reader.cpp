@@ -96,7 +96,7 @@ int profile_reader_t::read_profiles(void)  //sdef_t the_profile[], int max)
     }
     printf("%s: %s\n", argv[0], argv[1]);
     safe_strcpy(section_profile[i].st1, argv[0], sizeof(section_profile[i].st1));
-    section_profile[i].total_dist = atof(argv[1]);
+    section_profile[i].distance = atof(argv[1]);
     argv = df.next(&argc, &line_num);
     //printf("argc = %d, %s, %d\n", argc, __FILE__, __LINE__);
     if (argc < 3)
@@ -193,7 +193,7 @@ int profile_reader_t::read_profiles(void)  //sdef_t the_profile[], int max)
   FILE *fp = fopen("junk.txt", "w");
   for (int i=0; i < n_segments; i++)
   {
-    fprintf(fp, "%s|%0.1lf|\n", section_profile[i].st1, section_profile[i].total_dist);
+    fprintf(fp, "%s|%0.1lf|\n", section_profile[i].st1, section_profile[i].distance);
     for (int j=0; j < section_profile[i].n; j++)
     {
       fprintf(fp, "%0.1lf|", section_profile[i].dist[j]);
@@ -309,7 +309,7 @@ void print_profile(int n)
   fp = fopen("line1_profile.txt", "w");
   for (int i=0; i < n; i++)
   {
-    fprintf(fp, "%s|%0.0lf|\n", vel_profile[i].st1, vel_profile[i].total_dist);
+    fprintf(fp, "%s|%0.0lf|\n", vel_profile[i].st1, vel_profile[i].distance);
     for (int j=0; j < vel_profile[i].n; j++)
     {
       fprintf(fp, "%0.1lf|", vel_profile[i].dist[j]);

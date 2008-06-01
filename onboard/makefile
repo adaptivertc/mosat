@@ -56,6 +56,10 @@ autonomous_mode: autonomous_mode.o spd_comm.o make_profile_dir.o  ob_config.o
 	g++ -o autonomous_mode autonomous_mode.o spd_comm.o make_profile_dir.o  ob_config.o\
 	  -lncurses $(RTMODBUS) $(RTCOMMON)
 
+odo_mode: odo_mode.o spd_comm.o ob_config.o
+	g++ -o odo_mode odo_mode.o spd_comm.o ob_config.o\
+	  -lncurses -lrt $(RTMODBUS) $(RTCOMMON)
+
 #profile_reader: profile_reader.cpp profile_reader.h
 #	g++ -o profile_reader profile_reader.cpp  $(RTCOMMON)
 		

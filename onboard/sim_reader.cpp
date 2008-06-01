@@ -99,7 +99,7 @@ void sim_reader_t::get_sim_speed_dist(int section, int t, double *dist, double *
   des->master = false;
   if (t < 0)
   {
-    if (start_count < 10)
+    if (start_count < 100)
     {
       des->doors_open = true;
     } 

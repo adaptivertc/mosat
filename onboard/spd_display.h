@@ -22,6 +22,6 @@ void spd_redraw_all();
 void spd_print_current(double desired, double actual, int type, bool warn, 
        double pct, double total_distance, double now, double total_time, spd_discrete_t *discretes);
 void spd_show_loading(int time);
-void spd_show_performance();
+void spd_show_performance(const onboard_performance_t *perf);
 void spd_create_image(const char *base_name, const char *gtitle, bool window);
 int select_from_list(int n, const char *list[], const char *prompt);
