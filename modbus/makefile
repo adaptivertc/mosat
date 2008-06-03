@@ -18,7 +18,7 @@ modsim:	myservice.o modsim.o trace.h
 	g++ -o modsim -lpthread myservice.o $(RTMODBUS) $(RTCOMMON) 
 
 myconnect:	myconnect.o
-	g++ -o myconnect myconnect.o  $(RTMODBUS) $(RTCOMMON) 
+	g++ -o myconnect myconnect.o  -lrt $(RTMODBUS) $(RTCOMMON) 
 
 librtmodbus.so: trace.o modsim.o trace.h crc.o swap.o modtcpip_client.o\
                 modtcpip.o hexascii.o crc.o rtmodbus.o modio.o \

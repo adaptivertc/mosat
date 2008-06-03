@@ -1,0 +1,4 @@
+station	psur	0	60	0	0
+curve	curve	714	790	50	0
+station	tesoro	1106	1166	0	1166
+station	patrias	2209	2269	0	2260

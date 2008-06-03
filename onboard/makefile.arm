@@ -4,6 +4,8 @@ export CPATH=../include
 
 RTMODBUS=../modbus/arm/librtmodbus.a
 
+RTCOMMON=../librtcommon/arm/librtcommon.a
+
 #CC=arm-linux-gcc -mcpu=arm9 -Wall 
 CC=arm-unknown-linux-gnu-gcc -mcpu=arm9 -Wall
 
@@ -54,6 +56,12 @@ $(DIR)onboard_4x40_mod:	$(DIR)onboard.o $(DIR)spd_display_4x40.o $(DIR)spd_comm.
 	$(CPP) -o $(DIR)onboard_4x40_mod -lrtcommon -lpthread $(DIR)onboard.o $(DIR)spd_display_4x40.o\
 		$(DIR)spd_algo_DC.o $(DIR)spd_algo_RD.o $(DIR)spd_algo_VV.o $(DIR)profile_reader.o $(DIR)sim_reader.o\
 		$(DIR)spd_comm.o $(DIR)spd_select.o $(DIR)frtimer.o $(DIR)alg_compare.o $(DIR)ob_config.o $(RTMODBUS) 
+
+$(DIR)odo_mode_4x40: $(DIR)odo_mode.o $(DIR)odo_display_4x40.o $(DIR)spd_comm.o $(DIR)ob_config.o
+	$(CPP) -o $(DIR)odo_mode_4x40 $(DIR)odo_mode.o $(DIR)spd_comm.o $(DIR)ob_config.o\
+		$(DIR)odo_display_4x40.o -lrt $(RTMODBUS) $(RTCOMMON)
+
+
 
 $(DIR)status:	$(DIR)status.o $(DIR)spd_display_4x40.o $(DIR)spd_com_tsarm.o\
 		$(DIR)spd_select.o $(DIR)frtimer.o

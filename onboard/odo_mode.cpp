@@ -23,7 +23,6 @@ DEALINGS IN THE SOFTWARE.
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <ncurses.h>
 #include <string.h>
 
 #include <errno.h>
@@ -34,142 +33,9 @@ DEALINGS IN THE SOFTWARE.
 #include "spd_comm.h"
 #include "ob_config.h"
 
+#include "odo_mode.h"
+
 onboard_config_t *onboard_config = NULL;
-
-static int last_col;
-
-/*********************************************************************/
-
-void odo_redraw_all()
-{
-  erase();
-  box(stdscr, 0, 0);
-  refresh();
-}
-
-/*******************************************************************/
-
-int xodo_wait_key(const char *msg)
-{
-  int mych;
-  mvprintw(24, 2,"%-36s", msg); 
-  refresh();
-  while (-1 != getch());
-  
-  while (1)
-  {
-    mych = getch();
-    //if ((mych ==  'q') || (mych == 'Q')) {endwin(); exit(0);}
-    if (mych != -1)
-    {
-      break;
-    } 
-    usleep(10000);
-    //if ((mych ==  'q') || (mych == 'Q')) {endwin(); exit(0);}
-  }
-  mvprintw(24,2,"got %c      ", mych); 
-  refresh();
-  mvprintw(15,2,"%-36s", ""); 
-  refresh();
-  return mych;
-}
-
-/*******************************************************************/
-
-int odo_wait_key(const char *msg)
-{
-  int mych;
-  mvprintw(15,2,"%-36s", msg); 
-  refresh();
-  while (-1 != getch());
-  
-  while (1)
-  {
-    mych = getch();
-    //if ((mych ==  'q') || (mych == 'Q')) {endwin(); exit(0);}
-    if (mych != -1)
-    {
-      break;
-    } 
-    usleep(400000);
-    mvprintw(15,2,"%-36s", " "); 
-    refresh();
-    mych = getch();
-    //if ((mych ==  'q') || (mych == 'Q')) {endwin(); exit(0);}
-    if (mych != -1)
-    {
-      break;
-    } 
-    usleep(400000);
-    mvprintw(15,2, msg); 
-    refresh();
-  }
-  mvprintw(15,2,"%-36s", ""); 
-  refresh();
-  return mych;
-}
-
-/*********************************************************************/
-
-void odo_init_screen()
-{
-  initscr();
-  start_color();
-  use_default_colors();
-  cbreak();
-  noecho();
-  nonl();
-  intrflush(stdscr, FALSE);
-  keypad(stdscr, TRUE);
-  curs_set(0);
-
-  short fg, bg;
-  pair_content(COLOR_PAIR(0), &fg, &bg);
-                                                                                
-  init_pair(1, COLOR_RED, bg);
-  init_pair(2, COLOR_GREEN, bg);
-  init_pair(3, COLOR_BLACK, COLOR_YELLOW);
-  init_pair(4, COLOR_BLUE, bg);
-  init_pair(5, COLOR_MAGENTA, bg);
-  init_pair(6, COLOR_CYAN, bg);
-  init_pair(7, COLOR_BLACK, COLOR_WHITE);
-  timeout(0);
-  last_col = COLS;
-  odo_redraw_all();
-  refresh();
-};
-
-/**********************************************************************/
-
-void odo_print_current(double speed, double distance, long total_count, long current_count)
-{ 
-  if (last_col != COLS)
-  {
-    erase();
-    odo_redraw_all();
-    last_col = COLS;
-  }
-
-  mvprintw(1,2,"Speed: %12.1lf", speed);
-  mvprintw(2,2,"Dist.: %12.1lf", distance);
-  mvprintw(3,2,"Count: %10d", total_count);
-  mvprintw(4,2,"Count: %10d", current_count);
-  refresh();
-}
-
-/*********************************************************************/
-
-int odo_endwin(void)
-{
-  return endwin();
-}
-
-/*********************************************************************/
-
-int odo_getch(void)
-{
-  return  getch();
-}
 
 /*********************************************************************/
 

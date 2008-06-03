@@ -56,9 +56,13 @@ autonomous_mode: autonomous_mode.o spd_comm.o make_profile_dir.o  ob_config.o
 	g++ -o autonomous_mode autonomous_mode.o spd_comm.o make_profile_dir.o  ob_config.o\
 	  -lncurses $(RTMODBUS) $(RTCOMMON)
 
-odo_mode: odo_mode.o spd_comm.o ob_config.o
+odo_mode: odo_mode.o odo_display.o spd_comm.o ob_config.o
 	g++ -o odo_mode odo_mode.o spd_comm.o ob_config.o\
-	  -lncurses -lrt $(RTMODBUS) $(RTCOMMON)
+	  odo_display.o -lncurses -lrt $(RTMODBUS) $(RTCOMMON)
+
+odo_mode_4x40: odo_mode.o odo_display_4x40.o spd_comm.o ob_config.o
+	g++ -o odo_mode_4x40 odo_mode.o spd_comm.o ob_config.o\
+	  odo_display_4x40.o -lncurses -lrt $(RTMODBUS) $(RTCOMMON)
 
 #profile_reader: profile_reader.cpp profile_reader.h
 #	g++ -o profile_reader profile_reader.cpp  $(RTCOMMON)
