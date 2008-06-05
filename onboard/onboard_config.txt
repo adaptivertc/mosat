@@ -1,4 +1,5 @@
-diameter|0.665
+#diameter|0.665
+diameter|0.66937
 #modbus_ip|172.16.115.99:502
 modbus_ip|127.0.0.1:502
 modbus_address|0

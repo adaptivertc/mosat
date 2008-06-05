@@ -3,13 +3,21 @@ export CPATH=../include
 
 CC= powerpc-linux-g++ -I/usr/local/include
 
+AR=powerpc-linux-ar
+
 DIR=ppc/
 
 $(DIR)%.o:      %.cpp $(INCLUDES)
 	$(CC) -c -fpic -o $@ -Wall $<
 
+all: $(DIR)librtcommon.so $(DIR)librtcommon.a
+
 $(DIR)librtcommon.so: $(DIR)arg.o $(DIR)common.o $(DIR)safestr.o $(DIR)utimer.o $(DIR)memfail.o
 	$(CC) -shared -o $(DIR)librtcommon.so $(DIR)arg.o $(DIR)common.o $(DIR)safestr.o $(DIR)utimer.o $(DIR)memfail.o
+
+$(DIR)librtcommon.a: $(DIR)arg.o $(DIR)common.o $(DIR)safestr.o $(DIR)utimer.o $(DIR)memfail.o
+	$(AR) r $(DIR)librtcommon.a $(DIR)arg.o $(DIR)common.o $(DIR)safestr.o $(DIR)utimer.o $(DIR)memfail.o
+
 
 install:
 	cp $(DIR)librtcommon.so /opt/sixnet/lib/gcc-lib/powerpc-linux/2.95.3/

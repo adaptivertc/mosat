@@ -61,7 +61,7 @@ odo_mode: odo_mode.o odo_display.o spd_comm.o ob_config.o
 	  odo_display.o -lncurses -lrt $(RTMODBUS) $(RTCOMMON)
 
 odo_mode_4x40: odo_mode.o odo_display_4x40.o spd_comm.o ob_config.o
-	g++ -o odo_mode_4x40 odo_mode.o spd_comm.o ob_config.o\
+	g++ -o odo_mode_4x40 -DUSE_PRINTF odo_mode.o spd_comm.o ob_config.o\
 	  odo_display_4x40.o -lncurses -lrt $(RTMODBUS) $(RTCOMMON)
 
 #profile_reader: profile_reader.cpp profile_reader.h

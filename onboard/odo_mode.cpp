@@ -29,7 +29,7 @@ DEALINGS IN THE SOFTWARE.
 #include <math.h>
 
 #include "rtcommon.h"
-#include "spd_display.h"
+#include "utimer.h"
 #include "spd_comm.h"
 #include "ob_config.h"
 
@@ -50,16 +50,50 @@ int main(int argc, char *argv[])
   double speed;
   double dist;
 
+  utimer_t utimer;
+  utimer.set_busy_wait(false);
+  utimer.set_interval(1000000);
+
+  const char *fname = "sample_out.txt";
+  FILE *fp = fopen(fname, "w");
+  if (fp == NULL)
+  {
+    perror(fname);
+    exit(0);
+  }
+
   init_io();
   reset_distance(0);
   odo_init_screen();
 
+  utimer.set_start_time();
+  int sample_n = 1;
   for (int i=0; i < 30; i++)
   {
     get_actual_speed_dist(0, 0, &dist, &speed, &discretes);
     //odo_print_current(double(i*10), double(i*9), i+22872); 
     odo_print_current(speed, dist, discretes.total_count, discretes.current_count); 
-    sleep(1);
+    #ifdef USE_PRINTF
+    printf("\n\n\n");
+    printf("Speed: %12.1lf\n", speed);
+    printf("Dist.: %12.1lf\n", dist);
+    printf("Count: %10ld\n", discretes.total_count);
+    printf("Count: %10ld\n", discretes.current_count);
+    #endif
+    int key = odo_getch();
+    if (key == 's')
+    {
+      fprintf(fp, "%d\t%lf\t%ld\t%ld\n", 
+          sample_n, dist, discretes.total_count, discretes.current_count);
+      #ifdef USE_PRINTF
+      printf("SAVED: %d\t%lf\t%ld\t%ld\n", 
+          sample_n, dist, discretes.total_count, discretes.current_count);
+      #else
+      #endif
+      
+      sample_n++;
+    }
+    utimer.wait_next();
   }
   odo_endwin();
 }
