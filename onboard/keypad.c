@@ -41,7 +41,7 @@ int main(int argc, char **argv) {
 	unsigned int k = 0, pressed = 0; 
 	unsigned char *start;
 	int fd = open("/dev/mem", O_RDWR|O_SYNC);
-	start = mmap(0, getpagesize(), PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0x80840000);
+	start = (unsigned char *) mmap(0, getpagesize(), PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0x80840000);
 	dat = (unsigned int *)(start + 0x4);
 	dir = (unsigned int *)(start + 0x14);
 	*dir = 0xf;

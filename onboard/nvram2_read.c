@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
     exit(1);
   }
 
-  pc104_start = mmap(0, size, PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0x11E00000);
+  pc104_start = (unsigned char *) mmap(0, size, PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0x11E00000);
 
   if (MAP_FAILED == pc104_start)
   {
@@ -119,7 +119,7 @@ int main(int argc, char *argv[])
       (int) *nvram2_r0, (int) *nvram2_r1, (int) *nvram2_r2, (int) *nvram2_r3,
       (int) *nvram2_r4, (int) *nvram2_r5, (int) *nvram2_r6, (int) *nvram2_r7);
 
-  char *nvram_mem_start = mmap(0, (0x200000 / size), PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0x2A800000);
+  char *nvram_mem_start = (char *) mmap(0, (0x200000 / size), PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0x2A800000);
 
   if (MAP_FAILED == nvram_mem_start)
   {

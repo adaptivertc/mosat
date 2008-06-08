@@ -20,6 +20,20 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 *************************************************************************/
 
+/****************************************************************
+ * This program is "odometer" mode. It is designed to 
+ * check / verify the distance to the start / end of all
+ * restrictions on the track. It was first used very early
+ * morning June 8th 2008 starting after the last train left
+ * service on Line 1 of the Light Rail in Guadalajara Mexico.
+ * We verified the location of all of the restrictions in 
+ * velocity, to use for generating the final piecewise linear
+ * velocity profiles.
+ *
+ * See gen_profiles.cpp for the profile generation.
+ *
+ * ***************************************************************/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -54,7 +68,10 @@ int main(int argc, char *argv[])
   utimer.set_busy_wait(false);
   utimer.set_interval(1000000);
 
-  const char *fname = "sample_out.txt";
+  char fname[300];
+
+  get_numbered_file("./", "odo_out", ".txt", fname, sizeof(fname));
+
   FILE *fp = fopen(fname, "w");
   if (fp == NULL)
   {
@@ -68,7 +85,9 @@ int main(int argc, char *argv[])
 
   utimer.set_start_time();
   int sample_n = 1;
-  for (int i=0; i < 30; i++)
+  bool q_hit = false;
+  bool q_count = 0;
+  for (int i=0; true; i++)
   {
     get_actual_speed_dist(0, 0, &dist, &speed, &discretes);
     //odo_print_current(double(i*10), double(i*9), i+22872); 
@@ -92,6 +111,24 @@ int main(int argc, char *argv[])
       #endif
       
       sample_n++;
+    }
+    if (key == 'q')
+    {
+      q_hit = true;
+      q_count = 0;
+    }
+    else if (q_hit)
+    {
+      if (key == 'y')
+      {
+        odo_endwin();
+        exit(0);
+      }
+      q_count++;
+      if (q_count >= 5)
+      {
+        q_hit = false;
+      }
     }
     utimer.wait_next();
   }

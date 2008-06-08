@@ -6,4 +6,3 @@ void odo_print_current(double speed, double distance, long total_count, long cur
 int odo_getch(void);
 int odo_endwin(void);
 
-

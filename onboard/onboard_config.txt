@@ -1,9 +1,11 @@
 #diameter|0.665
 diameter|0.66937
 #modbus_ip|172.16.115.99:502
-modbus_ip|127.0.0.1:502
+#modbus_ip|127.0.0.1:502
+modbus_ip|10.1.0.5:502
 modbus_address|0
-count_channel|8
+#count_channel|8
+count_channel|2
 door_channel|2
 use_left_right_doors|T
 left_door_channel|9

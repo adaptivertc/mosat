@@ -57,6 +57,7 @@ char *safe_strcat(char *dest, const char *src, int size_dest);
 //#define file_exists(fn) (0 == access(fn, 0))
 //bool file_exists(char *filename);
 
+int get_numbered_file(const char *dir, const char *prefix, const char *suffix, char *fname, int fname_size);
 
 int first_file(char *path, char *file_name);
 int first_file(char *path, char *file_name, int attr);

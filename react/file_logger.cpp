@@ -315,7 +315,7 @@ void file_logger_t::update(void)
   printf("\n");
 
   fprintf(instantaneous_fp, "\n");
-  fflush(instantaneous_fp);
+  //fflush(instantaneous_fp);
   last_log_time = now;
 }
 

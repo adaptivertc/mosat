@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
     exit(1);
   }
 
-  pc104_start = mmap(0, size, PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0x11E00000);
+  pc104_start = (volatile unsigned char *) mmap(0, size, PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0x11E00000);
 
   if (MAP_FAILED == pc104_start)
   {

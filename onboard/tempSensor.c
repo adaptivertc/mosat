@@ -45,10 +45,10 @@ int main(int argc, char **argv)
 	alarm(2);
 
 	/* Lets intialize our pointers */
-	chip_select_page = mmap(0, getpagesize(), PROT_READ|PROT_WRITE, MAP_SHARED, fd, CHIP_SELECT_PAGE);
+	chip_select_page = ( volatile unsigned char *) mmap(0, getpagesize(), PROT_READ|PROT_WRITE, MAP_SHARED, fd, CHIP_SELECT_PAGE);
 	assert(chip_select_page != MAP_FAILED);
 
-	ssp_page = mmap(0, getpagesize(), PROT_READ|PROT_WRITE, MAP_SHARED, fd, SSP_PAGE);
+	ssp_page =  (volatile unsigned char *) mmap(0, getpagesize(), PROT_READ|PROT_WRITE, MAP_SHARED, fd, SSP_PAGE);
 	assert(ssp_page != MAP_FAILED);
 
 	/* 

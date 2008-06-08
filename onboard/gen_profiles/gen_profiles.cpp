@@ -1,3 +1,31 @@
+
+/************************************************************
+ * gen_profiles.cpp
+ *
+ * This program is designed to automatically generate the 
+ * piecewise linear profiles for light rail passenger service,
+ * based on a list of velocity restrictions for curves, at grade
+ * crossings, passenger stations, contstruction, etc. 
+ *
+ * This assumes that the trains have embedded control for a fixed
+ * aceleration / deceleration of for instance 0.5 m/s² or 1.0 m/s².
+ * This program must determine when restrictions overlap and 
+ * generate the transitions between them. There are many little 
+ * details that must be handled, such as that you can not switch
+ * immediately from acceleration to deceleration. Also, if distances
+ * are short enough between restrictions, it may not be worth the
+ * electricity to accelerate to maximum speed between restrictions.
+ *
+ * This is designed for the rules and restrictions at the light rail
+ * system in Guadalajar Mexico, though we plan to adapt it to other 
+ * light rail systems.
+ *
+ * This will also be used to generate the informattion needed for 
+ * driver cues such as telling them when to decelerate.
+ *
+ * **********************************************************/
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>

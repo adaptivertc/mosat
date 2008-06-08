@@ -43,9 +43,9 @@ static int left_door_channel = 5;
 static int right_door_channel = 6;
 
 
-static long total_count;
-static long last_count;
-static int count_history[2];
+static long total_count = 0;
+static long last_count = 0;
+static int count_history[2] = {0,0};
 //static struct timeval time_history[3]; 
 static int hindex;
 static const int hsize = sizeof(count_history) / sizeof(count_history[0]);
@@ -191,10 +191,11 @@ void get_actual_speed_dist(int section, int t, double *dist, double *speed, spd_
   //fflush(fp);
   discretes->total_count = total_count;
   discretes->current_count = current_count;
+  *dist = double(total_count) * meters_per_pulse;
   last_count = current_count;
   count_history[hindex] = current_count;
   hindex = (hindex + 1) % hsize;
-  *dist = total_distance;
+  //*dist = total_distance;
   *speed = fspeed; //ai_speed;
 }
 

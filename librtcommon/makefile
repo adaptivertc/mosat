@@ -1,6 +1,8 @@
 
 export CPATH=../include
 
+OBJS=  arg.o common.o safestr.o utimer.o memfail.o  numbered_file.o
+
 CC=g++
 
 %.o:    %.cpp $(INCLUDES)
@@ -8,11 +10,11 @@ CC=g++
 
 all: librtcommon.so librtcommon.a 
 
-librtcommon.so: arg.o common.o safestr.o utimer.o memfail.o
-	g++  -shared -o librtcommon.so arg.o common.o safestr.o utimer.o memfail.o
+librtcommon.so: $(OBJS) 
+	g++  -shared -o librtcommon.so $(OBJS) 
 
-librtcommon.a: arg.o common.o safestr.o utimer.o memfail.o
-	  ar r librtcommon.a arg.o common.o safestr.o utimer.o memfail.o
+librtcommon.a: $(OBJS) 
+	  ar r librtcommon.a $(OBJS) 
 
 
 install:
