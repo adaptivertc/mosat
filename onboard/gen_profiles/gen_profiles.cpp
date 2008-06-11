@@ -196,6 +196,11 @@ int main(int argc, char *argv[])
   restriction_reader_t rr;
   gen_data_t gd;
 
+  const char *restrict_fname = "restrictions.txt";
+  if (argc > 1)
+  {
+    restrict_fname = argv[1];
+  }
   const char *fname = "profile_out.txt";
   FILE *fp = fopen(fname, "w");
   if (fp == NULL)
@@ -204,7 +209,8 @@ int main(int argc, char *argv[])
     exit(0);
   }
 
-  rr.read_restrictions();
+  rr.read_restrictions(restrict_fname);
+
 
   for (int i=0; i < rr.get_n_restrictions(); i++)
   {

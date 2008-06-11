@@ -23,9 +23,17 @@ DISPLAY_FILE,display_info.txt
 
 Next, you must create the sections file, where each line has the form: 
 
-<station name><tab><time to travel section><tab><time to first sensor><tab><time to second sensor>
+<station name><tab><time to travel section><tab><time to sensor 1><tab><time to sensor 2> . . . <tab><time to sensor N>
 
-Here are some example lines:
+<station name> is the name of the station at the start of this section that will appear in user interfaces.
+
+<time to travel section> is the expected/average time to reach the next station after leaving the station at the start of this section.
+
+<time to sensor N> is the time to reach the Nth sensor in this section, after leaving the station at the start of this section.
+
+Note: The times do not include the time loading and unloading passengers (dwell time). That must be accounted for separately and we currently assume a fixed time for all stations. We may add a column to this file in the future, so it can be explicitly set for each section since for some stations there will be more people getting on and off. It might also vary by time of day, as when the load is heavier, it takes longer at each station for passengers to get on and off. This still needs work.
+
+Here are some example lines (two sensors in each section):
 
 Chennai Beach   226     4       222
 Chennai Fort    138     4       134
@@ -66,6 +74,8 @@ The final configuration file is for the graphical display. It has the following 
 
 <background image>,<square image>,<square image for unexpected>, <output html file>,X1,X2,Y1,Y2,<number of sections>
 
+Following is an example:
+
 dia/CHENNAIBEACH_VELACHERY.png,dia/square12x12.png,dia/square12x12.png,Line1.html,24,968,63,94,32
 
 Important: the number of sections MUST match with the timetable file.
@@ -76,15 +86,17 @@ Important: the number of sections MUST match with the timetable file.
 
 Design issues.
 
-How to select the correct timetable. We really need to make the selection of the timetable to use a function of the location, since each country has different holidays and circumstances that affect how many schedules they will have and how to select them. Furthere, there may be special events, so, there must be a way to override the selection of timetables. For now, we are taking the easy way out, and just simulating one schedule type for each location.
+How to select the correct timetable. For Guadalajara Mexico, they have different schedules for Weekdays, Saturday, Sunday, and Holidays. Other countries / cities may have a different number of time tables to select from. We really need to make the selection of the timetable to use a function of the location, since each country has different holidays and circumstances that affect how many schedules they will have and how to select them. Furthermore, there may be special events, so, there must be a way to override the selection of timetables. For now, we are taking the easy way out, and just simulating one schedule type for each location.
 
 We need to completely separate the display generation from the position calculations. (this is in process)
 
+If we base everything on integers (all timestamps and configuration information rounded to the nearest second), can we sufficiently define the system so that each algorithm will generate the exact same data? If so, then we can treat any difference in calculations as a grave error. If not, we must then determine that the algorithms are "close enough" and just average them. Actually, I will work on a formal proof showing that, using integers, they must all agree. In general, we need to look for things in general that we can prove about the correctness of the system.
+
 The file format for the sections file. We need a generic file format that will work for all locations if possible. Since all light rail systems have stations, we can define the sections based on passenger stations. Then we will allow 0 or more sensors per section. The current assumption is exactly two sensors per section.
 
-We also need to be able to handle very soon the differences between having inductive sensors, and track circuits that give a "presense" signal. The two could be treated the same, but, it might be good to use the extra information we get from "presense" iformation. At the very least, we need to have special alarms for the types of failures possible for track circuits. With track circuits, you have the invariant that when you lose the presense in one segment, you must gain the presense in the next. We also know other characteristics, such that you should never gain lose presense if the train has not been in the segment long enough to reach the end. At SITEUR, they are considering a special monitoring system for the track circuit hardware.
+We also need to be able to handle very soon the differences between having inductive sensors, and track circuits that give a "presence" signal. The two could be treated the same, but, it might be good to use the extra information we get from "presence" information. At the very least, we need to have special alarms for the types of failures possible for track circuits. With track circuits, you have the invariant that when you lose the presence in one segment, you must gain the presence in the next. We also know other characteristics, such that you should never gain lose presence if the train has not been in the segment long enough to reach the end. At SITEUR, they are considering a special monitoring system for the track circuit hardware.
 
-So, the question is: is it better to have a sub-system to convert presense information into crossing information, and do alarm checking, then pass that information to the existing modules that only understand crossing events, or, should we just replace the existing modules?
+So, the question is: is it better to have a sub-system to convert presence information into crossing information, and do alarm checking, then pass that information to the existing modules that only understand crossing events, or, should we just replace the existing modules? If we convert the presence information into crossing events, we can feed the alarms associated with track circuits directly to the alarm manager
 
-For the radio systems, we WILL just replace the modules, so probably better to just replace the module too.
+For the radio systems, we will have to completely replace the position modules since there will be no concept of "crossing". However, we can use the same user interfaces.
 

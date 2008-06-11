@@ -6,9 +6,12 @@
 enum restriction_type_t
 {
   RESTRICT_CURVE,
+  RESTRICT_OTHER,
   RESTRICT_STATION,
   RESTRICT_CROSSING,
-  RESTRICT_CONSTRUCTION
+  RESTRICT_CONSTRUCTION,
+  RESTRICT_SECTION,
+  RESTRICT_MAINTENANCE
 };
 
 
@@ -31,8 +34,8 @@ public:
   restriction_reader_t(void);
   int get_n_restrictions(void) {return n_restrictions;};
   const restriction_def_t *get_restriction(int n) {return  &restriction[n];}; 
-  int read_restrictions(void);
+  int read_restrictions(const char *fname);
   const char *restriction_string(restriction_type_t type);
-  void print_restriction( restriction_def_t res);
+  void print_restriction(const restriction_def_t *res);
 };
 

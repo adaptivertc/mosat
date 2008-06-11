@@ -92,23 +92,19 @@ int main(int argc, char *argv[])
     get_actual_speed_dist(0, 0, &dist, &speed, &discretes);
     //odo_print_current(double(i*10), double(i*9), i+22872); 
     odo_print_current(speed, dist, discretes.total_count, discretes.current_count); 
-    #ifdef USE_PRINTF
     printf("\n\n\n");
     printf("Speed: %12.1lf\n", speed);
     printf("Dist.: %12.1lf\n", dist);
     printf("Count: %10ld\n", discretes.total_count);
     printf("Count: %10ld\n", discretes.current_count);
-    #endif
     int key = odo_getch();
     if (key == 's')
     {
       fprintf(fp, "%d\t%lf\t%ld\t%ld\n", 
           sample_n, dist, discretes.total_count, discretes.current_count);
-      #ifdef USE_PRINTF
+      fflush(fp);
       printf("SAVED: %d\t%lf\t%ld\t%ld\n", 
           sample_n, dist, discretes.total_count, discretes.current_count);
-      #else
-      #endif
       
       sample_n++;
     }

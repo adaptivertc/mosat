@@ -26,12 +26,14 @@ int main(int argc, char *argv[])
   //rtmodbus_t *modc = rt_create_modbus("172.16.115.99");
   //rtmodbus_t *modc = rt_create_modbus("192.168.1.104");
   //rtmodbus_t *modc = rt_create_modbus("coyote2.dyndns.org:502");
-  rtmodbus_t *modc = rt_create_modbus("189.162.54.98:502");
+  //rtmodbus_t *modc = rt_create_modbus("189.162.54.98:502");
+  rtmodbus_t *modc = rt_create_modbus("172.16.115.32");
+  //rtmodbus_t *modc = rt_create_modbus("172.16.115.35");
   //rtmodbus_t *modc = rt_create_modbus("172.16.115.37");
   //rtmodbus_t *modc = rt_create_modbus("10.1.0.5");
   //rtmodbus_t *modc = rt_create_modbus("10.0.0.0");
   modc->set_debug_level(0);
-  modc->set_address(0);
+  modc->set_address(2);
   printf("myconnect %s:%d\n", __FILE__, __LINE__);
  
   while (true)

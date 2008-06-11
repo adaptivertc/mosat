@@ -77,7 +77,7 @@ $(DIR)test_lcd:	$(DIR)test_lcd.o $(DIR)d2x24_tsarm.o  $(DIR)keypad_tsarm.o
 	$(CPP) -o $(DIR)test_lcd -lpthread $(DIR)test_lcd.o $(DIR)d2x24_tsarm.o  $(DIR)keypad_tsarm.o
 
 $(DIR)tst_4x40: $(DIR)tst_4x40.o 
-	$(CPP) -o $(DIR)tst_4x40 $(DIR)tst_4x40.o -lrtcommon -lrtmodbus
+	$(CPP) -o $(DIR)tst_4x40 -DUSE_PRINTF $(DIR)tst_4x40.o -lrtcommon -lrtmodbus
 
 $(DIR)test_keypad:	$(DIR)test_keypad.o $(DIR)keypad_tsarm.o
 	$(CPP) -o $(DIR)test_keypad -lpthread $(DIR)test_keypad.o $(DIR)keypad_tsarm.o
