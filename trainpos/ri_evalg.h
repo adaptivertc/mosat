@@ -18,18 +18,30 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 ***********************************************************************/
 
 // Add other classes / structures as needed
+#include <list>
+
+struct ri_train_data_t 
+{
+	unsigned sec_num;					// sen_num = Número secuencial del tren
+	time_t	entry_time;					// tiempo de entrada en servicio
+	unsigned cur_seg;					// segmento donde está el tren actualmente
+};
 
 class ri_evalg_t : public event_alg_t
 {
 private:
-  FILE * fp;
-  unsigned m_uiNumOfSections;
-  train_data_t trainarray[50];  
+	FILE * fp;
+  	unsigned m_uiNumOfSections;
+	unsigned m_uiSecNum;
+	train_data_t trainarray[50];
+	std::list<ri_train_data_t> train_data_array;
 // Add private definitions here!
 public:
-  void init(void);
-  void update(time_t time);
-  void process_event(crossing_event_t ev);
+	ri_evalg_t();
+	void init(void);
+	void update(time_t time);
+	void process_event(crossing_event_t ev);
+	void gen_htmlreport();
 };
 
 
