@@ -1,9 +1,9 @@
 
 export CPATH=../../include
 
-CC=g++ -g
+CC=g++ -g -Wall
 
-CPP=g++ -g
+CPP=g++ -g -Wall
 
 RTCOMMON=../../librtcommon/librtcommon.a
 RTMODBUS=../../modbus/librtmodbus.a

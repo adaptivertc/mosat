@@ -27,3 +27,39 @@ There are basically six important projects here:
 5) ClassicTControl. This was our first stab at a train control project, and uses N-Version programming with a voting algorithm such that all algorithms have to have errors before dangerous situations are allowed. It also uses a control algorithm running concurrently with the safety algorithms. 
 
 6) Modbus library for modbus TCP/IP. This currently implements Modbus TCP/IP, both client and server, but we are also working to implement Modbus serial and RTU, bridges for TCP/IP to serial, etc, a complete package. There will be two kinds of bridges, one that constantly polls the remote devices, and then returns requests from local memory, and another that forwards all requests to the corresponding device, waiting for a replay. We might also do buffered writes, if it is considered safe (you often want a guarantee that the output was actually sent when you return the acknowlegement. This will definitely be configurable, not the default). And, of course integration with React. With these libraries, you can create your own modbus server. There is an example server simulator.
+
+Programming notes:
+
+The following functions are strictly prohibited for ALL of our projects:
+
+sprintf, strcpy, strcat, strncat, strncpy
+
+The first three can write past the end of the string, the next two do NOT
+guarantee termination of the string.
+
+We have the following function calls to replace strncat and strncpy:
+
+char *safe_strcpy(char *dest, const char *src, int size_dest);
+char *safe_strcat(char *dest, const char *src, int size_dest);
+
+For the others, you should use the version with an 'n' in the name.
+
+Also, do not use any of the older system calls that are not thread safe.
+
+Examples: asctime(), ctime(), gmtime()
+
+Use instead the thread safe version with an "_r" suffix:
+
+gmtime_r(), localtime_r(), asctime_r()
+
+Avoid the use of malloc and free as they are not type safe. Instead, use new, delete.
+
+Also for production running code, we must also avoid dynamic allocation wherever possible. Size arrays for the maximum sizes where possible. If not allocate with new at startup, and never delete. If it is absolutely necessary to allocate and free data, it must be isolated and simplified, and triple checked for correctness. 
+
+All calls that return errors should be checked for errors and handled.
+
+When you are writing functions though, try to NOT return error codes that must be handled by the caller. Many errors can NOT be handled by the caller, and indicate the program cannot continue anyway. It is better for you to log the error and exit(), as this will greatly simplify the code for all of the callers, and result in a more reliable system.
+
+Another good trick is to isolate the handling of errors so that lower level code does not have to deal with it, and is thus much simpler.
+
+

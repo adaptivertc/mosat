@@ -69,7 +69,7 @@ int restriction_reader_t::read_restrictions(const char *fname)
   
   double last_start = -100.0;
   argv = df.first(fname, &argc, &line_num);
-  for (int i=0; (argv != NULL) && (i < RT_MAX_RESTRICTIONS); i++, argv = df.next(&argc, &line_num))
+  for (int i=0; (argv != NULL) && (i < RT_MAX_RESTRICTIONS); argv = df.next(&argc, &line_num))
   {
     if (argv == NULL)
     {
@@ -90,7 +90,7 @@ int restriction_reader_t::read_restrictions(const char *fname)
       printf("*********** Wrong number of args: %d, line %d\n", argc, line_num);
       exit(0);
     }
-    printf("%s, %s, %s, %s, %s, %s\n", argv[0], argv[1], argv[2], argv[3], argv[4], argv[5]);
+    printf("%d: %s, %s, %s, %s, %s, %s\n", i, argv[0], argv[1], argv[2], argv[3], argv[4], argv[5]);
     /* Some spread sheeds will put quotes around the strings, we must get rid of the quotes*/
     strip_quotes(argv[0]);
     strip_quotes(argv[1]);
@@ -154,6 +154,7 @@ int restriction_reader_t::read_restrictions(const char *fname)
     }
     last_start = restriction[i].start;
     print_restriction(&restriction[i]);
+    i++;
     n_restrictions++;
   }
   return n_restrictions;
