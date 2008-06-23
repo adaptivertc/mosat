@@ -17,31 +17,89 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ***********************************************************************/
 
-// Add other classes / structures as needed
 #include <list>
 
-struct ri_train_data_t 
+/**************************************************************************************************/
+/* Macros to create the HTML report I use for debugging purposes                                  */
+/*                                                                                                */
+/**************************************************************************************************/
+
+#define HTML_F_FIXED_SECTION \
+  "  <!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\">\n\
+  <HTML>\n\
+  <HEAD>\n\
+    <META HTTP-EQUIV=\"refresh\" CONTENT=\"1\">\n\
+    <meta http-equiv=\"pragma\" content=\"no-cache>\"\n\
+    <META HTTP-EQUIV=\"CONTENT-TYPE\" CONTENT=\"text/html; charset=utf-8\">\n\
+    <TITLE></TITLE>\n\
+    <STYLE TYPE=\"text/css\">\n\
+    <!--\n\
+      @page { size: 8.5in 11in; margin: 0.79in }\n\
+      P { margin-bottom: 0.08in }\n\
+      TD P { margin-bottom: 0in }\n\
+      TH P { margin-bottom: 0in }\n\
+    -->\n\
+    </STYLE>\n\
+  </HEAD>\n\
+  <BODY LANG=\"en-US\" DIR=\"LTR\">\n\
+    <TABLE WIDTH=100%% BORDER=1 BORDERCOLOR=\"#000000\" CELLPADDING=4 CELLSPACING=0>\n\
+      <COL WIDTH=85*>\n\
+      <COL WIDTH=85*>\n\
+      <COL WIDTH=85*>\n\
+      <TR VALIGN=TOP>\n\
+        <TH WIDTH=33%% BGCOLOR=\"#000080\">\n\
+          <P><FONT COLOR=\"#ffffff\"><SPAN STYLE=\"background: #000080\">N&uacute;mero\n\
+          Secuencial</SPAN></FONT></P>\n\
+        </TH>\n\
+        <TH WIDTH=33%% BGCOLOR=\"#000080\">\n\
+          <P><FONT COLOR=\"#ffffff\"><SPAN STYLE=\"background: #000080\">Tiempo\n\
+          de entrada en servicio</SPAN></FONT></P>\n\
+        </TH>\n\
+        <TH WIDTH=33%% BGCOLOR=\"#000080\">\n\
+          <P><FONT COLOR=\"#ffffff\"><SPAN STYLE=\"background: #000080\">Segmento\n\
+          actual</SPAN></FONT></P>\n\
+        </TH>\n\
+      </TR>\n"
+#define HTML_TABLE_ROW \
+  "      <TR VALIGN=TOP>\n\
+        <TD WIDTH=33%%>\n\
+          <P ALIGN=CENTER>%d</P>\n\
+        </TD>\n\
+        <TD WIDTH=33%%>\n\
+          <P ALIGN=CENTER>%s</P>\n\
+        </TD>\n\
+        <TD WIDTH=33%%>\n\
+          <P ALIGN=CENTER>%d</P>\n\
+        </TD>\n\
+      </TR>\n"
+#define HTML_S_FIXED_SECTION \
+  "    </TABLE>\n\
+  </BODY>\n\
+  </HTML>\n"
+
+// Add other classes / structures as needed
+
+struct ri_train_data_t
 {
-	unsigned sec_num;					// sen_num = Número secuencial del tren
-	time_t	entry_time;					// tiempo de entrada en servicio
-	unsigned cur_seg;					// segmento donde está el tren actualmente
+  unsigned m_uiStlNum;                                                                                // m_uiStlNum = "Secuential number assigned to this train"
+  unsigned m_uiCurSec;                                                                                // m_uiCurSec = "Section where a this train currently is"
+  time_t m_tEntryTime;                                                                                // m_tEntryTime = "Time this train entered service"
 };
 
 class ri_evalg_t : public event_alg_t
 {
-private:
-	FILE * fp;
-  	unsigned m_uiNumOfSections;
-	unsigned m_uiSecNum;
-	train_data_t trainarray[50];
-	std::list<ri_train_data_t> train_data_array;
-// Add private definitions here!
-public:
-	ri_evalg_t();
-	void init(void);
-	void update(time_t time);
-	void process_event(crossing_event_t ev);
-	void gen_htmlreport();
+  private:
+  unsigned m_uiNumOfSec;                                                                              // m_uiNumOfSec = "Number of sections on the circuit"
+  unsigned m_uiStlNum;                                                                                // m_uiStlNum = "Secuential number! It represents a secuential that is actuma"
+  FILE* m_fpLogFile;
+  std::list<ri_train_data_t> m_lsTrains;                                                              // m_lsTrains = "List of structures with "
+  public:
+  ri_evalg_t();
+  ~ri_evalg_t();
+  void init(void);
+  void update(time_t time);
+  void process_event(crossing_event_t ev);
+  void gen_htmlreport();
 };
 
 
