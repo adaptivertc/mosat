@@ -17,6 +17,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ***********************************************************************/
 
+#include <semaphore.h>
+#include <pthread.h>
+
+#include "reactpoint.h"
+#include "db_point.h"
+#include "db.h"
+#include "iodriver.h"
+
+
+#include "iodriver.h"
+
+
 
 class dallas_1wire_driver_t : public io_driver_t
 {
