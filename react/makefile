@@ -22,7 +22,7 @@ LIBS = -ldl $(RTCOMMON)
 
 GENFILES =  gen_case.cpp gen_script.cpp gen_script.h
 
-DRIVERDIRS = drivers/pci9111 drivers/pci7248 drivers/sim drivers/modbusdrv drivers/shmdrv drivers/sim_pump drivers/sim_pump_low
+DRIVERDIRS = drivers/pci9111 drivers/pci7248 drivers/sim drivers/modbusdrv drivers/shmdrv drivers/sim_pump drivers/sim_pump_low drivers/dallas_1wire
 
 CDEBUG =
 
