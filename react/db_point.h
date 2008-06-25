@@ -628,6 +628,50 @@ public:
   static level_point_t **read(int *cnt, const char * home_dir);
 };
 
+class ac_point_t : public discrete_point_t
+{
+private:
+  ai_point_t *ai_point;
+  di_point_t *di_point;
+  ai_point_t *level_ai_point;
+
+  ai_point_t *cold_temp_point;
+  ai_point_t *hot_temp_point;
+  di_point_t *unit_running_point;
+  do_point_t *unit_disable_point;
+
+  time_t last_change_time;
+  bool last_state_at_change; 
+  double last_current;
+
+  bool change_started;
+  char change_start_line[100];
+
+  time_t this_hour;
+  time_t this_day;
+
+  double hour_total_amps; // When ON
+  int hour_num_on_readings;
+  int hour_num_off_reading;
+
+  double day_total_amps;  // When ON
+  int day_num_on_readings;
+  int day_num_off_reading;
+
+  int hour_total_seconds; // Total seconds ON
+  int day_total_seconds;  // Total seconds ON
+
+
+  double min_amps; // When ON
+  double max_amps; // When ON
+  double delay; // Delay before applying the alarm
+
+  FILE *history_fp;
+public:
+  point_type_t point_type(void) {return PUMP_POINT;};
+  void update(void);
+  static ac_point_t **read(int *cnt, const char * home_dir);
+};
 
 /* Structure used by Web Points. */
 struct discrete_ref_t
