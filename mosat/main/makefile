@@ -6,7 +6,7 @@ RTCOMMON=../../librtcommon/librtcommon.a
 
 CC = g++ -Wall
 
-ALL= remote_record ntt runit ppc_record rtsync auto_report frames 
+ALL= remote_record ntt runit ppc_record rtsync auto_report frames
 
 all:	$(ALL)
 
@@ -35,6 +35,9 @@ clean:
 ppc_all:
 	make -f makefile.ppc
 
+cgi:
+	make -f makefile.cgi
+
 rtsync:	rtsync.cpp
 	g++ -Wall -o rtsync rtsync.cpp $(RTCOMMON)
 
@@ -43,5 +46,3 @@ auto_report:	auto_report.cpp
 
 frames:	frames.cpp
 	g++ -Wall -o frames frames.cpp
-
-
