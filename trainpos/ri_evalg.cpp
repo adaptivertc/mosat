@@ -51,7 +51,7 @@ void ri_evalg_t::gen_htmlreport()
   {
     struct tm ts;
     char buf[30];
-    
+
     localtime_r(&i->m_tEntryTime, &ts);
     strftime(buf, sizeof(buf), "%T, %F", &ts);
     fprintf(fp, HTML_TABLE_ROW, i->m_uiStlNum, buf, i->m_uiCurSec);
@@ -91,53 +91,51 @@ void ri_evalg_t::process_event(crossing_event_t ev)
 {
   struct tm ts;
   char buf[30];
-  std::list<ri_train_data_t>::iterator i;
+  std::list<ri_train_data_t>::iterator i = m_lsTrains.begin();
 
   localtime_r(&ev.time_stamp, &ts);
   strftime(buf, sizeof(buf), "%T, %F", &ts);
 //  fprintf(m_fpLogFile, "Event: Time: %s, Section: %d, Type: %s\n", buf, ev.section, ev.departure?"Departure":"Arrival");
-  if(ev.departure)
-  {
-    if(ev.section == 0)
-    {
-      ri_train_data_t tmp_train;
+  if(ev.departure && 0 == ev.section)                                                                 // <-- If true, a train has just started opperating so it must me added to the list of trains on
+  {                                                                                                   //     service.
+    ri_train_data_t tmp_train;
 
-      tmp_train.m_uiStlNum = m_uiStlNum++;
-      tmp_train.m_tEntryTime = ev.time_stamp;
-      tmp_train.m_uiCurSec = 0;
-      m_lsTrains.push_front(tmp_train);
-    }
+    tmp_train.m_uiStlNum = m_uiStlNum++;
+    tmp_train.m_tEntryTime = ev.time_stamp;
+    tmp_train.m_uiCurSec = 0;
+    m_lsTrains.push_front(tmp_train);
   }
-  else 
+  else
   {
-    for (i = m_lsTrains.begin(); m_lsTrains.end() != i; ++i)
-      if (ev.section - 1 == i->m_uiCurSec)
-      {
-        i->m_uiCurSec = ev.section;
-        break;
-      }
-    if(ev.section == (m_uiNumOfSec/*-1*/))
+    if(ev.section == m_uiNumOfSec)                                                                    // <-- If true, a train has traversed the entire circuit and is getting out of service so I pop it
+      m_lsTrains.pop_back();                                                                          //     from the list.
+    while(m_lsTrains.end() != i && ev.section - 1 != i->m_uiCurSec)
+      ++i;
+    i->m_uiCurSec = ev.section;
+  }
+
+  char szStlNum[10];                                                                                  // <-- TODO: I need to change this hardcoded 10 for a macro
+  unsigned uiNextPOS = 0;                                                                             // <-- uiExpTrainPos = "Next possible occupied section".
+  int iPrevTS = -1;                                                                                   // <-- iPrevTS = "Section that the previous train occupies". -1 means there is not a previous train.
+  std::string szPositions = "|[";
+
+  for (i = m_lsTrains.begin(); i != m_lsTrains.end(); ++i)
+  {
+    for (unsigned uiNES = i->m_uiCurSec; uiNES > 0 && uiNES > uiNextPOS; --uiNES)                     // <-- uiNES = "Number of empty sections"
+      szPositions += "-][";
+    if (i->m_uiCurSec == iPrevTS)                                                                     // <-- This shouldn't normally happen because it means there is more than one train ocupping the
+      sprintf(szStlNum, "\b\b,%d][", i->m_uiStlNum);                                                  //     the same section, and that is a condition that is possible but considered dangerous.
+    else
     {
-//      fprintf(m_fpLogFile, "On my God ! ... that was a train getting out of service\n");
-      m_lsTrains.pop_back();
+      sprintf(szStlNum, "%d][", i->m_uiStlNum);
+      uiNextPOS = i->m_uiCurSec + 1;
     }
-  }
-  char szStlNum[3];
-  unsigned uiNextSec = 35;
-  unsigned uiNumOfTrains = m_lsTrains.size();
-  std::string szPositions;
-  i = m_lsTrains.end();
-  for (--i; uiNumOfTrains > 0; --i, --uiNumOfTrains)
-  {
-    for (unsigned j = i->m_uiCurSec; j < uiNextSec; ++j)
-      szPositions += "[-]"; 
-    sprintf(szStlNum, "[%d]", i->m_uiStlNum);
     szPositions += szStlNum;
-    uiNextSec = i->m_uiCurSec;    
+    iPrevTS == i->m_uiCurSec;
   }
-  for (unsigned j = uiNextSec; j > 0; --j)
-    szPositions += "[-]";
-  szPositions += "\n";
+  for (unsigned uiRES = uiNextPOS; uiRES < 36; ++uiRES)                                               // <-- uiRES = "Number of remaining empty sections after the last occupied section".
+    szPositions += "-][";                                                                             //     TODO: I need to change this hardcoded 36 for a macro
+  szPositions += "\b|\n";
   fprintf(m_fpLogFile, szPositions.data());
   fflush(m_fpLogFile);
   gen_htmlreport();
