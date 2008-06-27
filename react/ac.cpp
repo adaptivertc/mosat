@@ -88,66 +88,69 @@ static bool day_changed(time_t t1, time_t t2)
 void ac_point_t::update(void)
 {
   /* Update the given ac point. */
-  double amps;
+  //double amps;
   bool state;
   time_t now;
   double level;
 
-  if ((ac_fp == NULL) || (ai_point == NULL) || (di_point == NULL))
+  double cold_temp;
+  double hot_temp;
+  bool unit_running;
+
+/**
+  ai_point_t *cold_temp_point;
+  ai_point_t *hot_temp_point;
+  di_point_t *unit_running_point;
+  do_point_t *unit_disable_point;
+***/
+
+  if ((ac_fp == NULL) || (cold_temp_point == NULL) || 
+     (unit_running_point == NULL) || (unit_disable_point == NULL))
   {
     return;
   }
 
   now = time(NULL);
-  amps = ai_point->get_pv();
-  state = di_point->get_pv();
+  //amps = ai_point->get_pv();
+  //state = di_point->get_pv();
 
-  //printf("state: %s, last: %s, amps: %0.1f\n", 
-  // state ? "1":"0", last_state_at_change ? "1":"0", amps);
-
-  if (level_ai_point == NULL)
-  {
-    level = 0.0;
-  }
-  else
-  {
-    level = level_ai_point->get_pv();
-  }
-
+  cold_temp = cold_temp_point->get_pv();
+  hot_temp = hot_temp_point->get_pv();
+  state = unit_running_point->get_pv();
 
   if (hour_changed(now, this_hour))
   {
     struct tm mytm;
     localtime_r(&this_hour, &mytm);
-    double avg_amps = hour_total_amps / double(hour_num_on_readings);
+    double avg_cold = hour_total_cold / double(hour_num_temp_readings);
+    double avg_hot = hour_total_hot / double(hour_num_temp_readings);
     double fraction_on = (double(hour_num_on_readings) / 
-         (double(hour_num_on_readings) + double(hour_num_off_reading)));
+         (double(hour_num_on_readings) + double(hour_num_off_readings)));
     fprintf(history_fp, "%d\t%0.2lf\t%0.2lf\t%0.2lf\n", mytm.tm_hour, 
-            100.0 * fraction_on, avg_amps, 
-         // calculate kwh for 3 phase
-       (220.0 * sqrt(3.0) * avg_amps * fraction_on) / 1000.0);
+            100.0 * fraction_on, avg_cold, avg_hot); 
 
     fflush(history_fp);
-    hour_total_amps = 0.0;
+    //hour_total_amps = 0.0;
+    hour_total_cold = 0.0;
+    hour_total_hot = 0.0;
     hour_num_on_readings = 0;
-    hour_num_off_reading = 0;
+    hour_num_off_readings = 0;
     this_hour =  now;
   }
 
   if (day_changed(now, this_day))
   {
-    double avg_amps = day_total_amps / double(day_num_on_readings);
     double fraction_on = (double(day_num_on_readings) / 
-         (double(day_num_on_readings) + double(day_num_off_reading)));
+         (double(day_num_on_readings) + double(day_num_off_readings)));
+    double avg_cold = day_total_cold / double(day_num_temp_readings);
+    double avg_hot = day_total_hot / double(day_num_temp_readings);
     fprintf(history_fp, "%s\t%0.2lf\t%0.2lf\t%0.2lf\n", "dia", 
-      100.0 * fraction_on, avg_amps,
-         // calculate kwh for 3 phase
-         (24 * 220.0 * sqrt(3.0) * avg_amps * fraction_on) / 1000.0);
+            100.0 * fraction_on, avg_cold, avg_hot); 
 
     fflush(history_fp);
-    day_total_amps = 0.0;
+    //day_total_amps = 0.0;
     day_num_on_readings = 0;
-    day_num_off_reading = 0;
+    day_num_off_readings = 0;
     this_day = now;
     ac_fp = open_day_history_file(ac_log_home, "_ac_log.txt", NULL);
     char tbuf[50];
@@ -160,13 +163,20 @@ void ac_point_t::update(void)
   // - just count on readings vs off readings. Close enough! 
   if (state)
   { 
-    hour_num_off_reading++;
-    day_num_off_reading++;
+    hour_num_off_readings++;
+    day_num_off_readings++;
   }
   else
   {
-    hour_total_amps += amps;
-    day_total_amps += amps;
+    if (delay_elapsed)
+    {
+      hour_total_cold += cold_temp;
+      hour_total_hot += hot_temp;
+      day_total_cold += cold_temp;
+      day_total_hot += hot_temp;
+    }
+    //hour_total_amps += amps;
+    //day_total_amps += amps;
     hour_num_on_readings++;
     day_num_on_readings++;
   }
@@ -180,7 +190,7 @@ void ac_point_t::update(void)
       //printf("%s", change_start_line);
       //printf("%0.3lf\n", amps);
       fprintf(ac_fp, "%s", change_start_line);
-      fprintf(ac_fp, "%0.3lf\n", amps);
+      //fprintf(ac_fp, "%0.3lf\n", amps);
       fflush(ac_fp);
       change_started = false;
     }
@@ -196,7 +206,7 @@ void ac_point_t::update(void)
  
     snprintf(change_start_line, sizeof(change_start_line), 
             "%s\t%s\t%s\t%0.2lf\t%0.3lf\t", datestr, tag, 
-            di_point->pv_string, level, amps);
+            di_point->pv_string, level, 0.0);
     last_state_at_change = state;
     last_change_time = now;
     change_started = true;
@@ -261,12 +271,6 @@ ac_point_t **ac_point_t::read(int *cnt, const char *home_dir)
 
     char temp_tag[30];
 
-/**
-  ai_point_t *cold_temp_point;
-  ai_point_t *hot_temp_point;
-  di_point_t *unit_running_point;
-  do_point_t *unit_disable_point;
-***/
 
     safe_strcpy(temp_tag, (const char*) argv[2], sizeof(temp_tag));
     rtrim(temp_tag);
@@ -320,19 +324,32 @@ ac_point_t **ac_point_t::read(int *cnt, const char *home_dir)
       ac->unit_disable_point = (do_point_t *) db_point;
     }
 
-    ac->min_amps = atof(argv[5]);
+    ac->delay = atof(argv[6]);
 
     ac->last_state_at_change = true;
     ac->last_change_time = time(NULL);
     ac->last_current = 0.0;
     ac->change_started = false;
     ac->this_hour = ac->this_day = time(NULL);
-    ac->hour_total_amps = 0.0;
     ac->hour_num_on_readings = 0;
-    ac->hour_num_off_reading = 0;
-    ac->day_total_amps = 0.0;
+    ac->hour_num_off_readings = 0;
+    ac->hour_num_temp_readings = 0;
+
     ac->day_num_on_readings = 0;
-    ac->day_num_off_reading = 0;
+    ac->day_num_off_readings = 0;
+    ac->day_num_temp_readings = 0;
+
+
+    ac->hour_total_cold = 0.0;
+    ac->day_total_cold = 0.0;
+    ac->hour_total_hot = 0.0;
+    ac->day_total_hot = 0.0;
+
+    /***
+    ac->hour_total_amps = 0.0;
+    ac->day_total_amps = 0.0;
+    ac->min_amps = atof(argv[5]);
+    ***/
 
     const char *html_home = react_config->get_config("htmlhome");
     if (html_home == NULL)

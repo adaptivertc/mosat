@@ -645,18 +645,29 @@ private:
   double last_current;
 
   bool change_started;
+  bool delay_elapsed;
   char change_start_line[100];
 
   time_t this_hour;
   time_t this_day;
 
   double hour_total_amps; // When ON
-  int hour_num_on_readings;
-  int hour_num_off_reading;
 
-  double day_total_amps;  // When ON
+  double hour_total_cold; // When ON after delay
+  double hour_total_hot; // When ON after delay
+
+  int hour_num_temp_readings;
+  int hour_num_on_readings;
+  int hour_num_off_readings;
+
+  double day_total_amps; // When ON
+  double day_total_cold; // When ON after delay
+  double day_total_hot; // When ON after delay
+
   int day_num_on_readings;
-  int day_num_off_reading;
+  int day_num_off_readings;
+
+  int day_num_temp_readings;
 
   int hour_total_seconds; // Total seconds ON
   int day_total_seconds;  // Total seconds ON
