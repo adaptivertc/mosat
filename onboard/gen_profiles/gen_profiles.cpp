@@ -35,7 +35,7 @@
 #include "restriction_reader.h"
 
 #define RT_MAX_PROFILE_POINTS (500)
-#define GEN_DIST (20.0)
+#define GEN_DIST (5.0)
 
 class gen_data_t
 {
@@ -89,14 +89,25 @@ void gen_data_t::print(void)
 
 /***************************************************************/
 
+double total_time = 0.0;
+
 void gen_data_t::plot(void)
 {
+  double time = 0.0;
   FILE *fp = fopen("plot.txt", "w");
   for (int i=0; i < n_items; i++)
   {
     fprintf(fp, "%0.1lf\t%0.1lf\n", x[i], desired[i] * 3.6);
+    if (i>0)
+    {
+      double delta_x = x[i] - x[i-1];
+      double avg_spd = (desired[i] + desired[i-1])/2.0;
+      time += delta_x / avg_spd; 
+    }
   }
   fclose(fp);
+  total_time += time;
+  printf("----------- Time this segment = %lf\n", time);
 
   const char *base_name = "plot";
   const char *gtitle = station;
@@ -430,6 +441,8 @@ int main(int argc, char *argv[])
       gd.gen_restriction(res);
     }
   }
+  int tt = int(total_time);
+  printf("Total time = %d, %d:%d\n", tt, tt/60, tt%60);
   /***
   gd.reset();
   gd.set_station("PerSur");
