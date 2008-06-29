@@ -239,9 +239,48 @@ void *maintain_log(void *data)
 
 /***************************************************************/
 
+void print_help()
+{
+  printf("Usage: remote_record [-d <home-directory>]\n");
+  printf("  -d   use an alternate directory for the home directory.\n");
+  printf("       The -d command must be followed by a home directory.\n");
+  printf("       This will be used as the home directory, in place of\n");
+  printf("       the current directory.\n\n");
+}
+
+/***************************************************************/
+
 int main(int argc, char *argv[])
 {
-  char *fname = "../config_files/record_config.txt";
+  int current_arg;
+  const char *home_dir="./";
+  for (current_arg=1; current_arg < argc; current_arg++)
+  {
+    if (0 == strcmp(argv[current_arg], "-d"))
+    {
+      if (argc > (current_arg + 1))
+      {
+        current_arg++;
+        home_dir = argv[current_arg];
+        chdir(home_dir);
+        printf("home dir = %s\n",home_dir);
+        home_dir = "./";
+      }
+      else
+      {
+        print_help();
+        printf("For -d option, you MUST specify the directory, %d, %d\n", argc, current_arg);
+        exit(1);
+      }
+    }
+    else if (0 == strcmp(argv[current_arg], "--help"))
+    {
+      print_help();
+      exit(0);
+    }
+  }
+  system("pwd");
+  const char *fname = "./record_config.txt";
   FILE *fp = fopen(fname, "r");
   if (fp == NULL)
   {
@@ -255,23 +294,23 @@ int main(int argc, char *argv[])
   for (int i=0; NULL != fgets(line, sizeof(line), fp); i++)
   {
     char tmp[300];
-    int argc;
-    char *argv[25];
+    int argcs;
+    char *argvs[25];
 
     printf("Line %d: %s\n", i, line);
     if (line[0] == '#') continue;
     safe_strcpy(tmp, line, sizeof(tmp));
-    argc = get_delim_args(tmp, argv, '|', 2);
-    if (argc == 0)
+    argcs = get_delim_args(tmp, argvs, '|', 2);
+    if (argcs == 0)
     {
       continue;
     }
-    if (argc == 2)
+    if (argcs == 2)
     {
       log_data_t *ldata = new log_data_t;
-      ldata->dest_ip = strdup(argv[0]);
+      ldata->dest_ip = strdup(argvs[0]);
       ldata->dest_port = DEST_PORT;
-      ldata->local_dir = strdup(argv[1]);
+      ldata->local_dir = strdup(argvs[1]);
       printf("Starting thread: %s, %s\n", ldata->dest_ip, ldata->local_dir); 
       int ret = pthread_create(&thread, NULL, maintain_log, ldata); 
     }

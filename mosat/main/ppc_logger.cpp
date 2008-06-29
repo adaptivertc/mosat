@@ -47,7 +47,7 @@ bool day_changed(time_t t1, time_t t2)
 
 /*********************************************************************/
 
-ppc_logger_t::ppc_logger_t(char *fname)
+ppc_logger_t::ppc_logger_t(const char *fname)
 {
   if (!file_exists(fname))
   {

@@ -485,7 +485,7 @@ void station_controller_t::reset(void)
 
 /************************************************************************/
 
-int main(int argc, char *argv)
+int main(int argc, char *argv[])
 {
   while (true)
   {

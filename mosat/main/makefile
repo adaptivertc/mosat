@@ -45,4 +45,4 @@ auto_report:	auto_report.cpp
 	g++ -Wall -o auto_report auto_report.cpp
 
 frames:	frames.cpp
-	g++ -Wall -o frames frames.cpp
+	g++ -Wall -o frames frames.cpp $(RTCOMMON)

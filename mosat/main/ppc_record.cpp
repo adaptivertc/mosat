@@ -532,7 +532,7 @@ int main(int argc, char *argv[])
   signal(SIGINT, my_sighandler);
 
   create_thread();
-  char *lfile = "/nvram/siteur/recordlog.txt";
+  const char *lfile = "/nvram/siteur/recordlog.txt";
   FILE *lfp = fopen(lfile, "w");
   if (lfp == NULL)
   {
@@ -540,7 +540,7 @@ int main(int argc, char *argv[])
     exit(0);
   }
 
-  char *fname = "/home/carr/rtu_channel_config.txt";
+  const char *fname = "/home/carr/rtu_channel_config.txt";
   FILE *fp = fopen(fname, "r");
   if (fp == NULL)
   {

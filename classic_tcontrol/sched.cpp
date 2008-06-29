@@ -339,7 +339,7 @@ scheduler_t::scheduler_t(void)
 
 /*********************************************************************/
 
-int main(int argc, char argv[])
+int main(int argc, char *argv[])
 {
   sect = new sections_t;
   sect->read_file();

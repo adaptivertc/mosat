@@ -3,7 +3,11 @@
 #include<stdio.h>
 #include<time.h>
 #include<ctype.h>
-void header(char Y[10], char M[10], char D[10],char  P[100],char st[50],char st2[10],char color[20],char img[20],char dir[20],char pdc[20][10],int t)
+
+#include "rtcommon.h"
+#include "arg.h"
+
+void header(const char Y[10], const char M[10], const char D[10],const char  P[100],const char st[50],const char st2[10],const char color[20],const char img[20],const char dir[20],const char pdc[20][10],int t)
 {
  struct tm mytm;
  time_t mytime;
@@ -134,7 +138,7 @@ void header(char Y[10], char M[10], char D[10],char  P[100],char st[50],char st2
  fprintf(fd,"</HTML>");
  fclose(fd);
 }
-void get_pdc(char pdc[20],char dir[20])
+void get_pdc(char pdc[20],const char dir[20])
 {
  time_t tt=time(NULL);
  struct tm stm;
@@ -183,7 +187,7 @@ void get_pdc(char pdc[20],char dir[20])
  }
 }
 
-void frame_generator(int refresh,char L[3])
+void frame_generator(int refresh,const char L[3])
 {
  FILE *fr;
  char Day[100],Day2[100],D[10],M[10],Y[10],pdc[20][10];
@@ -235,7 +239,7 @@ void frame_generator(int refresh,char L[3])
  }
  else
  {
-  fprintf(fr,"   <FRAME src=\"periferico_norte/per_norte_header.html\">\n");
+  fprintf(fr,"   <FRAME src=\"periferico_norte/periferico_norte_header.html\">\n");
   fprintf(fr,"   <FRAME src=\"periferico_sur/periferico_sur_header.html\">\n");
   fprintf(fr,"   <FRAME src=\"periferico_norte/%s_report_p_norte.html\">\n",Day);
   fprintf(fr,"   <FRAME src=\"periferico_sur/%s_report_p_sur.html\">\n",Day);
@@ -244,13 +248,77 @@ void frame_generator(int refresh,char L[3])
  fprintf(fr,"</HTML>");
  fclose(fr);
 }
+
+
+int main (int argc, char **argv)
+{
+  if (argc < 2)
+  {
+    printf("You must specify the time between refreshes on the command line\n");
+    exit(1);
+  }
+
+  const char *fname = "./record_config.txt";
+  FILE *fp = fopen(fname, "r");
+  if (fp == NULL)
+  {
+    perror(fname);
+    exit(0);
+  }
+
+  int n_stations=0;
+  const char *station_dirs[20];
+
+  char line[300];
+  for (int i=0; NULL != fgets(line, sizeof(line), fp); i++)
+  {
+    char tmp[300];
+    int argcs;
+    char *argvs[25];
+
+    printf("Line %d: %s\n", i, line);
+    if (line[0] == '#') continue;
+    safe_strcpy(tmp, line, sizeof(tmp));
+    argcs = get_delim_args(tmp, argvs, '|', 2);
+    if (argcs == 0)
+    {
+      continue;
+    }
+    if (argcs == 2)
+    {
+      station_dirs[n_stations]=strdup(argvs[1]);
+      printf("Station dir = %s\n",station_dirs[n_stations]);
+      n_stations++;
+      if (n_stations>=20)
+      {
+        printf("Max stations exceeded\n");
+        break;
+      }
+    }
+  }
+
+
+  int ref = atoi(argv[1]);
+  printf("Generando reporte L2... ");
+  frame_generator(ref,"L2");
+  printf("Hecho!\n");
+  printf("Generando reporte L1... ");
+  frame_generator(ref,"L1");
+  printf("Hecho!\n");
+  return 0;
+}
+
+/*
 int main (int argc, char **argv)
 {
  if (argc != 2)
  {
    printf("You must specify the time between refreshes on the command line\n");
    exit(1);
- } 
+ }
+ int n_stations;
+ const char *station_dirs[20];
+
  int ref = atoi(argv[1]);
  printf("Generando reporte L2... ");
  frame_generator(ref,"L2");
@@ -260,3 +328,4 @@ int main (int argc, char **argv)
  printf("Hecho!\n");
  return 0;
 }
+ */

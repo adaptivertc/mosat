@@ -132,7 +132,7 @@ int evlog_t::get_day(void)
 
 /******************************************************/
 
-void evlog_t::file_name(char *post, char *buf, int sz)
+void evlog_t::file_name(const char *post, char *buf, int sz)
 {
   time_t this_time;
   this_time = time(NULL);

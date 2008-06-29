@@ -78,6 +78,9 @@ clean:
 	rm -fv $(DIR)onboard_2x24
 	rm -fv $(DIR)lcdmesg
 	rm -fv $(DIR)keypad
+	rm -fv $(DIR)onboard_4x40
+	rm -fv $(DIR)odo_mode_4x40
+	rm -fv $(DIR)odo_mode
 
 armall:
 	make -f makefile.arm

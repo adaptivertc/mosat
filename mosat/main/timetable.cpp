@@ -19,7 +19,7 @@ struct tdinfo_t
 
 struct section_info_t
 {
-  char *name;
+  const char *name;
   int n;
   double wait_time;
   double times[20];
@@ -63,9 +63,9 @@ int square_number(double difference, section_info_t *sinfo)
 
 /***************************************************************************/
 
-void gen_html(FILE *fp, char *background, int top, int left, 
-             char *iname, int n_image, int itop[], int ileft[], 
-             int textleft[], int texttop[], char thetext[][25])
+void gen_html(FILE *fp, const char *background, int top, int left, 
+             const char *iname, int n_image, int itop[], int ileft[], 
+             int textleft[], int texttop[], const char thetext[][25])
 {
   fprintf(fp, "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">\n");
   fprintf(fp, "<html>\n");
@@ -108,7 +108,7 @@ void gen_html(FILE *fp, char *background, int top, int left,
 }
 
 /**********************************************************************/
-void gen_display(FILE *fp, char *background, int top, int left, char *iname, 
+void gen_display(FILE *fp, const char *background, int top, int left, const char *iname, 
                 tdinfo_t td[], int n)
 {
   int itop[50];
@@ -221,27 +221,29 @@ int decide_status(time_t programmed[], int prog_idx,
 
 }
 /**************************************************************************/
-int get_int (char argv[],char n_exit[50][200],char int_type[50][200])
+int get_int (char argv[],char n_exit[][200],char int_type[][200],int size)
 {
  time_t mtmt;
  struct tm mtm;
  FILE *file;
- char path[100]="/var/www/html/react/log/",buf[50][200],date[20];
- int w,x=0,y,z,l=strlen(path);
- strncat(path,argv,l+strlen(argv));
- strcat(path,"/");
+ char path[200],buf[50][200],date[20];
+ int w,x=0,y,z;
+/* strncat(path,argv,l+strlen(argv));
+ strcat(path,"/");*/
  mtmt = time(NULL);
  localtime_r(&mtmt,&mtm);
  strftime(date,sizeof(date),"%Y%m%d",&mtm);
- strcat(path,date);
+/* strcat(path,date);
  l=strlen(path);
  strncat(path,"_int.txt",l+8);
- puts(path);
+ puts(path);*/
+ snprintf(path,sizeof(path),"/var/www/html/react/log/%s/%s_int.txt",argv,date);
+ printf("%s\n",path);
  file = fopen(path,"r");
  if (file == NULL)
  {
-  perror(path);
-  exit(1);
+  printf("No interruption file %s yet \n",path);
+  //exit(1);
  }
  else
  {
@@ -287,24 +289,32 @@ int get_int (char argv[],char n_exit[50][200],char int_type[50][200])
     {
      for(w=y;w<x-1;w++)
      {
-      strcpy(n_exit[w],n_exit[w+1]);
-      strcpy(int_type[w],int_type[w+1]);
+      snprintf(n_exit[w],size,"%s",n_exit[w+1]);
+      /*strcpy(n_exit[w],n_exit[w+1]);
+      strcpy(int_type[w],int_type[w+1]);*/
+      snprintf(int_type[w],size,int_type[w+1]);
      }
      x--;
     }
-  char aux[10];
+  char aux[200];
   for(y=0;y<x;y++)
   {
    for(z=y+1;z<x;z++)
    {
     if(atoi(n_exit[y])>atoi(n_exit[z]))
     {
-     strcpy(aux,n_exit[y]);
+     /*strcpy(aux,n_exit[y]);
      strcpy(n_exit[y],n_exit[z]);
      strcpy(n_exit[z],aux);
      strcpy(aux,int_type[y]);
      strcpy(int_type[y],int_type[z]);
-     strcpy(int_type[z],aux);
+     strcpy(int_type[z],aux);*/
+     snprintf(aux,sizeof(aux),"%s",n_exit[y]);
+     snprintf(n_exit[y],200,"%s",n_exit[z]);
+     snprintf(n_exit[z],size,"%s",aux);
+     snprintf(aux,sizeof(aux),"%s",int_type[y]);
+     snprintf(int_type[y],size,"%s",int_type[z]);
+     snprintf(int_type[z],size,"%s",aux);
     }
    }
   }
@@ -413,7 +423,7 @@ fprintf(fp, "}\n");
 /**********/
   char n_exit[50][200],int_type[50][200];
   int x;
-  x  = get_int(dir,n_exit,int_type);
+  x  = get_int(dir,n_exit,int_type,200);
   int prog_idx = 0;
   int actual_idx = 0;
   time_t programmed_time;
@@ -855,13 +865,15 @@ fprintf(fp, "}\n");
   time_t gtim = time(NULL);
   struct tm gtm;
   FILE *pdc_h;
-  char path[60]="/var/www/html/react/log/";
+  char path[200];/*="/var/www/html/react/log/";
   int l=strlen(path);
-  l+=strlen(dir);
+  l+=strlen(dir);*/
   localtime_r(&gtim,&gtm);
   strftime(D,sizeof(D),"%d",&gtm);
-  strncat(path,dir,l);
-  strncat(path,"pdc.txt",l+7);
+/*  strncat(path,dir,l);
+  strncat(path,"pdc.txt",l+7);*/
+  snprintf(path,sizeof(path),"/var/www/html/react/log/%spdc.txt",dir);
+  printf("%s\n",path);
   remove(path);
   pdc_h = fopen(path,"w+");
   if (pdc_h == NULL)
@@ -875,18 +887,20 @@ fprintf(fp, "}\n");
   FILE *gra;
   char day[50][100],pc[50][100],c;
   int c1=0,c2=0,f=0,jk;
-  strcpy(path,"/var/www/html/react/log/");
+  //strcpy(path,"/var/www/html/react/log/");
   gtim = time(NULL);
   localtime_r(&gtim,&gtm);
   strftime(M,sizeof(M),"%b",&gtm);
   strftime(D,sizeof(D),"%d",&gtm);
-  l=strlen(path);
+  /*l=strlen(path);
   l+=strlen(M);
   strncat(path,M,l);
   l=strlen(path);
   l+=strlen(dir);
   strncat(path,dir,l);
-  strncat(path,".txt",l+4);
+  strncat(path,".txt",l+4);*/
+  snprintf(path,sizeof(path),"/var/www/html/react/log/%s%s.txt",M,dir);
+  printf("%s\n",path);
   gra = fopen(path,"r");
   if(gra!=NULL)
   {
@@ -925,7 +939,8 @@ fprintf(fp, "}\n");
   {
    gra = fopen(path,"w+");
    fprintf(gra,"%s\t%.2f\n",D,(pdc/total_departures)*100);
-   strncpy(day[c1],D,strlen(D));
+   //strncpy(day[c1],D,strlen(D));
+   snprintf(day[c1],sizeof(day[c1]),"%s",D);
    c1++;
    fclose(gra);
   }
@@ -933,14 +948,15 @@ fprintf(fp, "}\n");
   {
    if(strcmp(day[jk],D)==0)
    {
-    sprintf(pc[jk],"%.2f",(pdc/total_departures)*100);
+    snprintf(pc[jk],sizeof(pc[jk]),"%.2f",(pdc/total_departures)*100);
     break;
    }
   }
   if(jk==c1)
   {
-   strncpy(day[c1],D,strlen(D));
-   sprintf(pc[c1],"%.2f",(pdc/total_departures)*100);
+   //strncpy(day[c1],D,strlen(D));
+   snprintf(day[c1],sizeof(day[c1]),"%s",D);
+   snprintf(pc[c1],sizeof(pc[c1]),"%.2f",(pdc/total_departures)*100);
    c1++;
   }
   gra = fopen(path,"w+");
@@ -985,7 +1001,8 @@ int main(int argc, char *argv[])
   char date_str[50];
   if (argc > 3)
   {
-    strcpy(date_str, argv[3]);
+    //strcpy(date_str, argv[3]);
+    snprintf(date_str,sizeof(date_str),"%s",argv[3]);
   }
   else
   {
@@ -1014,7 +1031,7 @@ int main(int argc, char *argv[])
   hd=fopen("/var/www/html/react/log/festivo.txt","r");
   int month_day = mytm.tm_mday;
   int month = mytm.tm_mon;
-  char *sched_type;
+  const char *sched_type;
   char sched_fname[200];
   switch (week_day)
   {
@@ -1107,16 +1124,24 @@ int main(int argc, char *argv[])
   printf("Scheduled: %d, Actual %d\n", n_sched, n_actual);
   char terminal[30];
   if(strcmp("periferico_sur",argv[1])==0)
-   strcpy(terminal,"p_sur");
+  {
+//    strcpy(terminal,"p_sur");
+    snprintf(terminal,sizeof(terminal),"p_sur");
+  }
   else
   {
-   if(strcmp("periferico_norte",argv[1])==0)
-    strcpy(terminal,"p_norte");
-   else
-    strcpy(terminal,argv[1]);
+    if(strcmp("periferico_norte",argv[1])==0)
+    {
+//      strcpy(terminal,"p_norte");
+      snprintf(terminal,sizeof(terminal),"p_norte");
+    }
+    else
+    {
+//      strcpy(terminal,argv[1]);
+      snprintf(terminal,sizeof(terminal),"%s",argv[1]);
+    }
   }
-  snprintf(fname, sizeof(fname), 
-       "%s/%s/%s_report_%s.html", HOME_DIR, argv[1], date_str,terminal);
+  snprintf(fname, sizeof(fname),"%s/%s/%s_report_%s.html", HOME_DIR, argv[1], date_str,terminal);
   printf("Generating: %s\n", fname);
   FILE *fp = fopen(fname, "w");
   if (fp == NULL)
@@ -1127,8 +1152,7 @@ int main(int argc, char *argv[])
   print_it(fp, train, programmed, actual, interuption, max, argv[2],week_day,argv[1]);
   fclose(fp);
 
-  snprintf(fname, sizeof(fname), 
-    "%s/%s/display.html", HOME_DIR, argv[1]);
+  snprintf(fname, sizeof(fname),"%s/%s/display.html", HOME_DIR, argv[1]);
   printf("Generating: fname =>%s\n", fname);
   fp = fopen(fname, "w");
   if (fp == NULL)
@@ -1137,8 +1161,8 @@ int main(int argc, char *argv[])
     exit(0);
   }
 
-  char *background = "../Linea1Sur.png";
-  char *iname = "../square.png";
+  const char *background = "../Linea1Sur.png";
+  const char *iname = "../square.png";
   int top = 50;
   int left = 0;
 

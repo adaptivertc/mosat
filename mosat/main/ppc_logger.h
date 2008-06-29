@@ -44,7 +44,7 @@ private:
   long search_seq_num;
   int search_index;
 public:
-  ppc_logger_t(char *fname);
+  ppc_logger_t(const char *fname);
   ~ppc_logger_t();
   long log_event(crossing_event_data_t *ev);
   int get_event(long seq_num, crossing_event_data_t *ev);

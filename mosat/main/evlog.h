@@ -20,7 +20,7 @@ private:
   void check_day(void);
   void only_open_files(void);
   long open_files(bool find_seq);
-  void file_name(char *post, char *buf, int sz);
+  void file_name(const char *post, char *buf, int sz);
   int get_day(void);
 public:
   evlog_t(char *the_dir);
