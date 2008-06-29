@@ -82,7 +82,7 @@ static double add_rand_noise(double val, double full_scale, double fraction_nois
 
 static double calc_level_raw(double level_eu)
 {
-  double pct = level_eu / 500.0;
+  //double pct = level_eu / 500.0;
   return 32000.0 - ((32000.0 - 6400.0) * (level_eu / 500.0));
 }
 
@@ -100,8 +100,7 @@ simpumpdrv_t::simpumpdrv_t(react_drv_base_t *r)
 {
   //printf("Read: ");
   printf("Creating sim pump driver . . . .\n");
-  const char *fname = "didata.txt";
-  driver_name = "File";
+  driver_name = "simpumpdrv";
   driver = 1;
   card = 1;
   base_addr = 0;

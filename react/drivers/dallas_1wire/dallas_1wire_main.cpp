@@ -10,7 +10,6 @@
 int main(int argc, char *argv[])
 {
    int device;
-   int i, j;
 
    char dev_name[60];
    if (argc > 1)
@@ -31,8 +30,14 @@ int main(int argc, char *argv[])
 
    char data[200];
    int ret_val = rt_read_serial(device, data, sizeof(data)); 
-   printf("Got this: %s\n", data);
-
+   if (ret_val < 0)
+   {
+     printf("Error reading serial port\n");
+   }
+   else
+   {
+     printf("Got this: %s\n", data);
+   }
    
    /* Toño y René, Aqui son ejemplos de abrir puerta serial */ 
 

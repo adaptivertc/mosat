@@ -162,6 +162,10 @@ void react_t::print_all_points(void)
   {
     printf("PUMP: %s\n", pump_points[i]->tag);
   }
+  for (int i=0; i < num_ac; i++)
+  {
+    printf("AC: %s\n", ac_points[i]->tag);
+  }
   for (int i=0; i < num_level; i++)
   {
     printf("LEVEL: %s\n", level_points[i]->tag);
@@ -242,6 +246,11 @@ void react_t::read_inputs(void)
   for (int i=0; i < num_pump; i++)
   {
     pump_points[i]->update();
+  }
+
+  for (int i=0; i < num_ac; i++)
+  {
+    ac_points[i]->update();
   }
 
   for (int i=0; i < num_level; i++)
@@ -442,6 +451,8 @@ react_t::react_t()
   pid_points = NULL;
   num_pump = 0;
   pump_points = NULL;
+  num_ac = 0;
+  ac_points = NULL;
   num_level = 0;
   level_points = NULL;
   num_data = 0;
@@ -685,6 +696,9 @@ void react_t::read_all_points(const char *a_home_dir)
 
   printf("Reading pump ........\n");
   pump_points = pump_point_t::read(&num_pump, a_home_dir);
+
+  printf("Reading ac ........\n");
+  ac_points = ac_point_t::read(&num_ac, a_home_dir);
 
   printf("Reading level ........\n");
   level_points = level_point_t::read(&num_level, a_home_dir);
@@ -1281,6 +1295,15 @@ db_point_t *react_t::get_db_point(char *tag)
       return pump_points[i];
     }
   }
+
+  for (i=0; i < num_ac; i++)
+  {
+    if (!strcasecmp(ac_points[i]->tag, tag))
+    {
+      return ac_points[i];
+    }
+  }
+
 
   for (i=0; i < num_level; i++)
   {

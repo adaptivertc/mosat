@@ -10,10 +10,12 @@
 
 int init_dallas_wire_temperatures(char *error, int size)
 {
+  return 0;
 }
 
 int read_dallas_wire_temperatures(double *temperatures, int max, 
            char *error, int size)
 {
+  return 0;
 }
 

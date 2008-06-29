@@ -107,6 +107,8 @@ public:
   int num_pid;
   pump_point_t **pump_points;
   int num_pump;
+  ac_point_t **ac_points;
+  int num_ac;
   level_point_t **level_points;
   int num_level;
   data_point_t **data_points;

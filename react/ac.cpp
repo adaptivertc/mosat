@@ -258,7 +258,7 @@ ac_point_t **ac_point_t::read(int *cnt, const char *home_dir)
     {
       continue;
     }
-    else if (argc != 8)
+    else if (argc != 7)
     {
       printf("%s: Wrong number of args, line %d\n", path, i+1);
       continue;

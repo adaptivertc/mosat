@@ -71,6 +71,7 @@ static void *rt_dallas_1wire_start_read_thread(void *driver_ptr)
 {
   dallas_1wire_driver_t *p = (dallas_1wire_driver_t *)driver_ptr;
   p->read_thread();
+  return NULL; // Should never return, but, this takes away the warning.
 }
 
 extern "C" io_driver_t *new_dallas_1wire(react_drv_base_t *r)
@@ -97,7 +98,7 @@ dallas_1wire_driver_t::dallas_1wire_driver_t(react_drv_base_t *react)
   printf("Initializing Dallas 1Wire\n");
   if (-1 == init_dallas_wire_temperatures(err, sizeof(err)))
   {
-    printf("Error initializing the Dallas 1-Wire interface: %s\n");
+    printf("Error initializing the Dallas 1-Wire interface: %s\n", err);
   }
   printf("DONE initializing Dallas 1Wire\n");
 

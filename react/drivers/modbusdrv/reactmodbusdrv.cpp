@@ -121,6 +121,7 @@ static void *rtmodbus_start_read_thread(void *driver_ptr)
 {
   reactmodbus_driver_t *p = (reactmodbus_driver_t *)driver_ptr;
   p->read_thread();
+  return NULL; // Should never return, but without a return, gives warning.
 }
 
 extern "C" io_driver_t *new_reactmodbus(react_drv_base_t *r)
