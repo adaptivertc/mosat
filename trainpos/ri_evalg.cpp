@@ -6,10 +6,7 @@ This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2 of the License, or
 (at your option) any later version.
-  struct tm ts;
-  char buf[30];
-  localtime_r(&ev.time_stamp, &ts);
-  strftime(buf, sizeof(buf), "%T, %F", &ts);
+
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
@@ -25,7 +22,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <time.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <string>
 #include "msg_queue.h"
 #include "tcontrol.h"
 #include "event_alg.h"
@@ -35,51 +31,71 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "rtcommon.h"
 #include "arg.h"
 
-void ri_evalg_t::gen_htmlreport()
-{
-  FILE* fp;
+/**************************************************************************************************/
+/* Implementation of ri_log_t                                                                     */
+/**************************************************************************************************/
 
-  fp = fopen("ri_log.html", "w");
-  if (NULL == fp)
-  {
-    perror("ri_log.html");
-    exit(0);
-  }
-  fprintf(fp, HTML_F_FIXED_SECTION);
-  std::list<ri_train_data_t>::iterator i;
-  for (i = m_lsTrains.begin(); i != m_lsTrains.end(); ++i)                                            // <-- My loop starts right here ! !!
-  {
-    struct tm ts;
-    char buf[30];
-
-    localtime_r(&i->m_tEntryTime, &ts);
-    strftime(buf, sizeof(buf), "%T, %F", &ts);
-    fprintf(fp, HTML_TABLE_ROW, i->m_uiStlNum, buf, i->m_uiCurSec);
-  }                                                                                                   // <-- My loop ends right here ! !!
-  fprintf(fp, HTML_S_FIXED_SECTION);
-  fclose(fp);
-}
-
-ri_evalg_t::ri_evalg_t():m_uiNumOfSec(0), m_uiStlNum(0), m_fpLogFile(NULL)
+ri_log_t::ri_log_t():m_fpLog(NULL)
 {}
 
-ri_evalg_t::~ri_evalg_t()
+ri_log_t::~ri_log_t()
 {
-  if (NULL != m_fpLogFile)
-    fclose(m_fpLogFile);
+  close_log();
 }
+
+bool ri_log_t::open_log(const char* szLogPath, const char* szMode)
+{
+  bool bOpS = false;                                                                                  // <-- bOpS = "Operation succeeded"
+  m_fpLog = fopen(szLogPath, szMode);
+  if (NULL != m_fpLog)
+    bOpS = true;
+  else
+    perror(szLogPath);
+  return bOpS;
+}
+
+bool ri_log_t::log(const char* szData, ...)
+{
+  bool bOpS = false;                                                                                  // <-- bOpS = "Operation succeeded"
+  if (NULL != m_fpLog)
+  {
+    va_list vaLOfArgs;                                                                                // <-- vaLOfArgs = "Variable list of arguments".
+    va_start(vaLOfArgs, szData);
+    if (vfprintf(m_fpLog, szData, vaLOfArgs) >= 0)
+      bOpS = true;
+    va_end(vaLOfArgs);
+  }
+  return bOpS;
+}
+
+void ri_log_t::flush_log()
+{
+  if (NULL != m_fpLog)
+    fflush(m_fpLog);
+}
+
+void ri_log_t::close_log()
+{
+  if (NULL != m_fpLog)
+  {
+    fclose(m_fpLog);
+    m_fpLog = NULL;
+  }
+}
+
+/**************************************************************************************************/
+/* Implementation of ri_evalg_t                                                                   */
+/**************************************************************************************************/
+
+ri_evalg_t::ri_evalg_t():m_uiStlNum(0), m_uiNumOfSec(0)
+{}
 
 void ri_evalg_t::init(void)
 {
-  m_fpLogFile = fopen("ri_log.txt", "w");
-  if (NULL == m_fpLogFile)
-  {
-    perror("ri_log.txt");
+  if (!m_lgTrainsOp.open_log("ri_log.txt"))
     exit(0);
-  }
   m_uiNumOfSec = sections.get_n_sections();
-  fprintf(m_fpLogFile, "Number of sections: %d\n", m_uiNumOfSec);
-  fflush(m_fpLogFile);
+  m_lgTrainsOp.log("Number of sections: %d\n", m_uiNumOfSec);
 }
 
 void ri_evalg_t::update(time_t ts)
@@ -91,53 +107,126 @@ void ri_evalg_t::process_event(crossing_event_t ev)
 {
   struct tm ts;
   char buf[30];
-  std::list<ri_train_data_t>::iterator i = m_lsTrains.begin();
-
   localtime_r(&ev.time_stamp, &ts);
   strftime(buf, sizeof(buf), "%T, %F", &ts);
-//  fprintf(m_fpLogFile, "Event: Time: %s, Section: %d, Type: %s\n", buf, ev.section, ev.departure?"Departure":"Arrival");
-  if(ev.departure && 0 == ev.section)                                                                 // <-- If true, a train has just started opperating so it must me added to the list of trains on
+  std::string stlSzTxtInfo, stlSzHtmlInfo;
+  m_lgTabHTML.open_log("ri_log.html");
+//  m_lgTrainsOp.log("Event: Time: %s, Section: %d, Type: %s\n", buf, ev.section, ev.departure?"Departure":"Arrival");
+  if(ev.departure && 0 == ev.section)                                                                 // <-- If true, a train has just entered service, so it must me added to the list of trains on
   {                                                                                                   //     service.
     ri_train_data_t tmp_train;
-
     tmp_train.m_uiStlNum = m_uiStlNum++;
     tmp_train.m_tEntryTime = ev.time_stamp;
     tmp_train.m_uiCurSec = 0;
     m_lsTrains.push_front(tmp_train);
+    graph_info_txt(stlSzTxtInfo);
+    m_lgTrainsOp.log(stlSzTxtInfo.data());
   }
-  else
+  else if (!ev.departure)                                                                             // <-- If true an arrival has just occurred.
   {
     if(ev.section == m_uiNumOfSec)                                                                    // <-- If true, a train has traversed the entire circuit and is getting out of service so I pop it
       m_lsTrains.pop_back();                                                                          //     from the list.
+    std::list<ri_train_data_t>::iterator i = m_lsTrains.begin();
     while(m_lsTrains.end() != i && ev.section - 1 != i->m_uiCurSec)
       ++i;
     i->m_uiCurSec = ev.section;
+    graph_info_txt(stlSzTxtInfo);
+    m_lgTrainsOp.log(stlSzTxtInfo.data());
   }
+  m_lgTrainsOp.flush_log();
+  tab_info_html(stlSzHtmlInfo);
+  m_lgTabHTML.log(stlSzHtmlInfo.data());
+  m_lgTabHTML.close_log();
+}
 
-  char szStlNum[10];                                                                                  // <-- TODO: I need to change this hardcoded 10 for a macro
-  unsigned uiNextPOS = 0;                                                                             // <-- uiExpTrainPos = "Next possible occupied section".
-  int iPrevTS = -1;                                                                                   // <-- iPrevTS = "Section that the previous train occupies". -1 means there is not a previous train.
-  std::string szPositions = "|[";
+void ri_evalg_t::tab_info_html(std::string &stlSzHtmlInfo)                                            // <-- stlSzHtmlInfo = "Stl string containing train's tabular information formated as HTML"
+{
+  stlSzHtmlInfo = HTML_F_FIXED_SECTION;
+  char szTableRow[SIZE_HTML_TABLE_ROW + 30];                                                          // <-- TODO: I need to change this hardcoded 30 for an appropriate macro
+  std::list<ri_train_data_t>::iterator i;
+  for (i = m_lsTrains.begin(); i != m_lsTrains.end(); ++i)                                            // <-- My loop starts right here
+  {
+    struct tm ts;
+    char buf[30];
+    localtime_r(&i->m_tEntryTime, &ts);
+    strftime(buf, sizeof(buf), "%T, %F", &ts);
+    sprintf(szTableRow, HTML_TABLE_ROW, i->m_uiStlNum, buf, i->m_uiCurSec);
+    stlSzHtmlInfo += szTableRow;
+  }                                                                                                   // <-- My loop ends right here
+  stlSzHtmlInfo += HTML_S_FIXED_SECTION;
+}
 
+void ri_evalg_t::graph_info_txt(std::string &stlSzTxtInfo)
+{
+  unsigned uiNextPOS = 0, uiPrevTS = 0;                                                               // <-- uiNextPOS = "Next possible occupied section". uiPrevTS = "Section the previous train occupies".
+  char szStlNum[10];                                                                                  // <-- TODO: I need to change this hardcoded 10 for an appropriate macro
+  stlSzTxtInfo = "|[";
+  std::list<ri_train_data_t>::iterator i = m_lsTrains.begin();
   for (i = m_lsTrains.begin(); i != m_lsTrains.end(); ++i)
   {
-    for (unsigned uiNES = i->m_uiCurSec; uiNES > 0 && uiNES > uiNextPOS; --uiNES)                     // <-- uiNES = "Number of empty sections"
-      szPositions += "-][";
-    if (i->m_uiCurSec == iPrevTS)                                                                     // <-- This shouldn't normally happen because it means there is more than one train ocupping the
-      sprintf(szStlNum, "\b\b,%d][", i->m_uiStlNum);                                                  //     the same section, and that is a condition that is possible but considered dangerous.
+    for (unsigned uiNES = i->m_uiCurSec; uiNES > uiNextPOS; --uiNES)                                  // <-- uiNES = "Number of empty sections"
+      stlSzTxtInfo += "-][";
+    if (i != m_lsTrains.begin() && i->m_uiCurSec == uiPrevTS)                                         // <-- This normally shouldn't happen because it means there is more than one train occuping the
+      sprintf(szStlNum, "\b\b,%d][", i->m_uiStlNum);                                                  //     same section and, even though that's a possible condition, it's considered dangerous.
     else
     {
       sprintf(szStlNum, "%d][", i->m_uiStlNum);
       uiNextPOS = i->m_uiCurSec + 1;
     }
-    szPositions += szStlNum;
-    iPrevTS == i->m_uiCurSec;
+    stlSzTxtInfo += szStlNum;
+    uiPrevTS = i->m_uiCurSec;
   }
-  for (unsigned uiRES = uiNextPOS; uiRES < 36; ++uiRES)                                               // <-- uiRES = "Number of remaining empty sections after the last occupied section".
-    szPositions += "-][";                                                                             //     TODO: I need to change this hardcoded 36 for a macro
-  szPositions += "\b|\n";
-  fprintf(m_fpLogFile, szPositions.data());
-  fflush(m_fpLogFile);
-  gen_htmlreport();
+  for (unsigned uiRES = uiNextPOS; uiRES < m_uiNumOfSec; ++uiRES)                                     // <-- uiRES = "Number of remaining empty sections ahead of the last occupied section".
+    stlSzTxtInfo += "-][";
+  stlSzTxtInfo += "\b|\n";
 }
 
+/**************************************************************************************************/
+/* Implementation of ri_time_table_t                                                              */
+/**************************************************************************************************/
+
+// ri_time_table_t::ri_time_table_t():m_fpTimeTbl(NULL)
+// {}
+
+// ri_time_table_t::~ri_time_table_t()
+// {
+//   clear_table();
+// }
+
+void ri_time_table_t::clear_table()
+{
+  m_lsTimeTbl.clear();
+}
+
+bool ri_time_table_t::load_table(const char *szTimeTblPath)
+{
+   bool bOpS = false;
+//   FILE *fpTimeTbl = fopen(szTimeTblPath, "r");
+//   if (NULL != fpTimeTbl)
+//   {
+//     char szData[2] = {0,0};
+//     std::string stlSzTrainID, stlEnterTime;
+//     szData[0] = (char)getc(fpTimeTbl);
+//     bool bIDRS = false, bETRS = false;                                                                // <-- bIDRS = "ID retrieved successfully". bETRS = "Enter time retrieved successfully".
+//     while (szData[0] != EOF)
+//     {
+//       while ('\t' != szData[0] && EOF != szData[0]);
+//       {
+//         stlSzTrainID += szData;
+//         szData[0] = (char)getc(fpTimeTbl);
+//         bIDRS = true;
+//       }
+//       szData[0] = (char)getc(fpTimeTbl);
+//       while ('\n' != szData[0] && EOF != szData[0]);
+//       {
+//         stlEnterTime += szData;
+//         szData[0] = (char)getc(fpTimeTbl);
+//       }
+//       szData[0] = (char)getc(fpTimeTbl);
+//     }
+//     fclose(fpTimeTbl);
+//   }
+//   else
+//     perror(szTimeTblPath);
+  return bOpS;
+}
