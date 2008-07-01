@@ -36,6 +36,7 @@ const char *restriction_reader_t::restriction_string(restriction_type_t type)
     case RESTRICT_CONSTRUCTION: return "CONSTRUCTION";
     case RESTRICT_SECTION: return "SECTION";
     case RESTRICT_MAINTENANCE: return "MAINTENANCE";
+    case RESTRICT_ACCEL_DECEL_CONTROL: return "AccelDecelControl";
   }
   return "ERROR";
 }
@@ -137,6 +138,10 @@ int restriction_reader_t::read_restrictions(const char *fname)
     else if (0 == strcasecmp(tp_string, "SECTION"))
     {
       restriction[i].type = RESTRICT_SECTION;
+    }
+    else if (0 == strcasecmp(tp_string, "AccelDecelControl"))
+    {
+      restriction[i].type = RESTRICT_ACCEL_DECEL_CONTROL;
     }
     else
     {

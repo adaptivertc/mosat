@@ -14,8 +14,10 @@ RTMODBUS=../../modbus/librtmodbus.a
 %.o:    %.c $(INCLUDES)
 	$(CC) -c -o $@ -Wall $<
 
-all: gen_profiles
+all: gen_profiles calc_savings
 
+calc_savings: calc_savings.cpp
+	g++ -Wall -o calc_savings calc_savings.cpp
 
 gen_profiles:	gen_profiles.o restriction_reader.o 
 	g++ -g -o gen_profiles gen_profiles.o restriction_reader.o $(RTMODBUS) $(RTCOMMON)

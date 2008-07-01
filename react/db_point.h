@@ -631,9 +631,11 @@ public:
 class ac_point_t : public discrete_point_t
 {
 private:
+  /**
   ai_point_t *ai_point;
   di_point_t *di_point;
   ai_point_t *level_ai_point;
+  **/
 
   ai_point_t *cold_temp_point;
   ai_point_t *hot_temp_point;

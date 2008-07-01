@@ -206,7 +206,7 @@ void ac_point_t::update(void)
  
     snprintf(change_start_line, sizeof(change_start_line), 
             "%s\t%s\t%s\t%0.2lf\t%0.3lf\t", datestr, tag, 
-            di_point->pv_string, level, 0.0);
+             unit_running_point->pv_string, level, 0.0);
     last_state_at_change = state;
     last_change_time = now;
     change_started = true;

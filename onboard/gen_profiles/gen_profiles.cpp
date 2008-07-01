@@ -35,7 +35,7 @@
 #include "restriction_reader.h"
 
 #define RT_MAX_PROFILE_POINTS (500)
-#define GEN_DIST (5.0)
+#define GEN_DIST (20.0)
 
 class gen_data_t
 {
@@ -110,8 +110,10 @@ void gen_data_t::plot(void)
   printf("----------- Time this segment = %lf\n", time);
 
   const char *base_name = "plot";
-  const char *gtitle = station;
+  char gtitle[100];
   bool window = true;
+  double avg_spd =  ((x[n_items-1] - x[0]) / time) * 3.6;
+  snprintf(gtitle, sizeof(gtitle), "%s, d = %0.0lf, t = %0.0lf, v = %0.1lf", station, x[n_items-1] - x[0], time, avg_spd);
   
   const char *fname = "gnuplotoptions.txt";
   fp = fopen(fname, "w");
@@ -259,6 +261,7 @@ void gen_data_t::gen_restriction( const restriction_def_t *res)
     case RESTRICT_OTHER:
     case RESTRICT_CURVE:
     case RESTRICT_CROSSING:
+    case RESTRICT_ACCEL_DECEL_CONTROL:
       last_end = n_items-1;
       gen_curve(res->start, res->end, res->max_speed);
       check_intersect(); 

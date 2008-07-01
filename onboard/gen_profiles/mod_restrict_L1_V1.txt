@@ -3,9 +3,11 @@
 "Station"	"Periférico Sur"	-60.0	0.0	0.0	15	
 "Other"	"1. Switch Zone."	0.0	181.0		15	
 "Crossing"	"Cruc. Tesoro"	741.9	783.2		20	
+"AccelDecelControl"	"Cruc. Tesoro"	790.0	875.0		35	
 "Station"	"Tesoro"	839.3	899.5	899.5		
 "Section"		860.0				
 "Crossing"	"Cruc. España"	1,840.4	1,867.6		20	
+"AccelDecelControl"	"Cruc. Espana"	1875.0	1950.0		30	
 "Station"	"España"	1,915.8	1,974.2	1,974.2		
 "Station"	"Patria Sur"	2,663.8	2,723.9	2,723.9		
 "Section"		3239	3,267.7			
@@ -14,6 +16,7 @@
 "Station"	"18 de Marzo"	4,167.4	4,226.7	4,226.7		
 "Crossing"	"Cruc. 18 de Marzo 01"	4,256.2	4,298.2		20	
 "Crossing"	"Cruc. 18 de Marzo 02"	4,807.7	4,845.3		20	
+"AccelDecelControl"	"Cruc. 19 de Marzo 02"	4852.0	4905.0		30	
 "Station"	"Urdaneta"	4,870.2	4,929.0	4,929.0		
 "Section"		5,178.7	5,208.5			
 "Station"	"Unidad Deportiva"	5,464.4	5,524.4	5,524.4		
@@ -41,6 +44,7 @@
 "Crossing"	"Cruc. Derma. 2"	14,089.4	14,107.2		20	
 "Section"		14,099.9	14,128.2			
 "Station"	"Dermatológico"	14,197.6	14,256.9	14,256.9		
+"AccelDecelControl"	"Cruc. Occidental"	14,275.0	14,400.0		35	
 "Crossing"	"Cruc. Occidental"	14,409.8	14,425.0		20	
 "Other"	"5. Switch Zone."	15,150.6	15,326.9		15	
 "Station"	"Periférico Norte"	15,236.9	15,326.9	15,296.9	15	
