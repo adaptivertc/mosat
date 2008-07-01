@@ -7,7 +7,7 @@ RTMODBUS=./librtmodbus.a
 
 INCLUDES = hp2mod.h  hprtu.h  modio.h  modsim.h  mtype.h  trace.h evlog.h
 
-CPP=g++
+CPP=g++ -fpic
 
 %.o:	%.cpp $(INCLUDES)
 	$(CPP) -c -o $@ -Wall $<
