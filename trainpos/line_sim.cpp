@@ -62,6 +62,7 @@ void my_notify_t::trigger_arrival(int section, time_t now)
   msgbuf.data.time_stamp = now;
   msgbuf.data.section = section;
   msgbuf.data.departure = false;
+  msgbuf.data.sensor = 1;
   msgbuf.data.update = false;
   int ret = msgsnd(qid, &msgbuf, sizeof(msgbuf.data), 0);
   if (ret == -1)
@@ -84,6 +85,7 @@ void my_notify_t::trigger_departure(int section, time_t now)
   msgbuf.data.time_stamp = now;
   msgbuf.data.section = section;
   msgbuf.data.departure = true;
+  msgbuf.data.sensor = 0;
   msgbuf.data.update = false;
   msgbuf.data.skip = false;
   int ret = msgsnd(qid, &msgbuf, sizeof(msgbuf.data), 0);
@@ -104,6 +106,7 @@ void send_update(time_t now)
   msgbuf.data.time_stamp = now;
   msgbuf.data.section = 0;
   msgbuf.data.departure = false;
+  msgbuf.data.sensor = 0;
   msgbuf.data.update = true;
   msgbuf.data.skip = false;
   int ret = msgsnd(qid, &msgbuf, sizeof(msgbuf.data), 0);

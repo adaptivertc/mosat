@@ -8,6 +8,7 @@ struct crossing_event_t
   time_t time_stamp;
   int section;
   bool departure;
+  int sensor;
   bool update;
   bool skip;
 };

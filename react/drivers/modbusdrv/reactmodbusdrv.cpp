@@ -192,7 +192,7 @@ reactmodbus_driver_t::reactmodbus_driver_t(react_drv_base_t *react)
 
 void reactmodbus_driver_t::send_ao(int ch, double val)
 {
-  if ((ch >= 0) && (ch < 64))
+  if ((ch >= 0) && (ch < 32))
   {
     //shm->ao_val[ch] = val;
   }
@@ -209,7 +209,7 @@ void reactmodbus_driver_t::close(void)
 
 void reactmodbus_driver_t::send_do(int ch, bool val)
 {
-  if ((ch >= 0) && (ch < 64))
+  if ((ch >= 0) && (ch < 32))
   {
     //shm->do_val[ch] = val;
     modbus->send_do(ch, val);
@@ -221,7 +221,7 @@ void reactmodbus_driver_t::send_do(int ch, bool val)
 double reactmodbus_driver_t::get_ai(int channel)
 {
   double read_val;
-  if ((channel >= 0) && (channel < 64))
+  if ((channel >= 0) && (channel < 32))
   {
     read_val = (double) ai_vals[channel];
     printf("AI %d, read %lf\n", channel, read_val);
@@ -238,7 +238,7 @@ double reactmodbus_driver_t::get_ai(int channel)
 bool reactmodbus_driver_t::get_di(int channel)
 {
   bool read_val;
-  if ((channel >= 0) && (channel < 64))
+  if ((channel >= 0) && (channel < 32))
   {
     read_val = di_vals[channel];
     printf("DI %d, read %s\n", channel, read_val ? "T" : "F");
@@ -254,7 +254,7 @@ bool reactmodbus_driver_t::get_di(int channel)
 
 long reactmodbus_driver_t::get_count(int channel)
 {
-  if ((channel >= 0) && (channel < 64))
+  if ((channel >= 0) && (channel < 32))
   {
     return 0;//shm->count_val[channel];
   }
@@ -301,11 +301,13 @@ void reactmodbus_driver_t::read(void)
     if (read_values)
     {
       wake_him_up = true;
+      di_vals[16] = false;
     }
     else
     {
       // Either the reader is slow or the link is down
       wake_him_up = false;
+      di_vals[16] = true;
     }
   //modbus->read_ai(0, 16, ai_vals);
   //modbus->read_di(0, 16, di_vals);
@@ -326,7 +328,7 @@ void reactmodbus_driver_t::end_read(void)
   }
   else
   {
-    printf("The read thread is hosed, no reason to keep incrementing . . .\n");
+    printf("The read thread is stalled, no reason to keep incrementing . . .\n");
   } 
 }
 

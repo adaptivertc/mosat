@@ -21,6 +21,7 @@ private:
   tsecdata_t sections[TP_MAX_SECTIONS];
 public:
   int get_n_sections(void);
+  int get_n_sensors(int section_number);
   void read_section_file(void);
   int get_section_time(int section_number);
   int get_departure_sensor_loc(int section_number);

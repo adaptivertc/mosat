@@ -1,6 +1,8 @@
 
 This document is to describe the general way that trainpos works and what information comes in and goes out.
 
+You might also want to read the position monitoring white paper: http://docs.google.com/Doc?id=dfqhr2t2_97dbd4wp
+
 First, a little bit about the type of train system we are monitoring and how we measure things. This project is really only for light rail systems where all tracks are one-way during normal service. We assume that trains enter service at some point, travel a length of track (usually one extreme to the other), crossing sensors that send "crossing events" back to central control, and also stopping at stations to pick up and drop off passengers. For our purposes, all of our segments begin at passenger stations, and end at the next. Trains enter service at a passenger station, and then leave service at a passenger station. This is only natural, since you go into service by picking up your first passengers, and you can only pick them up at a passenger station. Before leaving service, you must drop off all passengers that you have.
 
 So to start, I will give a simple text diagram to illustrate this. Here, the '=' will be the symbol for a passenger station, and an 'x' is a crossing sensor or track circuit division. Here we have 7 stations labeled A through G, with each segment having 3 sensors. Please notice that the number of sensors in each segment is variable, and most systems will have a variable number. 
@@ -76,7 +78,17 @@ As you can see in our world of measuring distances everything gets very complica
 
 Ok, now that we have all of this behind us, we are ready to talk about "trainpos" actually works.
 
-To be continued . . . .
+How trainpos works.
+------------------
+
+Trainpos is basically divided into two parts that talk to each other via Unix message queues. The first part that we will describe is the communications manager module that knows how to communicate with all of the remote devices that actually are connected to the sensors. This module will be responsible for communicating with how many ever remote device there are and passing all of the events on to the process that processes all of the events.
+
+Communications manager
+----------------------
+
+As we started describing above, the communications manager must communicate with all of the devices connected directly to sensors. When I say "sensors", I am using the word a little loose. There are many different ways to determine when a train has crossed a certain point on the tracks. You can use RFID sensors, inductive sensors, track circuits, and more possibilities than we can mention here. The idea is that some way, some how, you can detect when a train passes a certain point on the tracks. With track circuits, you also get "presence" information, which can be helpful, but still gives you the same basic information that a train has crossed a certain point.
+
+I should say that our first communications manager is not really a communications manager at all, but a simulator that generates the same information as a real running system. The simulator reads the timetable and the sections file, and then randomly assigns slightly slow drivers or slightly fast drivers when a train enters the system, and also add a random time to travel each segment. The simulator adds a train to the system when one is scheduled to enter, and then starts generating the crossing events for that train. Trainpos can not tell the difference between a real running system and the simulator. In fact, you can replace the simulator with a real systems and do NOT need to recompile trainpos. You can use the simulator to train new employees, check new schedules before going live, and, of course, most importantly, test changes to the software before going live. The great thing about the simulator, is that you can run faster than real-time. The simulator in fact runs at 10x real-time by default, since real-time is rather boring. The simulator can also simulate all kinds of possible errors that might occur in a real running system such as failed sensors, flaky sensors, spurious events, etc, to make sure that the software responds correctly to the errors, and can recover correctly from errors.
 
 
 

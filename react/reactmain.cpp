@@ -83,7 +83,12 @@ void edit_files(const char *base, int n)
 
 
 /*****************************************************************/
-
+void my_sighandler(int signum)
+{
+  printf("Got a signal: %d\n", signum);
+  exit(0);
+}
+/*****************************************************************/
 void react_signal_handler(int sig_num)
 {
   signal_recieved = true;
@@ -139,6 +144,15 @@ int main(int argc, char *argv[])
     perror("Error setting signal SIGHUP");
     exit(1);
   }
+  signal(SIGQUIT, my_sighandler);
+  signal(SIGTERM, my_sighandler);
+  signal(SIGFPE, my_sighandler);
+  signal(SIGILL, my_sighandler);
+  signal(SIGSEGV, my_sighandler);
+  signal(SIGINT, my_sighandler);
+  signal(SIGINT, my_sighandler);
+  signal(SIGIO , my_sighandler);
+
 
   //printf("%s:%d\n", __FILE__, __LINE__);
   bool execute_script = true;

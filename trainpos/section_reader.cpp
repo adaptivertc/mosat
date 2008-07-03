@@ -23,6 +23,19 @@ int section_reader_t::get_n_sections(void)
 
 /********************************************************/
 
+int section_reader_t::get_n_sensors(int section_number)
+{
+  if ((section_number < 0) || (section_number >= n_sections))
+  {
+    printf("%s line %d: Out of range index (%d) to access section data\n",
+       __FILE__, __LINE__, section_number);
+    exit(1);
+  }
+  return sections[section_number].n_sensors;
+}
+
+/********************************************************/
+
 int section_reader_t::get_section_time(int section_number)
 {
   if ((section_number < 0) || (section_number >= n_sections))

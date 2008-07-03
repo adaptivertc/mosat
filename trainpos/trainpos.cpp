@@ -174,8 +174,8 @@ int main(int argc, char *argv[])
       localtime_r(&qevent.data.time_stamp, &mytm);
       strftime(buf1, sizeof(buf1), "%T, %F", &mytm);
 
-      printf("Event: time %s, section %d (%s)\n", buf1, qevent.data.section,
-         (qevent.data.departure) ? "departure" : "arival");
+      printf("Event: time %s, section %d sensor: %d\n", 
+            buf1, qevent.data.section, qevent.data.sensor);
     }
     //dispatch.new_event(qevent.data);
     if (qevent.data.update)
