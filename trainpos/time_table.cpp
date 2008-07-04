@@ -50,6 +50,7 @@ const char *time_table_t::match_departure(time_t actual_departure_time)
     {
        found = true;
        this->matched[i] = true;
+       if (i > 0) printf("******** Error, departures skipped\n");
        next_match = i + 1;
        return this->train_id[i];
     }

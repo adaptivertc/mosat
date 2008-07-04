@@ -1,7 +1,7 @@
 
 export CPATH=../include
 
-OBJS=  arg.o common.o safestr.o utimer.o memfail.o  numbered_file.o
+OBJS=  arg.o common.o safestr.o utimer.o memfail.o  numbered_file.o ap_config.o
 
 CC=g++
 
