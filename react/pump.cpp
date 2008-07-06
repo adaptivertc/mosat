@@ -33,7 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "db_point.h"
 #include "db.h"
 #include "arg.h"
-#include "config.h"
+#include "ap_config.h"
 
 static FILE *pump_fp = NULL;
 //static const char *plog_home = "/home/react/public_html/log/atemajac/";
@@ -241,7 +241,7 @@ pump_point_t **pump_point_t::read(int *cnt, const char *home_dir)
   }
   char line[300];
 
-//const char *html_home = react_config->get_config("htmlhome");
+//const char *html_home = ap_config.get_config("htmlhome");
 
   for (int i=0; NULL != fgets(line, sizeof(line), fp); i++)
   {
@@ -330,7 +330,7 @@ pump_point_t **pump_point_t::read(int *cnt, const char *home_dir)
     pmp->day_num_on_readings = 0;
     pmp->day_num_off_reading = 0;
 
-    const char *html_home = react_config->get_config("htmlhome");
+    const char *html_home = ap_config.get_config("htmlhome");
     if (html_home == NULL)
     {
       printf("Warning: htmlhome variable not set\n");

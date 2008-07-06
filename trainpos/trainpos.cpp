@@ -38,7 +38,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gp_evalg.h"
 #include "ag_evalg.h"
 #include "ri_evalg.h"
-#include "tpconfig.h"
+
+#include "ap_config.h"
+
+ap_config_t ap_config;
 
 /***********************************/
 
@@ -109,11 +112,11 @@ int main(int argc, char *argv[])
   }
  
 
-  tpconfig.read_file(config_file);
+  ap_config.read_file(config_file);
 
   int qid = create_message_queue();
 
-  const char *sections_file = tpconfig.get_config("SECTIONS_FILE");
+  const char *sections_file = ap_config.get_config("SECTIONS_FILE");
   if (sections_file == NULL)
   {
     sections_file = "sections.txt";

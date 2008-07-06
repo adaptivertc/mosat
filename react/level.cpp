@@ -33,7 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "db_point.h"
 #include "db.h"
 #include "arg.h"
-#include "config.h"
+#include "ap_config.h"
 
 static char plog_home[200];
 
@@ -181,7 +181,7 @@ level_point_t **level_point_t::read(int *cnt, const char *home_dir)
   }
   char line[300];
 
-//const char *html_home = react_config->get_config("htmlhome");
+//const char *html_home = ap_config.get_config("htmlhome");
 
   for (int i=0; NULL != fgets(line, sizeof(line), fp); i++)
   {
@@ -260,7 +260,7 @@ level_point_t **level_point_t::read(int *cnt, const char *home_dir)
     lvl->this_hour = lvl->this_day = time(NULL);
     lvl->time_at_bottom = time(NULL);
  
-    const char *html_home = react_config->get_config("htmlhome");
+    const char *html_home = ap_config.get_config("htmlhome");
     if (html_home == NULL)
     {
       printf("Warning: htmlhome variable not set\n");

@@ -134,6 +134,10 @@ void react_t::print_all_points(void)
   {
     printf("Calc: %s\n", calcs[i]->tag);
   }
+  for (int i=0; i < num_d_calc; i++)
+  {
+    printf("DiscreteCalc: %s\n", d_calcs[i]->tag);
+  }
   for (int i=0; i < num_dcalc; i++)
   {
     printf("DCalc: %s\n", dcalcs[i]->tag);
@@ -298,6 +302,10 @@ void react_t::read_inputs(void)
   {
     calcs[i]->update();
   }
+  for (int i=0; i < num_d_calc; i++)
+  {
+    d_calcs[i]->update();
+  }
   for (int i=0; i < num_dcalc; i++)
   {
     dcalcs[i]->update();
@@ -445,6 +453,8 @@ react_t::react_t()
   dcalcs = NULL;
   num_calc = 0;
   calcs = NULL;
+  num_d_calc = 0;
+  d_calcs = NULL;
   num_int = 0;
   ints = NULL;
   num_pid = 0;
@@ -685,6 +695,11 @@ void react_t::read_all_points(const char *a_home_dir)
   printf("Reading calc ........\n\r");
   calcs = calc_point_t::read(&num_calc, a_home_dir);
 
+  printf("Reading discrete calc ........\n\r");
+  d_calcs = dcalc_point_t::read(&num_d_calc, a_home_dir);
+  printf("%d discrete calcs readn\r", num_d_calc);
+  
+
   printf("Reading dcalc ........\n");
   dcalcs = dcalc_t::read(&num_dcalc, a_home_dir);
 
@@ -725,6 +740,11 @@ void react_t::read_all_points(const char *a_home_dir)
     calcs[i]->parse_expr();
   }
 
+  printf("Parsing %d Discrete Expressions ......\n", num_d_calc);
+  for (int i=0; i < num_d_calc; i++)
+  {
+    d_calcs[i]->parse_expr();
+  }
 #ifdef __REACT_SHM__
   this->init_shared_memory();
   this->fill_shared_memory();
@@ -1260,6 +1280,14 @@ db_point_t *react_t::get_db_point(char *tag)
     if (!strcasecmp(calcs[i]->tag, tag))
     {
       return calcs[i];
+    }
+  }
+
+  for (i=0; i < num_d_calc; i++)
+  {
+    if (!strcasecmp(d_calcs[i]->tag, tag))
+    {
+      return d_calcs[i];
     }
   }
 

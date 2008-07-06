@@ -34,7 +34,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "rtcommon.h"
 #include "sim_msg.h"
 
-#include "tpconfig.h"
+#include "ap_config.h"
+
+ap_config_t ap_config;
 
 /********************************************************/
 
@@ -188,7 +190,7 @@ int main(int argc, char *argv[])
     }
   }
 
-  tpconfig.read_file(config_file);
+  ap_config.read_file(config_file);
 
 
   qid = connect_message_queue();
@@ -201,7 +203,7 @@ int main(int argc, char *argv[])
   now = sim.read_day();
   start = now;
 
-  const char *sections_file = tpconfig.get_config("SECTIONS_FILE");
+  const char *sections_file = ap_config.get_config("SECTIONS_FILE");
   if (sections_file == NULL)
   {
     sections_file = "sections.txt";

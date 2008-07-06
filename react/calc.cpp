@@ -177,9 +177,7 @@ calc_point_t **calc_point_t::read(int *cnt, const char *home_dir)
     free(calc_points);
     return NULL;
   }
-  printf("%d calc points\n", count);
   *cnt = count;
-  printf("%s %s\n", calc_points[0]->tag, "");//calc_points[0]->expr_string);
   return calc_points;
 }
 

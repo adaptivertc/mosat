@@ -19,8 +19,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <stdlib.h>
 
 #include "rtcommon.h"
+
 #include "logfile.h"
-#include "config.h"
+
+#include "ap_config.h"
 
 
 /****************************************************************/
@@ -253,7 +255,7 @@ void logfile_t::do_init(bool print_to_file, bool print_to_screen)
 
 void logfile_t::create_dir(void)
 {
-  loghome = react_config->get_config("loghome");
+  loghome = ap_config.get_config("loghome");
   if (loghome == NULL)
   {
     loghome = START;

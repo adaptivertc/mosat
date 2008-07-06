@@ -99,6 +99,8 @@ public:
   int num_do;
   calc_point_t **calcs;
   int num_calc;
+  dcalc_point_t **d_calcs;
+  int num_d_calc;
   dcalc_t **dcalcs;
   int num_dcalc;
   int_t **ints;

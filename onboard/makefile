@@ -58,7 +58,7 @@ mo_test: mo_test.cpp
 
 autonomous_mode: autonomous_mode.o spd_comm.o make_profile_dir.o  ob_config.o
 	g++ -o autonomous_mode autonomous_mode.o spd_comm.o make_profile_dir.o  ob_config.o\
-	  -lncurses $(RTMODBUS) $(RTCOMMON)
+	  -lncurses -lrt $(RTMODBUS) $(RTCOMMON)
 
 odo_mode: odo_mode.o odo_display.o spd_comm.o ob_config.o $(INCLUDES)
 	g++ -o odo_mode odo_mode.o spd_comm.o ob_config.o\

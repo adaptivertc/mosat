@@ -38,7 +38,7 @@ changes to discrete points given in the list.
 #include "db_point.h"
 #include "db.h"
 #include "arg.h"
-#include "config.h"
+#include "ap_config.h"
 
 /**********************************************************************/
 
@@ -68,7 +68,7 @@ static FILE *open_day_history_file(const char * pre, const char *post, FILE *fp)
   {
     fclose(fp);
   }
-  const char *loghome = react_config->get_config("LogHome");
+  const char *loghome = ap_config.get_config("LogHome");
   if (loghome == NULL)
   {
     loghome = "./";

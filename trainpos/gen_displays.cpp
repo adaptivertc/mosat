@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <time.h>
 
 #include "trainpos.h"
-#include "tpconfig.h"
+#include "ap_config.h"
 #include "section_reader.h"
 
 #include "gen_displays.h"
@@ -123,7 +123,7 @@ void display_dist_t::calc_xy(int section, double fraction, int *x, int *y, bool 
 
 void gen_displays_t::init(void)
 {
-  const char *dfile = tpconfig.get_config("DISPLAY_FILE");
+  const char *dfile = ap_config.get_config("DISPLAY_FILE");
   if (dfile == NULL)
   {
     dfile = "display_info.txt";
@@ -351,7 +351,7 @@ void display_data_t::set(const char *a_background, const char *a_square, const c
   text_offset_y1 = a_text_offset_y1;
   text_offset_y2 = a_text_offset_y2;
   char path[300];
-  const char *html_home = tpconfig.get_config("HTML_HOME");
+  const char *html_home = ap_config.get_config("HTML_HOME");
   if (html_home == NULL)
   {
     html_home = "./";

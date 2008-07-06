@@ -36,7 +36,7 @@ Member functions for data collection points.
 #include "db_point.h"
 #include "db.h"
 #include "arg.h"
-#include "config.h"
+#include "ap_config.h"
 
 #define FL_MIN_ARGS (11)
 
@@ -157,7 +157,7 @@ static bool year_changed(time_t t1, time_t t2)
 
 static void make_day_file_name(time_t the_time, char *fname, int size_fname, const char *pre, const char *post)
 {
-  const char *loghome = react_config->get_config("LogHome");
+  const char *loghome = ap_config.get_config("LogHome");
   if (loghome == NULL)
   {
     loghome = "./";
@@ -424,7 +424,7 @@ file_logger_t **file_logger_t::read(int *cnt, const char *home_dir)
       {
         p->analog_points[j-(FL_MIN_ARGS - 1)] = (analog_point_t *) db_point;
       }
-      printf("analog pint %d: %s\n", j-(FL_MIN_ARGS - 1), temp_tag);
+      printf("analog point %d: %s\n", j-(FL_MIN_ARGS - 1), temp_tag);
     }
     p->last_log_time = time(NULL);
     p->n_hour_samples = 0;

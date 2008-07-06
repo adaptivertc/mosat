@@ -57,13 +57,13 @@ DEALINGS IN THE SOFTWARE.
 #define RT_FACTOR (100)
 
 #include "arg.h"
-#include "ob_config.h"
+#include "ap_config.h"
 
 //static int n_sections;
 static int the_line = 1;
 static bool all_profiles = false;
 
-onboard_config_t *onboard_config = NULL;
+ap_config_t ap_config;
 
 const char *L2V1_names[] = {
 "Tetlan-Aurora", 
@@ -336,8 +336,7 @@ int main(int argc, char *argv[])
     }
   }
 
-  onboard_config = new onboard_config_t();
-  onboard_config->read_file(config_file);
+  ap_config.read_file(config_file);
 
   //spd_init_screen();
 

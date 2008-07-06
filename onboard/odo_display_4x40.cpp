@@ -35,7 +35,7 @@ DEALINGS IN THE SOFTWARE.
 #include "rtcommon.h"
 #include "rt_serial.h"
 #include "spd_comm.h"
-#include "ob_config.h"
+#include "ap_config.h"
 
 #include "odo_mode.h"
 
@@ -188,8 +188,8 @@ void odo_init_screen()
     return;
   }
 
-  const char *serial_device = onboard_config->get_config("4x40_serial_dev", "/dev/ttyT8S0");
-  int baudrate = onboard_config->get_int("4x40_baudrate", 19200);
+  const char *serial_device = ap_config.get_config("4x40_serial_dev", "/dev/ttyT8S0");
+  int baudrate = ap_config.get_int("4x40_baudrate", 19200);
 
   //serial_fd1 = rt_open_serial("/dev/ttyUSB0", 19200, 0);
   //serial_fd1 = rt_open_serial("/dev/ttyTS0", 19200, 0); // COM3 on the board.

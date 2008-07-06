@@ -35,7 +35,7 @@ Member functions for web points.
 #include "db_point.h"
 #include "db.h"
 #include "arg.h"
-#include "config.h"
+#include "ap_config.h"
 
 /**********************************************************************/
 
@@ -163,8 +163,8 @@ web_point_t **web_point_t::read(int *cnt, const char *home_dir)
 
     p->update_interval = atof(argv[2]);
 
-    const char *html_home = react_config->get_config("htmlhome");
-    const char *template_home = react_config->get_config("templatehome");
+    const char *html_home = ap_config.get_config("htmlhome");
+    const char *template_home = ap_config.get_config("templatehome");
     if (html_home == NULL)
     {
       //p->dest_file = strdup(argv[4]);

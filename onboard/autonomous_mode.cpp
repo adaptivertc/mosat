@@ -16,7 +16,7 @@
 
 #include "spd_comm.h"
 
-#include "ob_config.h"
+#include "ap_config.h"
 
 //#define MAX_MAINTENANCE_SPEED (35.0)
 
@@ -46,7 +46,7 @@ struct record_data_t
 #define TV_ELAPSED_US(x, y)     ((((x).tv_sec - (y).tv_sec) * 1000000) + \
         ((x).tv_usec - (y).tv_usec))
 
-onboard_config_t *onboard_config = NULL;
+ap_config_t ap_config;
 
 /**
 void connect_modbus(void);
@@ -183,11 +183,10 @@ int main(int argc, char *argv[])
     }
   }
 
-  onboard_config = new onboard_config_t();
-  onboard_config->read_file(config_file);
+  ap_config.read_file(config_file);
 
-  max_maintenance_speed = onboard_config->get_double("max_maintain", 30);
-  auto_timeout_time = onboard_config->get_int("auto_timeout", 40);
+  max_maintenance_speed = ap_config.get_double("max_maintain", 30);
+  auto_timeout_time = ap_config.get_int("auto_timeout", 40);
 
   utimer_t utimer;
   utimer.set_busy_wait(false);

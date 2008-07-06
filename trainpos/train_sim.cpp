@@ -30,7 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "tcontrol.h"
 #include "event_alg.h"
 
-#include "tpconfig.h"
+#include "ap_config.h"
 
 const double driver_factors[10] = {1.02, 0.99, 0.98, 1.008, 1.02, 1.02, 0.99, 1.01, 0.98, 0.992};
 static int factor_loc = 0;
@@ -109,7 +109,7 @@ time_t train_sim_t::read_day(void)
   time_t today = time(NULL);
   char line[300];
   
-  const char *fname = tpconfig.get_config("TIMETABLE_FILE");
+  const char *fname = ap_config.get_config("TIMETABLE_FILE");
   if (fname == NULL)
   {
     fname = "timetable.txt";

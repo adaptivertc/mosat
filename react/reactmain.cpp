@@ -30,14 +30,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "utimer.h"
 #include "logfile.h"
 #include "conio.h"
-#include "config.h"
+#include "ap_config.h"
 #include "timeaccum.h"
 
 react_base_t *db = NULL;
 static react_t *reactdb = NULL;
 
 logfile_t *logfile = NULL;
-react_config_t *react_config = NULL;
+ap_config_t ap_config;
 bool signal_recieved = false;
 
 /*****************************************************************/
@@ -65,7 +65,7 @@ void edit_files(const char *base, int n)
     return;
   }
   char cmd[600];
-  const char *the_editor = react_config->get_config("editor");
+  const char *the_editor = ap_config.get_config("editor");
   if (the_editor == NULL)
   {
     the_editor = "gedit --new-window";
@@ -259,13 +259,12 @@ int main(int argc, char *argv[])
   atexit(exit_clean_up);
 
   logfile = new logfile_t(false, print_to_screen);
-  react_config = new react_config_t();
   char config_file[100];
   safe_strcpy(config_file, home_dir, sizeof(config_file));
-  safe_strcat(config_file, "/dbfiles", sizeof(config_file));
-  react_config->read_file(config_file);
+  safe_strcat(config_file, "/dbfiles/config.dat", sizeof(config_file));
+  ap_config.read_file(config_file);
 
-  long sample_rate = react_config->get_int("SampleRate");;
+  long sample_rate = ap_config.get_int("SampleRate");;
   if (sample_rate <= 0) sample_rate =  10;
   long usecs_per_sample =  (long) 1000000 / sample_rate;
   reactdb = new react_t;

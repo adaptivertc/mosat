@@ -4,7 +4,7 @@
 
 #include "rtcommon.h"
 #include "arg.h"
-#include "tpconfig.h"
+#include "ap_config.h"
 
 #include "msg_queue.h"
 #include "tcontrol.h"
@@ -140,7 +140,7 @@ void section_reader_t::read_section_file(void)
 {
   int max = TP_MAX_SECTIONS;
 
-  const char *sections_file = tpconfig.get_config("SECTIONS_FILE");
+  const char *sections_file = ap_config.get_config("SECTIONS_FILE");
   if (sections_file == NULL)
   {
     printf("%s line %d: SECTIONS_FILE not defined\n",

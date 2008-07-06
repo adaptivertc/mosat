@@ -16,7 +16,7 @@
 
 #include "spd_comm.h"
 
-#include "ob_config.h"
+#include "ap_config.h"
 
 /*********************************************************************/
 
@@ -105,18 +105,18 @@ void set_calculation_information(double the_diameter, int the_count_channel)
 
 void connect_modbus(void)
 {
-  set_calculation_information(onboard_config->get_double("diameter", 0.665),
-                              onboard_config->get_int("count_channel", 8));
-  door_channel = onboard_config->get_int("door_channel", 2);
-  door_invert =  onboard_config->get_bool("door_invert", false); 
-  use_left_right_doors = onboard_config->get_bool("use_left_right_doors", false);
-  left_door_channel = onboard_config->get_int("left_door_channel", 9);
-  right_door_channel = onboard_config->get_int("right_door_channel", 10);
+  set_calculation_information(ap_config.get_double("diameter", 0.665),
+                              ap_config.get_int("count_channel", 8));
+  door_channel = ap_config.get_int("door_channel", 2);
+  door_invert =  ap_config.get_bool("door_invert", false); 
+  use_left_right_doors = ap_config.get_bool("use_left_right_doors", false);
+  left_door_channel = ap_config.get_int("left_door_channel", 9);
+  right_door_channel = ap_config.get_int("right_door_channel", 10);
 
 
-  modc = rt_create_modbus(onboard_config->get_config("modbus_ip", "172.16.115.99"));
+  modc = rt_create_modbus(ap_config.get_config("modbus_ip", "172.16.115.99"));
   modc->set_debug_level(10);
-  modc->set_address(onboard_config->get_int("modbus_address", 0));
+  modc->set_address(ap_config.get_int("modbus_address", 0));
   reset_distance(0);
 }
 

@@ -7,7 +7,7 @@
 #include <arg.h>
 
 #include "time_table.h"
-#include "tpconfig.h"
+#include "ap_config.h"
 
 /********************************************************/
 time_table_t::time_table_t(void)
@@ -73,7 +73,7 @@ void time_table_t::read_day(void)
   // correct timetable file. For each country, the holidays are different,
   // and in some places, they will run a Sunday schedule on holidays, so it
   // is very location dependent.
-  const char *fname = tpconfig.get_config("TIMETABLE_FILE");
+  const char *fname = ap_config.get_config("TIMETABLE_FILE");
   if (fname == NULL)
   {
      fname = "timetable.txt";

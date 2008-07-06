@@ -52,9 +52,9 @@ struct myline_t
 
 /*************************************************************************/
 
-void create_image(char *data, char *png, myline_t *line, bool window)
+void create_image(const char *data, const char *png, myline_t *line, bool window)
 {
-  char *fname = "gnuplotoptions.txt";
+  const char *fname = "gnuplotoptions.txt";
   FILE *fp = fopen(fname, "w");
   if (fp == NULL)
   {
@@ -108,7 +108,7 @@ void create_image(char *data, char *png, myline_t *line, bool window)
 
 /*************************************************************************/
 
-void integrate_it(char *fname, int n_ranges, integ_range_t ranges[])
+void integrate_it(const char *fname, int n_ranges, integ_range_t ranges[])
 {
   double total = 0.0;
   double last_val;

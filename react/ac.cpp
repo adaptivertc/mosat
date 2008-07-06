@@ -33,7 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "db_point.h"
 #include "db.h"
 #include "arg.h"
-#include "config.h"
+#include "ap_config.h"
 
 static FILE *ac_fp = NULL;
 static char ac_log_home[200];
@@ -56,7 +56,7 @@ static FILE *open_day_history_file(const char *home, const char *post, FILE *fp)
   fp = fopen(fname, "a");
   if (fp == NULL)
   {
-    printf("**** Error Opening %s\n", fname);
+    printf("**** Error Opening: %s\n", fname);
   }
   return fp;
 }
@@ -241,7 +241,7 @@ ac_point_t **ac_point_t::read(int *cnt, const char *home_dir)
   }
   char line[300];
 
-//const char *html_home = react_config->get_config("htmlhome");
+//const char *html_home = ap_config.get_config("htmlhome");
 
   for (int i=0; NULL != fgets(line, sizeof(line), fp); i++)
   {
@@ -351,7 +351,7 @@ ac_point_t **ac_point_t::read(int *cnt, const char *home_dir)
     ac->min_amps = atof(argv[5]);
     ***/
 
-    const char *html_home = react_config->get_config("htmlhome");
+    const char *html_home = ap_config.get_config("htmlhome");
     if (html_home == NULL)
     {
       printf("Warning: htmlhome variable not set\n");

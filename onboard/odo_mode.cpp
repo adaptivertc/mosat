@@ -45,11 +45,11 @@ DEALINGS IN THE SOFTWARE.
 #include "rtcommon.h"
 #include "utimer.h"
 #include "spd_comm.h"
-#include "ob_config.h"
+#include "ap_config.h"
 
 #include "odo_mode.h"
 
-onboard_config_t *onboard_config = NULL;
+ap_config_t ap_config;
 
 /*********************************************************************/
 
@@ -57,8 +57,7 @@ int main(int argc, char *argv[])
 {
   const char *config_file = "onboard_config.txt";
 
-  onboard_config = new onboard_config_t();
-  onboard_config->read_file(config_file);
+  ap_config.read_file(config_file);
 
   spd_discrete_t discretes;
   double speed;
