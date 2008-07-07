@@ -64,10 +64,11 @@ private:
 public:
 	sms(const char *host, const char *user, const char *password, const char *database, const char *receiveFile, const char *sendFile);
 	~sms();
-	int sms_send(const char *message, const char *number);
+	bool sms_send(const char *message, const char *number);
 	bool sms_send_member(const char *message, const char *name, const char *group);
-	int sms_send_group(const char *message, const char *group);
-	int sms_send_all(const char *message);
+	bool sms_send_group(const char *message, const char *group);
+	bool sms_send_all(const char *message);
+	void sms_prueba();
 	smsMessage nextMessage();
 	
 
