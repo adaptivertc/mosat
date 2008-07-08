@@ -137,7 +137,7 @@ gen_php:	gen_php.cpp
 
 clean:
 	rm -fv *.o *.so react rconsole rdisplay reactcgi gen utest integrate
-	rm -fv rtshmmain gen_case.cpp gen_script.cpp gen_script.h
+	rm -fv rtshmmain gen_case.cpp gen_script.cpp gen_script.h gen_php
 	for i in $(DRIVERDIRS) drivers/sixnet_rtu ; do cd "$$i"; $(MAKE) clean; cd ../..; done
 
 

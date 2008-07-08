@@ -31,7 +31,7 @@ void process_file(const char *fname, FILE *fp_out)
   fprintf(fp_out, "<FORM method=\"POST\" action=\"\">\n");
 
 
-  fprintf(fp_out, "<table width=100%%>");
+  fprintf(fp_out, "<table width=\"100%%\">");
 
   for (argv = df.first(fname, &argc, &line_num);
          (argv != NULL); 
@@ -50,17 +50,17 @@ void process_file(const char *fname, FILE *fp_out)
     printf("\n");
     if (0 == strcasecmp(argv[0], "table"))
     {
-      fprintf(fp_out, "<h1>%s</h1>\n", argv[1]);
-      fprintf(fp_out, "<p><i>Campos marcados con un asterisco son obligatorios</i></p>\n");
-      fprintf(fp_out, "<hr><br>\n");
+      fprintf(fp_out, "<h1>%s</h1><br>\n", argv[1]);
+      fprintf(fp_out, "<i>Campos marcados con un asterisco son obligatorios</i>\n");
+//      fprintf(fp_out, "<hr><br>\n");
     }
     else if (0 == strcasecmp(argv[0], "separator"))
     {
-      fprintf(fp_out, "</table>\n");
-      fprintf(fp_out, "<br><br>\n");
-      fprintf(fp_out, "<h2>%s<h2>\n", argv[1]);
-      fprintf(fp_out, "<hr>\n");
-      fprintf(fp_out, "<table width=100%%>");
+//      fprintf(fp_out, "</table>\n");
+//      fprintf(fp_out, "<br><br>\n");
+      fprintf(fp_out, "<tr><td colspan=\"3\"><hr></td></tr>\n");
+      fprintf(fp_out, "<tr><td colspan=\"3\"><h2>%s<h2></td></tr>\n", argv[1]);
+//      fprintf(fp_out, "<table width=\"100%%\">");
     }
     else if (0 == strcasecmp(argv[0], "string"))
     {
@@ -142,6 +142,7 @@ void process_file(const char *fname, FILE *fp_out)
       exit(0);
     }
   }
+  fprintf(fp_out, "<tr><td colspan=\"3\"><hr></td></tr>\n");
   fprintf(fp_out, "</table>\n");
   fprintf(fp_out, "<br><br>\n");
   fprintf(fp_out, "<center>\n");
