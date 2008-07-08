@@ -44,6 +44,7 @@ private:
   char **argv;
   char delim;
   char comment;
+  bool do_print_lines;
 public:
   delim_file_t(int a_max_line_size, int a_max_args,
                char a_delim, char a_comment);
@@ -51,7 +52,26 @@ public:
   char** first(const char *fname, int *n_args, int *a_line_num);
   char** next(int *n_args, int *a_line_num);
   char *get_last_line(void);
+  void print_lines(bool plines) {do_print_lines = plines;};
 };
+
+class delim_separator_t
+{
+private:
+  FILE *fp;
+  char *line;
+  char *tmp;
+  int max_line_size;
+  int max_args;
+  char **argv;
+  char delim;
+public:
+  delim_separator_t(int a_max_line_size, int a_max_args, char a_delim);
+  ~delim_separator_t(void);
+  char** first(const char *fname, int *n_args, int *a_line_num);
+  char** separate(int *n_args, const char *line);
+};
+
 
 
 int get_delim_args(char *line, char *argv[], char delimeter, int max_args);

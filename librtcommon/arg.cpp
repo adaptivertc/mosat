@@ -76,9 +76,9 @@ delim_file_t::delim_file_t(int a_max_line_size,
   line = (char *) malloc(max_line_size);
   
   tmp = (char *) malloc(max_line_size);
-  max_line_size = a_max_line_size;
   argv = (char **) malloc(max_args * sizeof(char*));
   line_num = 0;
+  do_print_lines = false;
 }
 
 /***********************************************************************/
@@ -112,13 +112,17 @@ char **delim_file_t::next(int *n_args, int *a_line_num)
     int argc;
 
     line_num++;
+    if (do_print_lines)
+    {
+    }
     safe_strcpy(tmp, line, max_line_size);
+    printf("%s", tmp);
     argc = get_delim_args(tmp, argv, delim, max_args);
     if (argc == 0)
     {
       continue;
    }
-    else if (argv[0][0] == delim)
+    else if (argv[0][0] == comment)
     {
       continue;
     }

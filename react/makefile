@@ -132,6 +132,9 @@ exprtest:       error.h exp.h error.cpp eval.cpp expr.cpp exprlist.cpp exprtree.
 ai.so:	ai.cpp
 	g++ -shared -fpic -o ai.so ai.cpp
 
+gen_php:	gen_php.cpp
+	g++ -g -Wall -o gen_php gen_php.cpp $(RTCOMMON)
+
 clean:
 	rm -fv *.o *.so react rconsole rdisplay reactcgi gen utest integrate
 	rm -fv rtshmmain gen_case.cpp gen_script.cpp gen_script.h
