@@ -1,0 +1,5 @@
+This program only compiles and runs under Microsoft Windows, needs the MPLAB IDE and the c30 C compiler.
+MPLAB -> http://ww1.microchip.com/downloads/en/DeviceDoc/mp810.zip
+C30 -> http://www.microchip.com/Microchip.WWW.SecureSoftwareList/secsoftwaredownload.aspx?device=en534868&lang=en&ReturnURL=http://www.microchip.com/stellent/idcplg?IdcService=SS_GET_PAGE&nodeId=1406&dDocName=en534868#
+
+You will need to register to get access to this tools.
