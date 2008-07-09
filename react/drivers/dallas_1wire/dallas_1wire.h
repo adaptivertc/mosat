@@ -25,10 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "db.h"
 #include "iodriver.h"
 
-
 #include "iodriver.h"
-
-
 
 class dallas_1wire_driver_t : public io_driver_t
 {
