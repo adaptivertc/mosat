@@ -32,7 +32,7 @@ DEALINGS IN THE SOFTWARE.
 #include "rtcommon.h"
 #include "spd_display.h"
 #include "spd_comm.h"
-#include "ob_config.h"
+#include "ap_config.h"
 
 #include "odo_mode.h"
 

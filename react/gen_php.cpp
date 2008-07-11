@@ -11,14 +11,17 @@ void process_file(const char *fname, FILE *fp_out)
 {
   char **argv;
   int argc;
-  char **d_argv;
-  int d_argc;
+  char **label_argv;
+  int label_argc;
+  char **value_argv;
+  int value_argc;
   int line_num;
 
   delim_file_t df(300, 20, '|', '#');
   df.print_lines(true);
 
-  delim_separator_t ds(100, 20, ',');
+  delim_separator_t ds_label(100, 20, ',');
+  delim_separator_t ds_value(100, 20, ',');
 
   fprintf(fp_out, "<html>\n");
   fprintf(fp_out, "<head>\n");
@@ -67,7 +70,7 @@ void process_file(const char *fname, FILE *fp_out)
       fprintf(fp_out, "<tr>\n");
       fprintf(fp_out, "  <td class=\"name\">%s: </td>\n", argv[1]);
       fprintf(fp_out, "  <td class=\"input\">\n");
-      fprintf(fp_out, "    <input TYPE=\"text\" name=\"%s\" size=\"%s\" value=\"\">\n", argv[2], argv[3]);
+      fprintf(fp_out, "    <input TYPE=\"text\" name=\"string_%s\" size=\"%s\" value=\"\">\n", argv[2], argv[3]);
       fprintf(fp_out, "  </td>\n");
       fprintf(fp_out, "  <td> \n");
       fprintf(fp_out, "    4 a %s caracteres \n", argv[3]);
@@ -79,7 +82,7 @@ void process_file(const char *fname, FILE *fp_out)
       fprintf(fp_out, "<tr>\n");
       fprintf(fp_out, "  <td class=\"name\">%s: </td>\n", argv[1]);
       fprintf(fp_out, "  <td class=\"input\">\n");
-      fprintf(fp_out, "    <input TYPE=\"text\" name=\"%s\" size=\"12\" value=\"\">\n", argv[2]);
+      fprintf(fp_out, "    <input TYPE=\"text\" name=\"double_%s\" size=\"12\" value=\"\">\n", argv[2]);
       fprintf(fp_out, "  </td>\n");
       fprintf(fp_out, "  <td> \n");
       fprintf(fp_out, "    double\n");
@@ -89,9 +92,9 @@ void process_file(const char *fname, FILE *fp_out)
     else if (0 == strcasecmp(argv[0], "int"))
     {
       fprintf(fp_out, "<tr>\n");
-      fprintf(fp_out, "  <td class=\"name\">%s: </td>\n", argv[1]);
+      fprintf(fp_out, "  <td class=\"name\">int_%s: </td>\n", argv[1]);
       fprintf(fp_out, "  <td class=\"input\">\n");
-      fprintf(fp_out, "    <input TYPE=\"text\" name=\"%s\" size=\"8\" value=\"\">\n", argv[2]);
+      fprintf(fp_out, "    <input TYPE=\"text\" name=\"int_%s\" size=\"8\" value=\"\">\n", argv[2]);
       fprintf(fp_out, "  </td>\n");
       fprintf(fp_out, "  <td> \n");
       fprintf(fp_out, "    int\n");
@@ -103,7 +106,7 @@ void process_file(const char *fname, FILE *fp_out)
       fprintf(fp_out, "<tr>\n");
       fprintf(fp_out, "  <td class=\"name\">%s</td>\n", argv[1]);
       fprintf(fp_out, "  <td class=\"input\">\n");
-      fprintf(fp_out, "    <input type=\"checkbox\" name=\"%s\">(Enable/Disable)<br>\n", argv[2]);
+      fprintf(fp_out, "    <input type=\"checkbox\" name=\"bool_%s\">(Enable/Disable)<br>\n", argv[2]);
       fprintf(fp_out, "  </td>\n");
       fprintf(fp_out, "  <td> \n");
       fprintf(fp_out, "   <!-- No comment -->\n");
@@ -112,24 +115,31 @@ void process_file(const char *fname, FILE *fp_out)
     }
     else if (0 == strcasecmp(argv[0], "dropdown"))
     {
-      if (argc != 4)
+      if (argc != 5)
       {
         printf("Wrong number of args for dropdown, line %d\n", line_num);
         continue;
       }
-      printf("dropdown items: %s\n", argv[3]);
-      d_argv = ds.separate(&d_argc, argv[3]); 
+      printf("dropdown items: %s, %s\n", argv[3], argv[4]);
+      label_argv = ds_label.separate(&label_argc, argv[3]); 
+      value_argv = ds_value.separate(&value_argc, argv[4]); 
+      if (label_argc != value_argc)
+      {
+        printf("The labels and values must have the same number of items, line %d\n", line_num);
+        continue;
+      }
       fprintf(fp_out, "<tr>\n");
       fprintf(fp_out, "  <td class=\"name\">%s</td>\n", argv[1]);
       fprintf(fp_out, "  <td class=\"input\">\n");
-      fprintf(fp_out, "    <select name=\"%s\">\n", argv[2]);
+      fprintf(fp_out, "    <select name=\"list_%s\">\n", argv[2]);
       fprintf(fp_out, "	 <option name=\"unset\" value=\"\" selected></option>\n");
 
       //fprintf(fp_out, "	 <option value=\"M\">Masculino</option>\n");
       //fprintf(fp_out, "	 <option value=\"F\">Femenino</option>\n");
-      for (int j=0; j < d_argc; j++)
+      for (int j=0; j < label_argc; j++)
       {
-        fprintf(fp_out, "	 <option value=\"%c\">%s</option>\n", d_argv[j][0], d_argv[j]);
+        fprintf(fp_out, "	 <option value=\"%s\">%s</option>\n", 
+                         value_argv[j], label_argv[j]);
       }
 
       fprintf(fp_out, "    </select>\n");

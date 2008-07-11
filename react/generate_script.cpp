@@ -815,24 +815,4 @@ int main(int argc, char *argv[])
 		  case_name, code_name, header_name, "db_point.h");
   parse_file("db_point.h");
   return 0;
-  /***** tests
-  char *vals[] = {"1000", "10"};
-  script_param_t params[] = {PARAM_DOUBLE, PARAM_BOOL, PARAM_INT};
-  char *p_names[20];
-  script_param_t p_types[20];
-  char *fn_name;
-  script_param_t ret_type;
-  char example_fn[500];
-  safe_strcpy(example_fn, "  double do_it_to_it(double p1, int p2, bool p3)  ");
-
-  parse_script_function(example_fn, &fn_name, &ret_type, p_names, p_types);
-
-  parse_script_function(char *str, char **fn_name, script_param_t *ret_type
-		char *names[], script_param_t types[])
-
-  code_fp = stdout;
-  header_fp = stdout;
-  generate_script_object("my_script_obj_t", "my_object_type_t", params, 3);
-  generate_execute_function("my_script_obj_t", "do_it_to_it", 3);
-  *****/
 }
