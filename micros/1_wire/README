@@ -1,0 +1,5 @@
+This source code compiles perfectly under Windows using the WINAVR tool.
+
+Still needs testing with the hardware and work to make it compile under linux.
+
+To compile on windows you just need to run the command 'make'.
