@@ -21,13 +21,16 @@ private:
 	char number[NUMMAXLEN];
 	char name[NAMEMAXLEN];
 	char group[NAMEMAXLEN];
+	bool status;
 
 public:
-	smsMessage(const char *message, const char *number, const char *name, const char *group);
-	char *getMessage();
-	char *getNumber();
-	char *getName();
-	char *getGroup();
+	void setData(const char *message, const char *number, const char *name, const char *group);
+	const char *getMessage();
+	const char *getNumber();
+	const char *getName();
+	const char *getGroup();
+	void setSuccess(bool x);
+	bool success();
 };
 
 class smsSplit
@@ -53,8 +56,9 @@ private:
 	MYSQL_ROW row;
 	MYSQL_RES *resGroups;
 	MYSQL_ROW rowGroups;
-	
 	bool goodConfig;
+	char gammuFile[150];
+	smsMessage actualMessage;
 	
 	int sms_send_multiple(char *message);
 	int sms_send_single(char *message);
@@ -62,16 +66,17 @@ private:
 	
 
 public:
-	sms(const char *host, const char *user, const char *password, const char *database, const char *receiveFile, const char *sendFile);
+	sms(const char *host, const char *user, const char *password, const char *database, const char *smsdConfig, const char *receiveFile, const char *sendFile);
 	~sms();
 	bool sms_send(const char *message, const char *number);
 	bool sms_send_member(const char *message, const char *name, const char *group);
 	bool sms_send_group(const char *message, const char *group);
 	bool sms_send_all(const char *message);
 	void sms_prueba();
-	smsMessage nextMessage();
-	
-
+	smsMessage next_sms();
+	smsMessage next_sms_number(const char *number);
+	smsMessage next_sms_member(const char *name, const char *group);
+	smsMessage next_sms_group(const char *group);
 };
 
 class reader
