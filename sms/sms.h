@@ -52,7 +52,6 @@ class sms
 
 private:
 	MYSQL *conn;
-	MYSQL_RES *res;
 	MYSQL_ROW row;
 	MYSQL_RES *resGroups;
 	MYSQL_ROW rowGroups;

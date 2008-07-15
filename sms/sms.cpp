@@ -372,7 +372,9 @@ bool sms::sms_send(const char *message, const char *number)
 
 bool sms::sms_send_member(const char *message, const char *name, const char *group)
 {
+	MYSQL_RES *res;
 	bool send = false;
+	
 	if(goodConfig == true)
 	{
 
@@ -397,6 +399,8 @@ bool sms::sms_send_member(const char *message, const char *name, const char *gro
       			send = sms_send(message,row[0]);
       			
       		}
+      		
+      		mysql_free_result(res);
       		
       		return send;
 	}
@@ -462,6 +466,7 @@ bool sms::sms_send_member(const char *message, const char *name, const char *gro
 
 bool sms::sms_send_group(const char *message, const char *group)
 {
+	MYSQL_RES *res;
 	bool send = false;
 	if(goodConfig == true)
 	{
@@ -484,6 +489,8 @@ bool sms::sms_send_group(const char *message, const char *group)
       		{
       			send = sms_send(message,row[0]);
       		}
+      		
+      		mysql_free_result(res);
       		
       		return send;
 	}
@@ -547,6 +554,7 @@ bool sms::sms_send_group(const char *message, const char *group)
 
 bool sms::sms_send_all(const char *message)
 {
+	MYSQL_RES *res;
 	bool send = false;
 	if(goodConfig == true)
 	{
@@ -566,6 +574,8 @@ bool sms::sms_send_all(const char *message)
       		{
       			send = sms_send(message,row[0]);
       		}
+      		
+      		mysql_free_result(res);
       		
       		return send;
 	}
@@ -626,6 +636,7 @@ bool sms::sms_send_all(const char *message)
 
 smsMessage sms::next_sms()
 {
+	MYSQL_RES *res;
 	const char *query = "SELECT TextDecoded, SenderNumber FROM inbox WHERE Processed = 'false';";
 	
 	if(mysql_query(conn,query))
@@ -633,16 +644,75 @@ smsMessage sms::next_sms()
 		fprintf(stderr,"%s\n",mysql_error(conn));
 		actualMessage.setSuccess(false);
 	}
+	
+	res = mysql_store_result(conn);
+	
 	if((row = mysql_fetch_row(res)) != NULL)
 	{
 		actualMessage.setData(row[0],row[1],"","");
+		actualMessage.setSuccess(true);
 	}
+	
+	mysql_free_result(res);
+	
+	return actualMessage;
+}
+
+smsMessage sms::next_sms_number(const char *number)
+{
+	MYSQL_RES *res;
+	char query[100];
+	
+	sprintf(query,"SELECT TextDecoded, SenderNumber FROM inbox WHERE SenderNumber = '%s';",number);
+	
+	if(mysql_query(conn,query))
+	{
+		fprintf(stderr,"%s\n",mysql_error(conn));
+		actualMessage.setSuccess(false);
+	}
+	
+	res = mysql_store_result(conn);
+	
+	if((row = mysql_fetch_row(res)) != NULL)
+	{
+		actualMessage.setData(row[0],row[1],"","");
+		actualMessage.setSuccess(true);
+	}
+	
+	mysql_free_result(res);
+	
+	return actualMessage;
+}
+
+smsMessage sms::next_sms_group(const char *group)
+{
+	MYSQL_RES *res;
+	char query[250];
+	
+	sprintf(query,"SELECT inbox.TextDecoded, receive.number, receive.name, receive.type FROM inbox, receive WHERE inbox.Processed = 'false' AND inbox.SenderNumber = receive.number AND receive.type = '%s';",group);
+	
+	if(mysql_query(conn,query))
+	{
+		fprintf(stderr,"%s\n",mysql_error(conn));
+		actualMessage.setSuccess(false);
+	}
+	
+	res = mysql_store_result(conn);
+	
+	if((row = mysql_fetch_row(res)) != NULL)
+	{
+		actualMessage.setData(row[0],row[1],row[2],row[3]);
+		actualMessage.setSuccess(true);
+	}
+	
+	mysql_free_result(res);
 	
 	return actualMessage;
 }
 
 void sms::sms_prueba()
 {
+	MYSQL_RES *res;
 	char query[1000];
 	
 	while(true)
@@ -674,6 +744,7 @@ void sms::sms_prueba()
 			fprintf(stderr,"%s\n",mysql_error(conn));
 		}
 	}
+		mysql_free_result(res);
 		sleep(10);
 	}
 	
@@ -684,6 +755,11 @@ int main(int argc, char *arvg[])
 	
 	sms mensajero("localhost", "root", "root", "gammu","gammusmsdrc.conf","receive.conf","send.conf");
 	
+	smsMessage mensaje;
+	
+	mensaje = mensajero.next_sms();
+	
+	printf("Mensaje: %s\nNumero: %s\nNombre: %s\nGrupo: %s\n",mensaje.getMessage(),mensaje.getNumber(),mensaje.getName(),mensaje.getGroup());
 	//mensajero.sms_send("LOL","3311709069");
 	//mensajero.sms_prueba();
    	//mensajero.sms_send_member("Calando","Rene","Normal");
