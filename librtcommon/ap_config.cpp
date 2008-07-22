@@ -25,12 +25,24 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "arg.h"
 #include "ap_config.h"
 
+
+/**********************************************************************/
+
+ap_config_t::ap_config_t(char a_delimiter)
+{
+  n_keys = 0;
+  cur_key = 0;
+  delimiter = a_delimiter;
+  printf("Init done, %d, %d\n", n_keys, cur_key);
+}
+
 /**********************************************************************/
 
 ap_config_t::ap_config_t(void)
 {
   n_keys = 0;
   cur_key = 0;
+  delimiter = '|';
   printf("Init done, %d, %d\n", n_keys, cur_key);
 }
 
@@ -179,7 +191,7 @@ void ap_config_t::read_file(const char *path)
     char *argv[25];
 
     safe_strcpy(tmp, (const char*) line, sizeof(tmp));
-    argc = get_delim_args(tmp, argv, '|', 25);
+    argc = get_delim_args(tmp, argv, delimiter, 25);
     if (argc == 0)
     {
       continue;

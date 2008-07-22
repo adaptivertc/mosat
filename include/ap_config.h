@@ -25,6 +25,7 @@ class ap_config_t
 private:
   int n_keys;
   int cur_key;
+  char delimiter;
   char *key[100];
   char *val[100];
 
@@ -39,7 +40,9 @@ public:
   void read_file(const char *path);
   const char *first(void);
   const char *next(void);
+  void set_delimiter(char a_delimiter){delimiter = a_delimiter;};
   ap_config_t();
+  ap_config_t(char a_delimiter);
 };
 
 extern ap_config_t ap_config;

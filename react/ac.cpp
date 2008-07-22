@@ -89,7 +89,6 @@ void ac_point_t::update(void)
 {
   /* Update the given ac point. */
   //double amps;
-  bool state;
   time_t now;
   double level;
 
@@ -104,19 +103,17 @@ void ac_point_t::update(void)
   do_point_t *unit_disable_point;
 ***/
 
-  if ((ac_fp == NULL) || (cold_temp_point == NULL) || 
+  if ((ac_fp == NULL) || (cold_temp_point == NULL) || (hot_temp_point == NULL) || 
      (unit_running_point == NULL) || (unit_disable_point == NULL))
   {
     return;
   }
 
   now = time(NULL);
-  //amps = ai_point->get_pv();
-  //state = di_point->get_pv();
 
   cold_temp = cold_temp_point->get_pv();
   hot_temp = hot_temp_point->get_pv();
-  state = unit_running_point->get_pv();
+  unit_running = unit_running_point->get_pv();
 
   if (hour_changed(now, this_hour))
   {
@@ -161,13 +158,10 @@ void ac_point_t::update(void)
 
   // Below is a simple method for caluclating % on.
   // - just count on readings vs off readings. Close enough! 
-  if (state)
-  { 
-    hour_num_off_readings++;
-    day_num_off_readings++;
-  }
-  else
+  if (unit_running)
   {
+    hour_num_on_readings++;
+    day_num_on_readings++;
     if (delay_elapsed)
     {
       hour_total_cold += cold_temp;
@@ -175,41 +169,31 @@ void ac_point_t::update(void)
       day_total_cold += cold_temp;
       day_total_hot += hot_temp;
     }
-    //hour_total_amps += amps;
-    //day_total_amps += amps;
-    hour_num_on_readings++;
-    day_num_on_readings++;
+  }
+  else
+  { 
+    hour_num_off_readings++;
+    day_num_off_readings++;
   }
 
-  //printf("PUMP UPDATE: %s\n", tag);
   if (change_started)
   {
     time_t now = time(NULL);
     if (now > (last_change_time + int(delay) + 1))
     {
-      //printf("%s", change_start_line);
-      //printf("%0.3lf\n", amps);
       fprintf(ac_fp, "%s", change_start_line);
-      //fprintf(ac_fp, "%0.3lf\n", amps);
       fflush(ac_fp);
+      delay_elapsed = true;
       change_started = false;
     }
   }
 
-  if (state != last_state_at_change)
+  if (unit_running != last_state_at_change)
   {
-    char datestr[30];
-    time_t now = time(NULL); 
-    struct tm mytm;
-    localtime_r(&now, &mytm);
-    strftime(datestr, sizeof(datestr), "%F\t%T", &mytm);
- 
-    snprintf(change_start_line, sizeof(change_start_line), 
-            "%s\t%s\t%s\t%0.2lf\t%0.3lf\t", datestr, tag, 
-             unit_running_point->pv_string, level, 0.0);
-    last_state_at_change = state;
+    last_state_at_change = unit_running;
     last_change_time = now;
     change_started = true;
+    delay_elapsed = false;
   }
   
 }

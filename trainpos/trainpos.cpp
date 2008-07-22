@@ -41,7 +41,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "ap_config.h"
 
-ap_config_t ap_config;
+ap_config_t ap_config(',');
 
 /***********************************/
 
