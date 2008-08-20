@@ -89,11 +89,30 @@ sim_train_t *trains;
 int tlocs24[] = {0,1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34};
 int tlocsxx[] = {0,2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34};
 int tlocsyy[] = {2, 4, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34};
-int tlocs[] = {0, 3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 32};
+int tlocs12[] = {0, 3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 32};
 int tlocs6[] = {0, 6, 12, 18, 24, 30};
 double initial_t_times[MAX_TRAINS];
 double slot_times[MAX_TRAINS];
 double dtypes[] = {10.0, 8.2, 5.5, 3.9, 0.8, 0.0, -1.2, -3.2, -6.2, -8.2, -8.9, -9.7};
+
+int tlocs[30];
+
+/*********************************************************************/
+
+int generate_locations(double train_spacing)
+{
+  double cycle_time = sect->get_cycle_time();
+  int n_tr = int(cycle_time / train_spacing);
+  int n_sec = sect->get_n_sections();
+  for (int i=0; i < n_tr; i++)
+  {
+    double fraction = double(i) / double(n_tr);
+    tlocs[i] = int(fraction * n_sec);
+    printf("Train[%d] starts a station %d\n", i, tlocs[i]);
+  }
+  return n_tr;
+}
+
 
 /*********************************************************************/
 
@@ -575,6 +594,34 @@ int get_x(double d)
 
 /*********************************************************************/
 
+void init_substations(void)
+{
+  double sub[] = {0, 853, 3282, 5230, 7507, 9032, 11018, 12855, 14135, 15421};
+
+  for (int i=0; i < (sizeof(sub) / sizeof(sub[0])); i++)
+  {
+    int x = get_x(sub[i]) + 2;
+    int y = n_algs + 4;
+    mvprintw(y, x, "+");
+  }
+
+}
+    
+/****
+Periferico Sur 0 
+Españita 853
+Polanco 3282
+López Mateos 5230
+Washington 7507
+Juárez 1 9032
+Mezquitan 11018
+División del Norte II 12855
+Atemajac 14135
+Periférico Norte 15421
+****/
+
+/*********************************************************************/
+
 void init_stations(void)
 {
 
@@ -650,6 +697,7 @@ void init_stations(void)
       }
     }
   }
+  init_substations();
 }
 
 /*********************************************************************/
@@ -925,8 +973,19 @@ int main(int argc, char *argv[])
     algs[3] = dc_alg4;
   }
 
+  double time_between;
+  if (argc > 1)
+  {
+    time_between = atof(argv[1]);
+  }
+  else
+  {
+    time_between = 5.0 * 60.0;
+  }
+
   ntrains = 30;
-  unsigned n_to_init = sizeof(tlocs) / sizeof(tlocs[0]);
+  unsigned n_to_init = generate_locations(time_between);
+  //unsigned n_to_init = sizeof(tlocs) / sizeof(tlocs[0]);
   for (unsigned i=0; i < n_to_init; i++)
   {
     initial_t_times[i] = sect->get_time_to_station(tlocs[i]);
@@ -1002,10 +1061,11 @@ int main(int argc, char *argv[])
   init_stations();
 
   FILE *fpn = fopen("run.txt", "w");
+  estop_active = false;
   bool fast = false;
   bool vfast = false;
   bool libre = false;
-  estop_active = false;
+  int speedup = 1;
   for (int i=0; i < 1000000; i++)
   {
     current_time = (double) i;
@@ -1022,18 +1082,26 @@ int main(int argc, char *argv[])
       fast = false;
       vfast = false;
       libre = false;
+      speedup = 1;
     }
     else if (ch == 'f')
     {
       fast = true;
       vfast = false;
       libre = false;
+      speedup = 10;
     }
     else if (ch == 'v')
     {
       libre = false;
       fast = false;
       vfast = true;
+      speedup = 50;
+    }
+    else if ((ch >= '1') && (ch <= '9'))
+    {
+      speedup = ch - '0';
+      libre = false;
     }
     else if (ch == 'l')
     {
@@ -1085,6 +1153,11 @@ int main(int argc, char *argv[])
 
     eval_stop_lights();
 
+    if (!libre)
+    {
+      usleep(1000000 / speedup);
+    }
+     /*****
     if (fast)
     {
       usleep(50000);
@@ -1100,6 +1173,7 @@ int main(int argc, char *argv[])
     {
       usleep(1000000);
     }
+    ****/
     if (estop_active)
     {
       break;

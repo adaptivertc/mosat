@@ -162,6 +162,8 @@ void sections_t::read_file(void)
     n++;
   }
   cycle_time = total_time;
+  printf("Total round trip = %d:%d\n", 
+             int(cycle_time) / 60, int(cycle_time) % 60);
   n_sections = n;
 }
 
