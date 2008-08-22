@@ -1,3 +1,0 @@
-Esta sera una peque;a interfaz para enviar sms. La idea es que se puedan enviar sms a un numero arbitrario, a un miembro de un grupo, a todo el grupo, o a todos los grupos, estos se definen en un archivo llamado send.conf, de igual modo se leeran los mensajes recibidos y estos seran relacionados con el individuo que lo envio y el grupo al que pertenecen.
-
-Por el momento solo esta implementado lo del envio de mensaje a un numero arbitrario y no cuida la longitud del mensaje, espero poder terminarlo pronto.

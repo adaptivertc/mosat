@@ -6,6 +6,8 @@ The following example program (in file prog.c) should be compiled with this Unix
 */
 
 #include "sms.h"
+#include<sys/time.h>
+#include <time.h>
 
 void smsMessage::setData(const char *message, const char *number, const char *name, const char *group)
 {
@@ -222,7 +224,7 @@ sms::sms(const char *host, const char *user, const char *password, const char *d
         	fprintf(stderr, "%s\n", mysql_error(conn));
       		goodConfig = false;
    	}
-
+   	
       	reader config;
       	
       	config.readerInit(receiveFile);
@@ -256,7 +258,7 @@ sms::sms(const char *host, const char *user, const char *password, const char *d
       	}
       	
       	config.readerInit(sendFile);
-      	
+
       	while(config.state() && !config.finished())
       	{
       		safe_strcpy(tempHeader,config.nextHeader(),sizeof(tempHeader));
@@ -282,50 +284,7 @@ sms::sms(const char *host, const char *user, const char *password, const char *d
    			}
       		}
       	}
-      	
 }
-
-/*bool sms::sms_send(const char *message, const char *number)
-{
-	if(goodConfig == true)
-	{
-		char query[500];
-		
-		printf("%s",message);
-		
-		if(strlen(message) <= 160)
-		{
-			sprintf(query,"INSERT INTO outbox (number,text) VALUES ('%s','%s');",number,message);
-			if (mysql_query(conn, query))
-			{
-      				fprintf(stderr, "%s\n", mysql_error(conn));
-      				return false;
-      			}
-		}
-		else
-		{
-			smsSplit spliter(message);
-		
-			for(int i = 1; i <= spliter.getCount(); i++)
-			{
-				sprintf(query,"INSERT INTO outbox (number,text) VALUES ('%s','(%d/%d)%s');",number,i,spliter.getCount(),spliter.getNextMsg());
-				printf("%s",query);
-				if(mysql_query(conn,query))
-				{
-					fprintf(stderr,"%s\n",mysql_error(conn));
-					return false;
-				}
-			}
-		}
- 
-		return true;
-	}
-	else
-	{
-		printf("No se puede enviar mensaje, no se configuro apropiadamente la lista de destinatarios");
-		return false;
-	}
-}*/
 
 bool sms::sms_send(const char *message, const char *number)
 {
@@ -409,61 +368,6 @@ bool sms::sms_send_member(const char *message, const char *name, const char *gro
 	return send;
 }
 
-/*bool sms::sms_send_member(const char *message, const char *name, const char *group)
-{
-	bool send = false;
-	if(goodConfig == true)
-	{
-
-		char query[500] = "SELECT number FROM send WHERE name = '";
-		safe_strcat(query,name,sizeof(query));
-		safe_strcat(query,"' AND type = '",sizeof(query));
-		safe_strcat(query,group,sizeof(query));
-		safe_strcat(query,"';",sizeof(query));
-		
-		
-		if (mysql_query(conn, query))
-		{
-      			fprintf(stderr, "%s\n", mysql_error(conn));
-      			return send;
-      		}
-      		
-      		res = mysql_store_result(conn);
-      		
-      		
-      		while ((row = mysql_fetch_row(res)) != NULL)
-      		{
-      			if(strlen(message) <= 160)
-      			{
-      				sprintf(query,"INSERT INTO outbox (number,text) VALUES ('%s','%s');",row[0],message);
-				if(mysql_query(conn,query))
-				{
-					fprintf(stderr,"%s\n",mysql_error(conn));
-				}
-				send = true;
-      			}
-      			else
-      			{
-      				smsSplit spliter(message);
-				for(int i = 1; i <= spliter.getCount(); i++)
-				{
-					sprintf(query,"INSERT INTO outbox (number,text) VALUES ('%s','(%d/%d)%s');",row[0],i,spliter.getCount(),spliter.getNextMsg());
-					if(mysql_query(conn,query))
-					{
-						fprintf(stderr,"%s\n",mysql_error(conn));
-					}
-					send = true;
-				}
-			}
-      		}
-      		
-      		return send;
-	}
-	else
-		printf("No se puede enviar mensaje, no se configuro apropiadamente la lista de destinatarios");
-	return send;
-}*/
-
 bool sms::sms_send_group(const char *message, const char *group)
 {
 	MYSQL_RES *res;
@@ -499,59 +403,6 @@ bool sms::sms_send_group(const char *message, const char *group)
 	return send;
 }
 
-/*bool sms::sms_send_group(const char *message, const char *group)
-{
-	bool send = false;
-	if(goodConfig == true)
-	{
-
-		char query[500] = "SELECT number FROM send WHERE type = '";
-		safe_strcat(query,group,sizeof(query));
-		safe_strcat(query,"';",sizeof(query));
-		
-		
-		if (mysql_query(conn, query))
-		{
-      			fprintf(stderr, "%s\n", mysql_error(conn));
-      			return send;
-      		}
-      		
-      		res = mysql_store_result(conn);
-      		
-      		
-      		while ((row = mysql_fetch_row(res)) != NULL)
-      		{
-      			if(strlen(message) <= 160)
-      			{
-      				sprintf(query,"INSERT INTO outbox (number,text) VALUES ('%s','%s');",row[0],message);
-				if(mysql_query(conn,query))
-				{
-					fprintf(stderr,"%s\n",mysql_error(conn));
-				}
-				send = true;
-      			}
-      			else
-      			{
-      				smsSplit spliter(message);
-				for(int i = 1; i <= spliter.getCount(); i++)
-				{
-					sprintf(query,"INSERT INTO outbox (number,text) VALUES ('%s','(%d/%d)%s');",row[0],i,spliter.getCount(),spliter.getNextMsg());
-					if(mysql_query(conn,query))
-					{
-						fprintf(stderr,"%s\n",mysql_error(conn));
-					}
-					send = true;
-				}
-			}
-      		}
-      		
-      		return send;
-	}
-	else
-		printf("No se puede enviar mensaje, no se configuro apropiadamente la lista de destinatarios");
-	return send;
-}*/
-
 bool sms::sms_send_all(const char *message)
 {
 	MYSQL_RES *res;
@@ -584,60 +435,10 @@ bool sms::sms_send_all(const char *message)
 	return send;
 }
 
-/*bool sms::sms_send_all(const char *message)
-{
-	bool send = false;
-	if(goodConfig == true)
-	{
-
-		char query[500] = "SELECT number FROM send;";
-		
-		if (mysql_query(conn, query))
-		{
-      			fprintf(stderr, "%s\n", mysql_error(conn));
-      			return send;
-      		}
-      		
-      		res = mysql_store_result(conn);
-      		
-      		
-      		while ((row = mysql_fetch_row(res)) != NULL)
-      		{
-      			if(strlen(message) <= 160)
-      			{
-      				sprintf(query,"INSERT INTO outbox (number,text) VALUES ('%s','%s');",row[0],message);
-				if(mysql_query(conn,query))
-				{
-					fprintf(stderr,"%s\n",mysql_error(conn));
-				}
-				send = true;
-      			}
-      			else
-      			{
-      				smsSplit spliter(message);
-				for(int i = 1; i <= spliter.getCount(); i++)
-				{
-					sprintf(query,"INSERT INTO outbox (number,text) VALUES ('%s','(%d/%d)%s');",row[0],i,spliter.getCount(),spliter.getNextMsg());
-					if(mysql_query(conn,query))
-					{
-						fprintf(stderr,"%s\n",mysql_error(conn));
-					}
-					send = true;
-				}
-			}
-      		}
-      		
-      		return send;
-	}
-	else
-		printf("No se puede enviar mensaje, no se configuro apropiadamente la lista de destinatarios");
-	return send;
-}*/
-
 smsMessage sms::next_sms()
 {
 	MYSQL_RES *res;
-	const char *query = "SELECT TextDecoded, SenderNumber FROM inbox WHERE Processed = 'false';";
+	char query[100] = "SELECT TextDecoded, SenderNumber, ID FROM inbox WHERE Processed = 'false';";
 	
 	if(mysql_query(conn,query))
 	{
@@ -651,7 +452,16 @@ smsMessage sms::next_sms()
 	{
 		actualMessage.setData(row[0],row[1],"","");
 		actualMessage.setSuccess(true);
+		
+		sprintf(query,"UPDATE inbox SET processed = 'true' WHERE ID = '%s';",row[2]);
+	
+		if(mysql_query(conn,query))
+		{
+			fprintf(stderr,"%s\n",mysql_error(conn));
+		}
 	}
+	else
+		actualMessage.setSuccess(false);
 	
 	mysql_free_result(res);
 	
@@ -663,7 +473,7 @@ smsMessage sms::next_sms_number(const char *number)
 	MYSQL_RES *res;
 	char query[100];
 	
-	sprintf(query,"SELECT TextDecoded, SenderNumber FROM inbox WHERE SenderNumber = '%s';",number);
+	sprintf(query,"SELECT TextDecoded, SenderNumber ID FROM inbox WHERE SenderNumber = '%s';",number);
 	
 	if(mysql_query(conn,query))
 	{
@@ -677,7 +487,16 @@ smsMessage sms::next_sms_number(const char *number)
 	{
 		actualMessage.setData(row[0],row[1],"","");
 		actualMessage.setSuccess(true);
+		
+		sprintf(query,"UPDATE inbox SET processed = 'true' WHERE ID = '%s';",row[2]);
+	
+		if(mysql_query(conn,query))
+		{
+			fprintf(stderr,"%s\n",mysql_error(conn));
+		}
 	}
+	else
+		actualMessage.setSuccess(false);
 	
 	mysql_free_result(res);
 	
@@ -689,7 +508,7 @@ smsMessage sms::next_sms_group(const char *group)
 	MYSQL_RES *res;
 	char query[250];
 	
-	sprintf(query,"SELECT inbox.TextDecoded, receive.number, receive.name, receive.type FROM inbox, receive WHERE inbox.Processed = 'false' AND inbox.SenderNumber = receive.number AND receive.type = '%s';",group);
+	sprintf(query,"SELECT inbox.TextDecoded, receive.number, receive.name, receive.type inbox.ID FROM inbox, receive WHERE inbox.Processed = 'false' AND inbox.SenderNumber = receive.number AND receive.type = '%s';",group);
 	
 	if(mysql_query(conn,query))
 	{
@@ -703,14 +522,60 @@ smsMessage sms::next_sms_group(const char *group)
 	{
 		actualMessage.setData(row[0],row[1],row[2],row[3]);
 		actualMessage.setSuccess(true);
+		
+		sprintf(query,"UPDATE inbox SET processed = 'true' WHERE ID = '%s';",row[4]);
+	
+		if(mysql_query(conn,query))
+		{
+			fprintf(stderr,"%s\n",mysql_error(conn));
+		}
 	}
+	else
+		actualMessage.setSuccess(false);
 	
 	mysql_free_result(res);
+	
 	
 	return actualMessage;
 }
 
-void sms::sms_prueba()
+smsMessage sms::next_sms_member(const char *name, const char *group)
+{
+	MYSQL_RES *res;
+	char query[300];
+	
+	sprintf(query,"SELECT inbox.TextDecoded, receive.number, receive.name, receive.type inbox.ID FROM inbox, receive WHERE inbox.Processed = 'false' AND inbox.SenderNumber = receive.number AND receive.name = '%s'AND receive.number = '%s';",name,group);
+	
+	if(mysql_query(conn,query))
+	{
+		fprintf(stderr,"%s\n",mysql_error(conn));
+		actualMessage.setSuccess(false);
+	}
+	
+	res = mysql_store_result(conn);
+	
+	if((row = mysql_fetch_row(res)) != NULL)
+	{
+		actualMessage.setData(row[0],row[1],row[2],row[3]);
+		actualMessage.setSuccess(true);
+		
+		sprintf(query,"UPDATE inbox SET processed = 'true' WHERE ID = '%s';",row[4]);
+	
+		if(mysql_query(conn,query))
+		{
+			fprintf(stderr,"%s\n",mysql_error(conn));
+		}
+	}
+	else
+		actualMessage.setSuccess(false);
+	
+	mysql_free_result(res);
+	
+	return actualMessage;
+
+}
+
+/*void sms::sms_prueba()
 {
 	MYSQL_RES *res;
 	char query[1000];
@@ -748,42 +613,90 @@ void sms::sms_prueba()
 		sleep(10);
 	}
 	
+}*/
+
+void sms::sms_prueba()
+{
+	smsMessage mensaje;
+	char temp[161];
+	int number;
+	
+	while(true)
+	{
+		mensaje = next_sms();
+		if(mensaje.success())
+		{
+			//printf("Mensaje recibido:%s",mensaje.getMessage());
+			strcpy(temp,mensaje.getMessage());
+					//printf("Mensaje recibido%s\n",temp);
+			if(strncasecmp("estatus.",temp,8)==0)
+			{
+				number = atoi(temp+8);
+				if(number >=1 && number <= 12)
+					sms_send(mensaje.getMessage(),mensaje.getNumber());
+				else
+					sms_send("Numero de unidad fuera de rango",mensaje.getNumber());
+			}
+			else
+				sms_send("Mensaje invalido",mensaje.getNumber());
+			//sms_send(mensaje.getMessage(),mensaje.getNumber());
+			printf("Se respondio un mensaje\n");
+		}
+		else
+			printf("No se han recibido mensajes nuevos\n");
+		sleep(2);
+	}
+	
 }
 
 int main(int argc, char *arvg[])
 {
+	time_t seconds1, seconds2;
 	
 	sms mensajero("localhost", "root", "root", "gammu","gammusmsdrc.conf","receive.conf","send.conf");
+
+	mensajero.sms_prueba();
 	
 	smsMessage mensaje;
 	
-	mensaje = mensajero.next_sms();
+	struct timeval tv1,tv2;
+//struct timezone tz;
+//struct tm *tm;
+//gettimeofday(&tv, NULL);
+//tm=localtime(&tv.tv_sec);
+//printf(" %d:%02d:%02d %d \n", tm->tm_hour, tm->tm_min,tm->tm_sec, tv.tv_usec);
 	
-	printf("Mensaje: %s\nNumero: %s\nNombre: %s\nGrupo: %s\n",mensaje.getMessage(),mensaje.getNumber(),mensaje.getName(),mensaje.getGroup());
-	//mensajero.sms_send("LOL","3311709069");
-	//mensajero.sms_prueba();
-   	//mensajero.sms_send_member("Calando","Rene","Normal");
-   	//mensajero.sms_send_member("Lalalalala","Toño","Normal");
-   	//mensajero.sms_send_all("Testing");
-   	
-   	//bool paso = mensajero.sms_send_group("Segunda prueba, por favor contesta el mensaje","Normal");
+	//seconds1 = time (NULL);
+	gettimeofday(&tv1, NULL);
 
-	//if(paso)
-	//	printf("Funciona");
-   /* send SQL query */
-   //if (mysql_query(conn, "SELECT * FROM outbox")) {
-      //fprintf(stderr, "%s\n", mysql_error(conn));
-      //return 0;
-   //}
-
-   //res = mysql_use_result(conn);
-   
-   /* output fields 1 and 2 of each row */
-   //while ((row = mysql_fetch_row(res)) != NULL)
-      //printf("%s %s %s %s %s %s %s\n", row[1], row[2], row[3], row[4], row[5], row[6], row[7]);
-
-   /* Release memory used to store results and close connection */
-   //mysql_free_result(res);
-   
+	
+	mensajero.sms_send_member("Probando","Rene","Normal");
+	
+	//seconds2 = time (NULL);
+	gettimeofday(&tv2, NULL);
+	
+	
+	//printf("Time before send: %ld\nTime after send:%ld\n",seconds1,seconds2);
+	printf("Diferencia:%ld\n",(tv2.tv_sec-tv1.tv_sec)*1000000+(tv2.tv_usec-tv1.tv_usec));
+	
+	//seconds1 = time (NULL);
+	gettimeofday(&tv1, NULL);
+	mensaje = mensajero.next_sms();
+	if(mensaje.success())
+	
+		printf("Se recibio el siguiente mensaje: %s\n",mensaje.getMessage());
+	else
+		printf("No se recibio mensaje");
+	//seconds2 = time (NULL);
+	gettimeofday(&tv2, NULL);
+	printf("Diferencia:%ld\n",(tv2.tv_sec-tv1.tv_sec)*1000000+(tv2.tv_usec-tv1.tv_usec));
+	//printf("Time before receive: %ld\nTime after receive:%ld\n",seconds1,seconds2);
+	
+	//printf("Mensaje: %s\nNumero: %s\nNombre: %s\nGrupo: %s\n",mensaje.getMessage(),mensaje.getNumber(),mensaje.getName(),mensaje.getGroup());
+	return 0;
 }
 
+/*
+formato de mensajes status.1
+AC1.get_cold();
+*/
