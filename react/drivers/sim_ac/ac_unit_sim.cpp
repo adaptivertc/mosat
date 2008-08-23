@@ -44,10 +44,10 @@ ac_unit_sim_t::ac_unit_sim_t(double a_period, double a_fraction_on, double a_sta
   steady_state_hot = 55.8;
   sim_cold.set_steady_state(outside_temp);
   sim_cold.set_current_value(outside_temp + 2.2);
-  sim_cold.set_tau(45);
+  sim_cold.set_tau(22);
   sim_hot.set_steady_state(outside_temp);
   sim_hot.set_current_value(outside_temp - 1.8);
-  sim_hot.set_tau(45);
+  sim_hot.set_tau(22);
 }
 
 /***********************************************************************/
@@ -86,9 +86,9 @@ void ac_unit_sim_t::update_on(double time_now)
     next_transition = time_now + next_time_off;
     // Ok, if the unit is off, the steady state value is the outside temp
     sim_hot.set_steady_state(outside_temp);
-    sim_hot.set_tau(45);
+    sim_hot.set_tau(18);
     sim_cold.set_steady_state(outside_temp);
-    sim_cold.set_tau(45);
+    sim_cold.set_tau(18);
   }
 }
 
@@ -104,9 +104,9 @@ void ac_unit_sim_t::update_off(double time_now)
     next_transition = time_now + next_time_on;
 
     sim_hot.set_steady_state(steady_state_hot);
-    sim_hot.set_tau(15);
+    sim_hot.set_tau(10);
     sim_cold.set_steady_state(steady_state_cold);
-    sim_cold.set_tau(15);
+    sim_cold.set_tau(10);
   }
 }
 

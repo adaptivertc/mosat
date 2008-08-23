@@ -83,18 +83,18 @@ sim_ac_drv_t::sim_ac_drv_t(react_drv_base_t *r)
   double now = react->get_time();
   last_time = now;
 
-  ac_sim[0] = new ac_unit_sim_t(8.1 * 60, 0.35, 2.7 * 60, now);
-  ac_sim[1] = new ac_unit_sim_t(9.2 * 60, 0.38, 2.1 * 60, now);
-  ac_sim[2] = new ac_unit_sim_t(7.8 * 60, 0.31, 0.2 * 60, now);
-  ac_sim[3] = new ac_unit_sim_t(5.2 * 60, 0.25, 0.5 * 60, now);
-  ac_sim[4] = new ac_unit_sim_t(12.2 * 60, 0.33, 3.0 * 60, now);
-  ac_sim[5] = new ac_unit_sim_t(7.1 * 60, 0.22, 4.1 * 60, now);
-  ac_sim[6] = new ac_unit_sim_t(9.2 * 60, 0.44, 1.1 * 60, now);
-  ac_sim[7] = new ac_unit_sim_t(6.9 * 60, 0.39, 2.1 * 60, now);
-  ac_sim[8] = new ac_unit_sim_t(7.5 * 60, 0.41, 1.5 * 60, now);
-  ac_sim[9] = new ac_unit_sim_t(8.7 * 60, 0.28, 2.5 * 60, now);
-  ac_sim[10] = new ac_unit_sim_t(9.3 * 60, 0.26, 0.3 * 60, now);
-  ac_sim[11] = new ac_unit_sim_t(6.4 * 60, 0.28, 2.5 * 60, now);
+  ac_sim[0] = new ac_unit_sim_t(64, 0.35, 22, now);
+  ac_sim[1] = new ac_unit_sim_t(55, 0.38, 42, now);
+  ac_sim[2] = new ac_unit_sim_t(88, 0.31, 55, now);
+  ac_sim[3] = new ac_unit_sim_t(99, 0.25, 52, now);
+  ac_sim[4] = new ac_unit_sim_t(45, 0.33, 12, now);
+  ac_sim[5] = new ac_unit_sim_t(44, 0.22, 19, now);
+  ac_sim[6] = new ac_unit_sim_t(77, 0.44, 48, now);
+  ac_sim[7] = new ac_unit_sim_t(88, 0.39, 39, now);
+  ac_sim[8] = new ac_unit_sim_t(121, 0.41, 122, now);
+  ac_sim[9] = new ac_unit_sim_t(77, 0.28, 155, now);
+  ac_sim[10] = new ac_unit_sim_t(92, 0.26, 66, now);
+  ac_sim[11] = new ac_unit_sim_t(81, 0.28, 60, now);
 }
 
 /***********************************************************************/

@@ -141,6 +141,7 @@ public:
   db_point_t(void);
   void trip_shutdown(char *reason);
 
+  void send_sms_group(const char *msg, const char *group);
   const char *get_tag(void) {return tag;};
   const char *get_description(void) {return description;};
   virtual ~db_point_t(void) {};
@@ -681,9 +682,12 @@ private:
 
   FILE *history_fp;
 public:
-  point_type_t point_type(void) {return PUMP_POINT;};
+  point_type_t point_type(void) {return AC_POINT;};
   void update(void);
   static ac_point_t **read(int *cnt, const char * home_dir);
+  const char *is_disabled(bool *disable);
+  double get_hot_average(void); 
+  double get_cold_average(void); 
 };
 
 /* Structure used by Web Points. */

@@ -60,6 +60,7 @@ public:
   void gen_start(void);
   void gen_end(void);
   void gen_decel(double startv, double endv, double end_distance, double accel);
+  void gen_decel_to_station(double startv, double end_distance, double accel);
   void gen_accel(double startv, double endv, double start_distance, double accel);
   void print(void);
   void plot(void);
@@ -177,6 +178,32 @@ gen_data_t::gen_data_t(void)
 
 /***************************************************************/
 
+void gen_data_t::gen_decel_to_station(double startv, double end_distance, double accel)
+{
+  double meters_at_35 = 30.0; // Meters before final stop that the train must be at 35.
+  double coast_decel = 0.1;
+  double v35 = 35.0 / 3.6;
+  double v35sqr = v35 * v35;
+
+  double dist_to_35 = fabs(((startv * startv) - (35.0 * 35.0)) / (2.0 * accel));
+
+  double vel2_numer = fabs(meters_at_35 - fabs(v35sqr / (2 * coast_decel)));
+  double vel2_denom = fabs(fabs(1.0 / (2.0 * accel)) - fabs(1.0 / (2.0 * coast_decel)));  
+  printf("numer: %lf, denom: %lf\n", vel2_numer, vel2_denom);
+
+  double vel2 = sqrt(vel2_numer / vel2_denom); 
+
+  double dist_2 = fabs((v35sqr - (vel2 * vel2)) / (2.0 * coast_decel));
+  double dist_3 = fabs((vel2 * vel2) / (2.0 * accel));
+
+  printf("vel2: %lf, dist_2: %lf, dist_3: %lf\n", vel2, dist_2, dist_3);
+  gen_decel(70.0 / 3.6, v35, end_distance - dist_2 - dist_3, accel);
+  gen_decel(v35, vel2, end_distance - dist_3, coast_decel);
+  gen_decel(vel2, 0, end_distance, accel);
+}
+
+/***************************************************************/
+
 void gen_data_t::gen_decel(double startv, double endv, double end_distance, double accel)
 {
   double dist = fabs(((startv * startv) - (endv * endv)) / (2.0 * -accel));
@@ -248,6 +275,7 @@ void gen_data_t::gen_end(void)
 {
   last_end = n_items-1;
   gen_decel(70.0 / 3.6, 0.0, end, 1.0);
+  //gen_decel_to_station(70.0 / 3.6, end, 1.0);
   check_intersect(); 
 }
 
@@ -430,7 +458,7 @@ int main(int argc, char *argv[])
         gd.print();
         gd.plot();
         n_stations++;
-        //if (n_stations > 0) exit(0); 
+        //if (n_stations > 0) exit(0);  /* comment this out */
       }
       gd.reset();
       gd.set_station(res->description);

@@ -18,5 +18,4 @@ VPUMP1_ON|Bomba V1 ON|1|1|7|ON|OFF|H|N|
 PUMP1_ON|Bomba 1 ON|1|1|8|ON|OFF|H|N|
 PUMP2_ON|Bomba 2 ON|1|1|9|ON|OFF|H|N|
 PUMP3_ON|Bomba 3 ON|1|1|10|ON|OFF|H|N|
-ON_AC1|AC unit one is on|1|1|10|ON|OFF|N|N|
 COM_FAILED|Communications Failed|1|1|16|ON|OFF|N|N|

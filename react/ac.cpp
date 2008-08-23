@@ -90,7 +90,6 @@ void ac_point_t::update(void)
   /* Update the given ac point. */
   //double amps;
   time_t now;
-  double level;
 
   double cold_temp;
   double hot_temp;
@@ -181,6 +180,7 @@ void ac_point_t::update(void)
     time_t now = time(NULL);
     if (now > (last_change_time + int(delay) + 1))
     {
+      printf("------- %s: Delay expired, %0.1lf\n", tag, delay);
       fprintf(ac_fp, "%s", change_start_line);
       fflush(ac_fp);
       delay_elapsed = true;
@@ -190,12 +190,51 @@ void ac_point_t::update(void)
 
   if (unit_running != last_state_at_change)
   {
+    printf("------- %s: AC change state, %s\n", tag, unit_running ? "RUN" : "OFF");
     last_state_at_change = unit_running;
     last_change_time = now;
-    change_started = true;
+    if (unit_running) change_started = true;
     delay_elapsed = false;
   }
-  
+  printf("%s: %s, %s\n", tag, unit_running ? "RUN" : "OFF", delay_elapsed ? "Checking alarms" : "");
+
+
+  if (delay_elapsed)
+  {
+    if ((hot_temp - cold_temp) < 30.0)
+    {
+       printf("%s: Difference is low: %0.1lf\n", tag, hot_temp - cold_temp);
+       send_sms_group("Eat shit and die", "Stupid_People");
+    }
+    
+    if (cold_temp < 2.0)
+    {
+      printf("%s: Freez Danger: %0.1lf\n", tag, cold_temp);
+    }
+    
+  }
+}
+
+/********************************************************************/
+
+const char *ac_point_t::is_disabled(bool *disable)
+{
+   *disable = true;
+   return "Way too cold"; 
+}
+
+/********************************************************************/
+
+double ac_point_t::get_hot_average(void)
+{
+  return 33.7;
+}
+
+/********************************************************************/
+
+double ac_point_t::get_cold_average(void)
+{
+  return 3.7;
 }
 
 /********************************************************************/

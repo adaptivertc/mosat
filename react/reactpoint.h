@@ -64,6 +64,7 @@ enum point_type_t
   WEB_POINT,
   INT_POINT,
   PUMP_POINT,
+  AC_POINT,
   LEVEL_POINT,
   PCI_POINT
 };

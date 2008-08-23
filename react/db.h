@@ -160,6 +160,8 @@ public:
   const char *get_home_dir(void);
   void keyboard_on(bool v){keyboard_is_on = v;};
   bool global_alarm_disabled(void) {return global_alarm_disable;};
+  void init_sms(void);
+  void check_sms(void);
 };
 
 extern react_base_t *db;

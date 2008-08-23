@@ -1,7 +1,7 @@
 #./drivers/modbusdrv/libreactmodbusdrv.so|new_reactmodbus||
 #./drivers/modbusdrv/libreactmodbusdrv.so|new_reactmodbus|librtmodbus.so|
-#./drivers/sim_pump_low/libsimpumpdrv.so|new_simpumpdrv||
-./drivers/sim_ac/libsimacdrv.so|new_sim_ac_drv||
+./drivers/sim_pump_low/libsimpumpdrv.so|new_simpumpdrv||
+#./drivers/sim_ac/libsimacdrv.so|new_sim_ac_drv||
 #./drivers/shmdrv/libreactshmdrv.so|new_reactshm||
 #./drivers/sim/libsimdriver.so|new_simdriver||
 #./drivers/sim_pump/libsimpumpdrv.so|new_simpumpdrv||
