@@ -18,23 +18,60 @@
  * ***********************************************************************/
 
 #include <stdio.h>
-
+#include <stdlib.h>
+#include <dlfcn.h>
 #include "db_point.h"
 #include "db.h"
+#include "sms.h"
 
+static sms_base *sms_object = NULL;
+
+const char * process_message(const char * message)
+{
+	return "i hope it works";
+}
 
 void db_point_t::send_sms_group(const char *msg, const char *group)
 {
   printf("Message for %s: %s\n", group, msg);
+  if(sms_object == NULL)
+  	return;
+  else
+  	sms_object->sms_send_group(msg,group);
+  
 }
 
 void react_t::init_sms(void)
 {
 
+	void *handle = dlopen("librtsms.so",RTLD_LAZY);
+	if(handle== NULL)
+	{
+		fprintf(stderr,"%s\n",dlerror());
+		exit(1);
+	}
+	new_sms_t fn = (new_sms_t) dlsym(handle,"create_new_sms_object");
+	
+	char *error;
+	
+	if((error = dlerror()) != NULL)
+	{
+		fprintf(stderr,"%s\n",error);
+		exit(1);
+	}
+	
+	sms_object = (*fn)("./");
 }
 
 void react_t::check_sms(void)
 {
-
+	if(sms_object == NULL)
+		return;
+	smsMessage message = sms_object->next_sms();
+	if(!message.success())
+		return;
+	const char *reply = process_message(message.getMessage());
+	sms_object->sms_send(reply,message.getNumber());
+	
 }
 

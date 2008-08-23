@@ -10,10 +10,16 @@ RTCOMMON=../librtcommon/librtcommon.a
 %.o:    %.cpp $(INCLUDES)
 	$(CC) -c -g -o $@ $<
 
-all: sms
+all: librtsms.so librtsms.a testsms
 
-sms: sms.cpp sms.h
-	$(CC) -o sms sms.cpp -lmysqlclient -lnsl -lm -lz $(RTCOMMON)
+testsms: sms.cpp ../include/sms.h sms_implement.h
+	$(CC) -o testsms testsms.cpp sms.cpp -lmysqlclient -lnsl -lm -lz $(RTCOMMON)
+	
+librtsms.so: sms.o ../include/sms.h sms_implement.h
+	g++  -shared -o librtsms.so sms.o 
+
+librtsms.a: sms.o ../include/sms.h sms_implement.h
+	  ar r librtsms.a sms.o
 
 clean:
 	rm -fv sms *.o

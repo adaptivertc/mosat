@@ -65,15 +65,7 @@ bool smsMessage::success();
 	
 */
 
-
-
-#include <mysql.h>
-#include <stdio.h>
 #include "rtcommon.h"
-#include "arg.h"
-#include <string.h>
-#include <queue>
-#include <math.h>
 
 #define MSGMAXLEN 161
 #define MULTIMSGMAXLEN 481
@@ -93,75 +85,35 @@ private:
 	bool status;
 
 public:
-	void setData(const char *message, const char *number, const char *name, const char *group);
-	const char *getMessage();
-	const char *getNumber();
-	const char *getName();
-	const char *getGroup();
-	void setSuccess(bool x);
-	bool success();
+	void setData(const char *message, const char *number, const char *name, const char *group){safe_strcpy(this->message,message,sizeof(this->message));
+	safe_strcpy(this->number,number,sizeof(this->number));
+	safe_strcpy(this->name,name,sizeof(this->name));
+	safe_strcpy(this->group,group,sizeof(this->group));};
+	const char *getMessage(){return message;};
+	const char *getNumber(){return number;};
+	const char *getName(){return name;};
+	const char *getGroup(){return group;};
+	void setSuccess(bool x){status = x;};
+	bool success(){return status;};
 };
 
-class smsSplit
-{
-private:
-	short int count;
-	short int actualChar;
-	short int actualMessage;
-	char multiMsg[MULTIMSGMAXLEN];
-	char msg[MSGMAXLEN];
-public:
-	smsSplit(const char *text);
-	short int getCount();
-	const char *getNextMsg();
-};
 
-class sms
-{
-
-private:
-	MYSQL *conn;
-	MYSQL_ROW row;
-	MYSQL_RES *resGroups;
-	MYSQL_ROW rowGroups;
-	bool goodConfig;
-	char gammuFile[150];
-	smsMessage actualMessage;
-	
-	int sms_send_multiple(char *message);
-	int sms_send_single(char *message);
-	
-	
+class sms_base
+{	
 
 public:
-	sms(const char *host, const char *user, const char *password, const char *database, const char *smsdConfig, const char *receiveFile, const char *sendFile);
-	~sms();
-	bool sms_send(const char *message, const char *number);
-	bool sms_send_member(const char *message, const char *name, const char *group);
-	bool sms_send_group(const char *message, const char *group);
-	bool sms_send_all(const char *message);
-	void sms_prueba();
-	smsMessage next_sms();
-	smsMessage next_sms_number(const char *number);
-	smsMessage next_sms_member(const char *name, const char *group);
-	smsMessage next_sms_group(const char *group);
+	virtual ~sms_base(){};
+	virtual bool sms_send(const char *message, const char *number) = 0;
+	virtual bool sms_send_member(const char *message, const char *name, const char *group) = 0;
+	virtual bool sms_send_group(const char *message, const char *group) = 0;
+	virtual bool sms_send_all(const char *message) = 0;
+	virtual void sms_prueba() = 0;
+	virtual smsMessage next_sms() = 0;
+	virtual smsMessage next_sms_number(const char *number) = 0;
+	virtual smsMessage next_sms_member(const char *name, const char *group) = 0;
+	virtual smsMessage next_sms_group(const char *group) = 0;
 };
 
-class reader
-{
+typedef sms_base *(*new_sms_t)(const char *path);
 
-private:
-	char header[NAMEMAXLEN];
-	char token[NAMEMAXLEN];
-	char temp;
-	FILE *fp;
-	bool goodConfig;
-	bool finish;
 
-public:
-	void readerInit(const char *path);
-	const char *nextHeader();
-	const char *nextToken();
-	bool state();
-	bool finished();
-};

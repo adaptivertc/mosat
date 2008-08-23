@@ -6,45 +6,11 @@ The following example program (in file prog.c) should be compiled with this Unix
 */
 
 #include "sms.h"
-#include<sys/time.h>
-#include <time.h>
+#include "sms_implement.h"
 
-void smsMessage::setData(const char *message, const char *number, const char *name, const char *group)
+extern "C" sms_base *create_new_sms_object(const char * path)
 {
-	safe_strcpy(this->message,message,sizeof(this->message));
-	safe_strcpy(this->number,number,sizeof(this->number));
-	safe_strcpy(this->name,name,sizeof(this->name));
-	safe_strcpy(this->group,group,sizeof(this->group));
-}
-
-const char *smsMessage::getMessage()
-{
-	return message;
-}
-
-const char *smsMessage::getNumber()
-{
-	return number;
-}
-
-const char *smsMessage::getName()
-{
-	return name;
-}
-
-const char *smsMessage::getGroup()
-{
-	return group;
-}
-
-void smsMessage::setSuccess(bool x)
-{
-	status = x;
-}
-
-bool smsMessage::success()
-{
-	return status;
+	return new sms("localhost", "root", "root", "gammu",path);
 }
 
 void reader::readerInit(const char *path)
@@ -194,15 +160,18 @@ sms::~sms()
 }
 
 
-sms::sms(const char *host, const char *user, const char *password, const char *database, const char *smsdConfig, const char *receiveFile, const char *sendFile)
+sms::sms(const char *host, const char *user, const char *password, const char *database, const char *path)
 {
-
+	char tempPath[300];
+	snprintf(gammuFile,sizeof(gammuFile),"%s/gammusmsdrc.conf",path);
+	
+/*"gammusmsdrc.conf","receive.conf","send.conf"*/
 	char query[300];
 	char tempHeader[NAMEMAXLEN];
 	char tempNumber[NUMMAXLEN];
 	char tempName[NAMEMAXLEN];
 	goodConfig = true;
-	sprintf(gammuFile,"%s",smsdConfig);
+	//sprintf(gammuFile,"%s",smsdConfig);
 	
 	conn = mysql_init(NULL);
    	
@@ -227,7 +196,9 @@ sms::sms(const char *host, const char *user, const char *password, const char *d
    	
       	reader config;
       	
-      	config.readerInit(receiveFile);
+      	snprintf(tempPath,sizeof(tempPath),"%s/receive.conf",path);
+      	
+      	config.readerInit(tempPath);
       	
       	while(config.state() && !config.finished())
       	{
@@ -257,7 +228,9 @@ sms::sms(const char *host, const char *user, const char *password, const char *d
       		}
       	}
       	
-      	config.readerInit(sendFile);
+      	snprintf(tempPath,sizeof(tempPath),"%s/send.conf",path);
+      	
+      	config.readerInit(tempPath);
 
       	while(config.state() && !config.finished())
       	{
@@ -473,7 +446,7 @@ smsMessage sms::next_sms_number(const char *number)
 	MYSQL_RES *res;
 	char query[100];
 	
-	sprintf(query,"SELECT TextDecoded, SenderNumber ID FROM inbox WHERE SenderNumber = '%s';",number);
+	sprintf(query,"SELECT TextDecoded, SenderNumber, ID FROM inbox WHERE SenderNumber = '%s';",number);
 	
 	if(mysql_query(conn,query))
 	{
@@ -544,7 +517,7 @@ smsMessage sms::next_sms_member(const char *name, const char *group)
 	MYSQL_RES *res;
 	char query[300];
 	
-	sprintf(query,"SELECT inbox.TextDecoded, receive.number, receive.name, receive.type inbox.ID FROM inbox, receive WHERE inbox.Processed = 'false' AND inbox.SenderNumber = receive.number AND receive.name = '%s'AND receive.number = '%s';",name,group);
+	sprintf(query,"SELECT inbox.TextDecoded, receive.number, receive.name, receive.type, inbox.ID FROM inbox, receive WHERE inbox.Processed = 'false' AND inbox.SenderNumber = receive.number AND receive.name = '%s'AND receive.number = '%s';",name,group);
 	
 	if(mysql_query(conn,query))
 	{
@@ -648,55 +621,3 @@ void sms::sms_prueba()
 	}
 	
 }
-
-int main(int argc, char *arvg[])
-{
-	time_t seconds1, seconds2;
-	
-	sms mensajero("localhost", "root", "root", "gammu","gammusmsdrc.conf","receive.conf","send.conf");
-
-	mensajero.sms_prueba();
-	
-	smsMessage mensaje;
-	
-	struct timeval tv1,tv2;
-//struct timezone tz;
-//struct tm *tm;
-//gettimeofday(&tv, NULL);
-//tm=localtime(&tv.tv_sec);
-//printf(" %d:%02d:%02d %d \n", tm->tm_hour, tm->tm_min,tm->tm_sec, tv.tv_usec);
-	
-	//seconds1 = time (NULL);
-	gettimeofday(&tv1, NULL);
-
-	
-	mensajero.sms_send_member("Probando","Rene","Normal");
-	
-	//seconds2 = time (NULL);
-	gettimeofday(&tv2, NULL);
-	
-	
-	//printf("Time before send: %ld\nTime after send:%ld\n",seconds1,seconds2);
-	printf("Diferencia:%ld\n",(tv2.tv_sec-tv1.tv_sec)*1000000+(tv2.tv_usec-tv1.tv_usec));
-	
-	//seconds1 = time (NULL);
-	gettimeofday(&tv1, NULL);
-	mensaje = mensajero.next_sms();
-	if(mensaje.success())
-	
-		printf("Se recibio el siguiente mensaje: %s\n",mensaje.getMessage());
-	else
-		printf("No se recibio mensaje");
-	//seconds2 = time (NULL);
-	gettimeofday(&tv2, NULL);
-	printf("Diferencia:%ld\n",(tv2.tv_sec-tv1.tv_sec)*1000000+(tv2.tv_usec-tv1.tv_usec));
-	//printf("Time before receive: %ld\nTime after receive:%ld\n",seconds1,seconds2);
-	
-	//printf("Mensaje: %s\nNumero: %s\nNombre: %s\nGrupo: %s\n",mensaje.getMessage(),mensaje.getNumber(),mensaje.getName(),mensaje.getGroup());
-	return 0;
-}
-
-/*
-formato de mensajes status.1
-AC1.get_cold();
-*/
