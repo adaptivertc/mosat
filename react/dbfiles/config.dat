@@ -2,3 +2,4 @@ LogHome|./log/
 HtmlHome|./html/
 TemplateHome|./template/
 SampleRate|1|
+SMS_ENABLED|T|

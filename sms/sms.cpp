@@ -10,6 +10,7 @@ The following example program (in file prog.c) should be compiled with this Unix
 
 extern "C" sms_base *create_new_sms_object(const char * path)
 {
+	printf("creating new sms object\n");
 	return new sms("localhost", "root", "root", "gammu",path);
 }
 

@@ -23,6 +23,7 @@
 #include "db_point.h"
 #include "db.h"
 #include "sms.h"
+#include "ap_config.h"
 
 static sms_base *sms_object = NULL;
 
@@ -35,7 +36,10 @@ void db_point_t::send_sms_group(const char *msg, const char *group)
 {
   printf("Message for %s: %s\n", group, msg);
   if(sms_object == NULL)
+  {
+        printf("***********Error, SMS not enabled\n");
   	return;
+  }
   else
   	sms_object->sms_send_group(msg,group);
   
@@ -43,7 +47,13 @@ void db_point_t::send_sms_group(const char *msg, const char *group)
 
 void react_t::init_sms(void)
 {
+	bool use_sms = ap_config.get_bool("SMS_ENABLED", false);
 
+        if (!use_sms) 
+	{
+		printf("SMS is not Enabled");
+		return;
+	}
 	void *handle = dlopen("librtsms.so",RTLD_LAZY);
 	if(handle== NULL)
 	{
