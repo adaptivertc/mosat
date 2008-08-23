@@ -508,7 +508,7 @@ smsMessage sms::next_sms_group(const char *group)
 	MYSQL_RES *res;
 	char query[250];
 	
-	sprintf(query,"SELECT inbox.TextDecoded, receive.number, receive.name, receive.type inbox.ID FROM inbox, receive WHERE inbox.Processed = 'false' AND inbox.SenderNumber = receive.number AND receive.type = '%s';",group);
+	sprintf(query,"SELECT inbox.TextDecoded, receive.number, receive.name, receive.type, inbox.ID FROM inbox, receive WHERE inbox.Processed = 'false' AND inbox.SenderNumber = receive.number AND receive.type = '%s';",group);
 	
 	if(mysql_query(conn,query))
 	{
@@ -623,7 +623,7 @@ void sms::sms_prueba()
 	
 	while(true)
 	{
-		mensaje = next_sms();
+		mensaje = next_sms_group("Normal");
 		if(mensaje.success())
 		{
 			//printf("Mensaje recibido:%s",mensaje.getMessage());
