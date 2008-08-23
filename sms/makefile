@@ -15,8 +15,8 @@ all: librtsms.so librtsms.a testsms testsms_so
 testsms: testsms.cpp sms.cpp ../include/sms.h sms_implement.h
 	$(CC) -o testsms testsms.cpp sms.cpp -lmysqlclient -lnsl -lm -lz $(RTCOMMON)
 
-testsms_so: testsms_so.cpp sms.cpp ../include/sms.h
-	$(CC) -o testsms_so testsms_so.cpp sms.cpp -lmysqlclient -lnsl -lm -lz -ldl $(RTCOMMON)
+testsms_so: testsms_so.cpp ../include/sms.h
+	$(CC) -o testsms_so testsms_so.cpp -lmysqlclient -lnsl -lm -lz -ldl $(RTCOMMON)
 	
 librtsms.so: sms.o ../include/sms.h sms_implement.h
 	g++  -shared -o librtsms.so sms.o 

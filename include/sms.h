@@ -85,10 +85,12 @@ private:
 	bool status;
 
 public:
-	void setData(const char *message, const char *number, const char *name, const char *group){safe_strcpy(this->message,message,sizeof(this->message));
-	safe_strcpy(this->number,number,sizeof(this->number));
-	safe_strcpy(this->name,name,sizeof(this->name));
-	safe_strcpy(this->group,group,sizeof(this->group));};
+	void setData(const char *message, const char *number, const char *name, const char *group) {
+          safe_strcpy(this->message,message,sizeof(this->message));
+	  safe_strcpy(this->number,number,sizeof(this->number));
+	  safe_strcpy(this->name,name,sizeof(this->name));
+	  safe_strcpy(this->group,group,sizeof(this->group));
+	};
 	const char *getMessage(){return message;};
 	const char *getNumber(){return number;};
 	const char *getName(){return name;};

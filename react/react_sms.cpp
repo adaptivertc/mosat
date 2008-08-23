@@ -27,10 +27,14 @@
 
 static sms_base *sms_object = NULL;
 
+/***************************************************************/
+
 const char * process_message(const char * message)
 {
 	return "i hope it works";
 }
+
+/***************************************************************/
 
 void db_point_t::send_sms_group(const char *msg, const char *group)
 {
@@ -45,16 +49,28 @@ void db_point_t::send_sms_group(const char *msg, const char *group)
   
 }
 
+/***************************************************************/
+
 void react_t::init_sms(void)
 {
 	bool use_sms = ap_config.get_bool("SMS_ENABLED", false);
 
         if (!use_sms) 
 	{
-		printf("SMS is not Enabled");
+		printf("SMS is not Enabled - skipping initialization\n");
 		return;
 	}
-	void *handle = dlopen("librtsms.so",RTLD_LAZY);
+	printf("Initializating SMS . . . \n");
+        void *handle;
+
+	handle = dlopen("libmysqlclient.so",RTLD_LAZY | RTLD_GLOBAL);
+	if(handle== NULL)
+	{
+		fprintf(stderr,"%s\n",dlerror());
+		exit(1);
+	}
+
+	handle = dlopen("../sms/librtsms.so",RTLD_LAZY);
 	if(handle== NULL)
 	{
 		fprintf(stderr,"%s\n",dlerror());
@@ -71,7 +87,11 @@ void react_t::init_sms(void)
 	}
 	
 	sms_object = (*fn)("./");
+	printf("SMS initialization done.\n");
+
 }
+
+/***************************************************************/
 
 void react_t::check_sms(void)
 {
@@ -84,4 +104,6 @@ void react_t::check_sms(void)
 	sms_object->sms_send(reply,message.getNumber());
 	
 }
+
+/***************************************************************/
 
