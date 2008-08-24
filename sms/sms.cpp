@@ -425,8 +425,8 @@ smsMessage sms::next_sms()
 	
 	if((row = mysql_fetch_row(res)) != NULL)
 	{
-		actualMessage.setData(row[0],row[1],"","");
-		actualMessage.setSuccess(true);
+		//actualMessage.setData(row[0],row[1],"","");
+		//actualMessage.setSuccess(true);
 		
 		sprintf(query,"UPDATE inbox SET processed = 'true' WHERE ID = '%s';",row[2]);
 	
@@ -624,7 +624,7 @@ smsMessage sms::next_sms_member(const char *name, const char *group)
 void sms::sms_prueba()
 {
 	smsMessage mensaje;
-	char temp[161];
+	char temp[191];
 	int number;
 	
 	while(true)
@@ -644,7 +644,10 @@ void sms::sms_prueba()
 					sms_send("Numero de unidad fuera de rango",mensaje.getNumber());
 			}
 			else
-				sms_send("Mensaje invalido",mensaje.getNumber());
+			{
+				sprintf(temp,"Mensaje invalido recibido:\n%s",mensaje.getMessage());
+				sms_send(temp,mensaje.getNumber());
+			}
 			//sms_send(mensaje.getMessage(),mensaje.getNumber());
 			printf("Se respondio un mensaje\n");
 		}

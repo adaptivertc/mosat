@@ -21,10 +21,13 @@ $(DIR)%.o:	%.c $(INCLUDES)
 $(DIR)%.o:	%.cpp $(INCLUDES)
 	$(CPP) -c -DARM -o $@ $<
 
-all:	$(DIR)sms
+all:	$(DIR)librtsms.so $(DIR)testsms_so
 
-$(DIR)sms:	$(DIR)sms.o sms.h 
-	$(CPP) -o $(DIR)sms $(DIR)sms.o $(RTCOMMON) $(DIR)libmysqlclient.a $(DIR)libz.a 
+$(DIR)librtsms.so:	$(DIR)sms.o ../include/sms.h sms_implement.h
+	$(CPP) -shared -o $(DIR)librtsms.so $(DIR)sms.o $(RTCOMMON) $(DIR)libmysqlclient.so $(DIR)libz.so.1 
+	
+$(DIR)testsms_so: testsms_so.cpp ../include/sms.h
+	$(CPP) -o $(DIR)testsms_so testsms_so.cpp -ldl $(RTCOMMON) $(DIR)libmysqlclient.a $(DIR)libz.a
 		
 clean:
 	rm -fv $(DIR)*.o
