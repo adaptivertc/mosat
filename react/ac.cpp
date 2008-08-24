@@ -197,19 +197,14 @@ void ac_point_t::update(void)
     delay_elapsed = false;
   }
   //printf("%s: %s, %s\n", tag, unit_running ? "RUN" : "OFF", delay_elapsed ? "Checking alarms" : "");
-
  
-    cold_detected = false;
-    cold_detect_time = 0.0;
-
-    small_diference_dectected = false;
-    small_difference_detect_time = 0.0;
-
   if (delay_elapsed)
   {
     if ((hot_temp - cold_temp) < 30.0)
     {
-      printf("%s: Difference is low: %0.1lf\n", tag, hot_temp - cold_temp);
+      printf("%s: Difference is low: %0.1lf %s, %ld %ld\n", 
+          tag, hot_temp - cold_temp, diff_alarm ? "ALARM" : "OK",
+                      now, small_difference_detect_time);
       if (!small_diference_dectected)
       {
         small_diference_dectected = true;
@@ -221,6 +216,7 @@ void ac_point_t::update(void)
         {
           if (!diff_alarm)
           {
+            printf("Sending diff alarm SMS *********************************************************************************\n");
             send_sms_group("Unit NOT working", "NORMAL");
             diff_alarm = true;
           }
@@ -235,7 +231,8 @@ void ac_point_t::update(void)
     
     if (cold_temp < 2.0)
     {
-      printf("%s: Freeze Danger: %0.1lf\n", tag, cold_temp);
+      printf("%s: Freeze Danger: %0.1lf %s\n", 
+          tag, cold_temp,  cold_alarm ? "ALARM" : "OK");
       if (!cold_detected)
       {
         cold_detected = true;
@@ -247,6 +244,7 @@ void ac_point_t::update(void)
         {
           if (!cold_alarm)
           {
+            printf("Sending cold alarm SMS *********************************************************************************\n");
             send_sms_group("Unit TOO cold", "NORMAL");
             cold_alarm = true;
           }
