@@ -78,6 +78,7 @@ private:
   display_info_t dinfo;
   char home_dir[200];
   double current_time;
+  double next_sms_check;
   double sample_rate;
   bool keyboard_is_on;
   db_point_factory_t *point_factory[MAX_POINT_TYPES];

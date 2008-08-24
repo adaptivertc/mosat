@@ -95,13 +95,17 @@ void react_t::init_sms(void)
 
 void react_t::check_sms(void)
 {
+	printf("Checking for SMS messages . . . . \n");
 	if(sms_object == NULL)
 		return;
 	smsMessage message = sms_object->next_sms();
 	if(!message.success())
 		return;
+	printf("Got a message, processing . . . . \n");
 	const char *reply = process_message(message.getMessage());
+	printf("Sending reply . . . \n");
 	sms_object->sms_send(reply,message.getNumber());
+	printf("Done Sending\n");
 	
 }
 

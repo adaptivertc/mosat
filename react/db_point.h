@@ -651,6 +651,12 @@ private:
   bool delay_elapsed;
   char change_start_line[100];
 
+  bool cold_detected;
+  int cold_detect_time;
+
+  bool small_diference_dectected;
+  int small_difference_detect_time;
+
   time_t this_hour;
   time_t this_day;
 

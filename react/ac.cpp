@@ -198,20 +198,59 @@ void ac_point_t::update(void)
   }
   printf("%s: %s, %s\n", tag, unit_running ? "RUN" : "OFF", delay_elapsed ? "Checking alarms" : "");
 
+ 
+    cold_detected = false;
+    cold_detect_time = 0.0;
+
+    small_diference_dectected = false;
+    small_difference_detect_time = 0.0;
 
   if (delay_elapsed)
   {
     if ((hot_temp - cold_temp) < 30.0)
     {
-       printf("%s: Difference is low: %0.1lf\n", tag, hot_temp - cold_temp);
-       send_sms_group("Eat shit and die", "Stupid_People");
+      printf("%s: Difference is low: %0.1lf\n", tag, hot_temp - cold_temp);
+      send_sms_group("Eat shit and die", "Stupid_People");
+      if (!small_diference_dectected)
+      {
+        small_diference_dectected = true;
+        small_difference_detect_time = now;
+      }
+      else 
+      {
+        if (now > (small_difference_detect_time + 30))
+        {
+
+        }
+      }
+    }
+    else
+    {
+      small_diference_dectected = false;
+      small_difference_detect_time = 0.0;
     }
     
     if (cold_temp < 2.0)
     {
-      printf("%s: Freez Danger: %0.1lf\n", tag, cold_temp);
+      printf("%s: Freeze Danger: %0.1lf\n", tag, cold_temp);
+      if (!cold_detected)
+      {
+        cold_detected = true;
+        cold_detect_time = now;
+      }
+      else 
+      {
+        if (now > (cold_detect_time + 30))
+        {
+
+        }
+      }
     }
-    
+    else
+    {
+      cold_detected = false;
+      cold_detect_time = 0;
+    }
   }
 }
 
@@ -367,6 +406,12 @@ ac_point_t **ac_point_t::read(int *cnt, const char *home_dir)
     ac->day_total_cold = 0.0;
     ac->hour_total_hot = 0.0;
     ac->day_total_hot = 0.0;
+
+    ac->cold_detected = false;
+    ac->cold_detect_time = 0.0;
+
+    ac->small_diference_dectected = false;
+    ac->small_difference_detect_time = 0.0;
 
     /***
     ac->hour_total_amps = 0.0;

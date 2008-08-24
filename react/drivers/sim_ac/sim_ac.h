@@ -40,14 +40,21 @@ private:
   double steady_state_hot;
   double cold_temp;
   double hot_temp;
+  double on_tau;
+  double off_tau;
   exp_simulator_t sim_hot;
   exp_simulator_t sim_cold;
+  void update_on(double t);
+  void update_off(double t);
 public:
   ac_unit_sim_t(double a_period, double a_fraction_on,
                 double a_start_delay, double start_time);
   bool update(double t, double *the_cold_temp, double *the_hot_temp);
-  void update_on(double t);
-  void update_off(double t);
+  void set_steady_state_hot(double temp){steady_state_hot = temp;};
+  void set_steady_state_cold(double temp){steady_state_cold = temp;};
+  void set_on_tau(double tau){on_tau = tau;};
+  void set_off_tau(double tau){off_tau = tau;};
+  void set_outside_temp(double temp){outside_temp = temp;};
 };
 
 class sim_ac_drv_t : public io_driver_t

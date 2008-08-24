@@ -120,6 +120,30 @@ void sim_ac_drv_t::send_do(int aChannel, bool aVal)
   }
   //di_data[aChannel] = aVal;
   do_data[aChannel] = aVal;
+  if (aChannel == 30)
+  {
+     if (aVal)
+     {
+       ac_sim[0]-> set_steady_state_hot(35.3);
+       ac_sim[0]-> set_steady_state_cold(28.1);
+     } 
+     else
+     {
+       ac_sim[0]-> set_steady_state_hot(55.8);
+       ac_sim[0]-> set_steady_state_cold(4.5);
+     }
+  }
+  else if (aChannel == 31)
+  {
+     if (aVal)
+     {
+       ac_sim[0]-> set_steady_state_cold(-2.0);
+     } 
+     else
+     {
+       ac_sim[0]-> set_steady_state_cold(4.5);
+     }
+  }
 }
 
 

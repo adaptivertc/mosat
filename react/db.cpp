@@ -356,6 +356,11 @@ bool react_t::update(double theTime, bool execute_script)
 {
   bool retval;
   this->set_time(theTime);
+  if (get_time() > next_sms_check)
+  {
+    this->check_sms();
+    next_sms_check += 10.0;
+  }
 
   ta1.start();
   this->read_inputs();
@@ -491,6 +496,7 @@ react_t::react_t()
   set_get_analog_ptr_fn(react_get_analog_ptr_fn);
   set_get_point_type_fn(fast_get_point_type);
   this->init_sms();
+  next_sms_check = 10.0;
 }
 
 /************************************************************************/
