@@ -273,6 +273,8 @@ int main(int argc, char *argv[])
   reactdb->set_home_dir(home_dir);
   reactdb->set_sample_rate((double) sample_rate);
   reactdb->read_all_points(home_dir);
+  reactdb->init_sms();
+
 
   int ntests = 0;
   if (execute_script)

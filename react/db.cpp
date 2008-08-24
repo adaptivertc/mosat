@@ -495,7 +495,6 @@ react_t::react_t()
   set_get_discrete_ptr_fn(react_get_discrete_ptr_fn);
   set_get_analog_ptr_fn(react_get_analog_ptr_fn);
   set_get_point_type_fn(fast_get_point_type);
-  this->init_sms();
   next_sms_check = 10.0;
 }
 
