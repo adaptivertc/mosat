@@ -266,7 +266,7 @@ bool sms::sms_send(const char *message, const char *number)
 	{
 		char query[500];
 		
-		printf("%s",message);
+		//printf("%s",message);
 		
 		if(strlen(message) <= 160)
 		{
@@ -285,7 +285,7 @@ bool sms::sms_send(const char *message, const char *number)
 			for(int i = 1; i <= spliter.getCount(); i++)
 			{
 				sprintf(query,"echo \"(%d/%d)%s\" | gammu --sendsmsdsms TEXT %s MYSQL %s",i,spliter.getCount(),spliter.getNextMsg(),number,gammuFile);
-				printf("%s",query);
+				//printf("%s",query);
 				if(system(query) != 0)
 				{
 					fprintf(stderr,"Error al enviar el mensaje\n");
@@ -411,7 +411,8 @@ bool sms::sms_send_all(const char *message)
 
 smsMessage sms::next_sms()
 {
-	MYSQL_RES *res;
+	MYSQL_RES *res, *res2;
+	MYSQL_ROW row2;
 	char query[100] = "SELECT TextDecoded, SenderNumber, ID FROM inbox WHERE Processed = 'false';";
 	
 	if(mysql_query(conn,query))
@@ -433,6 +434,21 @@ smsMessage sms::next_sms()
 		{
 			fprintf(stderr,"%s\n",mysql_error(conn));
 		}
+		
+		sprintf(query,"SELECT * FROM receive WHERE number = '%s';",row[1]);
+	
+		if(mysql_query(conn,query))
+		{
+			fprintf(stderr,"%s\n",mysql_error(conn));
+		}
+		
+		res2 = mysql_store_result(conn);
+		
+		if((row2 = mysql_fetch_row(res2)) != NULL)
+			actualMessage.setData(row[0],row[1],row2[1],row2[2]);
+		else
+			actualMessage.setData(row[0],row[1],"@","@");
+		actualMessage.setSuccess(true);
 	}
 	else
 		actualMessage.setSuccess(false);
@@ -444,7 +460,8 @@ smsMessage sms::next_sms()
 
 smsMessage sms::next_sms_number(const char *number)
 {
-	MYSQL_RES *res;
+	MYSQL_RES *res, *res2;
+	MYSQL_ROW row2;
 	char query[100];
 	
 	sprintf(query,"SELECT TextDecoded, SenderNumber, ID FROM inbox WHERE SenderNumber = '%s';",number);
@@ -459,7 +476,7 @@ smsMessage sms::next_sms_number(const char *number)
 	
 	if((row = mysql_fetch_row(res)) != NULL)
 	{
-		actualMessage.setData(row[0],row[1],"","");
+		//actualMessage.setData(row[0],row[1],"","");
 		actualMessage.setSuccess(true);
 		
 		sprintf(query,"UPDATE inbox SET processed = 'true' WHERE ID = '%s';",row[2]);
@@ -468,6 +485,21 @@ smsMessage sms::next_sms_number(const char *number)
 		{
 			fprintf(stderr,"%s\n",mysql_error(conn));
 		}
+		
+		sprintf(query,"SELECT * FROM receive WHERE number = '%s';",number);
+	
+		if(mysql_query(conn,query))
+		{
+			fprintf(stderr,"%s\n",mysql_error(conn));
+		}
+		
+		res2 = mysql_store_result(conn);
+		
+		if((row2 = mysql_fetch_row(res2)) != NULL)
+			actualMessage.setData(row[0],row[1],row2[1],row2[2]);
+		else
+			actualMessage.setData(row[0],row[1],"@","@");
+		actualMessage.setSuccess(true);
 	}
 	else
 		actualMessage.setSuccess(false);
@@ -597,10 +629,10 @@ void sms::sms_prueba()
 	
 	while(true)
 	{
-		mensaje = next_sms_group("Normal");
+		mensaje = next_sms();
 		if(mensaje.success())
 		{
-			//printf("Mensaje recibido:%s",mensaje.getMessage());
+			printf("Mensaje recibido:%s\nDel individuo:%s\nDel grupo:%s\n",mensaje.getMessage(),mensaje.getName(),mensaje.getGroup());
 			strcpy(temp,mensaje.getMessage());
 					//printf("Mensaje recibido%s\n",temp);
 			if(strncasecmp("estatus.",temp,8)==0)
