@@ -10,6 +10,9 @@ SHUTOFF_AC9|Output to shutoff AC1|1|5|8|ON|OFF|
 SHUTOFF_AC10|Output to shutoff AC1|1|5|9|ON|OFF|
 SHUTOFF_AC11|Output to shutoff AC1|1|5|10|ON|OFF|
 SHUTOFF_AC12|Output to shutoff AC1|1|5|11|ON|OFF|
+diff_error|Create Diff Error|1|5|30|ON|OFF|
+cold_error|Create Cold Error|1|5|31|ON|OFF|
+
 #    Tag
 #    Description
 #    Driver Number

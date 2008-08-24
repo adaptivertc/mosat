@@ -60,7 +60,7 @@ bool ac_unit_sim_t::update(double time_now,
 
 void ac_unit_sim_t::update_on(double time_now)
 {
-  printf("ON: next: %0.1lf\n", next_transition);
+  //printf("ON: next: %0.1lf\n", next_transition);
   if (time_now > next_transition)
   {
     ac_is_on = false;
@@ -78,7 +78,7 @@ void ac_unit_sim_t::update_on(double time_now)
 
 void ac_unit_sim_t::update_off(double time_now)
 {
-  printf("OFF: next: %0.1lf\n", next_transition);
+  //printf("OFF: next: %0.1lf\n", next_transition);
   if (time_now > next_transition)
   {
     ac_is_on = true;

@@ -124,11 +124,13 @@ void sim_ac_drv_t::send_do(int aChannel, bool aVal)
   {
      if (aVal)
      {
+       printf("***************** Creating performance error on ac unit 1\n");
        ac_sim[0]-> set_steady_state_hot(35.3);
        ac_sim[0]-> set_steady_state_cold(28.1);
      } 
      else
      {
+       printf("-- Canceling performance error\n");
        ac_sim[0]-> set_steady_state_hot(55.8);
        ac_sim[0]-> set_steady_state_cold(4.5);
      }
@@ -137,10 +139,12 @@ void sim_ac_drv_t::send_do(int aChannel, bool aVal)
   {
      if (aVal)
      {
-       ac_sim[0]-> set_steady_state_cold(-2.0);
+       printf("############## Creating too cold error on ac unit 1\n");
+       ac_sim[0]-> set_steady_state_cold(-8.0);
      } 
      else
      {
+       printf("-- Canceling cold error\n");
        ac_sim[0]-> set_steady_state_cold(4.5);
      }
   }
@@ -185,7 +189,7 @@ void sim_ac_drv_t::read(void)
 
   if (elapsed_time < 0.05) return;
 
-  printf("------ %0.1lf\n", now);
+  //printf("------ %0.1lf\n", now);
   for (int i=0; i < 12; i++)
   {
     di_data[i] = ac_sim[i]->update(now, &ai_data[i], &ai_data[i+12]);

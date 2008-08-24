@@ -196,7 +196,7 @@ void ac_point_t::update(void)
     if (unit_running) change_started = true;
     delay_elapsed = false;
   }
-  printf("%s: %s, %s\n", tag, unit_running ? "RUN" : "OFF", delay_elapsed ? "Checking alarms" : "");
+  //printf("%s: %s, %s\n", tag, unit_running ? "RUN" : "OFF", delay_elapsed ? "Checking alarms" : "");
 
  
     cold_detected = false;
@@ -210,7 +210,6 @@ void ac_point_t::update(void)
     if ((hot_temp - cold_temp) < 30.0)
     {
       printf("%s: Difference is low: %0.1lf\n", tag, hot_temp - cold_temp);
-      send_sms_group("Eat shit and die", "Stupid_People");
       if (!small_diference_dectected)
       {
         small_diference_dectected = true;
@@ -220,7 +219,11 @@ void ac_point_t::update(void)
       {
         if (now > (small_difference_detect_time + 30))
         {
-
+          if (!diff_alarm)
+          {
+            send_sms_group("Unit NOT working", "NORMAL");
+            diff_alarm = true;
+          }
         }
       }
     }
@@ -242,7 +245,11 @@ void ac_point_t::update(void)
       {
         if (now > (cold_detect_time + 30))
         {
-
+          if (!cold_alarm)
+          {
+            send_sms_group("Unit TOO cold", "NORMAL");
+            cold_alarm = true;
+          }
         }
       }
     }
@@ -263,7 +270,24 @@ const char *ac_point_t::is_disabled(bool *disable)
 }
 
 /********************************************************************/
+ 
+void ac_point_t::get_status(char *status, int len)
+{
+  if (cold_alarm)
+  {
+    snprintf(status, len, "%s: COLD ALARM\n", tag);
+  }
+  else if (diff_alarm)
+  {
+    snprintf(status, len, "%s: COLD ALARM\n", tag);
+  }
+  else
+  {
+    snprintf(status, len, "%s: NORMAL\n", tag);
+  }
+}
 
+/********************************************************************/
 double ac_point_t::get_hot_average(void)
 {
   return 33.7;
@@ -408,9 +432,11 @@ ac_point_t **ac_point_t::read(int *cnt, const char *home_dir)
     ac->day_total_hot = 0.0;
 
     ac->cold_detected = false;
+    ac->cold_alarm = false;
     ac->cold_detect_time = 0.0;
 
     ac->small_diference_dectected = false;
+    ac->diff_alarm = false;
     ac->small_difference_detect_time = 0.0;
 
     /***

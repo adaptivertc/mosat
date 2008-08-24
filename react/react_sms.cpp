@@ -27,11 +27,22 @@
 
 static sms_base *sms_object = NULL;
 
+ac_point_t *ac_unit[12];
+
 /***************************************************************/
 
+static char acmsg[120];
 const char * process_message(const char * message)
 {
-	return "i hope it works";
+  acmsg[0] = '\0';
+  for(int i=0; i < 6; i++)
+  {
+    char status[50];
+    if (ac_unit[i] == NULL) continue; 
+    ac_unit[i]->get_status(status, sizeof(status));
+    safe_strcat(acmsg, status, sizeof(acmsg)); 
+  }
+  return acmsg;
 }
 
 /***************************************************************/
@@ -88,6 +99,22 @@ void react_t::init_sms(void)
 	
 	sms_object = (*fn)("./");
 	printf("SMS initialization done.\n");
+
+	for (int i=0; i < 6; i++)
+        {
+            char actag[30];
+            snprintf(actag, sizeof(actag), "AC%d", i+1); 
+      	    db_point_t *db_point = db->get_db_point(actag);
+      	    if ((db_point == NULL) || (db_point->point_type() != AC_POINT))
+            {
+      	      ac_unit[i] = NULL;
+      	      printf("Bad AC point: %s\n", actag);
+            }
+      	    else
+            {
+      	      ac_unit[i] = (ac_point_t *) db_point;
+            }
+        }
 
 }
 
