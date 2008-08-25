@@ -653,11 +653,11 @@ private:
 
   bool cold_detected;
   bool cold_alarm;
-  int cold_detect_time;
+  time_t cold_detect_time;
 
   bool small_diference_dectected;
   bool diff_alarm;
-  int small_difference_detect_time;
+  time_t small_difference_detect_time;
 
   time_t this_hour;
   time_t this_day;
@@ -697,6 +697,7 @@ public:
   double get_hot_average(void); 
   double get_cold_average(void); 
   void get_status(char *status, int len);
+  void reset(void);
 };
 
 /* Structure used by Web Points. */

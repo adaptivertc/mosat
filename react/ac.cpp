@@ -219,6 +219,7 @@ void ac_point_t::update(void)
             printf("Sending diff alarm SMS *********************************************************************************\n");
             send_sms_group("Unit NOT working", "NORMAL");
             diff_alarm = true;
+            unit_disable_point->send(true);
           }
         }
       }
@@ -247,6 +248,7 @@ void ac_point_t::update(void)
             printf("Sending cold alarm SMS *********************************************************************************\n");
             send_sms_group("Unit TOO cold", "NORMAL");
             cold_alarm = true;
+            unit_disable_point->send(true);
           }
         }
       }
@@ -268,7 +270,13 @@ const char *ac_point_t::is_disabled(bool *disable)
 }
 
 /********************************************************************/
+
+void ac_point_t::reset(void)
+{
+}
  
+/********************************************************************/
+
 void ac_point_t::get_status(char *status, int len)
 {
   if (cold_alarm)
@@ -277,7 +285,7 @@ void ac_point_t::get_status(char *status, int len)
   }
   else if (diff_alarm)
   {
-    snprintf(status, len, "%s: COLD ALARM\n", tag);
+    snprintf(status, len, "%s: DIFF ALARM\n", tag);
   }
   else
   {

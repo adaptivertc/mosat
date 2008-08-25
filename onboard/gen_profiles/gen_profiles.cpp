@@ -35,7 +35,7 @@
 #include "restriction_reader.h"
 
 #define RT_MAX_PROFILE_POINTS (500)
-#define GEN_DIST (20.0)
+#define GEN_DIST (5.0)
 
 class gen_data_t
 {
@@ -61,6 +61,7 @@ public:
   void gen_end(void);
   void gen_decel(double startv, double endv, double end_distance, double accel);
   void gen_decel_to_station(double startv, double end_distance, double accel);
+  void gen_decel_to_station2(double startv, double end_distance, double accel);
   void gen_accel(double startv, double endv, double start_distance, double accel);
   void print(void);
   void plot(void);
@@ -177,7 +178,88 @@ gen_data_t::gen_data_t(void)
 }
 
 /***************************************************************/
+static const double start_coast_vel = (35.0 / 3.6);  // m/s
+static const double meters_coasting = 30; // meters 
+static const double coast_decel = 0.2; // m/s^2
 
+void gen_data_t::gen_decel_to_station(double startv, double end_distance, double accel)
+{
+  double final_coast_vel = sqrt(
+                  pow(start_coast_vel, 2.0) - 
+                          (2.0 * coast_decel * meters_coasting) 
+                           );  
+  double stop_dist_from_coast = pow(final_coast_vel, 2.0) / (2 * accel);
+  gen_decel(70.0 / 3.6, start_coast_vel, 
+           end_distance - meters_coasting - stop_dist_from_coast, accel);
+  gen_decel(start_coast_vel, final_coast_vel, 
+            end_distance - stop_dist_from_coast, coast_decel);
+  gen_decel(final_coast_vel, 0, end_distance, accel);
+}
+
+/***************************************************************/
+
+static const double start_coast_vel_1 = (35.0 / 3.6);  // m/s
+static const double meters_coasting_1 = 30; // meters 
+
+static const double start_coast_vel_2 = (15.0 / 3.6);  // m/s
+static const double meters_coasting_2 = 10; // meters 
+
+
+void gen_data_t::gen_decel_to_station2(double startv, double end_distance, double accel)
+{
+  double final_coast_vel_1 = sqrt(
+                  pow(start_coast_vel_1, 2.0) -
+                          (2.0 * coast_decel * meters_coasting_1)
+                           );
+
+  double final_coast_vel_2 = sqrt(
+                  pow(start_coast_vel_2, 2.0) -
+                          (2.0 * coast_decel * meters_coasting_2)
+                          );
+
+  double decel_dist_from_coast_1 = 
+     (pow(final_coast_vel_1, 2.0) - pow(start_coast_vel_2, 2.0)) 
+                      / (2 * accel);
+  double stop_dist_from_coast_2 = pow(final_coast_vel_2, 2.0) / (2 * accel);
+ 
+  printf("final_coast_vel_1: %0.1lf\n", final_coast_vel_1 * 3.6);
+  printf("final_coast_vel_2: %0.1lf\n", final_coast_vel_2 * 3.6);
+  printf("meters_coasting_1: %0.1lf\ndecel_dist_from_coast_1: %0.1lf\nmeters_coasting_2: %0.1lf\nstop_dist_from_coast_2: %lf\n",
+                 meters_coasting_1,  
+                decel_dist_from_coast_1,
+                meters_coasting_2, 
+                stop_dist_from_coast_2);
+
+  gen_decel(70.0 / 3.6, start_coast_vel_1,
+           end_distance 
+              - meters_coasting_1 
+               - decel_dist_from_coast_1 
+               - meters_coasting_2 
+               - stop_dist_from_coast_2, 
+           accel);
+
+  gen_decel(start_coast_vel_1, final_coast_vel_1,
+           end_distance - meters_coasting_2 - 
+               - decel_dist_from_coast_1 
+               - meters_coasting_2 
+               - stop_dist_from_coast_2, 
+           coast_decel);
+
+  gen_decel(final_coast_vel_1, start_coast_vel_2, 
+           end_distance - 
+               - meters_coasting_2 
+               - stop_dist_from_coast_2, 
+           accel);
+
+  gen_decel(start_coast_vel_2, final_coast_vel_2, 
+           end_distance - stop_dist_from_coast_2, 
+           coast_decel);
+
+  gen_decel(final_coast_vel_2, 0, end_distance, accel);
+}
+
+
+/******
 void gen_data_t::gen_decel_to_station(double startv, double end_distance, double accel)
 {
   double meters_at_35 = 30.0; // Meters before final stop that the train must be at 35.
@@ -202,7 +284,7 @@ void gen_data_t::gen_decel_to_station(double startv, double end_distance, double
   gen_decel(vel2, 0, end_distance, accel);
 }
 
-/***************************************************************/
+***************************************************************/
 
 void gen_data_t::gen_decel(double startv, double endv, double end_distance, double accel)
 {
@@ -274,8 +356,8 @@ void gen_data_t::gen_start(void)
 void gen_data_t::gen_end(void)
 {
   last_end = n_items-1;
-  gen_decel(70.0 / 3.6, 0.0, end, 1.0);
-  //gen_decel_to_station(70.0 / 3.6, end, 1.0);
+  //gen_decel(70.0 / 3.6, 0.0, end, 1.0);
+  gen_decel_to_station(70.0 / 3.6, end, 1.0);
   check_intersect(); 
 }
 
@@ -443,6 +525,12 @@ int main(int argc, char *argv[])
 
   rr.read_restrictions(restrict_fname);
 
+/**/
+  gd.gen_decel_to_station2(35.0/3.6, 215, 1.0);
+  gd.print();
+  gd.plot();
+  return 0;
+/**/
 
   int n_stations = 0; 
   for (int i=0; i < rr.get_n_restrictions(); i++)
