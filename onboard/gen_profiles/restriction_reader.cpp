@@ -37,6 +37,7 @@ const char *restriction_reader_t::restriction_string(restriction_type_t type)
     case RESTRICT_SECTION: return "SECTION";
     case RESTRICT_MAINTENANCE: return "MAINTENANCE";
     case RESTRICT_ACCEL_DECEL_CONTROL: return "AccelDecelControl";
+    case RESTRICT_MOD_NEXT: return "ModNext";
   }
   return "ERROR";
 }
@@ -66,6 +67,8 @@ int restriction_reader_t::read_restrictions(const char *fname)
   int argc, line_num;
   char **argv;
   n_restrictions = 0;
+  bool mod_next = false;
+  restriction_def_t modifier;
   delim_file_t df(600, 50, '\t', '#');
   
   double last_start = -100.0;
@@ -143,6 +146,10 @@ int restriction_reader_t::read_restrictions(const char *fname)
     {
       restriction[i].type = RESTRICT_ACCEL_DECEL_CONTROL;
     }
+    else if (0 == strcasecmp(tp_string, "ModNext"))
+    {
+      restriction[i].type =  RESTRICT_MOD_NEXT;
+    }
     else
     {
       printf("******* Invalid restriction type on line %d: '%s'\n", line_num, tp_string);
@@ -159,8 +166,36 @@ int restriction_reader_t::read_restrictions(const char *fname)
     }
     last_start = restriction[i].start;
     print_restriction(&restriction[i]);
-    i++;
-    n_restrictions++;
+
+    if (mod_next == true)
+    {
+      mod_next = false;
+      // For now, you can only modify the start, end, and max_speed;
+      if (modifier.start > 0.0)
+      {
+        restriction[i].start = modifier.start;
+      }
+      if (modifier.end > 0.0)
+      {
+        restriction[i].end = modifier.end;
+      }
+      if (modifier.max_speed > 0.0)
+      {
+        restriction[i].max_speed = modifier.max_speed;
+      }
+    }
+
+    if (restriction[i].type == RESTRICT_MOD_NEXT)
+    {
+      // If this modifies the next restriction, save it and continue;
+      mod_next = true;
+      modifier = restriction[i];
+    }
+    else
+    {
+      i++;
+      n_restrictions++;
+    }
   }
   return n_restrictions;
 }
