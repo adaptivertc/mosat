@@ -174,6 +174,25 @@ sms::sms(const char *host, const char *user, const char *password, const char *d
 	goodConfig = true;
 	//sprintf(gammuFile,"%s",smsdConfig);
 	
+	
+	if(0!=system("pkill -0 \"mysqld\""))
+	{
+		system("mysqld &");
+		sleep(3);
+		if(0!=system("pkill -0 \"mysqld\""))
+			goodConfig = false;
+	}
+	
+	if(0!=system("pkill -0 \"gammu\""))
+	{	
+		char command [330];
+		snprintf(command,sizeof(command),"gammu --smsd MYSQL %s",gammuFile);
+		system(command);
+		sleep(1);
+		if(0!=system("pkill -0 \"gammu\""))
+			goodConfig = false;
+	}
+	
 	conn = mysql_init(NULL);
    	
    	/* Connect to database */
