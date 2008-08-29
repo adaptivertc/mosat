@@ -164,7 +164,7 @@ sms::~sms()
 sms::sms(const char *host, const char *user, const char *password, const char *database, const char *path)
 {
 	char tempPath[300];
-	snprintf(gammuFile,sizeof(gammuFile),"%s/gammusmsdrc.conf",path);
+	snprintf(gammuFile,sizeof(gammuFile),"%sgammusmsdrc.conf",path);
 	
 /*"gammusmsdrc.conf","receive.conf","send.conf"*/
 	char query[300];
@@ -186,7 +186,7 @@ sms::sms(const char *host, const char *user, const char *password, const char *d
 	if(0!=system("pkill -0 \"gammu\""))
 	{	
 		char command [330];
-		snprintf(command,sizeof(command),"gammu --smsd MYSQL %s",gammuFile);
+		snprintf(command,sizeof(command),"gammu --smsd MYSQL %s &",gammuFile);
 		system(command);
 		sleep(1);
 		if(0!=system("pkill -0 \"gammu\""))
@@ -277,6 +277,7 @@ sms::sms(const char *host, const char *user, const char *password, const char *d
    			}
       		}
       	}
+      	printf("SMS properly configured\n");
 }
 
 bool sms::sms_send(const char *message, const char *number)
