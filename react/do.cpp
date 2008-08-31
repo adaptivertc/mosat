@@ -40,9 +40,17 @@ Member functions for discrete output points.
 
 void do_point_t::send(bool val)
 {
+  tdo_on = false; // if tdo is on, turn it off;
+  blink_on = false; // if blink is on, turn it off;
+  send_it(val);
+}
+
+/********************************************************************/
+
+void do_point_t::send_it(bool val)
+{
   /* Send the discrete output. */
 
-  tdo_on = false; // if tdo is on, turn it off;
   db->send_do(driver, card, channel, val);
   pv = val ? DISCRETE_HI: DISCRETE_LO;
   switch (pv)
@@ -69,12 +77,33 @@ void do_point_t::send(bool val)
 
 /********************************************************************/
 
+void do_point_t::blink(double val)
+{
+  printf("%s: Turning on blink, %0.1lf\n", tag, val);
+  blink_on = true;
+  tdo_on = false;
+  blink_time = val;
+  double tnow = db->get_time();
+  operation_end_time = tnow + val;
+  if (pv ==  DISCRETE_LO)
+  {
+    this->send_it(true);
+  }
+  else
+  {
+    this->send_it(false);
+  }
+}
+
+/********************************************************************/
+
 void do_point_t::tdo(double val)
 {
-  this->send(true);
-  double t = db->get_time();
-  tdo_end_time = t + val;
+  this->send_it(true);
+  double tnow = db->get_time();
+  operation_end_time = tnow + val;
   tdo_on = true;
+  blink_on = false;
 }
 
 
@@ -82,15 +111,36 @@ void do_point_t::tdo(double val)
 
 void do_point_t::update(void)
 {
-  if (!tdo_on)
+  double tnow = db->get_time();
+  //printf("///////// %s: Now: %0.1lf, Next%0.1lf, %s, %s\n", 
+  //     tag, tnow, operation_end_time, tdo_on ? "T":"F", blink_on ? "T":"F");
+  if (tdo_on)
   {
-    return;
+    if (tnow > operation_end_time)
+    {
+      this->send_it(false);
+      tdo_on = false;
+    }
   }
-  double t = db->get_time();
-  if (t > tdo_end_time)
+
+  if (blink_on)
   {
-    this->send(false);
-    tdo_on = false;
+    //printf("//////////////////// %s: Now: %0.1lf, Next%0.1lf\n", 
+    //      tag, tnow, operation_end_time);
+    if (tnow > operation_end_time)
+    {
+      operation_end_time += blink_time;
+      if (pv ==  DISCRETE_LO)
+      {
+        printf("------------------ %s: BLINK ON\n", tag);
+        this->send_it(true);
+      }
+      else
+      {
+        printf("-------------------%s: BLINK OFF\n", tag);
+        this->send_it(false);
+      }
+    }
   }
 }
 
@@ -167,6 +217,9 @@ do_point_t **do_point_t::read(int *cnt, const char *home_dir)
     p->pv = DISCRETE_LO;
     p->pv_string = p->lo_desc;
     //p->pv_attr = NORMAL_PV_ATTR;
+    p->tdo_on = false;
+    p->blink_on = false;
+    p->operation_end_time = 0.0;
 
     do_points[*cnt] = p;
     (*cnt)++;

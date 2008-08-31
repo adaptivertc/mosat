@@ -35,6 +35,7 @@ database.
 #include "rtcommon.h"
 #include "reactpoint.h"
 #include "exp.h"
+#include "dbref.h"
 
 #define DESCRIPTION_OFFSET 0
 #define PV_OFFSET 21
@@ -117,6 +118,10 @@ public:
   virtual driver_info_t *get_driver_info(void) {return NULL;};
   virtual secuencia_step_t *get_secuencia_step(int argc, char *argv[], char *err_str, int esize)
        {snprintf(err_str, esize, "%s", "No functions for this point type"); return NULL;};
+  virtual rt_double_ref_t *get_double_ref(const char *expr, char *err, int sz) = 0;
+  virtual rt_bool_ref_t *get_bool_ref(const char *expr, char *err, int sz) = 0;
+  virtual rt_long_ref_t *get_long_ref(const char *expr, char *err, int sz) = 0;
+
   virtual ~db_point_interface_t(void) {};
 };
 
@@ -144,6 +149,10 @@ public:
   void send_sms_group(const char *msg, const char *group);
   const char *get_tag(void) {return tag;};
   const char *get_description(void) {return description;};
+  rt_double_ref_t *get_double_ref(const char *expr, char *err, int sz);
+  rt_bool_ref_t *get_bool_ref(const char *expr, char *err, int sz);
+  rt_long_ref_t *get_long_ref(const char *expr, char *err, int sz);
+
   virtual ~db_point_t(void) {};
 };
 
@@ -354,13 +363,18 @@ class do_point_t : public discrete_point_t, public field_point_t
 {
 private:
   bool tdo_on;
-  double tdo_end_time;
+  bool blink_on;
+  double blink_time;
+  double operation_end_time;
 public:
   int output_time_stamp;
+  void send_it(bool value);
 /*#SCRIPT_FUNCTION#*/
   void send(bool value);
 /*#SCRIPT_FUNCTION#*/
   void tdo(double val);
+/*#SCRIPT_FUNCTION#*/
+  void blink(double val);
   void update(void);
   point_type_t point_type(void) {return DISCRETE_OUTPUT;};
   static do_point_t **read(int *cnt, const char * home_dir);
@@ -649,7 +663,6 @@ private:
 
   bool change_started;
   bool delay_elapsed;
-  char change_start_line[100];
 
   bool cold_detected;
   bool cold_alarm;

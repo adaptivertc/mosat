@@ -1,0 +1,13 @@
+changing_filter_1|Changing Filter 1|1|1|0|ON|OFF|N|N|
+changing_filter_2|Changing Filter 2|1|1|1|ON|OFF|N|N|
+level_1|Above Level 1|1|1|2|ON|OFF|N|N|
+level_2|Above Level 1|1|1|3|ON|OFF|N|N|
+#    Tag (string max 25)
+#    Description (string max 50)
+#    Driver Number (char max 25)
+#    Card (char max 25)
+#    Channel (char max 25)
+#    Low Description (string max 12)
+#    High Description (string max 12)
+#    Alarm State (drop down {high, low, none})
+#    Shutdown State  (drop down {high, low, none})

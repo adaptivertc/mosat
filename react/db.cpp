@@ -384,6 +384,7 @@ bool react_t::update(double theTime, bool execute_script)
   {
     retval = false;
   }
+  execute_background_scripts();
   return retval;
 }
 
@@ -1054,6 +1055,9 @@ void react_t::delete_msg_queue(void)
 
 /**********************************************************************/
 
+static secuencia_t *background_sequences[20];
+static int n_background;
+
 static secuencia_t *secuencia_stack[100];
 static int current_secuencia;
 
@@ -1070,6 +1074,45 @@ void react_t::new_secuencia(secuencia_t *s)
 const char *react_t::secuencia_name(void)
 {
   return secuencia->name;
+}
+
+/**********************************************************************/
+
+void react_t::execute_background_scripts(void)
+{
+  for (int i=0; i < n_background; i++)
+  {
+    bool done = background_sequences[i]->run(current_time);
+  }
+}
+
+/**********************************************************************/
+
+void react_t::read_background_sequences(const char *a_home_dir, const char *a_seq_dir)
+{
+  char path[200];
+  safe_strcpy(path, home_dir, sizeof(path));
+  safe_strcat(path, "/dbfiles/background.dat", sizeof(path));
+  n_background = 0;
+  FILE *fp = fopen(path, "r");
+  if (fp == NULL)
+  {
+    printf("Can't open background script file: %s\n", path);
+    return;
+  }
+  char line[300];
+  for (int i=0; NULL != fgets(line, sizeof(line), fp); i++)
+  {
+    ltrim(line);
+    rtrim(line);
+    if ((line[0] == '#') || (line[0] == '\0'))
+    {
+      continue;
+    }
+    background_sequences[n_background] = new secuencia_t(line, a_seq_dir);
+    n_background++;
+  }
+
 }
 
 /**********************************************************************/
@@ -1203,6 +1246,35 @@ db_point_t::db_point_t(void)
   display_is_on = true;
   display_x = display_y = 0;
   point_state = last_point_state = STATE_NORMAL;
+}
+
+/***********************************************************************/
+
+rt_double_ref_t *db_point_t::get_double_ref(const char *expr, char *err, int sz) 
+{
+  //pv_type_t pv_type(void) {return ANALOG_VALUE;};
+  if (ANALOG_VALUE == this->pv_type())
+  {
+    analog_point_t *ap = (analog_point_t *) this;
+    return new rt_double_ptr_ref_t(&ap->pv);  
+  }
+  snprintf(err, sz, "Not an analog point"); 
+  return NULL;
+}
+
+/***********************************************************************/
+
+rt_bool_ref_t *db_point_t::get_bool_ref(const char *expr, char *err, int sz) 
+{
+  snprintf(err, sz, "Not implemented"); return NULL;
+}
+
+/***********************************************************************/
+
+rt_long_ref_t *db_point_t::get_long_ref(const char *expr, char *err, int sz) 
+{
+  snprintf(err, sz, "Not implemented"); 
+  return NULL;
 }
 
 /***********************************************************************/

@@ -1,0 +1,15 @@
+red_do_1|Red Light 1|1|5|0|ON|OFF|
+yellow_do_1|Yellow Light 1|1|5|1|ON|OFF|
+green_do_1|Green Light 1|1|5|2|ON|OFF|
+red_do_2|Red Light 2|1|5|3|ON|OFF|
+yellow_do_2|Yellow Light 2|1|5|4|ON|OFF|
+green_do_2|Green Light 2|1|5|5|ON|OFF|
+pump_1|Pump 1|1|5|0|ON|OFF|
+pump_2|Pump 2|1|5|0|ON|OFF|
+#    Tag
+#    Description
+#    Driver Number
+#    Card
+#    Channel
+#    Low Description
+#    High Description

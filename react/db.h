@@ -36,6 +36,7 @@ class react_base_t;
 class react_drv_base_t;
 
 #include "db_point.h"
+#include "dbref.h"
 #include "secuencia.h"
 #include "iodriver.h"
 #include "displaydata.h"
@@ -63,6 +64,9 @@ public:
   virtual bool kbhit(void) = 0;
   virtual void new_secuencia(secuencia_t *s) = 0;
   virtual const char *secuencia_name(void) = 0;
+  virtual rt_double_ref_t *get_double_ref(const char *expr, char *err, int sz) = 0;
+  virtual rt_bool_ref_t *get_bool_ref(const char *expr, char *err, int sz) = 0;
+  virtual rt_long_ref_t *get_long_ref(const char *expr, char *err, int sz) = 0;
   virtual ~react_base_t(void) {};
 };
 
@@ -130,6 +134,8 @@ public:
   bool shutdown;
   void read_inputs(void);
   void read_secuencia(const char *name, const char *a_home_dir);
+  void read_background_sequences(const char *a_home_dir, const char *a_seq_dir);
+  void execute_background_scripts(void);
   void new_secuencia(secuencia_t *s);
   const char *secuencia_name(void);
   bool execute_secuencia(void);
@@ -163,6 +169,9 @@ public:
   bool global_alarm_disabled(void) {return global_alarm_disable;};
   void init_sms(void);
   void check_sms(void);
+  rt_double_ref_t *get_double_ref(const char *expr, char *err, int sz) {snprintf(err, sz, "Not implemented"); return NULL;};
+  rt_bool_ref_t *get_bool_ref(const char *expr, char *err, int sz) {snprintf(err, sz, "Not implemented"); return NULL;};
+  rt_long_ref_t *get_long_ref(const char *expr, char *err, int sz) {snprintf(err, sz, "Not implemented"); return NULL;};
 };
 
 extern react_base_t *db;

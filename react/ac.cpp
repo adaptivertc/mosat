@@ -114,39 +114,80 @@ void ac_point_t::update(void)
   hot_temp = hot_temp_point->get_pv();
   unit_running = unit_running_point->get_pv();
 
+  double avg_cold;
+  double avg_hot;
+  double fraction_on;
+  int total_readings;
+
   if (hour_changed(now, this_hour))
   {
     struct tm mytm;
     localtime_r(&this_hour, &mytm);
-    double avg_cold = hour_total_cold / double(hour_num_temp_readings);
-    double avg_hot = hour_total_hot / double(hour_num_temp_readings);
-    double fraction_on = (double(hour_num_on_readings) / 
-         (double(hour_num_on_readings) + double(hour_num_off_readings)));
-    fprintf(history_fp, "%d\t%0.2lf\t%0.2lf\t%0.2lf\n", mytm.tm_hour, 
-            100.0 * fraction_on, avg_cold, avg_hot); 
+    
 
+    if (hour_num_temp_readings == 0)
+    {
+      avg_cold = -1.0; 
+      avg_hot = -1.0;
+    }
+    else
+    {
+      avg_cold = hour_total_cold / double(hour_num_temp_readings);
+      avg_hot = hour_total_hot / double(hour_num_temp_readings);
+    }
+
+    total_readings = hour_num_on_readings + hour_num_off_readings;
+    if (total_readings == 0)
+    {
+      fraction_on = -1.0;
+    }
+    else
+    {
+      fraction_on = double(hour_num_on_readings) / double(total_readings); 
+    }
+    fprintf(history_fp, "%d\t%0.1lf\t%0.1lf\t%0.1lf\n", mytm.tm_hour, 
+            100.0 * fraction_on, avg_cold, avg_hot); 
     fflush(history_fp);
-    //hour_total_amps = 0.0;
+
     hour_total_cold = 0.0;
     hour_total_hot = 0.0;
     hour_num_on_readings = 0;
     hour_num_off_readings = 0;
+    hour_num_temp_readings = 0;
     this_hour =  now;
   }
 
   if (day_changed(now, this_day))
   {
-    double fraction_on = (double(day_num_on_readings) / 
-         (double(day_num_on_readings) + double(day_num_off_readings)));
-    double avg_cold = day_total_cold / double(day_num_temp_readings);
-    double avg_hot = day_total_hot / double(day_num_temp_readings);
-    fprintf(history_fp, "%s\t%0.2lf\t%0.2lf\t%0.2lf\n", "dia", 
-            100.0 * fraction_on, avg_cold, avg_hot); 
+    if (day_num_temp_readings == 0)
+    {
+      avg_cold = -1.0; 
+      avg_hot = -1.0;
+    }
+    else
+    {
+      avg_cold = day_total_cold / double(day_num_temp_readings);
+      avg_hot = day_total_hot / double(day_num_temp_readings);
+    }
 
+    total_readings = day_num_on_readings + day_num_off_readings;
+    if (total_readings == 0)
+    {
+      fraction_on = -1.0;
+    }
+    else
+    {
+      fraction_on = double(day_num_on_readings) / double(total_readings); 
+    }
+    fprintf(history_fp, "%s\t%0.1lf\t%0.1lf\t%0.1lf\n", "dia", 
+            100.0 * fraction_on, avg_cold, avg_hot); 
     fflush(history_fp);
-    //day_total_amps = 0.0;
+
+    day_total_cold = 0.0;
+    day_total_hot = 0.0;
     day_num_on_readings = 0;
     day_num_off_readings = 0;
+    day_num_temp_readings = 0;
     this_day = now;
     ac_fp = open_day_history_file(ac_log_home, "_ac_log.txt", NULL);
     char tbuf[50];
@@ -165,8 +206,10 @@ void ac_point_t::update(void)
     {
       hour_total_cold += cold_temp;
       hour_total_hot += hot_temp;
+      hour_num_temp_readings++;
       day_total_cold += cold_temp;
       day_total_hot += hot_temp;
+      day_num_temp_readings++;
     }
   }
   else
@@ -181,7 +224,6 @@ void ac_point_t::update(void)
     if (now > (last_change_time + int(delay) + 1))
     {
       printf("------- %s: Delay expired, %0.1lf\n", tag, delay);
-      fprintf(ac_fp, "%s", change_start_line);
       fflush(ac_fp);
       delay_elapsed = true;
       change_started = false;
@@ -212,7 +254,7 @@ void ac_point_t::update(void)
       }
       else 
       {
-        if (now > (small_difference_detect_time + 30))
+        if (now > (small_difference_detect_time + 5))
         {
           if (!diff_alarm)
           {
@@ -241,7 +283,7 @@ void ac_point_t::update(void)
       }
       else 
       {
-        if (now > (cold_detect_time + 30))
+        if (now > (cold_detect_time + 5))
         {
           if (!cold_alarm)
           {
@@ -320,7 +362,6 @@ ac_point_t **ac_point_t::read(int *cnt, const char *home_dir)
 
   int count = 0;
 
-
   char path[200];
   safe_strcpy(path, home_dir, sizeof(path));
   safe_strcat(path, "/dbfiles/ac.dat", sizeof(path));
@@ -332,8 +373,6 @@ ac_point_t **ac_point_t::read(int *cnt, const char *home_dir)
     return NULL;
   }
   char line[300];
-
-//const char *html_home = ap_config.get_config("htmlhome");
 
   for (int i=0; NULL != fgets(line, sizeof(line), fp); i++)
   {
@@ -362,7 +401,6 @@ ac_point_t **ac_point_t::read(int *cnt, const char *home_dir)
     safe_strcpy(ac->description, (const char*) argv[1], sizeof(ac->description));
 
     char temp_tag[30];
-
 
     safe_strcpy(temp_tag, (const char*) argv[2], sizeof(temp_tag));
     rtrim(temp_tag);
@@ -415,7 +453,6 @@ ac_point_t **ac_point_t::read(int *cnt, const char *home_dir)
     {
       ac->unit_disable_point = (do_point_t *) db_point;
     }
-
     ac->delay = atof(argv[6]);
 
     ac->last_state_at_change = true;
@@ -423,18 +460,19 @@ ac_point_t **ac_point_t::read(int *cnt, const char *home_dir)
     ac->last_current = 0.0;
     ac->change_started = false;
     ac->this_hour = ac->this_day = time(NULL);
+
     ac->hour_num_on_readings = 0;
     ac->hour_num_off_readings = 0;
     ac->hour_num_temp_readings = 0;
+
+    ac->hour_total_cold = 0.0;
+    ac->hour_total_hot = 0.0;
 
     ac->day_num_on_readings = 0;
     ac->day_num_off_readings = 0;
     ac->day_num_temp_readings = 0;
 
-
-    ac->hour_total_cold = 0.0;
     ac->day_total_cold = 0.0;
-    ac->hour_total_hot = 0.0;
     ac->day_total_hot = 0.0;
 
     ac->cold_detected = false;
@@ -444,12 +482,6 @@ ac_point_t **ac_point_t::read(int *cnt, const char *home_dir)
     ac->small_diference_dectected = false;
     ac->diff_alarm = false;
     ac->small_difference_detect_time = 0.0;
-
-    /***
-    ac->hour_total_amps = 0.0;
-    ac->day_total_amps = 0.0;
-    ac->min_amps = atof(argv[5]);
-    ***/
 
     const char *html_home = ap_config.get_config("htmlhome");
     if (html_home == NULL)

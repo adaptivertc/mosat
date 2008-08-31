@@ -286,8 +286,11 @@ int main(int argc, char *argv[])
   }
   else
   {
-    logfile->vprint("No script executing, use \"kill -1 %d\" or <CTRL-C> to stop\n", getpid());
+    logfile->vprint("No foreground script executing, use \"kill -1 %d\" or <CTRL-C> to stop\n", getpid());
   }
+
+  reactdb->read_background_sequences(home_dir, secpath);
+  
 
   reactdb->init_driver();
   //reactdb->print_all_points();

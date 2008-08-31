@@ -74,6 +74,9 @@ void react_t::init_sms(void)
 	printf("Initializating SMS . . . \n");
         void *handle;
 
+	const char * sms_so = 
+             ap_config.get_config("SMS_SO", "../sms/librtsms.so");
+
 	handle = dlopen("libmysqlclient.so",RTLD_LAZY | RTLD_GLOBAL);
 	if(handle== NULL)
 	{
@@ -81,7 +84,7 @@ void react_t::init_sms(void)
 		exit(1);
 	}
 
-	handle = dlopen("../sms/librtsms.so",RTLD_LAZY);
+	handle = dlopen(sms_so,RTLD_LAZY);
 	if(handle== NULL)
 	{
 		fprintf(stderr,"%s\n",dlerror());
@@ -122,9 +125,9 @@ void react_t::init_sms(void)
 
 void react_t::check_sms(void)
 {
-	printf("Checking for SMS messages . . . . \n");
 	if(sms_object == NULL)
 		return;
+	printf("Checking for SMS messages . . . . \n");
 	smsMessage message = sms_object->next_sms();
 	if(!message.success())
 		return;
