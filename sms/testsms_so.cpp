@@ -50,7 +50,7 @@ int main(int argc, char *arvg[])
 
         sms_base *mensajero; 
         printf("Calling the factory function\n");
-        mensajero = (*fn)("./");
+        mensajero = (*fn)("/home/thaumiel/svn/trunk/sms/");
 
 	//sms mensajero("localhost", "root", "root", "gammu","./");
 

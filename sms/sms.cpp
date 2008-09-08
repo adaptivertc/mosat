@@ -164,7 +164,21 @@ sms::~sms()
 sms::sms(const char *host, const char *user, const char *password, const char *database, const char *path)
 {
 	char tempPath[300];
-	snprintf(gammuFile,sizeof(gammuFile),"%sgammusmsdrc.conf",path);
+	char TruePath[300];
+	
+	if(strcmp("./",path) == 0)
+	{
+		char *tpath = NULL;
+		tpath=getcwd(tpath,300);
+		snprintf(TruePath,sizeof(TruePath),"%s/",tpath);
+		//safe_strcpy(TruePath,tpath,sizeof(TruePath));
+		//cout<<"\n current Path"<<path;
+	}
+	else
+	{
+		safe_strcpy(TruePath,path,sizeof(TruePath));
+	}
+	snprintf(gammuFile,sizeof(gammuFile),"%sgammusmsdrc.conf",TruePath);
 	
 /*"gammusmsdrc.conf","receive.conf","send.conf"*/
 	char query[300];
@@ -216,7 +230,7 @@ sms::sms(const char *host, const char *user, const char *password, const char *d
    	
       	reader config;
       	
-      	snprintf(tempPath,sizeof(tempPath),"%s/receive.conf",path);
+      	snprintf(tempPath,sizeof(tempPath),"%s/receive.conf",TruePath);
       	
       	config.readerInit(tempPath);
       	
@@ -248,7 +262,7 @@ sms::sms(const char *host, const char *user, const char *password, const char *d
       		}
       	}
       	
-      	snprintf(tempPath,sizeof(tempPath),"%s/send.conf",path);
+      	snprintf(tempPath,sizeof(tempPath),"%s/send.conf",TruePath);
       	
       	config.readerInit(tempPath);
 
