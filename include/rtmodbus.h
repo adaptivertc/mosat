@@ -1,5 +1,4 @@
 
-
 #ifndef __rtmodbus_INC__
 #define __rtmodbus_INC__
 
@@ -43,7 +42,6 @@ public:
 
 rtmodbus_t *rt_create_modbus(const char *device); 
 rtmodbus_t *rt_create_modbus_serial(const char *device, int baudrate, float timeout);
-
 
 #endif
 

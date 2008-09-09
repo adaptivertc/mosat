@@ -30,7 +30,7 @@ CFLAGS = -Wall
 
 LDFLAGS =
 
-CC = g++ -g
+CC = g++
 
 
 MAKE = make

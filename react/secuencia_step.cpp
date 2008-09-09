@@ -764,14 +764,14 @@ step_if_t::step_if_t(int argc, char *argv[], char *the_error, int esize)
     expression.expr[0].token_type = LOGICAL_VAL;
     expression.expr[0].val.logical_val = true;
     expression.expr[1].token_type = END_EXPR;
-    logfile->vprint("Wrong number of args for 'wait_until', %d\n", argc);
+    logfile->vprint("Wrong number of args for 'if', %d\n", argc);
     return;
   }
 
   expression.expr = make_expr(argv[2]);
   if (expression.expr == NULL)
   {
-    logfile->vprint("Bad expression for 'wait_until': %s\n", rtexperror.str());
+    logfile->vprint("Bad expression for 'if': %s\n", rtexperror.str());
     expression.expr = new expr_op_t[2];
     expression.expr[0].token_type = LOGICAL_VAL;
     expression.expr[0].val.logical_val = true;
