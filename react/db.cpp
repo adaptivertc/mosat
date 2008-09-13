@@ -573,12 +573,13 @@ void react_t::init_driver(void)
     {
       continue;
     }
-    else if ((argc != 3) || (argc != 4))
+    else if ((argc != 3) && (argc != 4))
     {
       printf("Line: %s", line);
       printf("%s: Wrong number of args, line %d, %d\n", path, i+1, argc);
       continue;
     }
+
     const char *option;
     if (argc == 3)
     {
