@@ -47,7 +47,7 @@ static const U16 ports[6] = {Channel_P1A, Channel_P1B, Channel_P1C,
 
 /***********************************************************************/
 
-extern "C" io_driver_t *new_pci7248(react_drv_base_t *react)
+extern "C" io_driver_t *new_pci7248(react_drv_base_t *react, const char *option)
 {
   return new PCI7248_driver_t(react);
 }

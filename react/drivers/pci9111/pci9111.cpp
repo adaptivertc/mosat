@@ -125,7 +125,7 @@ void PCI9111_driver_t::read_voltage_file()
 
 /***********************************************************************/
 
-extern "C" io_driver_t *new_pci9111(react_drv_base_t *r)
+extern "C" io_driver_t *new_pci9111(react_drv_base_t *r, const char *option)
 {
   printf("Creating new pci9111 iodriver\n");
   return new PCI9111_driver_t(r);

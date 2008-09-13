@@ -128,7 +128,7 @@ public:
   int num_scan;
   web_point_t **web_points;
   int num_web;
-  io_driver_t *io_driver;
+  io_driver_t *io_driver[10];
   int num_io_drivers;
   secuencia_t *secuencia;
   bool shutdown;

@@ -58,7 +58,17 @@ static react_t *reactdb = NULL;
 void react_t::send_do(int drv, int crd, int channel, bool val)
 {
   /* Send a discrete output */
-  io_driver->send_do(channel, val);
+  if (drv < num_io_drivers)
+  {
+    if (io_driver[drv] != NULL)
+    {
+      io_driver[drv]->send_do(channel, val);
+    }
+  }
+  else
+  {
+    printf("*********************** Driver out of range: %d\n", drv);
+  }
 }
 
 /***********************************************************************/
@@ -66,25 +76,32 @@ void react_t::send_do(int drv, int crd, int channel, bool val)
 void react_t::send_ao(int drv, int crd, int channel, double val)
 {
   /* Send an analog output */
-  io_driver->send_ao(channel, val);
+  if (drv < num_io_drivers)
+  {
+    if (io_driver[drv] != NULL)
+    {
+      io_driver[drv]->send_ao(channel, val);
+    }
+  }
+  else
+  {
+    printf("*********************** Driver out of range: %d\n", drv);
+  }
 }
 
 /***********************************************************************/
 
 void react_t::exit_clean_up(void)
 {
-  if (io_driver != NULL)
+  if (num_do > 0) printf("Turning off %d discrete outputs\n", num_do);
+  for (int i=0; i < num_do; i++)
   {
-    if (num_do > 0) printf("Turning off %d discrete outputs\n", num_do);
-    for (int i=0; i < num_do; i++)
-    {
-      do_points[i]->send(false);
-    }
-    if (num_ao > 0) printf("Zeroing %d analog outputs\n", num_ao);
-    for (int i=0; i < num_ao; i++)
-    {
-      ao_points[i]->send(0.0);
-    }
+    do_points[i]->send(false);
+  }
+  if (num_ao > 0) printf("Zeroing %d analog outputs\n", num_ao);
+  for (int i=0; i < num_ao; i++)
+  {
+    ao_points[i]->send(0.0);
   }
 
   for (int i=0; i < num_scan; i++)
@@ -112,9 +129,12 @@ void react_t::exit_clean_up(void)
   delete_shared_memory();
 #endif
 
-  if (io_driver != NULL)
+  for (int i=0; i < num_io_drivers; i++)
   {
-    io_driver->close();
+    if (io_driver[i] != NULL)
+    {
+      io_driver[i]->close();
+    }
   }
 }
 
@@ -204,15 +224,19 @@ void react_t::read_inputs(void)
 {
   int j = 0;
   taa[j].start();
-  io_driver->read();
+  for (int i=0; i < num_io_drivers; i++)
+  {
+    io_driver[i]->read();
+  }
   taa[j].stop();
 
   j++;
   taa[j].start();
   for (int i=0; i < num_di; i++)
   {
+    int drv = di_points[i]->driver;
     int ch = di_points[i]->channel;
-    bool val = io_driver->get_di(ch);
+    bool val = io_driver[drv]->get_di(ch);
     di_points[i]->update(val);
   }
   taa[j].stop();
@@ -221,8 +245,9 @@ void react_t::read_inputs(void)
   taa[j].start();
   for (int i=0; i < num_ai; i++)
   {
+    int drv = ai_points[i]->get_driver();
     int ch = ai_points[i]->get_channel();
-    double val = io_driver->get_ai(ch);
+    double val = io_driver[drv]->get_ai(ch);
     ai_points[i]->update_analog(val);
   }
   taa[j].stop();
@@ -231,12 +256,16 @@ void react_t::read_inputs(void)
   taa[j].start();
   for (int i=0; i < num_pci; i++)
   {
+    int drv = pci_points[i]->driver;
     int ch = pci_points[i]->channel;
-    long val = io_driver->get_count(ch);
+    long val = io_driver[drv]->get_count(ch);
     pci_points[i]->update(val);
   }
   taa[j].stop();
-  io_driver->end_read();
+  for (int i=0; i < num_io_drivers; i++)
+  {
+    io_driver[i]->end_read();
+  }
 
 
   j++;
@@ -483,7 +512,10 @@ react_t::react_t()
   web_points = NULL;
 
   num_io_drivers = 0;
-  io_driver = NULL;
+  for (int i=0; i < 5; i++)
+  {
+    io_driver[i] = NULL;
+  }
   shutdown = false;
   dinfo.adata = NULL;
   dinfo.ddata = NULL;
@@ -517,11 +549,13 @@ void react_t::init_driver(void)
   if (fp == NULL)
   {
     printf("Can't open %s, using default sim driver", path);
-    io_driver = load_iodriver(db, "./drivers/sim/libsimdriver.so", "new_simdriver", NULL);
+    io_driver[0] = load_iodriver(db, "./drivers/sim/libsimdriver.so", "new_simdriver", NULL, NULL);
+    num_io_drivers = 1;
     return;
   }
   char line[300];
 
+  num_io_drivers = 0;
   for (int i=0; NULL != fgets(line, sizeof(line), fp); i++)
   {
     char tmp[300];
@@ -539,11 +573,20 @@ void react_t::init_driver(void)
     {
       continue;
     }
-    else if (argc != 3)
+    else if ((argc != 3) || (argc != 4))
     {
       printf("Line: %s", line);
       printf("%s: Wrong number of args, line %d, %d\n", path, i+1, argc);
       continue;
+    }
+    const char *option;
+    if (argc == 3)
+    {
+      option = NULL;
+    }
+    else
+    {
+      option = argv[3];
     }
 
      /***
@@ -551,17 +594,24 @@ void react_t::init_driver(void)
     io_driver =  
     ****/
 
-
-    io_driver = load_iodriver(db, argv[0], argv[1], argv[2]);
-    if (io_driver == NULL)
+    if (num_io_drivers >= sizeof(io_driver)/sizeof(io_driver[0]))
     {
-      printf("Can't load %s, using default sim driver", argv[0]);
-      io_driver = load_iodriver(db, "./drivers/sim/libsimdriver.so",
-               "new_simdriver", NULL);
-      return;
+      printf("********** Maximum number of drivers loaded - can not load:\n\t%s\n", line);
+      continue;
     }
 
-    break; // For now, only load one driver, this will change.
+
+    io_driver[num_io_drivers] = load_iodriver(db, argv[0], argv[1], argv[2], option);
+    if (io_driver[num_io_drivers] == NULL)
+    {
+      printf("Can't load %s, using default sim driver", argv[0]);
+      io_driver[num_io_drivers] = load_iodriver(db, "./drivers/sim/libsimdriver.so",
+               "new_simdriver", NULL, NULL);
+      //return;
+    }
+    num_io_drivers++;
+
+    //break; // For now, only load one driver, this will change.
   }
 }
 

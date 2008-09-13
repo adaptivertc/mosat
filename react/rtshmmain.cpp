@@ -162,7 +162,7 @@ int main(int argc, char *argv[])
 
   shm = reactshmio_attach();
 
-  io_driver = load_iodriver(&dummy_db, "./drivers/modbusdrv/libreactmodbusdrv.so", "new_reactmodbus", "librtmodbus.so");
+  io_driver = load_iodriver(&dummy_db, "./drivers/modbusdrv/libreactmodbusdrv.so", "new_reactmodbus", "librtmodbus.so", NULL);
   //io_driver = load_iodriver(&dummy_db, "./drivers/sim/libsimdriver.so", "new_simdriver", NULL);
   //io_driver = load_iodriver(&dummy_db, "./drivers/pci9111/libpci9111.so", "new_pci9111", "libpci_dask.so");
 

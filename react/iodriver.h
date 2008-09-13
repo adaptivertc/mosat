@@ -64,14 +64,14 @@ public:
   virtual ~io_driver_t(void) {};
 };
 
-typedef io_driver_t *(*get_io_drv_t)(react_drv_base_t *r);
+typedef io_driver_t *(*get_io_drv_t)(react_drv_base_t *r, const char *option);
 
 typedef io_driver_factory_t *(*get_iodriver_factory_t)(react_drv_base_t *r);
 
 typedef void (*del_io_drv_t)(io_driver_t *);
 
 io_driver_t *load_iodriver(react_drv_base_t *drvdb, 
-     const char *sofile, const char *get_fn_name, const char *other_lib);
+     const char *sofile, const char *get_fn_name, const char *other_lib, const char *option);
 
 io_driver_factory_t *load_iodriver_factory(react_drv_base_t *drvdb, 
   const char *sofile, const char *get_fn_name, const char *other_lib);

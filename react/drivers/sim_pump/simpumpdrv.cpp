@@ -64,7 +64,7 @@ public:
 ***********************************************************************/
 /*
 
-extern "C" io_driver_factory_t *new_simpumpdrv_factory_1_0(react_drv_base_t *r)
+extern "C" io_driver_factory_t *new_simpumpdrv_factory_1_0(react_drv_base_t *r, const char *option)
 {
   return new simpumpdrv_factory_t(r);
 }
@@ -80,7 +80,7 @@ double add_rand_noise(double val, double full_scale, double fraction_noise)
 
 /**********************************************************************/
 
-extern "C" io_driver_t *new_simpumpdrv(react_drv_base_t *r)
+extern "C" io_driver_t *new_simpumpdrv(react_drv_base_t *r, const char *option)
 {
   return new simpumpdrv_t(r);
 }

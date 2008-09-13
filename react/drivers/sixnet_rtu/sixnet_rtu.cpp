@@ -86,7 +86,7 @@ static void print_u8(unsigned char x)
 
 /***********************************************************************/
 
-extern "C" io_driver_t *new_sixnet_rtu(react_drv_base_t *r)
+extern "C" io_driver_t *new_sixnet_rtu(react_drv_base_t *r, const char *option)
 {
   printf("Creating new sixnet_rtu iodriver\n");
   return new sixnet_rtu_driver_t(r);

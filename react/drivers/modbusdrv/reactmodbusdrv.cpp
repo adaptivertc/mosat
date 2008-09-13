@@ -124,15 +124,15 @@ static void *rtmodbus_start_read_thread(void *driver_ptr)
   return NULL; // Should never return, but without a return, gives warning.
 }
 
-extern "C" io_driver_t *new_reactmodbus(react_drv_base_t *r)
+extern "C" io_driver_t *new_reactmodbus(react_drv_base_t *r, const char *option)
 {
   printf("Creating new reactmodbus iodriver\n");
-  return new reactmodbus_driver_t(r);
+  return new reactmodbus_driver_t(r, option);
 }
 
 /***********************************************************************/
 
-reactmodbus_driver_t::reactmodbus_driver_t(react_drv_base_t *react)
+reactmodbus_driver_t::reactmodbus_driver_t(react_drv_base_t *react, const char *option)
 {
 
 /* Ok, we really need a configuration file to configure modbus, to start
@@ -150,7 +150,18 @@ reactmodbus_driver_t::reactmodbus_driver_t(react_drv_base_t *react)
   printf("initializing modbus\n");
   //modbus = rt_create_modbus("127.0.0.1:502");
   //modbus = rt_create_modbus("192.168.1.104:502");
-  modbus = rt_create_modbus("127.0.0.1:502");
+  if (option == NULL)
+  {
+    modbus = rt_create_modbus("127.0.0.1:502");
+  }
+  else if (option[0] == '\0')
+  {
+    modbus = rt_create_modbus("127.0.0.1:502");
+  }
+  else
+  {
+    modbus = rt_create_modbus(option);
+  }
   if (modbus == NULL)
   {
     exit(0);

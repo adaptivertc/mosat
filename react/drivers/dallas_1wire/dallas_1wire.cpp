@@ -74,7 +74,7 @@ static void *rt_dallas_1wire_start_read_thread(void *driver_ptr)
   return NULL; // Should never return, but, this takes away the warning.
 }
 
-extern "C" io_driver_t *new_dallas_1wire(react_drv_base_t *r)
+extern "C" io_driver_t *new_dallas_1wire(react_drv_base_t *r, const char *option)
 {
   printf("Creating new dallas_1wire iodriver\n");
   return new dallas_1wire_driver_t(r);

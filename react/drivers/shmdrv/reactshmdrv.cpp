@@ -44,7 +44,7 @@ Contains code for shared memory driver.
 
 /***********************************************************************/
 
-extern "C" io_driver_t *new_reactshm(react_drv_base_t *r)
+extern "C" io_driver_t *new_reactshm(react_drv_base_t *r, const char *option)
 {
   printf("Creating new reactshm iodriver\n");
   return new reactshm_driver_t(r);

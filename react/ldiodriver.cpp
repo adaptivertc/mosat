@@ -68,7 +68,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
  */
 
 io_driver_factory_t *load_iodriver_factory(react_drv_base_t *drvdb, 
-     const char *sofile, const char *get_fn_name, const char *other_lib)
+     const char *sofile, const char *get_fn_name, const char *other_lib, const char *option)
 {
   if (other_lib != NULL)
   {
@@ -107,7 +107,7 @@ io_driver_factory_t *load_iodriver_factory(react_drv_base_t *drvdb,
 
 
 io_driver_t *load_iodriver(react_drv_base_t *drvdb, 
-     const char *sofile, const char *get_fn_name, const char *other_lib)
+     const char *sofile, const char *get_fn_name, const char *other_lib, const char *option)
 {
 
   if (other_lib != NULL)
@@ -139,7 +139,7 @@ io_driver_t *load_iodriver(react_drv_base_t *drvdb,
     exit(1);
   }
 
-  io_driver_t *iodrv = (*fn)(drvdb);
+  io_driver_t *iodrv = (*fn)(drvdb, option);
   //mybasep->myprint();
   //dlclose(handle);
   return iodrv;

@@ -111,6 +111,8 @@ public:
   virtual double get_analog(void) {return 0.0;};
   virtual bool get_discrete(void) {return false;};
   virtual long get_int(void) {return 0;};
+  virtual int get_driver(void) {return 0;};
+  virtual int get_card(void) {return 0;};
   virtual int get_channel(void) {return 0;};
   virtual const char *get_tag(void) = 0;
   virtual const char *get_description(void) = 0;
@@ -218,6 +220,10 @@ public:
 public:
   void update_analog(double v) {this->update(v);};
   double get_analog(void) {return this->pv;};
+
+  /* Will have to do this for all points that have driver, card channel */
+  virtual int get_driver(void) {return this->driver;};
+  virtual int get_card(void) {return this->card;};
   virtual int get_channel(void) {return this->channel;};
 
   void update(double new_raw_value);

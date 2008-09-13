@@ -62,18 +62,17 @@ public:
 };
 
 
-/***********************************************************************/
+/***********************************************************************
 
-extern "C" io_driver_factory_t *new_simdriver_factory_1_0(react_drv_base_t *r)
+extern "C" io_driver_factory_t *new_simdriver_factory_1_0(react_drv_base_t *r, const char *option)
 {
   return new sim_io_driver_factory_t(r);
 }
 
-/***********************************************************************/
+***********************************************************************/
 
-extern "C" io_driver_t *new_simdriver(react_drv_base_t *r)
+extern "C" io_driver_t *new_simdriver(react_drv_base_t *r, const char *option)
 {
-  //printf("Why do you want that???\n");
   return new sim_io_driver_t(r);
 }
 

@@ -64,7 +64,7 @@ public:
 ***********************************************************************/
 /*
 
-extern "C" io_driver_factory_t *new_simpumpdrv_factory_1_0(react_drv_base_t *r)
+extern "C" io_driver_factory_t *new_simpumpdrv_factory_1_0(react_drv_base_t *r, const char *option)
 {
   return new simpumpdrv_factory_t(r);
 }
@@ -88,7 +88,7 @@ static double calc_level_raw(double level_eu)
 
 /**********************************************************************/
 
-extern "C" io_driver_t *new_simpumpdrv(react_drv_base_t *r)
+extern "C" io_driver_t *new_simpumpdrv(react_drv_base_t *r, const char *option)
 {
   return new simpumpdrv_t(r);
 }

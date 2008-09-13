@@ -35,7 +35,7 @@ private:
   sem_t read_mutex_sem; 
   sem_t read_wait_sem; 
 public:
-  reactmodbus_driver_t(react_drv_base_t *react);
+  reactmodbus_driver_t(react_drv_base_t *react, const char *option);
   void read(void);
   void end_read(void);
   void read_thread(void);

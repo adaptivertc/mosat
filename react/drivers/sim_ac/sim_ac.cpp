@@ -56,7 +56,7 @@ static double calc_level_raw(double level_eu)
 
 /**********************************************************************/
 
-extern "C" io_driver_t *new_sim_ac_drv(react_drv_base_t *r)
+extern "C" io_driver_t *new_sim_ac_drv(react_drv_base_t *r, const char *option)
 {
   return new sim_ac_drv_t(r);
 }

@@ -405,16 +405,25 @@ file_logger_t **file_logger_t::read(int *cnt, const char *home_dir)
       printf("collection is on for %s\n", p->tag);
     }
 
+    printf("File %s, line %d\n", __FILE__, __LINE__);
     p->num_points = argc - (FL_MIN_ARGS - 1);
+    printf("File %s, line %d\n", __FILE__, __LINE__);
     p->analog_points = new analog_point_t *[p->num_points + 1];
+    printf("File %s, line %d\n", __FILE__, __LINE__);
 
     for (int j=(FL_MIN_ARGS - 1); j < argc; j++)
     {
+    printf("File %s, line %d\n", __FILE__, __LINE__);
       char temp_tag[50];
       db_point_t *db_point;
+    printf("File %s, line %d\n", __FILE__, __LINE__);
       safe_strcpy(temp_tag, (const char*) argv[j], sizeof(temp_tag));
+    printf("File %s, line %d\n", __FILE__, __LINE__);
       rtrim(temp_tag);
+    printf("File %s, line %d\n", __FILE__, __LINE__);
+    printf("Tag = %s\n", temp_tag);
       db_point = db->get_db_point(temp_tag);
+    printf("File %s, line %d\n", __FILE__, __LINE__);
       if ((db_point == NULL) || (db_point->pv_type() != ANALOG_VALUE))
       {
         p->analog_points[j-(FL_MIN_ARGS - 1)] = NULL;
@@ -422,7 +431,9 @@ file_logger_t **file_logger_t::read(int *cnt, const char *home_dir)
       }
       else
       {
+    printf("File %s, line %d\n", __FILE__, __LINE__);
         p->analog_points[j-(FL_MIN_ARGS - 1)] = (analog_point_t *) db_point;
+    printf("File %s, line %d\n", __FILE__, __LINE__);
       }
       printf("analog point %d: %s\n", j-(FL_MIN_ARGS - 1), temp_tag);
     }
