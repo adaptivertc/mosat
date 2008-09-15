@@ -32,6 +32,7 @@ int main(int argc, char *argv[])
   while(true)
   {
     ret_val = rt_read_serial(device, data, 1); 
+    data[1] = '\0';
     if (ret_val < 0)
     {
       printf("Error reading serial port\n");
@@ -54,6 +55,7 @@ int main(int argc, char *argv[])
     else if (data[0] == 'W')
     {
       ret_val = rt_read_serial(device, data, 3); 
+      data[3] = '\0';
       if (ret_val < 0)
       {
         printf("Error reading serial port\n");
