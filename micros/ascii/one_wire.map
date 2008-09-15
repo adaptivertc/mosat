@@ -1,0 +1,27 @@
+CodeVisionAVR C Compiler V1.25.5 Professional
+(C) Copyright 1998-2007 Pavel Haiduc, HP InfoTech s.r.l.
+http://www.hpinfotech.com
+
+File: f:\adaptive\one wire\one_wire\one_wire.c
+Global variables memory map:
+
+Variable                          Address   Size
+rx_buffer                                                             160h      8
+rx_wr_index                                                             R5      1
+rx_rd_index                                                             R4      1
+rx_counter                                                              R7      1
+rx_buffer_overflow                                                    R2.0    1/8
+tx_buffer                                                             168h      8
+tx_wr_index                                                             R6      1
+tx_rd_index                                                             R9      1
+tx_counter                                                              R8      1
+rom_codes                                                             170h    270
+__ds1820_scratch_pad.temp_lsb                                         27Eh      1
+__ds1820_scratch_pad.temp_msb                                         27Fh      1
+__ds1820_scratch_pad.temp_high                                        280h      1
+__ds1820_scratch_pad.temp_low                                         281h      1
+__ds1820_scratch_pad.res1                                             282h      1
+__ds1820_scratch_pad.res2                                             283h      1
+__ds1820_scratch_pad.cnt_rem                                          284h      1
+__ds1820_scratch_pad.cnt_c                                            285h      1
+__ds1820_scratch_pad.crc                                              286h      1
