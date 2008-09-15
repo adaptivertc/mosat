@@ -35,7 +35,8 @@ int read_simple_ascii(int fd,
 {
   char buf[100];
   write(fd, "R", 1);
-  int ret_val = rt_read_serial(fd, buf, 3);
+  int ret_val = rt_read_serial(fd, buf, 4);
+  buf[4] = '\0';
   if (ret_val < 0)
   {
     printf("Error reading serial port\n");
@@ -43,7 +44,8 @@ int read_simple_ascii(int fd,
   int n = atol(buf);
   for (int i=0; ((i < n) && (i < max_ai)); i++)
   {
-    ret_val = rt_read_serial(fd, buf, 11);
+    ret_val = rt_read_serial(fd, buf, 12);
+    buf[12] = '\0';
     if (ret_val < 0)
     {
       printf("Error reading serial port\n");
@@ -51,7 +53,8 @@ int read_simple_ascii(int fd,
     ai_vals[i] = atof(buf);
   }
 
-  ret_val = rt_read_serial(fd, buf, 13);
+  ret_val = rt_read_serial(fd, buf, 14);
+  buf[14] = '\0';
   if (ret_val < 0)
   {
     printf("Error reading serial port\n");
@@ -61,7 +64,8 @@ int read_simple_ascii(int fd,
     di_vals[i] = (buf[i] == '1');
   }
   
-  ret_val = rt_read_serial(fd, buf, 13);
+  ret_val = rt_read_serial(fd, buf, 14);
+  buf[14] = '\0';
   if (ret_val < 0)
   {
     printf("Error reading serial port\n");
@@ -81,8 +85,9 @@ int send_simple_ascii(int fd, int channel, bool val,
            char *error, int size)
 {
   char buf[10];
-  write(fd, "R", 1);
-  int ret_val = rt_read_serial(fd, buf, 3);
+  write(fd, "W", 1);
+  int ret_val = rt_read_serial(fd, buf, 4);
+  buf[4] = '\0';
   if (ret_val < 0)
   {
     printf("Error reading serial port\n");
