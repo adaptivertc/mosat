@@ -145,14 +145,71 @@ else
 
 // Declare your global variables here
 unsigned char rom_codes[MAX_DEVICES,9];
+
+void send_temperatures(unsigned char devices)
+{
+        int i,j,temp;
+        char temp_buf[10];  
+        
+        for (i=0;i<devices;i++)
+
+          {
+                
+               temp=ds1820_temperature_10(&rom_codes[i,0]);
+               sprintf(temp_buf, "%d:%d\n\r", i, temp);
+               for (j=0; j < strlen(temp_buf); j++)
+               {
+                        putchar(temp_buf[j]);
+                        
+               };       
+          };
+}
+
+void read_di(void)
+{       
+        int i;       
+        char buf[11];
+        /*sprintf(buf,"%02d\n\r",devices);
+        
+        
+        for(j=0;j<devices;j++)
+        {
+                sprintf(buf,"%010d\n\r",PINB.0);
+                for(i=0;i<10;i++)
+                        putchar(buf[i]);
+        }
+        sprintf(buf,"%d%d%d%d%d%d%d%d\n\r",PINB.0,PINB.1,PINB.2,PINB.3,PINB.4,PINB.5,PINB.6,PINB.7);*/
+        PORTC.2 = 1;
+        sprintf(buf,"%d%d%d%d%d%d%d%d\n\r",PINC.0,PINC.1,PINC.2,PINC.3,PINC.4,PINC.5,PINC.6,PINC.7);
+        for(i=0;i<10;i++)
+                        putchar(buf[i]);
+}
+
+/*void show_serials(unsigned char devices)
+{
+        int i,j;
+        char tempBuff[13];
+        for(i=0;i<devices;i++)
+        {
+                //temp=ds1820_temperature_10(&rom_codes[i,0]);
+                sprintf(tempBuff,"%p\n\r", rom_codes[i,0]);
+                for (j=0; j < sizeof(rom_codes); j++)
+                {
+                        putchar(rom_codes[i,j]);
+                        
+                };
+                putchar('\n');
+                putchar('\r');
+        };
+}*/
+
 void main(void)
 {
 // Declare your local variables here
                   
-unsigned char i,devices;
-char temp_buf[100];
+unsigned char devices;
+char letra;
 
-int temp, j;
 // Input/Output Ports initialization
 // Port A initialization
 // Func7=In Func6=In Func5=In Func4=In Func3=In Func2=In Func1=In Func0=Out 
@@ -163,14 +220,14 @@ DDRA=0x01;
 // Port B initialization
 // Func7=In Func6=In Func5=In Func4=In Func3=In Func2=In Func1=In Func0=In 
 // State7=T State6=T State5=T State4=T State3=T State2=T State1=T State0=T 
-PORTB=0x00;
+PORTB=0xFF;
 DDRB=0x00;
 
 // Port C initialization
 // Func7=In Func6=In Func5=In Func4=In Func3=In Func2=In Func1=In Func0=In 
 // State7=T State6=T State5=T State4=T State3=T State2=T State1=T State0=T 
 PORTC=0x00;
-DDRC=0x00;
+DDRC=0xFF;
 
 // Port D initialization
 // Func7=In Func6=In Func5=In Func4=In Func3=In Func2=In Func1=In Func0=In 
@@ -255,20 +312,24 @@ w1_init();
 // Global enable interrupts
 #asm("sei")
 devices=w1_search(0xf0,rom_codes);
+letra = '#';
 while (1)
       {
       // Place your code here
-        for (i=0;i<devices;)
 
-          {
-
-               temp=ds1820_temperature_10(&rom_codes[i,0]);
-               sprintf(temp_buf, "%d\n", temp);
-               for (j=0; j < strlen(temp_buf); j++)
+               if(rx_counter > 0)
+                 letra = getchar();
+               if(letra == 'R' || letra == 'r')
                {
-                        putchar(temp_buf[j]);
-                        // putchar('A');
-               };
-          };
+                 send_temperatures(devices);
+                 read_di();
+                 letra = '#';
+               }
+               /*if(letra == 'S' || letra == 's')
+               {
+                        show_serials(devices); 
+                        letra = '#';
+               }*/
+                        
       };
 }
