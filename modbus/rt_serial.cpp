@@ -40,13 +40,14 @@ int rt_read_serial(int fd, void *data, int sz)
     #ifdef SERIAL_USE_SIGNALS
     if (wait_flag)
     {
-      printf("Looping . . . \n");
+      //printf("Looping . . . \n");
+      usleep(100000);
       continue;
     }
     #endif
     int n = read(fd, dp + total_read, sz - total_read); 
     #ifdef SERIAL_USE_SIGNALS
-    wait_flag = true;
+    //wait_flag = true;
     #endif
     if (n == 0)
     {
