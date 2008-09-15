@@ -293,6 +293,7 @@ int main(int argc, char *argv[])
   
 
   reactdb->init_driver();
+  reactdb->verify_drivers();
   //reactdb->print_all_points();
 
   printf("Num tests = %d\n", ntests);

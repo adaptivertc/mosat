@@ -85,9 +85,7 @@ void data_point_t::update(void)
   {
     if (analog_points[i] != NULL)
     {
-      //printf("%s %d, %d %d\n", __FILE__, __LINE__, i, count);
       data[i][count] = analog_points[i]->get_pv();
-      //printf("%s %d\n", __FILE__, __LINE__);
     }
     else
     {

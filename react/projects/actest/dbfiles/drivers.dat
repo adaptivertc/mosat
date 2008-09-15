@@ -7,4 +7,6 @@
 #./drivers/sim_pump/libsimpumpdrv.so|new_simpumpdrv||
 #./drivers/pci9111/libpci9111.so|new_pci9111|libpci_dask.so|
 #./drivers/pci7248/libpci7248.so|new_pci7248|libpci_dask.so|
+#../../drivers/sim_ac/libsimacdrv.so|new_sim_ac_drv|||
 ../../drivers/dallas_1wire/libdallas_1wire_drv.so|new_dallas_1wire||
+../../drivers/modbusdrv/libreactmodbusdrv.so|new_reactmodbus||127.0.0.1:502|

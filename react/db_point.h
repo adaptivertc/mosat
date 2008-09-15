@@ -111,9 +111,9 @@ public:
   virtual double get_analog(void) {return 0.0;};
   virtual bool get_discrete(void) {return false;};
   virtual long get_int(void) {return 0;};
-  virtual int get_driver(void) {return 0;};
-  virtual int get_card(void) {return 0;};
-  virtual int get_channel(void) {return 0;};
+  virtual int get_driver(void) {return -1;};
+  virtual int get_card(void) {return -1;};
+  virtual int get_channel(void) {return -1;};
   virtual const char *get_tag(void) = 0;
   virtual const char *get_description(void) = 0;
   virtual void exit_cleanup(void) {};
@@ -249,6 +249,11 @@ public:
   double ramp_inc;
   double ramp_val;
 public:
+
+  virtual int get_driver(void) {return this->driver;};
+  virtual int get_card(void) {return this->card;};
+  virtual int get_channel(void) {return this->channel;};
+
 /*#SCRIPT_FUNCTION#*/
   void send(double val);
 /*#SCRIPT_FUNCTION#*/
@@ -279,6 +284,9 @@ public:
   double last_time;
   double zero_cutoff;
 public:
+  virtual int get_driver(void) {return this->driver;};
+  virtual int get_card(void) {return this->card;};
+  virtual int get_channel(void) {return this->channel;};
   void update(long new_raw_count);
   point_type_t point_type(void) {return PCI_POINT;};
   static pci_point_t **read(int *cnt, const char *home_dir);
@@ -326,6 +334,9 @@ public:
   int update_time_stamp;
   int last_update_time_stamp;
 public:
+  virtual int get_driver(void) {return this->driver;};
+  virtual int get_card(void) {return this->card;};
+  virtual int get_channel(void) {return this->channel;};
   void update(bool new_value);
   point_type_t point_type(void) {return DISCRETE_INPUT;};
   static di_point_t **read(int *cnt, const char * home_dir);
@@ -373,6 +384,9 @@ private:
   double blink_time;
   double operation_end_time;
 public:
+  virtual int get_driver(void) {return this->driver;};
+  virtual int get_card(void) {return this->card;};
+  virtual int get_channel(void) {return this->channel;};
   int output_time_stamp;
   void send_it(bool value);
 /*#SCRIPT_FUNCTION#*/

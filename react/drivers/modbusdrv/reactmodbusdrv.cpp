@@ -124,6 +124,8 @@ static void *rtmodbus_start_read_thread(void *driver_ptr)
   return NULL; // Should never return, but without a return, gives warning.
 }
 
+/***********************************************************************/
+
 extern "C" io_driver_t *new_reactmodbus(react_drv_base_t *r, const char *option)
 {
   printf("Creating new reactmodbus iodriver\n");
@@ -160,6 +162,7 @@ reactmodbus_driver_t::reactmodbus_driver_t(react_drv_base_t *react, const char *
   }
   else
   {
+    printf("Uing ip passed to driver: %s\n", option);
     modbus = rt_create_modbus(option);
   }
   if (modbus == NULL)

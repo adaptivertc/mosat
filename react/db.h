@@ -133,6 +133,7 @@ public:
   secuencia_t *secuencia;
   bool shutdown;
   void read_inputs(void);
+  void verify_drivers(void);
   void read_secuencia(const char *name, const char *a_home_dir);
   void read_background_sequences(const char *a_home_dir, const char *a_seq_dir);
   void execute_background_scripts(void);

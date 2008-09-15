@@ -93,14 +93,16 @@ void react_t::send_ao(int drv, int crd, int channel, double val)
 
 void react_t::exit_clean_up(void)
 {
-  if (num_do > 0) printf("Turning off %d discrete outputs\n", num_do);
+  if (num_do > 0) printf("Turning off %d discrete outputs:\n", num_do);
   for (int i=0; i < num_do; i++)
   {
+    printf("\t%s\n", do_points[i]->tag);
     do_points[i]->send(false);
   }
-  if (num_ao > 0) printf("Zeroing %d analog outputs\n", num_ao);
+  if (num_ao > 0) printf("Zeroing %d analog outputs:\n", num_ao);
   for (int i=0; i < num_ao; i++)
   {
+    printf("\t%s\n", ao_points[i]->tag);
     ao_points[i]->send(0.0);
   }
 
@@ -216,9 +218,61 @@ void react_t::print_all_points(void)
   }
 }
 
-timeaccum_t taa[20];
 
 /***********************************************************************/
+
+void react_t::verify_drivers(void)
+{
+  for (int i=0; i < num_ai; i++)
+  {
+    int drv = ai_points[i]->get_driver();
+    if ((drv < 0) || (drv >= num_io_drivers))
+    {
+      printf("Driver out of range for ai point %s: %d\n", ai_points[i]->tag, drv); 
+      exit(0);
+    } 
+  }
+  for (int i=0; i < num_di; i++)
+  {
+    int drv = di_points[i]->get_driver();
+    if ((drv < 0) || (drv >= num_io_drivers))
+    {
+      printf("Driver out of range for di point %s: %d\n", di_points[i]->tag, drv); 
+      exit(0);
+    } 
+  }
+  for (int i=0; i < num_do; i++)
+  {
+    int drv = do_points[i]->get_driver();
+    if ((drv < 0) || (drv >= num_io_drivers))
+    {
+      printf("Driver out of range for do point %s: %d\n", do_points[i]->tag, drv); 
+      exit(0);
+    } 
+  }
+  for (int i=0; i < num_ao; i++)
+  {
+    int drv = ao_points[i]->get_driver();
+    if ((drv < 0) || (drv >= num_io_drivers))
+    {
+      printf("Driver out of range for ao point %s: %d\n", ao_points[i]->tag, drv); 
+      exit(0);
+    } 
+  }
+  for (int i=0; i < num_pci; i++)
+  {
+    int drv = pci_points[i]->get_driver();
+    if ((drv < 0) || (drv >= num_io_drivers))
+    {
+      printf("Driver out of range for pci point %s: %d\n", ai_points[i]->tag, drv); 
+      exit(0);
+    } 
+  }
+}
+
+/***********************************************************************/
+
+timeaccum_t taa[20];
 
 void react_t::read_inputs(void)
 {
@@ -1361,7 +1415,6 @@ db_point_t *react_t::get_db_point(char *tag)
 
   int i;
 
-  //printf("%s:%d\n", __FILE__, __LINE__);
   for (i=0; i < num_ai; i++)
   {
     if (!strcasecmp(ai_points[i]->tag, tag))
