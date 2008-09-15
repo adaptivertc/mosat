@@ -280,7 +280,9 @@ void react_t::read_inputs(void)
   taa[j].start();
   for (int i=0; i < num_io_drivers; i++)
   {
+    printf("------------------------------- In read for driver %d\n", i);
     io_driver[i]->read();
+    printf("------------------------------- Out of read for driver %d\n", i);
   }
   taa[j].stop();
 
@@ -318,7 +320,9 @@ void react_t::read_inputs(void)
   taa[j].stop();
   for (int i=0; i < num_io_drivers; i++)
   {
+    printf("------------------------------- In end read for driver %d\n", i);
     io_driver[i]->end_read();
+    printf("------------------------------- Finished end read for driver %d\n", i);
   }
 
 

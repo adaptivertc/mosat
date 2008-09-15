@@ -34,18 +34,22 @@ int read_simple_ascii(int fd,
            char *error, int size)
 {
   char buf[100];
+  printf("Sending 'R' to micro\n");
   write(fd, "R", 1);
   int ret_val = rt_read_serial(fd, buf, 4);
-  buf[4] = '\0';
+  buf[2] = '\0'; // We do not care about the /n/r
+  printf("Got: %s\n", buf);
   if (ret_val < 0)
   {
     printf("Error reading serial port\n");
   }
   int n = atol(buf);
+  printf("There are %d analog values\n", n);
   for (int i=0; ((i < n) && (i < max_ai)); i++)
   {
     ret_val = rt_read_serial(fd, buf, 12);
-    buf[12] = '\0';
+    buf[10] = '\0'; // Get rid of the /n/r
+    printf("Got: %s\n", buf);
     if (ret_val < 0)
     {
       printf("Error reading serial port\n");
@@ -54,7 +58,8 @@ int read_simple_ascii(int fd,
   }
 
   ret_val = rt_read_serial(fd, buf, 14);
-  buf[14] = '\0';
+  buf[12] = '\0'; // Get rid of the /n/r
+  printf("Got: %s\n", buf);
   if (ret_val < 0)
   {
     printf("Error reading serial port\n");
@@ -65,7 +70,8 @@ int read_simple_ascii(int fd,
   }
   
   ret_val = rt_read_serial(fd, buf, 14);
-  buf[14] = '\0';
+  buf[12] = '\0'; // Get rid of the /n/r
+  printf("Got: %s\n", buf);
   if (ret_val < 0)
   {
     printf("Error reading serial port\n");
@@ -74,8 +80,7 @@ int read_simple_ascii(int fd,
   {
     do_vals[i] = (buf[i] == '1');
   }
-  
-  return 0;
+  printf("----------- The message was complete\n");
   return 0;
 }
 

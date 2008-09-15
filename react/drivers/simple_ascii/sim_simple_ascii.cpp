@@ -9,6 +9,12 @@
 int main(int argc, char *argv[])
 {
    int device;
+   int n_reads = 0;
+   int n_writes = 0;
+   int n_serial = 0;
+   char dos[20];
+
+   snprintf(dos, sizeof(dos), "%s", "000000000000\n\r");
 
    char dev_name[60];
    if (argc > 1)
@@ -44,16 +50,19 @@ int main(int argc, char *argv[])
 
     if (data[0] == 'R')
     {
+      n_reads++;
       write(device, "04\n\r", 4);
       write(device, "+12.345678\n\r", 12);
       write(device, "+12.345678\n\r", 12);
       write(device, "+12.345678\n\r", 12);
       write(device, "+12.345678\n\r", 12);
       write(device, "101010101001\n\r", 14);
-      write(device, "010000000100\n\r", 14);
+      write(device, dos, 14);
+      printf("%d reads so far\n", n_reads);
     }
     else if (data[0] == 'W')
     {
+      n_writes++;
       ret_val = rt_read_serial(device, data, 3); 
       data[3] = '\0';
       if (ret_val < 0)
@@ -65,7 +74,22 @@ int main(int argc, char *argv[])
       ch += (data[0] - '0') * 10;
       bool val = (data[2] == '1');
       printf("%s channel %d\n", val ? "Turning On" : "Turning OFF", ch);
+      if ((ch >= 0) && (ch < 12))
+      {
+        dos[ch] = val ? '1' : '0';
+      }
       write(device, "OK\n\r", 4);
+      printf("%d writes so far\n", n_reads);
+    }
+    else if (data[0] == 'S')
+    {
+      n_serial++;
+      write(device, "04\n\r", 4);
+      write(device, "10.4AEC29CDBAAB\n\r", 17);
+      write(device, "10.4AEC29CDBAAB\n\r", 17);
+      write(device, "10.4AEC29CDBAAB\n\r", 17);
+      write(device, "10.4AEC29CDBAAB\n\r", 17);
+      printf("%d serial number requests so far\n", n_serial);
     }
     else
     {

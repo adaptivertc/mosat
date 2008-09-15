@@ -7,5 +7,5 @@
 #    High Description (string max 12)
 #    Alarm State (drop down {high, low, none})
 #    Shutdown State  (drop down {high, low, none})
-ON_AC1|AC unit one is on|1|1|0|ON|OFF|N|N|
-COM_FAILED|Communications Failed|1|1|16|ON|OFF|N|N|
+ON_AC1|AC unit one is on|0|0|0|ON|OFF|N|N|
+COM_FAILED|Communications Failed|0|0|16|ON|OFF|N|N|
