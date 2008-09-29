@@ -30,6 +30,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class simple_ascii_driver_t : public io_driver_t
 {
 private:
+  bool read_values;
+  bool wake_him_up;
   double ai_vals[32];
   double tmp_ai_vals[32];
   bool di_vals[32];
@@ -39,11 +41,14 @@ private:
   int do_offset;
   int ai_offset;
   int ao_offset;
+  sem_t read_mutex_sem; 
+  sem_t read_wait_sem; 
   int serial_fd;
 public:
   simple_ascii_driver_t(react_drv_base_t *react, const char *device);
   void read(void);
   void end_read(void);
+  void read_thread(void);
   bool get_di(int channel);
   double get_ai(int channel);
   long get_count(int channel);

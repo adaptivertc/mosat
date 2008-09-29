@@ -53,10 +53,7 @@ Contains code for react simple ascii driver.
 
   'R' will return the following type of message:
 
-All lines must terminate with \n\r so this can be tested with minicom, so
-this means that each line will be 2 characters longer than stated.
-
-04
+4
 +12345.123
 -12345.123
 +12345.123
@@ -64,7 +61,7 @@ this means that each line will be 2 characters longer than stated.
 101010101010
 010001000101
 
-The first line, is always the number of analog intputs (N) 2 ascii digits.
+The first line, is always the number of analog intputs (N).
 
 Next, are N lines of analog inputs, EXACTLY 10 characters per line,
 	formated how you like, but must be valid floating point.
@@ -95,6 +92,21 @@ everything was ok, or exactly two digits error code.
 
 /***********************************************************************/
 
+static void *rt_simple_ascii_start_read_thread(void *driver_ptr)
+{
+  simple_ascii_driver_t *p = (simple_ascii_driver_t *)driver_ptr;
+  p->read_thread();
+  return NULL; // Should never return, but, this takes away the warning.
+}
+
+extern "C" io_driver_t *new_simple_ascii(react_drv_base_t *r, const char *option)
+{
+  printf("Creating new simple_ascii iodriver\n");
+  return new simple_ascii_driver_t(r, option);
+}
+
+/***********************************************************************/
+
 simple_ascii_driver_t::simple_ascii_driver_t(react_drv_base_t *react, 
                            const char *device)
 {
@@ -106,6 +118,8 @@ simple_ascii_driver_t::simple_ascii_driver_t(react_drv_base_t *react,
   ai_offset = 0;
   ao_offset = 0;
 
+  read_values = false;
+  wake_him_up = true;
 
   printf("Initializing simple ascii\n");
   serial_fd = init_simple_ascii(device, err, sizeof(err));
@@ -114,6 +128,34 @@ simple_ascii_driver_t::simple_ascii_driver_t(react_drv_base_t *react,
     printf("Error initializing the simple ascii interface: %s\n", err);
   }
   printf("DONE initializing simple ascii\n");
+
+  printf("Initializing semaphores\n");
+  if (0 != sem_init(&read_mutex_sem, 0, 1))
+  {
+    perror("sem_init");
+  }
+  if (0 != sem_init(&read_wait_sem, 0, 0))
+  {
+    perror("sem_init");
+  }
+  printf("DONE Initializing semaphores\n");
+  
+  printf("Creating thread\n");
+  pthread_t thr;
+  int retval;
+  retval = pthread_create(&thr, NULL, rt_simple_ascii_start_read_thread, this);
+  if (retval != 0)
+  {
+    perror("can't create thread");
+    exit(0);
+  }
+  retval = pthread_detach(thr);
+  if (retval != 0)
+  {
+    perror("can't detach thread");
+    exit(0);
+  }
+  printf("DONE Creating thread\n");
 }
 
 /***********************************************************************/
@@ -122,6 +164,10 @@ void simple_ascii_driver_t::send_ao(int ch, double val)
 {
   if ((ch >= 0) && (ch < 32))
   {
+    char error[50];
+    send_simple_ascii(serial_fd, ch, val,
+           error, sizeof(error));
+
   }
 }
 
@@ -135,11 +181,8 @@ void simple_ascii_driver_t::close(void)
 
 void simple_ascii_driver_t::send_do(int ch, bool val)
 {
-  if ((ch >= 0) && (ch < 12))
+  if ((ch >= 0) && (ch < 64))
   {
-    char error[50];
-    send_simple_ascii(serial_fd, ch, val,
-           error, sizeof(error));
   }
 }
 
@@ -193,22 +236,73 @@ long simple_ascii_driver_t::get_count(int channel)
 
 /***********************************************************************/
 
-void simple_ascii_driver_t::read(void)
+static int mycounter = 0;
+
+void simple_ascii_driver_t::read_thread(void)
 {
-    char error[50];
+  char err[100];
+  while(true)
+  {
+    printf("read thread reading simple ascii values . . .\n");
     read_simple_ascii(serial_fd, 
              tmp_ai_vals, 16, 
-             tmp_di_vals, 12, 
-             tmp_do_vals, 12, 
-             error, sizeof(error));
+             tmp_di_vals, 16, 
+             tmp_do_vals, 16, 
+             err, sizeof(err));
+    printf("read thread simple ascii DONE reading simple ascii values . . .\n");
+
+    printf("read thread simple ascii copying values . . .\n");
+    sem_wait(&read_mutex_sem);
+      printf("  -- read thread simple ascii in critical section . . .\n");
+      memcpy(ai_vals, tmp_ai_vals, sizeof(ai_vals));
+      memcpy(di_vals, tmp_di_vals, sizeof(di_vals));
+      read_values = true;
+      printf("  -- read thread simple ascii leaving critical section . . .\n");
+    sem_post(&read_mutex_sem);
+    printf("read thread simple ascii DONE copying values . . .\n");
+
+    printf("read thread simple ascii waiting %d\n", mycounter++);
+    sem_wait(&read_wait_sem);
+    printf("thread woke up\n");
+  }
+}
+
+/***********************************************************************/
+
+void simple_ascii_driver_t::read(void)
+{
+    time_t tstart = time(NULL);
+    sem_wait(&read_mutex_sem);
+    time_t tend = time(NULL);
+    printf("  -- simple ascii main thread in critical section %ld. . .\n", tend - tstart);
+    if (read_values)
+    {
+      wake_him_up = true;
+    }
+    else
+    {
+      // Either the reader is very slow or the link is down
+      wake_him_up = false;
+    }
 }
 
 /***********************************************************************/
 
 void simple_ascii_driver_t::end_read(void)
 {
+  read_values = false;
+  printf("  -- simple ascii main thread leaving critical section . . .\n");
+  sem_post(&read_mutex_sem);
+  if (wake_him_up)
+  {
+    printf("simple ascii waking up reader\n");
+    sem_post(&read_wait_sem); // wake up the read thread to read the next values.
+    printf("simple ascii DONE waking up reader\n");
+  }
+  else
+  {
+    printf("Simple Ascii read thread is hosed, no reason to keep incrementing . . .\n");
+  } 
 }
 
 /***********************************************************************/
-
-

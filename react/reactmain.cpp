@@ -319,7 +319,7 @@ int main(int argc, char *argv[])
   for (int i=0; !done; i++)
   {
     ta.start();
-    printf("Waiting for the next . . . \n");
+    printf("Waiting for the next interval . . . \n");
     utimer.wait_next();
     printf("DONE, next upate . . . \n");
     tj.start_of_interval();
