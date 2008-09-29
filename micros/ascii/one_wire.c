@@ -165,11 +165,11 @@ void send_temperatures(unsigned char devices)
           };
 }
 
-void read_di(void)
+void read_di(unsigned char devices)
 {       
-        int i;       
+        int i, j;       
         char buf[11];
-        /*sprintf(buf,"%02d\n\r",devices);
+        sprintf(buf,"%02d\n\r",devices);
         
         
         for(j=0;j<devices;j++)
@@ -178,9 +178,9 @@ void read_di(void)
                 for(i=0;i<10;i++)
                         putchar(buf[i]);
         }
-        sprintf(buf,"%d%d%d%d%d%d%d%d\n\r",PINB.0,PINB.1,PINB.2,PINB.3,PINB.4,PINB.5,PINB.6,PINB.7);*/
+        sprintf(buf,"%d%d%d%d%d%d%d%d\n\r",PINB.0,PINB.1,PINB.2,PINB.3,PINB.4,PINB.5,PINB.6,PINB.7);
         PORTC.2 = 1;
-        sprintf(buf,"%d%d%d%d%d%d%d%d\n\r",PINC.0,PINC.1,PINC.2,PINC.3,PINC.4,PINC.5,PINC.6,PINC.7);
+        sprintf(buf,"%d%d%d%d%d%d%d%d\n\r",PORTC.0,PORTC.1,PORTC.2,PORTC.3,PORTC.4,PORTC.5,PORTC.6,PORTC.7);
         for(i=0;i<10;i++)
                         putchar(buf[i]);
 }
@@ -322,7 +322,7 @@ while (1)
                if(letra == 'R' || letra == 'r')
                {
                  send_temperatures(devices);
-                 read_di();
+                 read_di(devices);
                  letra = '#';
                }
                /*if(letra == 'S' || letra == 's')
