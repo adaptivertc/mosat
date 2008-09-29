@@ -151,6 +151,8 @@ void send_temperatures(unsigned char devices)
         int i,j,temp;
         char temp_buf[10];  
         
+        sprintf(temp_buf,"%02d\n\r",devices);
+        
         for (i=0;i<devices;i++)
 
           {
@@ -165,30 +167,42 @@ void send_temperatures(unsigned char devices)
           };
 }
 
-void read_di(unsigned char devices)
+void read_di_do()
 {       
-        int i, j;       
+        int i;       
         char buf[11];
-        sprintf(buf,"%02d\n\r",devices);
+        //sprintf(buf,"%02d\n\r",devices);
         
         
-        for(j=0;j<devices;j++)
+        /*for(j=0;j<devices;j++)
         {
                 sprintf(buf,"%010d\n\r",PINB.0);
                 for(i=0;i<10;i++)
                         putchar(buf[i]);
-        }
+        }*/
+        
         sprintf(buf,"%d%d%d%d%d%d%d%d\n\r",PINB.0,PINB.1,PINB.2,PINB.3,PINB.4,PINB.5,PINB.6,PINB.7);
+        for(i=0;i<10;i++)
+                        putchar(buf[i]);
         PORTC.2 = 1;
         sprintf(buf,"%d%d%d%d%d%d%d%d\n\r",PORTC.0,PORTC.1,PORTC.2,PORTC.3,PORTC.4,PORTC.5,PORTC.6,PORTC.7);
         for(i=0;i<10;i++)
                         putchar(buf[i]);
 }
 
-/*void show_serials(unsigned char devices)
+void show_serials(unsigned char devices)
 {
         int i,j;
         char tempBuff[13];
+        
+        sprintf(tempBuff,"%02d\n\r",devices);
+        
+        for (i=0; i < strlen(tempBuff); i++)
+        {
+                putchar(tempBuff[i]);
+                        
+        };
+        
         for(i=0;i<devices;i++)
         {
                 //temp=ds1820_temperature_10(&rom_codes[i,0]);
@@ -201,7 +215,7 @@ void read_di(unsigned char devices)
                 putchar('\n');
                 putchar('\r');
         };
-}*/
+}
 
 void main(void)
 {
@@ -322,14 +336,14 @@ while (1)
                if(letra == 'R' || letra == 'r')
                {
                  send_temperatures(devices);
-                 read_di(devices);
+                 read_di_do();
                  letra = '#';
                }
-               /*if(letra == 'S' || letra == 's')
+               if(letra == 'S' || letra == 's')
                {
                         show_serials(devices); 
                         letra = '#';
-               }*/
+               }
                         
       };
 }
