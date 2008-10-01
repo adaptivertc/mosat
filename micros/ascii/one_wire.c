@@ -23,6 +23,7 @@ Data Stack size     : 256
 
 #include <mega16.h>
 #include <string.h>
+#include <ctype.h>
 
 // 1 Wire Bus functions
 #asm
@@ -217,12 +218,80 @@ void show_serials(unsigned char devices)
         };
 }
 
+char write_do(char ch1, char ch2, char val)
+{
+        if(isdigit(ch1) != 1 && isdigit(ch2) != 1 && ( val == '1' || val =='0'))
+                return 1;
+        
+        if(ch1 == '0')
+        {
+                if(ch2 == '0')
+                {
+                        if(val == '0')
+                                PORTC.0 = 0;
+                        else
+                                PORTC.0 = 1;
+                }
+                if(ch2 == '1')
+                {
+                        if(val == '0')
+                                PORTC.1 = 0;
+                        else
+                                PORTC.1 = 1;
+                }
+                if(ch2 == '2')
+                {
+                        if(val == '0')
+                                PORTC.2 = 0;
+                        else
+                                PORTC.2 = 1;
+                }
+                if(ch2 == '3')
+                {
+                        if(val == '0')
+                                PORTC.3 = 0;
+                        else
+                                PORTC.3 = 1;
+                }
+                if(ch2 == '4')
+                {
+                        if(val == '0')
+                                PORTC.4 = 0;
+                        else
+                                PORTC.4 = 1;
+                }
+                if(ch2 == '5')
+                {
+                        if(val == '0')
+                                PORTC.5 = 0;
+                        else
+                                PORTC.5 = 1;
+                }
+                if(ch2 == '6')
+                {
+                        if(val == '0')
+                                PORTC.6 = 0;
+                        else
+                                PORTC.6 = 1;
+                }
+                if(ch2 == '7')
+                {
+                        if(val == '0')
+                                PORTC.7 = 0;
+                        else
+                                PORTC.7 = 1;
+                }
+        }
+        
+        return '0';
+}
+
 void main(void)
 {
 // Declare your local variables here
                   
 unsigned char devices;
-char letra;
+char letra, ch1, ch2, val;
 
 // Input/Output Ports initialization
 // Port A initialization
@@ -344,6 +413,24 @@ while (1)
                         show_serials(devices); 
                         letra = '#';
                }
-                        
+               
+               if(letra == 'W' || letra == 'w')
+               {
+                        if(rx_counter < 3)
+                        {
+                                putchar('2');
+                                putchar('\n');
+                                putchar('\r');
+                        }
+                        else
+                        {
+                                ch1 = getchar();
+                                ch2 = getchar();
+                                val = getchar();
+                                putchar(write_do(ch1,ch2,val));//regresa un solo caracter 0 exito 1 error en los parametros
+                                putchar('\n');
+                                putchar('\r');
+                        }
+               }
       };
 }
