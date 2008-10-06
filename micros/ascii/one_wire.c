@@ -154,6 +154,12 @@ void send_temperatures(unsigned char devices)
         
         sprintf(temp_buf,"%02d\n\r",devices);
         
+        for (j=0; j < strlen(temp_buf); j++)
+        {
+                putchar(temp_buf[j]);
+                        
+        }; 
+        
         for (i=0;i<devices;i++)
 
           {
@@ -185,7 +191,7 @@ void read_di_do()
         sprintf(buf,"%d%d%d%d%d%d%d%d\n\r",PINB.0,PINB.1,PINB.2,PINB.3,PINB.4,PINB.5,PINB.6,PINB.7);
         for(i=0;i<10;i++)
                         putchar(buf[i]);
-        PORTC.2 = 1;
+                        
         sprintf(buf,"%d%d%d%d%d%d%d%d\n\r",PORTC.0,PORTC.1,PORTC.2,PORTC.3,PORTC.4,PORTC.5,PORTC.6,PORTC.7);
         for(i=0;i<10;i++)
                         putchar(buf[i]);
@@ -292,6 +298,7 @@ void main(void)
                   
 unsigned char devices;
 char letra, ch1, ch2, val;
+int time_out;
 
 // Input/Output Ports initialization
 // Port A initialization
@@ -396,6 +403,8 @@ w1_init();
 #asm("sei")
 devices=w1_search(0xf0,rom_codes);
 letra = '#';
+time_out = 0;
+
 while (1)
       {
       // Place your code here
@@ -416,7 +425,10 @@ while (1)
                
                if(letra == 'W' || letra == 'w')
                {
-                        if(rx_counter < 3)
+                        while(rx_counter < 3 && time_out < 9000000)
+                                time_out++;
+                        
+                        if(time_out == 9000000)
                         {
                                 putchar('2');
                                 putchar('\n');
@@ -431,6 +443,9 @@ while (1)
                                 putchar('\n');
                                 putchar('\r');
                         }
+
+                        time_out = 0;
+                        letra = '#';
                }
       };
 }
