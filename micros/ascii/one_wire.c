@@ -150,7 +150,7 @@ unsigned char rom_codes[MAX_DEVICES,9];
 void send_temperatures(unsigned char devices)
 {
         int i,j,temp;
-        char temp_buf[10];  
+        char temp_buf[13];  
         
         sprintf(temp_buf,"%02d\n\r",devices);
         
@@ -165,19 +165,19 @@ void send_temperatures(unsigned char devices)
           {
                 
                temp=ds1820_temperature_10(&rom_codes[i,0]);
-               sprintf(temp_buf, "%d:%d\n\r", i, temp);
+               sprintf(temp_buf, "%+010d\n\r", temp);
                for (j=0; j < strlen(temp_buf); j++)
                {
                         putchar(temp_buf[j]);
                         
-               };       
+               };
           };
 }
 
 void read_di_do()
 {       
         int i;       
-        char buf[11];
+        char buf[15];
         //sprintf(buf,"%02d\n\r",devices);
         
         
@@ -188,12 +188,12 @@ void read_di_do()
                         putchar(buf[i]);
         }*/
         
-        sprintf(buf,"%d%d%d%d%d%d%d%d\n\r",PINB.0,PINB.1,PINB.2,PINB.3,PINB.4,PINB.5,PINB.6,PINB.7);
-        for(i=0;i<10;i++)
+        sprintf(buf,"%d%d%d%d%d%d%d%d%d%d00\n\r",PINB.0,PINB.1,PINB.2,PINB.3,PINB.4,PIND.2,PIND.3,PIND.4,PIND.5,PIND.7);
+        for(i=0;i<14;i++)
                         putchar(buf[i]);
                         
-        sprintf(buf,"%d%d%d%d%d%d%d%d\n\r",PORTC.0,PORTC.1,PORTC.2,PORTC.3,PORTC.4,PORTC.5,PORTC.6,PORTC.7);
-        for(i=0;i<10;i++)
+        sprintf(buf,"%d%d%d%d%d%d%d%d%d%d%d%d\n\r",PORTA.4,PORTA.5,PORTA.6,PORTA.7,PORTC.0,PORTC.1,PORTC.2,PORTC.3,PORTC.4,PORTC.5,PORTC.6,PORTC.7);
+        for(i=0;i<14;i++)
                         putchar(buf[i]);
 }
 
@@ -210,7 +210,7 @@ void show_serials(unsigned char devices)
                         
         };
         
-        for(i=0;i<devices;i++)
+        /*for(i=0;i<devices;i++)
         {
                 //temp=ds1820_temperature_10(&rom_codes[i,0]);
                 sprintf(tempBuff,"%p\n\r", rom_codes[i,0]);
@@ -221,75 +221,179 @@ void show_serials(unsigned char devices)
                 };
                 putchar('\n');
                 putchar('\r');
-        };
+        };*/
+        for (i=0;i<devices;i++)
+        {
+                //printf("DEVICE #%-u ROM CODE IS:", i+1);
+
+                for (j=0;j<8;j++)
+                        printf("%02X",rom_codes[i][j]);
+                
+                printf("\n\r");
+
+       };
+       /*for(i=0;i<devices;i++)
+        {
+                //binary_to_hexascii(uint8 hex_buf[], uint8 bin_buf[], int n_bin)
+                k=binary_to_hexascii(tempBuff,rom_codes[i], 13);
+                //sprintf(tempBuff,"%s\n\r", rom_codes[i,0]);
+                for (j=0; j < k; j++)
+                {
+                        putchar(tempBuff[j]);
+                        
+                };
+                putchar('\n');
+                putchar('\r');
+        };*/
+       
 }
 
-char write_do(char ch1, char ch2, char val)
+void write_do(char ch1, char ch2, char val)
 {
-        if(isdigit(ch1) != 1 && isdigit(ch2) != 1 && ( val == '1' || val =='0'))
-                return 1;
-        
+        if(isdigit(ch1) != 1 || isdigit(ch2) != 1 || ( val != '1' && val !='0'))
+        {
+                putchar('0');
+                putchar('1');
+                putchar('\n');
+                putchar('\r');
+                return;
+        }
+
         if(ch1 == '0')
         {
                 if(ch2 == '0')
+                {
+                        if(val == '0')
+                                PORTA.4 = 0;
+                        else
+                                PORTA.4 = 1;
+                }
+                if(ch2 == '1')
+                {
+                        if(val == '0')
+                                PORTA.5 = 0;
+                        else
+                                PORTA.5 = 1;
+                }
+                if(ch2 == '2')
+                {
+                        if(val == '0')
+                                PORTA.6 = 0;
+                        else
+                                PORTA.6 = 1;
+                }
+                if(ch2 == '3')
+                {
+                        if(val == '0')
+                                PORTA.7 = 0;
+                        else
+                                PORTA.7 = 1;
+                }
+                if(ch2 == '4')
                 {
                         if(val == '0')
                                 PORTC.0 = 0;
                         else
                                 PORTC.0 = 1;
                 }
-                if(ch2 == '1')
+                if(ch2 == '5')
                 {
                         if(val == '0')
                                 PORTC.1 = 0;
                         else
                                 PORTC.1 = 1;
                 }
-                if(ch2 == '2')
+                if(ch2 == '6')
                 {
                         if(val == '0')
                                 PORTC.2 = 0;
                         else
                                 PORTC.2 = 1;
                 }
-                if(ch2 == '3')
+                if(ch2 == '7')
                 {
                         if(val == '0')
                                 PORTC.3 = 0;
                         else
                                 PORTC.3 = 1;
                 }
-                if(ch2 == '4')
+                if(ch2 == '8')
                 {
                         if(val == '0')
                                 PORTC.4 = 0;
                         else
                                 PORTC.4 = 1;
                 }
-                if(ch2 == '5')
+                if(ch2 == '9')
                 {
                         if(val == '0')
                                 PORTC.5 = 0;
                         else
                                 PORTC.5 = 1;
                 }
-                if(ch2 == '6')
-                {
-                        if(val == '0')
-                                PORTC.6 = 0;
-                        else
-                                PORTC.6 = 1;
-                }
-                if(ch2 == '7')
-                {
-                        if(val == '0')
-                                PORTC.7 = 0;
-                        else
-                                PORTC.7 = 1;
-                }
         }
+        else
+                if(ch1 == '1')
+                {
+                        if(ch2 == '0')
+                        {
+                                if(val == '0')
+                                        PORTC.6 = 0;
+                                else
+                                        PORTC.6 = 1;
+                        }
+                        else
+                                if(ch2 == '1')
+                                {
+                                        if(val == '0')
+                                                PORTC.7 = 0;
+                                        else
+                                                PORTC.7 = 1;
+                                }
+                                else
+                                {
+                                        putchar('0');
+                                        putchar('3');
+                                        putchar('\n');
+                                        putchar('\r');
+                                        return;
+                                }
+                }
+                else
+                {
+                        putchar('0');
+                        putchar('3');
+                        putchar('\n');
+                        putchar('\r');
+                        return;
+                }
         
-        return '0';
+        putchar('O');
+        putchar('K');
+        putchar('\n');
+        putchar('\r');
+}
+
+void test(unsigned char devices)
+{       
+        int k,temp,j;
+        char temp_buf[15];
+        
+        k = 0;
+        
+        if(devices > 0)
+                while(k < 100)
+                {
+                        temp=ds1820_temperature_10(&rom_codes[0,0]);
+                        sprintf(temp_buf, "k:%+010d\n\r", temp);
+                        for (j=0; j < strlen(temp_buf); j++)
+                        {
+                                putchar(temp_buf[j]);
+                        
+                        };
+                        k++;
+                }
+                
 }
 
 void main(void)
@@ -302,20 +406,20 @@ int time_out;
 
 // Input/Output Ports initialization
 // Port A initialization
-// Func7=In Func6=In Func5=In Func4=In Func3=In Func2=In Func1=In Func0=Out 
-// State7=T State6=T State5=T State4=T State3=T State2=T State1=T State0=0 
+// Func7=Out Func6=Out Func5=Out Func4=Out Func3=In Func2=In Func1=In Func0=In 
+// State7=0 State6=0 State5=0 State4=0 State3=T State2=T State1=T State0=T 
 PORTA=0x00;
-DDRA=0x01;
+DDRA=0xF0;
 
 // Port B initialization
 // Func7=In Func6=In Func5=In Func4=In Func3=In Func2=In Func1=In Func0=In 
 // State7=T State6=T State5=T State4=T State3=T State2=T State1=T State0=T 
-PORTB=0xFF;
+PORTB=0x00;
 DDRB=0x00;
 
 // Port C initialization
-// Func7=In Func6=In Func5=In Func4=In Func3=In Func2=In Func1=In Func0=In 
-// State7=T State6=T State5=T State4=T State3=T State2=T State1=T State0=T 
+// Func7=Out Func6=Out Func5=Out Func4=Out Func3=Out Func2=Out Func1=Out Func0=Out 
+// State7=0 State6=0 State5=0 State4=0 State3=0 State2=0 State1=0 State0=0 
 PORTC=0x00;
 DDRC=0xFF;
 
@@ -428,7 +532,7 @@ while (1)
                         while(rx_counter < 3 && time_out < 9000000)
                                 time_out++;
                         
-                        if(time_out == 9000000)
+                        if(time_out == 900000)
                         {
                                 putchar('2');
                                 putchar('\n');
@@ -439,12 +543,15 @@ while (1)
                                 ch1 = getchar();
                                 ch2 = getchar();
                                 val = getchar();
-                                putchar(write_do(ch1,ch2,val));//regresa un solo caracter 0 exito 1 error en los parametros
-                                putchar('\n');
-                                putchar('\r');
+                                write_do(ch1,ch2,val);
                         }
 
                         time_out = 0;
+                        letra = '#';
+               }
+               if(letra == 'T' || letra == 't')
+               {
+                        test(devices);
                         letra = '#';
                }
       };
