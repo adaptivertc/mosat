@@ -2,6 +2,8 @@
 
 #include <stdio.h>
 
+#include <ctype.h>
+
 #include "rt_serial.h"
 
 #include "simple_ascii.h"
@@ -52,33 +54,48 @@ int main(int argc, char *argv[])
     {
       n_reads++;
       write(device, "04\n\r", 4);
-      write(device, "+12.345678\n\r", 12);
-      write(device, "+12.345678\n\r", 12);
-      write(device, "+12.345678\n\r", 12);
-      write(device, "+12.345678\n\r", 12);
+      printf("04\n\r");
+      for (int i=0; i < 4; i++)
+      {
+        write(device, "+12.345678\n\r", 12);
+        printf("+12.345678\n\r");
+      }
       write(device, "101010101001\n\r", 14);
+      printf("101010101001\n\r");
       write(device, dos, 14);
+      printf(dos);
       printf("%d reads so far\n", n_reads);
     }
     else if (data[0] == 'W')
     {
       n_writes++;
+      printf("Reading Command bytes\n");
       ret_val = rt_read_serial(device, data, 3); 
       data[3] = '\0';
+      printf("Write command: %s\n", data);
       if (ret_val < 0)
       {
         printf("Error reading serial port\n");
         write(device, "01\n\r", 4);
       }
-      int ch = data[1] - '0'; 
-      ch += (data[0] - '0') * 10;
-      bool val = (data[2] == '1');
-      printf("%s channel %d\n", val ? "Turning On" : "Turning OFF", ch);
-      if ((ch >= 0) && (ch < 12))
+      if (!isdigit(data[0]) || !isdigit(data[1]) || 
+          ((data[2] != '0') && (data[2] != '1')) )
       {
-        dos[ch] = val ? '1' : '0';
+        printf("bad message\n");
+        write(device, "05\n\r", 4);
       }
-      write(device, "OK\n\r", 4);
+      else
+      {
+        int ch = data[1] - '0'; 
+        ch += (data[0] - '0') * 10;
+        bool val = (data[2] == '1');
+        printf("%s channel %d\n", val ? "Turning On" : "Turning OFF", ch);
+        if ((ch >= 0) && (ch < 12))
+        {
+          dos[ch] = val ? '1' : '0';
+        }
+        write(device, "OK\n\r", 4);
+      }
       printf("%d writes so far\n", n_reads);
     }
     else if (data[0] == 'S')

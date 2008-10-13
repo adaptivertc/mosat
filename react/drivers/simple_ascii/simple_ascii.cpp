@@ -93,6 +93,15 @@ everything was ok, or exactly two digits error code.
 
 ****/
 
+
+/***********************************************************************/
+
+extern "C" io_driver_t *new_simple_ascii(react_drv_base_t *r, const char *option)
+{
+  printf("Creating new simple_ascii iodriver\n");
+  return new simple_ascii_driver_t(r, option);
+}
+
 /***********************************************************************/
 
 simple_ascii_driver_t::simple_ascii_driver_t(react_drv_base_t *react, 

@@ -16,7 +16,7 @@ int init_simple_ascii(const char *device, char *error, int size)
   int serial_fd; 
   rt_verbose = 1;
   printf("Opening device %s . . . \n", device);
-  serial_fd = rt_open_serial(device ,9600,0.0);
+  serial_fd = rt_open_serial(device ,9600,1.0);
   printf("Serial fd: %d \n", serial_fd);
   if (serial_fd < 0)
   {
@@ -55,6 +55,7 @@ int read_simple_ascii(int fd,
   if (ret_val < 0)
   {
     printf("Error reading serial port\n");
+    write(fd, "XXXXX", 5);
   }
   int n = atol(buf);
   printf("There are %d analog values\n", n);
@@ -104,8 +105,11 @@ int send_simple_ascii(int fd, int channel, bool val,
 {
   char buf[10];
   snprintf(buf, sizeof(buf), "W%02d%c\n\r", channel, val ? '1' : '0' );
-  write(fd, buf, 6);
-  int ret_val = rt_read_serial(fd, buf, 4);
+  int ret_val = write(fd, buf, 4);
+  printf("%d bytes written: %s", ret_val, buf);
+  ret_val = rt_read_serial(fd, buf, 4);
+  buf[4] = '\0';
+  printf("%d bytes read: %s", ret_val, buf);
   buf[4] = '\0';
   if (ret_val < 0)
   {
