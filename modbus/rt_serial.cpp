@@ -35,18 +35,21 @@ int rt_read_serial(int fd, void *data, int sz)
 {
   int total_read = 0;
   char *dp = (char *) data;
+  bool first = true;
   while (total_read < sz)
   {
     #ifdef SERIAL_USE_SIGNALS
-    printf("waiting for signal in serial driver\n");
+    if (first) printf("waiting for signal in serial driver\n");
     if (wait_flag)
     {
       //printf("Looping . . . \n");
       usleep(100000);
+      first = false;
       continue;
     }
     #endif
     printf("Got signal in serial driver\n");
+    first = true;
     int n = read(fd, dp + total_read, sz - total_read); 
     #ifdef SERIAL_USE_SIGNALS
     wait_flag = true;
