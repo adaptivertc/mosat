@@ -38,6 +38,7 @@ int rt_read_serial(int fd, void *data, int sz)
   while (total_read < sz)
   {
     #ifdef SERIAL_USE_SIGNALS
+    printf("waiting for signal in serial driver\n");
     if (wait_flag)
     {
       //printf("Looping . . . \n");
@@ -45,6 +46,7 @@ int rt_read_serial(int fd, void *data, int sz)
       continue;
     }
     #endif
+    printf("Got signal in serial driver\n");
     int n = read(fd, dp + total_read, sz - total_read); 
     #ifdef SERIAL_USE_SIGNALS
     wait_flag = true;
