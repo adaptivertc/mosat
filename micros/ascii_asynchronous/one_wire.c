@@ -391,7 +391,7 @@ void test(unsigned char devices)
                 while(k < 100)
                 {
                         temp=ds1820_temperature_10(&rom_codes[0,0]);
-                        sprintf(temp_buf, "k:%+010d\n\r", temp);
+                        sprintf(temp_buf, "%d:%+010d\n\r", k, temp);
                         for (j=0; j < strlen(temp_buf); j++)
                         {
                                 putchar(temp_buf[j]);
@@ -415,7 +415,7 @@ void pad(unsigned char devices)
                         ds1820_read_spd(&rom_codes[0,0]);
                         
                         //temp=ds1820_temperature_10(&rom_codes[0,0]);
-                        sprintf(temp_buf, "k:%d\n\r", __ds1820_scratch_pad.temp_high);
+                        sprintf(temp_buf, "%d:%d,%d\n\r", k, __ds1820_scratch_pad.temp_low, __ds1820_scratch_pad.temp_high);
                         for (j=0; j < strlen(temp_buf); j++)
                         {
                                 putchar(temp_buf[j]);
@@ -547,7 +547,9 @@ devices=w1_search(0xf0,rom_codes);
 letra = '#';
 time_out = 0;
 //sensors_info = (unsigned short int*) malloc(sizeof(unsigned short int) * MAX_DEVICES*2);
+//ds1820_set_alarm(&rom_codes[0,0],10,50);
 
+	
 while (1)
       {
       // Place your code here
