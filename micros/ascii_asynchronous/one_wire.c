@@ -150,7 +150,7 @@ else
 // Declare your global variables here
 unsigned char rom_codes[MAX_DEVICES,9];
 //unsigned short int *sensors_info;
-//flash unsigned short int sensors_info[MAX_DEVICES][MAX_DEVICES];
+unsigned short int sensors_info[MAX_DEVICES][2];
 int temperatures[MAX_DEVICES];
 
 void send_temperatures(unsigned char devices)
@@ -546,7 +546,6 @@ w1_init();
 devices=w1_search(0xf0,rom_codes);
 letra = '#';
 time_out = 0;
-//sensors_info = (unsigned short int*) malloc(sizeof(unsigned short int) * MAX_DEVICES*2);
 //ds1820_set_alarm(&rom_codes[0,0],10,50);
 
 	
