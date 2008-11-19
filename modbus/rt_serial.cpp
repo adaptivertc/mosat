@@ -7,6 +7,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <termios.h>
+#include <math.h>
 
 #include <sys/signal.h>
 #include <sys/types.h>
@@ -15,21 +16,16 @@
 
 #include "rt_serial.h"
 
+
+static bool serial_no_timeout = false;
+static struct timeval serial_tv = {5,0};
+
 struct termios saved_tty_parameters; /* saved serial port setting */
 int rt_verbose;
 
-#define SERIAL_USE_SIGNALS
-
-#ifdef SERIAL_USE_SIGNALS
-bool wait_flag = true;
-sem_t wait_sem;
-
-void signal_handler_IO (int status)
+void signal_handler_IO(int sig)
 {
-//    printf("received SIGIO signal.\n");
-  wait_flag = false;
 }
-#endif
 
 int rt_read_serial(int fd, void *data, int sz)
 {
@@ -43,16 +39,26 @@ int rt_read_serial(int fd, void *data, int sz)
 
     /* Watch stdin (fd 0) to see when it has input. */
     FD_ZERO(&rfds);
-    FD_SET(0, &rfds);
-    /* Wait up to five seconds. */
-    tv.tv_sec = 5;
-    tv.tv_usec = 0;
+    FD_SET(fd, &rfds);
 
   while (total_read < sz)
   {
 
-    retval = select(1, &rfds, NULL, NULL, &tv);
-    /* Don't rely on the value of tv now! */
+    tv.tv_sec = 5;
+    tv.tv_usec = 0;
+    if (serial_no_timeout)
+    {
+      printf("Calling select with NULL for tv\n");
+      retval = select(1, &rfds, NULL, NULL, NULL);
+    }
+    else
+    {
+      tv = serial_tv;
+      printf("Calling select with {%ld, %ld} for tv\n", tv.tv_sec, tv.tv_usec);
+      retval = select(1, &rfds, NULL, NULL, &tv);
+    }
+    printf("select returned\n");
+    usleep(10000);
 
     if (retval == -1)
     {
@@ -70,29 +76,8 @@ int rt_read_serial(int fd, void *data, int sz)
         /* FD_ISSET(0, &rfds) will be true. */
     }
 
-    return 0;
-
-    #ifdef SERIAL_USE_SIGNALS
-   /***
-       int select(int nfds, fd_set *readfds, fd_set *writefds,
-                  fd_set *exceptfds, struct timeval *timeout);
-  ***/
-
-    if (first) printf("waiting for signal in serial driver\n");
-    if (wait_flag)
-    {
-      //printf("Looping . . . \n");
-      usleep(100000);
-      first = false;
-      continue;
-    }
-    #endif
-    printf("Got signal in serial driver\n");
-    first = true;
-    int n = read(fd, dp + total_read, sz - total_read); 
-    #ifdef SERIAL_USE_SIGNALS
-    wait_flag = true;
-    #endif
+    //int n = read(fd, dp + total_read, sz - total_read); 
+    int n = read(fd, dp + total_read, 1); 
     if (n == 0)
     {
       // we timed out waiting for our characters.
@@ -125,10 +110,7 @@ int rt_open_serial(const char *port, int baud_rate, float timeout)
   int fd;
   struct termios rt_tio; 
 
-  #ifdef SERIAL_USE_SIGNALS
   signal(SIGIO, signal_handler_IO);
-  sem_init(&wait_sem, 0, 0);
-  #endif
 
   /* open the serial port */
   fd = open(port,O_RDWR | O_NOCTTY | O_NONBLOCK | O_NDELAY) ;
@@ -259,11 +241,16 @@ int rt_open_serial(const char *port, int baud_rate, float timeout)
   {
     rt_tio.c_cc[VMIN]=1;
     rt_tio.c_cc[VTIME]=0;
+    serial_no_timeout = true;
   }
   else
   {
-    rt_tio.c_cc[VMIN]=0;
-    rt_tio.c_cc[VTIME]= (int)(timeout * 10.0);
+    rt_tio.c_cc[VMIN]=1;
+    rt_tio.c_cc[VTIME]=0;
+    //rt_tio.c_cc[VMIN]=0;
+    //rt_tio.c_cc[VTIME]= (int)(timeout * 10.0);
+    serial_tv.tv_sec = trunc(timeout);
+    serial_tv.tv_usec = trunc((timeout - trunc(timeout)) * 1000000.0);
   }
 
   /* flush the serial port */

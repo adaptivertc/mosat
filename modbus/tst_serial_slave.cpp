@@ -6,8 +6,6 @@
 
 #include "rt_serial.h"
 
-/* compiling : gcc master-example.c -o master-example -lmodbus */
-
 int main(int argc, char *argv[])
 {
    int device;
@@ -55,13 +53,14 @@ int main(int argc, char *argv[])
 
    
    /*** Read ***/
+   write(device, "x", 1);
    char read_data[100];
    int total_read = 0;
    int count = 0;
    while (1)
    {
      printf("Reading . . . \n");
-     int n = read(device,read_data,sizeof(read_data) - 1);
+     int n =  rt_read_serial(device,read_data,sizeof(read_data) - 1);
      count++;
      if (n > 0)
      { 
@@ -75,9 +74,7 @@ int main(int argc, char *argv[])
      } 
    }
   /** done read **/
-
    rt_close_serial(device);
-
    return 0;
 }
 

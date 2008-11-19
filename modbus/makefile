@@ -12,7 +12,7 @@ CPP=g++ -fpic
 %.o:	%.cpp $(INCLUDES)
 	$(CPP) -c -o $@ -Wall $<
 
-all:	 librtmodbus.so librtmodbus.a modsim myconnect 
+all:	 librtmodbus.so librtmodbus.a modsim myconnect tst_serial_master tst_serial_slave 
 
 modsim:	myservice.o modsim.o trace.h 
 	g++ -o modsim -lpthread myservice.o $(RTMODBUS) $(RTCOMMON) 
@@ -34,6 +34,12 @@ librtmodbus.a: trace.o modsim.o trace.h crc.o swap.o modtcpip_client.o\
 		 modtcpip.o hexascii.o rtmodbus.o modio.o modtcpip_client.o \
 		evlog.o rt_serial.o rt_mod_serial_client.o rt_modreplysize.o
 
+tst_serial_slave: tst_serial_slave.cpp $(INCLUDES)
+	g++ -o tst_serial_slave tst_serial_slave.cpp -lrt ./librtmodbus.a
+
+tst_serial_master:  tst_serial_master.cpp $(INCLUDES)
+	g++ -o tst_serial_master tst_serial_master.cpp -lrt ./librtmodbus.a
+
 install:
 	cp librtmodbus.so /usr/local/lib
 	cp rtmodbus.h /usr/local/include
@@ -41,7 +47,7 @@ install:
 
 
 clean:	
-	rm -fv *.o modsim myconnect librtmodbus.so librtmodbus.a 
+	rm -fv *.o modsim myconnect librtmodbus.so librtmodbus.a tst_serial_slave tst_serial_master 
 
 ppcall:
 	make -f makefile.ppc
