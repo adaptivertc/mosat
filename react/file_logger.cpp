@@ -377,7 +377,7 @@ file_logger_t **file_logger_t::read(int *cnt, const char *home_dir)
       continue;
     }
 
-    printf(line);
+    printf("%s", line);
     file_logger_t *p = new file_logger_t;
 
     safe_strcpy(p->tag, (const char*) argv[0], sizeof(p->tag));

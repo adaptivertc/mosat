@@ -383,7 +383,7 @@ void jl_algorithm_t::denySysEntry(int section)
 
 void jl_algorithm_t::logThis(char *msglog)
 {
-    fprintf(log_file,msglog);
+    fprintf(log_file, "%s", msglog);
     fflush(log_file);
 }
 

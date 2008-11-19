@@ -155,7 +155,7 @@ data_point_t **data_point_t::read(int *cnt, const char *home_dir)
       continue;
     }
 
-    printf(line);
+    printf("%s", line);
     data_point_t *p = new data_point_t;
 
     /*****

@@ -26,6 +26,7 @@ DEALINGS IN THE SOFTWARE.
 #include <time.h>
 #include <sys/time.h>
 #include <unistd.h>
+#include <errno.h>
 
 
 #include "utimer.h"
@@ -140,6 +141,23 @@ struct timeval utimer_t::elapsed_time(void)
 }
 
 /*******************************************************************/
+
+struct timespec utimer_t::timespec_dif(struct timeval atv) 
+{
+  struct timespec temp_ts;
+  struct timeval mytv;
+  
+  mytv.tv_sec = tv1.tv_sec - atv.tv_sec;
+  mytv.tv_usec = tv1.tv_usec - atv.tv_usec;
+  normalize_timeval(&mytv);
+  
+  temp_ts.tv_sec = mytv.tv_sec;
+  temp_ts.tv_nsec = mytv.tv_usec * long(1000);
+  return temp_ts;
+}
+
+/*******************************************************************/
+
 long utimer_t::usec_timer_dif(struct timeval atv)
 {
   /*
@@ -214,8 +232,38 @@ void utimer_t::wait_next(void)
   }
   else
   {
-    usleep(dif);
+    //usleep(dif);
+    struct timespec remain;
+    struct timespec request = timespec_dif(tv2);
+    printf("waiting (%ld, %ld)\n", request.tv_sec, request.tv_nsec);
+    int retval = nanosleep(&request, &remain);
+    while (retval == -1)
+    { 
+      if (errno == EINTR)
+      {
+        request = remain; // Ok, a signal screwed things up, sleep again.
+        printf("waiting for rest(%ld, %ld)\n", request.tv_sec, request.tv_nsec);
+        retval = nanosleep(&request, &remain);
+      }
+      else if (errno == EINVAL)
+      {
+        printf("Error in utimer code %s:%d\n", __FILE__, __LINE__);
+        break;
+      }
+      else if (errno == EFAULT)
+      {
+        printf("System error in utimer (EFAULT) %s:%d\n", __FILE__, __LINE__);
+        break;
+      }
+      else
+      {
+        break; // Should never happen, but break to avoid infinite loop; 
+      }
+    }
   }
+  gettimeofday(&tv2, NULL);
+  dif = usec_timer_dif(tv2);
+  printf("wait difference: %ld\n", dif);
   //struct timespec ts;
   //ts.tv_sec = 0;
   //ts.tv_nsec = dif * 1000L;

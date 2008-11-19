@@ -145,7 +145,7 @@ scan_point_t **scan_point_t::read(int *cnt, const char *home_dir)
       continue;
     }
 
-    printf(line);
+    printf("%s", line);
     scan_point_t *p = new scan_point_t;
 
     /*****

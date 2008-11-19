@@ -134,7 +134,7 @@ void sections_t::read_file(void)
       printf("pid.dat: Wrong number of args, line %d\n", i+1);
       continue;
     }
-    printf(line);
+    printf("%s", line);
     safe_strcpy(sections[n].name, argv[0], sizeof(sections[n].name));
     sections[n].total_time = atof(argv[1]);
     sections[n].distance = atof(argv[2]);

@@ -99,7 +99,7 @@ di_point_t **di_point_t::read(int *cnt, const char *home_dir)
     }
 
     di_point_t *p = new di_point_t;
-    printf(line);
+    printf("%s", line);
 
     /*****
     Tag

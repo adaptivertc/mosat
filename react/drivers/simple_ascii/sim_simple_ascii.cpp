@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
       write(device, "101010101001\n\r", 14);
       printf("101010101001\n\r");
       write(device, dos, 14);
-      printf(dos);
+      printf("%s", dos);
       printf("%d reads so far\n", n_reads);
     }
     else if (data[0] == 'W')

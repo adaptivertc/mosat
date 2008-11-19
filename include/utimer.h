@@ -47,6 +47,8 @@ private:
   bool busy_wait;
   void inc_time(long usecs);
   long usec_timer_dif(struct timeval atv);
+  struct timespec timespec_dif(struct timeval atv); // used for nanosseep, 
+       // though we should convert all internal data structures to timespec 
   void normalize_timeval(struct timeval *atv);
   void my_busy_wait();
 public:

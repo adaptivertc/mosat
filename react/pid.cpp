@@ -95,8 +95,9 @@ void pid_point_t::stop_control(void)
 }
 
 /******************************************************************/
-typedef enum tune_type_t {TUNE_PI, TUNE_PID};
-typedef struct tune_data_t
+
+enum tune_type_t {TUNE_PI, TUNE_PID};
+struct tune_data_t
 {
   double A0;
   double A1;
@@ -365,7 +366,7 @@ pid_point_t **pid_point_t::read(int *cnt, const char *home_dir)
       printf("%s: Wrong number of args, line %d\n", path, i+1);
       continue;
     }
-    printf(line);
+    printf("%s", line);
     pid_point_t *pid = new pid_point_t;
 
     safe_strcpy(pid->tag, (const char*) argv[0], sizeof(pid->tag));
@@ -384,7 +385,21 @@ pid_point_t **pid_point_t::read(int *cnt, const char *home_dir)
     char temp_tag[30];
     safe_strcpy(temp_tag, (const char*) argv[9], sizeof(temp_tag));
     rtrim(temp_tag);
+
     db_point = db->get_db_point(temp_tag);
+
+    if (db_point == NULL)
+    {
+      printf("%s - bad TAGNAME: %s\n", pid->tag, temp_tag);
+    }
+
+    pid->ai_point = dynamic_cast <ai_point_t *> (db_point);
+    if (pid->ai_point == NULL)
+    {
+      printf("%s - bad analog input point: %s\n", pid->tag, temp_tag);
+    }
+
+    /**
     if ((db_point == NULL) || (db_point->point_type() != ANALOG_INPUT))
     {
       pid->ai_point = NULL;
@@ -394,9 +409,24 @@ pid_point_t **pid_point_t::read(int *cnt, const char *home_dir)
     {
       pid->ai_point = (ai_point_t *) db_point;
     }
+    ***/
+
     safe_strcpy(temp_tag, (const char*) argv[10], sizeof(temp_tag));
     rtrim(temp_tag);
     db_point = db->get_db_point(temp_tag);
+
+    if (db_point == NULL)
+    {
+      printf("%s - bad TAGNAME: %s\n", pid->tag, temp_tag);
+    }
+
+    pid->ao_point = dynamic_cast <ao_point_t *> (db_point);
+    if (pid->ai_point == NULL)
+    {
+      printf("%s - bad analog output point: %s\n", pid->tag, temp_tag);
+    }
+
+    /********
     if ((db_point == NULL) || (db_point->point_type() != ANALOG_OUTPUT))
     {
       pid->ao_point = NULL;
@@ -406,6 +436,7 @@ pid_point_t **pid_point_t::read(int *cnt, const char *home_dir)
     {
       pid->ao_point = (ao_point_t *) db_point;
     }
+    ****/
 
     pid->deviation_alarm = atof(argv[11]);
     pid->deviation_caution = atof(argv[12]);

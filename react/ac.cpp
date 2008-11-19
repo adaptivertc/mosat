@@ -477,11 +477,11 @@ ac_point_t **ac_point_t::read(int *cnt, const char *home_dir)
 
     ac->cold_detected = false;
     ac->cold_alarm = false;
-    ac->cold_detect_time = 0.0;
+    ac->cold_detect_time = 0;
 
     ac->small_diference_dectected = false;
     ac->diff_alarm = false;
-    ac->small_difference_detect_time = 0.0;
+    ac->small_difference_detect_time = 0;
 
     const char *html_home = ap_config.get_config("htmlhome");
     if (html_home == NULL)

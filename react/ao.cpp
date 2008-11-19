@@ -220,7 +220,7 @@ ao_point_t **ao_point_t::read(int *cnt, const char *home_dir)
       printf("%s:%d\n", path, i+1);
       continue;
     }
-    printf(line);
+    printf("%s", line);
     count++;
     /**********/
 

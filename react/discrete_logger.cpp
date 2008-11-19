@@ -200,7 +200,7 @@ discrete_logger_t **discrete_logger_t::read(int *cnt, const char *home_dir)
       continue;
     }
 
-    printf(line);
+    printf("%s", line);
     discrete_logger_t *p = new discrete_logger_t;
 
     safe_strcpy(p->tag, (const char*) argv[0], sizeof(p->tag));

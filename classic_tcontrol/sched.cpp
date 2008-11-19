@@ -146,7 +146,7 @@ void scheduler_t::read_schedule(void)
       printf("sched.txt: Wrong number of args, line %d\n", i+1);
       continue;
     }
-    printf(line);
+    printf("%s", line);
     bool is_add;
     int secs;
     if (argv[0][0] == '+')

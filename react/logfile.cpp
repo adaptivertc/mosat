@@ -46,7 +46,7 @@ void logfile_t::print(const char *txt)
   }
   if (file_print_enabled)
   {
-    fprintf(fp, txt);
+    fprintf(fp, "%s", txt);
   }
 }
 

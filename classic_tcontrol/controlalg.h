@@ -24,7 +24,7 @@ DEALINGS IN THE SOFTWARE.
 
 /*******************************************************************/
 
-typedef struct control_train_t
+struct control_train_t
 {
   int section;       // This will be incremented when you cross the sensor.
   int section_est;   // This will be incremented when you SHOULD have 
@@ -40,7 +40,7 @@ typedef struct control_train_t
 
 /*******************************************************************/
 
-typedef struct control_tsection_t
+struct control_tsection_t
 {
   bool has_system_entry;
   int section_key;

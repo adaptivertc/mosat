@@ -191,7 +191,7 @@ do_point_t **do_point_t::read(int *cnt, const char *home_dir)
       printf("%s: Wrong number of args, line %d", path, i+1);
       continue;
     }
-    printf(line);
+    printf("%s", line);
     do_point_t *p = new do_point_t;
 
     /*****

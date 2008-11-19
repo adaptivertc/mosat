@@ -27,13 +27,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define SECUENCIA_LOOP (INT_MAX - 1)
 #define SECUENCIA_SKIP_TO_ENDIF (INT_MAX - 2)
 
-typedef enum
+enum script_param_t
 {
   PARAM_DOUBLE, PARAM_BOOL, PARAM_INT, PARAM_BAD, PARAM_STRING, PARAM_VOID
-} script_param_t;
+};
 
 
-typedef enum step_type_t
+enum step_type_t
 {
   STEP_SENDDO, STEP_WAIT, STEP_WAITKEY, STEP_STARTDAQ,
   STEP_STOPDAQ, STEP_PRINTMSG, STEP_MARK, STEP_LOOP, 

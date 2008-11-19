@@ -26,7 +26,7 @@ DEALINGS IN THE SOFTWARE.
 
 #define DATA_START 30
 
-typedef enum sim_type_t {SIM_SLAVE, SIM_RANDOM, SIM_FIXED};
+enum sim_type_t {SIM_SLAVE, SIM_RANDOM, SIM_FIXED};
 
 class event_notify_object_t
 {

@@ -724,7 +724,7 @@ db_point_t ** react_t::read_one_point_type(db_point_factory_t *factory,
       printf("%s:%d %s\n", path, i+1, errbuf);
       continue;
     }
-    printf(line);
+    printf("%s", line);
     n++;
     if (n > max_points)
     {

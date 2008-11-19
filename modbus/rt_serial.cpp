@@ -36,9 +36,48 @@ int rt_read_serial(int fd, void *data, int sz)
   int total_read = 0;
   char *dp = (char *) data;
   bool first = true;
+
+    fd_set rfds;
+    struct timeval tv;
+    int retval;
+
+    /* Watch stdin (fd 0) to see when it has input. */
+    FD_ZERO(&rfds);
+    FD_SET(0, &rfds);
+    /* Wait up to five seconds. */
+    tv.tv_sec = 5;
+    tv.tv_usec = 0;
+
   while (total_read < sz)
   {
+
+    retval = select(1, &rfds, NULL, NULL, &tv);
+    /* Don't rely on the value of tv now! */
+
+    if (retval == -1)
+    {
+      return -1;
+      perror("select()");
+    }
+    else if (retval == 0)
+    {
+      return total_read;
+      printf("No data within five seconds.\n");
+    }
+    else
+    {
+      printf("Data is available now.\n");
+        /* FD_ISSET(0, &rfds) will be true. */
+    }
+
+    return 0;
+
     #ifdef SERIAL_USE_SIGNALS
+   /***
+       int select(int nfds, fd_set *readfds, fd_set *writefds,
+                  fd_set *exceptfds, struct timeval *timeout);
+  ***/
+
     if (first) printf("waiting for signal in serial driver\n");
     if (wait_flag)
     {

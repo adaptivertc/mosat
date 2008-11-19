@@ -110,7 +110,7 @@ dcalc_t **dcalc_t::read(int *cnt, const char *home_dir)
       continue;
     }
 
-    printf(line);
+    printf("%s", line);
     dcalc_t *p = new dcalc_t;
 
     /*****

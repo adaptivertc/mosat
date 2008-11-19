@@ -32,7 +32,7 @@ struct zone_t
 };
 
 
-typedef struct startup_tsection_t
+struct startup_tsection_t
 {
   bool has_system_entry;
   int section_key;

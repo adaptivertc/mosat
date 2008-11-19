@@ -78,7 +78,7 @@ dcalc_point_t **dcalc_point_t::read(int *cnt, const char *home_dir)
     }
 
     dcalc_point_t *p = new dcalc_point_t;
-    printf(line);
+    printf("%s", line);
 
     /*****
     Tag

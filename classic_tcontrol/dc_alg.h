@@ -22,7 +22,7 @@ DEALINGS IN THE SOFTWARE.
 
 
 
-typedef struct my_tsection_t
+struct my_tsection_t
 {
   bool has_system_entry;
   int section_key;

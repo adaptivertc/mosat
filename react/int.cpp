@@ -113,7 +113,7 @@ int_t **int_t::read(int *cnt, const char *home_dir)
       continue;
     }
 
-    printf(line);
+    printf("%s", line);
     int_t *p = new int_t;
 
     /*****

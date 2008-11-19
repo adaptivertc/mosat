@@ -3,7 +3,7 @@
 const double SPD_STATE_DEADBAND = 0.5;
 const int SPD_MAX_WARN_TIME = 20;
 
-typedef enum speed_state_t 
+enum speed_state_t 
 {
   SPD_STATE_SHUTDOWN,
   SPD_STATE_WARN_HI,

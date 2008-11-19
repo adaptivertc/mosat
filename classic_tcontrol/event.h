@@ -28,7 +28,7 @@ DEALINGS IN THE SOFTWARE.
 #define STATION_ENTER_EVENT 4
 #define STATION_EXIT_EVENT 5
 
-typedef struct event_t
+struct event_t
 {
   int type;
   int section;
