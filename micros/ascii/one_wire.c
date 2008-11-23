@@ -7,15 +7,15 @@ http://www.hpinfotech.com
 
 Project : 
 Version : 
-Date    : 15/07/2008
-Author  : Pato                            
-Company : Pato                            
+Date    : 22/11/2008
+Author  : F4CG                            
+Company : F4CG                            
 Comments: 
 
 
 Chip type           : ATmega16
 Program type        : Application
-Clock frequency     : 4.000000 MHz
+Clock frequency     : 8.000000 MHz
 Memory model        : Small
 External SRAM size  : 0
 Data Stack size     : 256
@@ -35,6 +35,17 @@ Data Stack size     : 256
 // DS1820 Temperature Sensor functions
 #include <ds1820.h>
 
+// maximum number of DS1820 devices
+// connected to the 1 Wire bus
+#define MAX_DS1820 8
+// number of DS1820 devices
+// connected to the 1 Wire bus
+unsigned char ds1820_devices;
+// DS1820 devices ROM code storage area,
+// 9 bytes are used for each device
+// (see the w1_search function description in the help)
+unsigned char ds1820_rom_codes[MAX_DS1820][9];
+
 #define RXB8 1
 #define TXB8 0
 #define UPE 2
@@ -50,7 +61,6 @@ Data Stack size     : 256
 #define RX_COMPLETE (1<<RXC)
 
 // USART Receiver buffer
-#define MAX_DEVICES 30
 #define RX_BUFFER_SIZE 8
 char rx_buffer[RX_BUFFER_SIZE];
 
@@ -145,12 +155,11 @@ else
 #include <stdio.h>
 
 // Declare your global variables here
-unsigned char rom_codes[MAX_DEVICES,9];
 
 void send_temperatures(unsigned char devices)
 {
         int i,j,temp;
-        char temp_buf[13];  
+        char temp_buf[20];  
         
         sprintf(temp_buf,"%02d\n\r",devices);
         
@@ -164,7 +173,7 @@ void send_temperatures(unsigned char devices)
 
           {
                 
-               temp=ds1820_temperature_10(&rom_codes[i,0]);
+               temp=ds1820_temperature_10(&ds1820_rom_codes[i][0]);
                sprintf(temp_buf, "%+010d\n\r", temp);
                for (j=0; j < strlen(temp_buf); j++)
                {
@@ -177,7 +186,7 @@ void send_temperatures(unsigned char devices)
 void read_di_do()
 {       
         int i;       
-        char buf[15];
+        char buf[20];
         //sprintf(buf,"%02d\n\r",devices);
         
         
@@ -200,7 +209,7 @@ void read_di_do()
 void show_serials(unsigned char devices)
 {
         int i,j;
-        char tempBuff[13];
+        char tempBuff[20];
         
         sprintf(tempBuff,"%02d\n\r",devices);
         
@@ -227,7 +236,7 @@ void show_serials(unsigned char devices)
                 //printf("DEVICE #%-u ROM CODE IS:", i+1);
 
                 for (j=0;j<8;j++)
-                        printf("%02X",rom_codes[i][j]);
+                        printf("%02X",ds1820_rom_codes[i][j]);
                 
                 printf("\n\r");
 
@@ -384,7 +393,7 @@ void test(unsigned char devices)
         if(devices > 0)
                 while(k < 100)
                 {
-                        temp=ds1820_temperature_10(&rom_codes[0,0]);
+                        temp=ds1820_temperature_10(&ds1820_rom_codes[0][0]);
                         sprintf(temp_buf, "k:%+010d\n\r", temp);
                         for (j=0; j < strlen(temp_buf); j++)
                         {
@@ -399,15 +408,14 @@ void test(unsigned char devices)
 void main(void)
 {
 // Declare your local variables here
-                  
-unsigned char devices;
 char letra, ch1, ch2, val;
 int time_out;
 
+
 // Input/Output Ports initialization
 // Port A initialization
-// Func7=Out Func6=Out Func5=Out Func4=Out Func3=In Func2=In Func1=In Func0=In 
-// State7=0 State6=0 State5=0 State4=0 State3=T State2=T State1=T State0=T 
+// Func7=In Func6=In Func5=In Func4=In Func3=In Func2=In Func1=In Func0=In 
+// State7=T State6=T State5=T State4=T State3=T State2=T State1=T State0=T 
 PORTA=0x00;
 DDRA=0xF0;
 
@@ -418,8 +426,8 @@ PORTB=0x00;
 DDRB=0x00;
 
 // Port C initialization
-// Func7=Out Func6=Out Func5=Out Func4=Out Func3=Out Func2=Out Func1=Out Func0=Out 
-// State7=0 State6=0 State5=0 State4=0 State3=0 State2=0 State1=0 State0=0 
+// Func7=In Func6=In Func5=In Func4=In Func3=In Func2=In Func1=In Func0=In 
+// State7=T State6=T State5=T State4=T State3=T State2=T State1=T State0=T 
 PORTC=0x00;
 DDRC=0xFF;
 
@@ -487,12 +495,11 @@ TIMSK=0x00;
 // USART Transmitter: On
 // USART Mode: Asynchronous
 // USART Baud Rate: 9600
-
 UCSRA=0x00;
 UCSRB=0xD8;
 UCSRC=0x86;
 UBRRH=0x00;
-UBRRL=0x19;
+UBRRL=0x33;
 
 // Analog Comparator initialization
 // Analog Comparator: Off
@@ -500,30 +507,31 @@ UBRRL=0x19;
 ACSR=0x80;
 SFIOR=0x00;
 
-// 1 Wire Bus initialization
+// Determine the number of DS1820 devices
+// connected to the 1 Wire bus
 w1_init();
-
-// Global enable interrupts
-#asm("sei")
-devices=w1_search(0xf0,rom_codes);
+ds1820_devices=w1_search(0xf0,ds1820_rom_codes);
 letra = '#';
 time_out = 0;
+// Global enable interrupts
+#asm("sei")
+
+rx_counter = 0;
 
 while (1)
       {
       // Place your code here
-
-               if(rx_counter > 0)
+        if(rx_counter > 0)
                  letra = getchar();
                if(letra == 'R' || letra == 'r')
                {
-                 send_temperatures(devices);
+                 send_temperatures(ds1820_devices);
                  read_di_do();
                  letra = '#';
                }
                if(letra == 'S' || letra == 's')
                {
-                        show_serials(devices); 
+                        show_serials(ds1820_devices); 
                         letra = '#';
                }
                
@@ -551,7 +559,7 @@ while (1)
                }
                if(letra == 'T' || letra == 't')
                {
-                        test(devices);
+                        test(ds1820_devices);
                         letra = '#';
                }
       };

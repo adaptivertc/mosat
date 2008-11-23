@@ -2,7 +2,7 @@
 Toolset=AVR
 [Chip]
 Type=ATmega16
-CPUClock=4
+CPUClock=8
 XTALDivEnabled=0
 XTALDivValue=2
 XTALDivIndex=-1
@@ -17,7 +17,7 @@ XRAMUpperWait=0
 CheckReset=0
 ProgramType=0
 [Ports]
-DDR0=1
+DDR0=0
 PORT0=0
 DDR1=0
 PORT1=0
@@ -234,7 +234,7 @@ ADCInterrupt=0
 ADCNoiseCancel=0
 ADCVref=0
 ADCVrefType=0
-ADCClock=1
+ADCClock=2
 ADCAutoScan=0
 FirstInput=0
 LastInput=0
@@ -336,13 +336,13 @@ DS1307Frequency=0
 1WirePort=1
 1WireBit=0
 DS1820Enabled=1
-DS1820Many=0
+DS1820Many=1
 [2Wire]
 2WireEnabled=0
 AckPulse=0
 SlaveAddress=0
 GeneralCallRecognition=0
-BitRate=0
+BitRate=2
 2WireInterrupt=0
 2WireDisconnectInterrupt=0
 2WireDisconnectTimeout=0
@@ -408,7 +408,7 @@ DS1302ChargeResistor=0
 [ProjectInformation]
 ProjectName=
 ProjectVersion=
-ProjectDate=15/07/2008
-ProjectAuthor=Pato                            
-ProjectCompany=Pato                            
+ProjectDate=22/11/2008
+ProjectAuthor=F4CG                            
+ProjectCompany=F4CG                            
 CommentLines=0
