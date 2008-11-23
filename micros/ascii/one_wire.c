@@ -197,7 +197,7 @@ void read_di_do()
                         putchar(buf[i]);
         }*/
         
-        sprintf(buf,"%d%d%d%d%d%d%d%d%d%d00\n\r",PINB.0,PINB.1,PINB.2,PINB.3,PINB.4,PIND.2,PIND.3,PIND.4,PIND.5,PIND.7);
+        sprintf(buf,"%d%d%d%d%d%d%d%d%d%d00\n\r",!PINB.0,PINB.1,PINB.2,PINB.3,PINB.4,PIND.2,PIND.3,PIND.4,PIND.5,PIND.7);
         for(i=0;i<14;i++)
                         putchar(buf[i]);
                         
@@ -301,44 +301,44 @@ void write_do(char ch1, char ch2, char val)
                 if(ch2 == '4')
                 {
                         if(val == '0')
-                                PORTC.0 = 0;
+                                PORTC.7 = 0;
                         else
-                                PORTC.0 = 1;
+                                PORTC.7 = 1;
                 }
                 if(ch2 == '5')
                 {
                         if(val == '0')
-                                PORTC.1 = 0;
+                                PORTC.6 = 0;
                         else
-                                PORTC.1 = 1;
+                                PORTC.6 = 1;
                 }
                 if(ch2 == '6')
                 {
                         if(val == '0')
-                                PORTC.2 = 0;
+                                PORTC.5 = 0;
                         else
-                                PORTC.2 = 1;
+                                PORTC.5 = 1;
                 }
                 if(ch2 == '7')
-                {
-                        if(val == '0')
-                                PORTC.3 = 0;
-                        else
-                                PORTC.3 = 1;
-                }
-                if(ch2 == '8')
                 {
                         if(val == '0')
                                 PORTC.4 = 0;
                         else
                                 PORTC.4 = 1;
                 }
+                if(ch2 == '8')
+                {
+                        if(val == '0')
+                                PORTC.3 = 0;
+                        else
+                                PORTC.3 = 1;
+                }
                 if(ch2 == '9')
                 {
                         if(val == '0')
-                                PORTC.5 = 0;
+                                PORTC.2 = 0;
                         else
-                                PORTC.5 = 1;
+                                PORTC.2 = 1;
                 }
         }
         else
@@ -347,17 +347,17 @@ void write_do(char ch1, char ch2, char val)
                         if(ch2 == '0')
                         {
                                 if(val == '0')
-                                        PORTC.6 = 0;
+                                        PORTC.1 = 0;
                                 else
-                                        PORTC.6 = 1;
+                                        PORTC.1 = 1;
                         }
                         else
                                 if(ch2 == '1')
                                 {
                                         if(val == '0')
-                                                PORTC.7 = 0;
+                                                PORTC.0 = 0;
                                         else
-                                                PORTC.7 = 1;
+                                                PORTC.0 = 1;
                                 }
                                 else
                                 {
