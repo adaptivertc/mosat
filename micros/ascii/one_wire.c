@@ -201,7 +201,7 @@ void read_di_do()
         for(i=0;i<14;i++)
                         putchar(buf[i]);
                         
-        sprintf(buf,"%d%d%d%d%d%d%d%d%d%d%d%d\n\r",PORTA.4,PORTA.5,PORTA.6,PORTA.7,PORTC.0,PORTC.1,PORTC.2,PORTC.3,PORTC.4,PORTC.5,PORTC.6,PORTC.7);
+        sprintf(buf,"%d%d%d%d%d%d%d%d%d%d%d%d\n\r",PORTA.4,PORTA.5,PORTA.6,PORTA.7,PORTC.7,PORTC.6,PORTC.5,PORTC.4,PORTC.3,PORTC.2,PORTC.1,PORTC.0);
         for(i=0;i<14;i++)
                         putchar(buf[i]);
 }
