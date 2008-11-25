@@ -242,6 +242,7 @@ int get_int (char argv[],char n_exit[][200],char int_type[][200],int size)
  file = fopen(path,"r");
  if (file == NULL)
  {
+  printf("%s:%d: ",__FILE__,__LINE__);
   printf("No interruption file %s yet \n",path);
   //exit(1);
  }
@@ -292,7 +293,7 @@ int get_int (char argv[],char n_exit[][200],char int_type[][200],int size)
       snprintf(n_exit[w],size,"%s",n_exit[w+1]);
       /*strcpy(n_exit[w],n_exit[w+1]);
       strcpy(int_type[w],int_type[w+1]);*/
-      snprintf(int_type[w], size, "%s", int_type[w+1]);
+      snprintf(int_type[w],size,int_type[w+1]);
      }
      x--;
     }
@@ -322,6 +323,7 @@ int get_int (char argv[],char n_exit[][200],char int_type[][200],int size)
   file = fopen(path,"w+");
   if (file == NULL)
   {
+    printf("%s:%d: ",__FILE__,__LINE__);
     perror(path);
     exit(1);
   }
@@ -432,6 +434,7 @@ fprintf(fp, "}\n");
   int total_dif = 0;
   int total_valid_dif = 0;
   int i,j,prev[2]={1000,1000};
+  printf("ntimes %d\n",n_times);
   for (i=0,j=1; i < n_times; i++,j++)
   {
     int dif;
@@ -878,6 +881,7 @@ fprintf(fp, "}\n");
   pdc_h = fopen(path,"w+");
   if (pdc_h == NULL)
   {
+    printf("%s:%d: ",__FILE__,__LINE__);
     perror(path);
     exit(1);
   }
@@ -1143,9 +1147,10 @@ int main(int argc, char *argv[])
   }
   snprintf(fname, sizeof(fname),"%s/%s/%s_report_%s.html", HOME_DIR, argv[1], date_str,terminal);
   printf("Generating: %s\n", fname);
-  FILE *fp = fopen(fname, "w");
-  if (fp == NULL)
+  FILE *fp;
+  if ((fp = fopen(fname, "w")) == NULL)
   {
+    printf("%s:%d: ",__FILE__,__LINE__);
     perror(fname);
     exit(0);
   }
@@ -1157,6 +1162,7 @@ int main(int argc, char *argv[])
   fp = fopen(fname, "w");
   if (fp == NULL)
   {
+    printf("%s:%d: ",__FILE__,__LINE__);
     perror(fname);
     exit(0);
   }

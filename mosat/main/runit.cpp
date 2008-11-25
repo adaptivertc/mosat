@@ -48,11 +48,11 @@ int main(int argc, char *argv[])
   system("pwd");
   while (1)
   {
-    system("ntt tetlan \"Tetl&aacute;n\"");
-    system("ntt periferico_sur \"Perif&eacute;rico Sur\"");
+    system("./ntt tetlan \"Tetl&aacute;n\"");
+    system("./ntt periferico_sur \"Perif&eacute;rico Sur\"");
 //    system("./ntt rtu_prueba \"Prueba\"");
-    system("ntt periferico_norte \"Perif&eacute;rico Norte\"");
-    system("ntt juarez2 \"Ju&aacute;rez 2\"");
+    system("./ntt periferico_norte \"Perif&eacute;rico Norte\"");
+    system("./ntt juarez2 \"Ju&aacute;rez 2\"");
     sleep(5);
   }
 }

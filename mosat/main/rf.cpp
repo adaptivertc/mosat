@@ -17,6 +17,7 @@ int read_schedule(char *fname, int train_num[], time_t times[], int max, time_t 
   FILE *fp = fopen(fname, "r");
   if (fp == NULL)
   {
+    printf("%s:%d: ",__FILE__,__LINE__);
     perror(fname);
     exit(0);
   }
@@ -41,6 +42,7 @@ int read_schedule(char *fname, int train_num[], time_t times[], int max, time_t 
     localtime_r(&today, &mytm);
     if (NULL == strptime(argv[1], "%T", &mytm))
     {
+      printf("%s:%d: ",__FILE__,__LINE__);
       perror(argv[1]);
       exit(0);
     }

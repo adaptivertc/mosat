@@ -18,6 +18,7 @@ int n_read_actual(char *fname, time_t times[], int max,
   FILE *fp = fopen(fname, "r");
   if (fp == NULL)
   {
+    printf("%s:%d: ",__FILE__,__LINE__);
     perror(fname);
     exit(0);
   }

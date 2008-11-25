@@ -59,10 +59,12 @@ int reconnect(int sock, struct sockaddr_in the_dest_addr, time_t last_time, long
   int err = shutdown(sock, SHUT_RDWR);
   if (err != 0)
   {
+    printf("%s:%d: ",__FILE__,__LINE__);
     perror("shutdown");
   }
   if (0 != close(sock))
   {
+    printf("%s:%d: ",__FILE__,__LINE__);
     perror("close");
   }
   /***/
@@ -70,6 +72,7 @@ int reconnect(int sock, struct sockaddr_in the_dest_addr, time_t last_time, long
   sock = socket(AF_INET, SOCK_STREAM, 0);
   if (sock < 0)
   {
+    printf("%s:%d: ",__FILE__,__LINE__);
     perror("Can't create socket");
     exit(0);
   }
@@ -80,11 +83,13 @@ int reconnect(int sock, struct sockaddr_in the_dest_addr, time_t last_time, long
   err = setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
   if (err != 0)
   {
+    printf("%s:%d: ",__FILE__,__LINE__);
     perror("setsockopt");
   }
   err = setsockopt(sock, SOL_SOCKET, SO_SNDTIMEO, &tv, sizeof(tv));
   if (err != 0)
   {
+    printf("%s:%d: ",__FILE__,__LINE__);
     perror("setsockopt");
   }
 
@@ -97,6 +102,7 @@ int reconnect(int sock, struct sockaddr_in the_dest_addr, time_t last_time, long
                     sizeof(struct sockaddr));
     if (n != 0)
     {
+      printf("%s:%d: ",__FILE__,__LINE__);
       perror("Can't connect to port");
     }
     else
@@ -112,6 +118,7 @@ int reconnect(int sock, struct sockaddr_in the_dest_addr, time_t last_time, long
       }
       else
       {
+        printf("%s:%d: ",__FILE__,__LINE__);
         perror("Can't send on new socket");
       }
     }
@@ -151,6 +158,7 @@ void *maintain_log(void *data)
   sockfd = socket(AF_INET, SOCK_STREAM, 0); /* do some error checking! */
   if (sockfd < 0)
   {
+    printf("%s:%d: ",__FILE__,__LINE__);
     perror("Can't create socket");
     exit(0);
   }
@@ -161,11 +169,13 @@ void *maintain_log(void *data)
   int err = setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv)); 
   if (err != 0)
   {
+    printf("%s:%d: ",__FILE__,__LINE__);
     perror("setsockopt");
   }
   err = setsockopt(sockfd, SOL_SOCKET, SO_SNDTIMEO, &tv, sizeof(tv)); 
   if (err != 0)
   {
+    printf("%s:%d: ",__FILE__,__LINE__);
     perror("setsockopt");
   }
 
@@ -180,6 +190,7 @@ void *maintain_log(void *data)
 		  sizeof(struct sockaddr));
   if (n < 0)
   {
+    printf("%s:%d: ",__FILE__,__LINE__);
     perror("Can't connect to port");
     exit(0);
   }
@@ -205,6 +216,7 @@ void *maintain_log(void *data)
     if (nbytes != sizeof(recv_buffer))
     {
       printf("Network down on %s\n", log_data->dest_ip);
+      printf("%s:%d: ",__FILE__,__LINE__);
       perror("recv");
       time_t now = time(NULL);
       evlog->print_log(EV_NETDN, "NETDN", now, now, -1, -1, -1);
@@ -284,6 +296,7 @@ int main(int argc, char *argv[])
   FILE *fp = fopen(fname, "r");
   if (fp == NULL)
   {
+    printf("%s:%d: ",__FILE__,__LINE__);
     perror(fname);
     exit(0);
   }
@@ -341,6 +354,7 @@ int main2(int argc, char *argv[])
   sockfd = socket(AF_INET, SOCK_STREAM, 0); /* do some error checking! */
   if (sockfd < 0)
   {
+    printf("%s:%d: ",__FILE__,__LINE__);
     perror("Can't create socket");
     exit(0);
   }
@@ -351,11 +365,13 @@ int main2(int argc, char *argv[])
   int err = setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv)); 
   if (err != 0)
   {
+    printf("%s:%d: ",__FILE__,__LINE__);
     perror("setsockopt");
   }
   err = setsockopt(sockfd, SOL_SOCKET, SO_SNDTIMEO, &tv, sizeof(tv)); 
   if (err != 0)
   {
+    printf("%s:%d: ",__FILE__,__LINE__);
     perror("setsockopt");
   }
 
@@ -370,6 +386,7 @@ int main2(int argc, char *argv[])
 		  sizeof(struct sockaddr));
   if (n < 0)
   {
+    printf("%s:%d: ",__FILE__,__LINE__);
     perror("Can't connect to port");
     exit(0);
   }
@@ -389,6 +406,7 @@ int main2(int argc, char *argv[])
     int nbytes = recv(sockfd, recv_buffer, sizeof(recv_buffer),  MSG_WAITALL);
     if (nbytes != sizeof(recv_buffer))
     {
+      printf("%s:%d: ",__FILE__,__LINE__);
       perror("recv");
       time_t now = time(NULL);
       evlog_print_log(EV_NETDN, "NETDN", now, now, -1, -1, -1);
