@@ -37,7 +37,7 @@ Data Stack size     : 256
 
 // maximum number of DS1820 devices
 // connected to the 1 Wire bus
-#define MAX_DS1820 8
+#define MAX_DS1820 30
 // number of DS1820 devices
 // connected to the 1 Wire bus
 unsigned char ds1820_devices;
@@ -197,7 +197,7 @@ void read_di_do()
                         putchar(buf[i]);
         }*/
         
-        sprintf(buf,"%d%d%d%d%d%d%d%d%d%d00\n\r",!PINB.0,PINB.1,PINB.2,PINB.3,PINB.4,PIND.2,PIND.3,PIND.4,PIND.5,PIND.7);
+        sprintf(buf,"%d%d%d%d%d%d%d%d%d%d00\n\r",~PINB.0,~PINB.1,~PINB.2,~PINB.3,~PINB.4,~PIND.2,~PIND.3,~PIND.4,~PIND.5,~PIND.7);
         for(i=0;i<14;i++)
                         putchar(buf[i]);
                         
@@ -509,14 +509,16 @@ SFIOR=0x00;
 
 // Determine the number of DS1820 devices
 // connected to the 1 Wire bus
+
 w1_init();
 ds1820_devices=w1_search(0xf0,ds1820_rom_codes);
 letra = '#';
 time_out = 0;
+
 // Global enable interrupts
 #asm("sei")
 
-rx_counter = 0;
+//rx_counter = 0;
 
 while (1)
       {
@@ -537,7 +539,7 @@ while (1)
                
                if(letra == 'W' || letra == 'w')
                {
-                        while(rx_counter < 3 && time_out < 9000000)
+                        while(rx_counter < 3 && time_out < 900000)
                                 time_out++;
                         
                         if(time_out == 900000)
@@ -557,10 +559,10 @@ while (1)
                         time_out = 0;
                         letra = '#';
                }
-               if(letra == 'T' || letra == 't')
+               /*if(letra == 'T' || letra == 't')
                {
                         test(ds1820_devices);
                         letra = '#';
-               }
+               }*/
       };
 }
