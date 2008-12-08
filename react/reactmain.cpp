@@ -264,14 +264,14 @@ int main(int argc, char *argv[])
   safe_strcat(config_file, "/dbfiles/config.dat", sizeof(config_file));
   ap_config.read_file(config_file);
 
-  long sample_rate = ap_config.get_int("SampleRate");;
-  if (sample_rate <= 0) sample_rate =  10;
-  long usecs_per_sample =  (long) 1000000 / sample_rate;
+  double sample_rate = ap_config.get_double("SampleRate", 10.0);
+  if (sample_rate <= 0.0) sample_rate =  10.0;
+  long usecs_per_sample =  (long) (1000000.0 / sample_rate);
   reactdb = new react_t;
   db = reactdb;
   reactdb->keyboard_on(check_keyboard);
   reactdb->set_home_dir(home_dir);
-  reactdb->set_sample_rate((double) sample_rate);
+  reactdb->set_sample_rate(sample_rate);
   reactdb->read_all_points(home_dir);
   reactdb->init_sms();
 

@@ -1,5 +1,8 @@
 valve_2.send(F)
-wait_until("hi_level", 59:59)
+sys.wait_until("hi_level", 59:59)
+sys.print("above high level");
 valve_2.send(T)
-wait_until("lo_level", 59:59)
+sys.wait_until("not lo_level", 59:59)
+sys.print("below low level");
+sys.wait(00:01)
 sys.loop()

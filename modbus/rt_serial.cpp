@@ -33,17 +33,19 @@ int rt_read_serial(int fd, void *data, int sz)
   char *dp = (char *) data;
   bool first = true;
 
+/**********
     fd_set rfds;
     struct timeval tv;
     int retval;
 
-    /* Watch stdin (fd 0) to see when it has input. */
     FD_ZERO(&rfds);
     FD_SET(fd, &rfds);
+*********/
 
   while (total_read < sz)
   {
 
+/*******
     tv.tv_sec = 5;
     tv.tv_usec = 0;
     if (serial_no_timeout)
@@ -73,11 +75,11 @@ int rt_read_serial(int fd, void *data, int sz)
     else
     {
       printf("Data is available now.\n");
-        /* FD_ISSET(0, &rfds) will be true. */
     }
+***/
 
-    //int n = read(fd, dp + total_read, sz - total_read); 
-    int n = read(fd, dp + total_read, 1); 
+    int n = read(fd, dp + total_read, sz - total_read); 
+    //int n = read(fd, dp + total_read, 1); 
     if (n == 0)
     {
       // we timed out waiting for our characters.
@@ -247,10 +249,10 @@ int rt_open_serial(const char *port, int baud_rate, float timeout)
   {
     rt_tio.c_cc[VMIN]=1;
     rt_tio.c_cc[VTIME]=0;
-    //rt_tio.c_cc[VMIN]=0;
-    //rt_tio.c_cc[VTIME]= (int)(timeout * 10.0);
-    serial_tv.tv_sec = trunc(timeout);
-    serial_tv.tv_usec = trunc((timeout - trunc(timeout)) * 1000000.0);
+    rt_tio.c_cc[VMIN]=0;
+    rt_tio.c_cc[VTIME]= (int)(timeout * 10.0);
+    serial_tv.tv_sec = int(timeout);
+    serial_tv.tv_usec = int((timeout - trunc(timeout)) * 1000000.0);
   }
 
   /* flush the serial port */

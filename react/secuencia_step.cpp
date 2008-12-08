@@ -693,6 +693,8 @@ int step_wait_until_t::execute(double current_time)
     if (!expression.evaluate())
     {
       //printf("%s:%d\n", __FILE__, __LINE__);
+      //printf("****************************** FALSE: %s", ctime(&tnow));
+      logfile->vprint("FALSE: %s", ctime(&tnow));
       return 0;
     }
     else
@@ -701,6 +703,7 @@ int step_wait_until_t::execute(double current_time)
       time_t tnow = time(NULL);
       logfile->vprint("wait_until condition TRUE at start: %lf\n", current_time);
       logfile->vprint("TRUE: %s", ctime(&tnow));
+      //printf("------------------------------- TRUE: %s", ctime(&tnow));
       //printf("%s:%d\n", __FILE__, __LINE__);
       return 1; // if the expresion is true, advance right away.
     }
@@ -723,11 +726,14 @@ int step_wait_until_t::execute(double current_time)
       time_t tnow = time(NULL);
       logfile->vprint("wait_until TRUE: %lf\n", current_time);
       logfile->vprint("wait_until TRUE: %s", ctime(&tnow));
+      //printf("****************************** TRUE: %s", ctime(&tnow));
       //printf("%s:%d\n", __FILE__, __LINE__);
       return 1;
     }
     else
     {
+      time_t tnow = time(NULL);
+      //printf("****************************************** FALSE: %s, %s", expr_string, ctime(&tnow));
       //printf("%s:%d\n", __FILE__, __LINE__);
       return 0;
     }

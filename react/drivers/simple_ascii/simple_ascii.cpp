@@ -206,9 +206,9 @@ void simple_ascii_driver_t::read(void)
 {
     char error[50];
     read_simple_ascii(serial_fd, 
-             tmp_ai_vals, 16, 
-             tmp_di_vals, 12, 
-             tmp_do_vals, 12, 
+             ai_vals, 16, 
+             di_vals, 12, 
+             do_vals, 12, 
              error, sizeof(error));
 }
 

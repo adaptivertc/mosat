@@ -131,11 +131,13 @@ int expr_tree_t::make_post_fix(expr_op_t *op)
       dptr = (*get_discrete_ptr_fn)(data.tag);
       if (dptr == NULL)
       {
+         printf("BAD tag for expression: %s\n", data.tag);
 	 op[n].token_type = LOGICAL_VAL;
 	 op[n].val.logical_val = DISCRETE_LO;
       }
       else
       {
+         printf("Good tag for expression: %s\n", data.tag);
         op[n].token_type = LOGICAL_PTR;
 	op[n].val.logical_ptr = dptr;
       }

@@ -43,7 +43,7 @@ BVL35   9:50:00
 BVL37   10:00:00
 BVL39   10:20:00
 
-This is a tab delimited file. The first column is the identifier assigned to each train as it enters service. As you will see, people are different all over the world (or even withing the same country), and each one has different ideas of how things should be labeled. So, we will let them assign their labels how they want. The next column is the scheduled departure time to the nearest second. We can use this information to put labels on trains when they enter service, and also to determine if they were early or late entering service. Ok, this is only useful to know if they entered service at the right time. Now we need another file to know how they should progress through the system.
+This is a tab delimited file. The first column is the identifier assigned to each train as it enters service. As you will see, people are different all over the world (or even within the same country), and each one has different ideas of how things should be labeled. So, we will let them assign their labels how they want. The next column is the scheduled departure time to the nearest second. We can use this information to put labels on trains when they enter service, and also to determine if they were early or late entering service. Ok, this is only useful to know if they entered service at the right time. Now we need another file to know how they should progress through the system.
 
 The next file we will call the sections file, also tab delimited. We will use an example from India again. Following are the first 10 lines:
 
@@ -81,7 +81,8 @@ Ok, now that we have all of this behind us, we are ready to talk about "trainpos
 How trainpos works.
 ------------------
 
-Trainpos is basically divided into two parts that talk to each other via Unix message queues. The first part that we will describe is the communications manager module that knows how to communicate with all of the remote devices that actually are connected to the sensors. This module will be responsible for communicating with how many ever remote device there are and passing all of the events on to the process that processes all of the events.
+Trainpos is basically divided into two parts that talk to each other via Unix message queues. The first part that we will describe is the communications manager module that knows how to communicate with all of the remote devices that actually are connected to the sensors. This module will be responsible for communicating with how many ever remote device there are and passing all of the events on to the 
+process that processes all of the events.
 
 Communications manager
 ----------------------

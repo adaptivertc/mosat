@@ -60,6 +60,7 @@ double analog_expr_t::evaluate(void)
 bool discrete_expr_t::evaluate(void)
 {
   /* Evaluate a discrete expression. */
+  //printf("################### evaluating discrete expression\n");
   return eval_expr(expr)->logical_val;
 }
 

@@ -27,6 +27,7 @@ void dcalc_point_t::evaluate()
   /* Evaluate the dcalc point. */
 
   pv = (discrete_value_t) expression.evaluate();
+  //printf("Discrete calc %s: expr: %s, val: %s\n", tag, expr_string, pv ? "TRUE" : "FALSE");
   check_alarms();
   display_pv();
 }

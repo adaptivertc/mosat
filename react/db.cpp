@@ -392,6 +392,7 @@ void react_t::read_inputs(void)
   for (int i=0; i < num_d_calc; i++)
   {
     d_calcs[i]->update();
+    d_calcs[i]->evaluate();
   }
   for (int i=0; i < num_dcalc; i++)
   {

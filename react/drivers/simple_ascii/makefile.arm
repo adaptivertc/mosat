@@ -21,7 +21,7 @@ simple_ascii.o:	simple_ascii.cpp simple_ascii.h
 	$(CPP) -fpic -c simple_ascii.cpp 
 
 sim_simple_ascii: sim_simple_ascii.cpp simple_ascii_read.cpp 
-	$(CPP) -o sim_simple_ascii simple_sim_ascii.cpp simple_ascii_read.cpp -lrt $(RTCOMMON) $(RTMODBUS)
+	$(CPP) -o sim_simple_ascii sim_simple_ascii.cpp simple_ascii_read.cpp -lrt $(RTCOMMON) $(RTMODBUS)
 
 clean:
 	rm *.o *.so sim_simple_ascii

@@ -110,7 +110,7 @@ int main(int argc, char *argv[])
     }
     else
     {
-      printf("You FOOL, that is NOT correct\n");
+      printf("You FOOL, that is NOT correct: %c\n", data[0]);
       write(device, "02\n\r", 4);
     }
   }

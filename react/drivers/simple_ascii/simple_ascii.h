@@ -34,6 +34,7 @@ private:
   double tmp_ai_vals[32];
   bool di_vals[32];
   bool tmp_di_vals[32];
+  bool do_vals[32];
   bool tmp_do_vals[32];
   int di_offset;
   int do_offset;

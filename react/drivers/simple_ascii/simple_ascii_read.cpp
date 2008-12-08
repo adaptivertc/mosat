@@ -63,7 +63,7 @@ int read_simple_ascii(int fd,
   {
     ret_val = rt_read_serial(fd, buf, 12);
     buf[10] = '\0'; // Get rid of the /n/r
-    printf("Got: %s\n", buf);
+    printf("%d AI value: got: %s\n", ret_val, buf);
     if (ret_val < 0)
     {
       printf("Error reading serial port\n");
