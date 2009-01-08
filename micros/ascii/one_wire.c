@@ -33,7 +33,7 @@ Data Stack size     : 256
 #include <1wire.h>
 
 // DS1820 Temperature Sensor functions
-#include <ds1820.h>
+#include <ds18b20.h>
 
 // maximum number of DS1820 devices
 // connected to the 1 Wire bus
@@ -173,7 +173,7 @@ void send_temperatures(unsigned char devices)
 
           {
                 
-               temp=ds1820_temperature_10(&ds1820_rom_codes[i][0]);
+               temp=ds18b20_temperature(&ds1820_rom_codes[i][0]);
                sprintf(temp_buf, "%+010d\n\r", temp);
                for (j=0; j < strlen(temp_buf); j++)
                {
@@ -383,7 +383,7 @@ void write_do(char ch1, char ch2, char val)
         putchar('\r');
 }
 
-void test(unsigned char devices)
+/*void test(unsigned char devices)
 {       
         int k,temp,j;
         char temp_buf[15];
@@ -403,13 +403,13 @@ void test(unsigned char devices)
                         k++;
                 }
                 
-}
+}*/
 
 void main(void)
 {
 // Declare your local variables here
 char letra, ch1, ch2, val;
-int time_out;
+int time_out, i;
 
 
 // Input/Output Ports initialization
@@ -512,6 +512,9 @@ SFIOR=0x00;
 
 w1_init();
 ds1820_devices=w1_search(0xf0,ds1820_rom_codes);
+for(i=0; i<ds1820_devices; i++)
+        ds18b20_init(&ds1820_rom_codes[i][0],25,35,DS18B20_12BIT_RES);
+
 letra = '#';
 time_out = 0;
 
