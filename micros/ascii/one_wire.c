@@ -158,29 +158,13 @@ else
 
 void send_temperatures(unsigned char devices)
 {
-        int i,j,temp;
-        char temp_buf[20];  
+        int i;
         
-        sprintf(temp_buf,"%02d\n\r",devices);
-        
-        for (j=0; j < strlen(temp_buf); j++)
-        {
-                putchar(temp_buf[j]);
-                        
-        }; 
+        printf("%02d\n\r",devices);
         
         for (i=0;i<devices;i++)
+               printf("%+010d\n\r",(int)ds18b20_temperature(&ds1820_rom_codes[i][0]));
 
-          {
-                
-               temp=ds18b20_temperature(&ds1820_rom_codes[i][0]);
-               sprintf(temp_buf, "%+010d\n\r", temp);
-               for (j=0; j < strlen(temp_buf); j++)
-               {
-                        putchar(temp_buf[j]);
-                        
-               };
-          };
 }
 
 void read_di_do()
@@ -383,18 +367,20 @@ void write_do(char ch1, char ch2, char val)
         putchar('\r');
 }
 
-/*void test(unsigned char devices)
+void test(unsigned char devices)
 {       
-        int k,temp,j;
+        int k,j;
         char temp_buf[15];
+        //float temp;
+        int temp;
         
         k = 0;
         
         if(devices > 0)
-                while(k < 100)
+                while(k < 30)
                 {
-                        temp=ds1820_temperature_10(&ds1820_rom_codes[0][0]);
-                        sprintf(temp_buf, "k:%+010d\n\r", temp);
+                        temp=ds18b20_temperature(&ds1820_rom_codes[0][0]);
+                        sprintf(temp_buf, "%d:%+010d\n\r", k, temp);
                         for (j=0; j < strlen(temp_buf); j++)
                         {
                                 putchar(temp_buf[j]);
@@ -403,13 +389,14 @@ void write_do(char ch1, char ch2, char val)
                         k++;
                 }
                 
-}*/
+}
 
 void main(void)
 {
 // Declare your local variables here
 char letra, ch1, ch2, val;
-int time_out, i;
+int time_out;
+//int i;
 
 
 // Input/Output Ports initialization
@@ -512,8 +499,14 @@ SFIOR=0x00;
 
 w1_init();
 ds1820_devices=w1_search(0xf0,ds1820_rom_codes);
-for(i=0; i<ds1820_devices; i++)
-        ds18b20_init(&ds1820_rom_codes[i][0],25,35,DS18B20_12BIT_RES);
+/*for(i=0; i<ds1820_devices; i++)
+        if(ds18b20_init(&ds1820_rom_codes[i][0],25,35,DS18B20_9BIT_RES))
+        
+                printf("Correctamente inicializado\n\r");
+        
+        else
+                printf("Fallo al inicializar\n\r");    
+ */       
 
 letra = '#';
 time_out = 0;
@@ -562,10 +555,10 @@ while (1)
                         time_out = 0;
                         letra = '#';
                }
-               /*if(letra == 'T' || letra == 't')
+               if(letra == 'T' || letra == 't')
                {
                         test(ds1820_devices);
                         letra = '#';
-               }*/
+               }
       };
 }
