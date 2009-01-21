@@ -1,0 +1,45 @@
+#!/bin/sh
+# This wrap will create/clean a ramdisk 
+# and will be set to be used by cherokee web server
+#
+if [ "$1" == "start" ]
+then
+    # starting creating the ramdisk
+    # Formats, mounts, and sets permissions on my 16MB ramdisk
+    echo "Creating the ramdisk..." 
+    /sbin/mke2fs -q -m 0 /dev/ram0
+    /bin/mount /dev/ram0 /mnt/rd
+    echo "Creating a default index.html" 
+    echo "<h1>Template index</h1>" > /var/www/index.html
+    # Starting cherokee web server 
+    /etc/init.d/cherokee start
+    # Copying tina directory
+    echo "Copying tina directory to ramdisk.."
+    cp -r /home/carr/tina /mnt/rd
+    # Starting react
+    /etc/init.d/react start
+elif [ "$1" == "stop" ]
+then
+    # Stop react
+    /etc/init.d/react stop
+    # Remove tina directory 
+    echo "Removing tina directory"
+    rm -rf /mnt/rd/tina
+    # Stop cherokee
+    /etc/init.d/cherokee stop
+    cherokee=$(pidof cherokee)
+    while [ ! -z "$cherokee" ]
+    do
+       sleep 1 
+       cherokee=$(pidof cherokee)
+    done
+    echo "Umounting ramdisk..."
+    # Umount ramdisk
+    umount /mnt/rd    
+elif [ "$1" == "restart" ]
+then
+    $0 stop
+    $0 start
+else
+    echo "Usage: $0 {start|stop|restart}"
+fi
