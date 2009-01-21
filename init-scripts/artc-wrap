@@ -10,8 +10,10 @@ then
     echo "Creating the ramdisk..." 
     /sbin/mke2fs -q -m 0 /dev/ram0
     /bin/mount /dev/ram0 /mnt/rd
-    echo "Creating a default index.html" 
     echo "<h1>Template index</h1>" > /var/www/index.html
+    echo "<a href=tina>Tina logs </a>" >> /var/www/index.html
+    echo "<br>" >> /var/www/index.html
+    echo "<a href=tina/log/old>Old logs</a>" >> /var/www/index.html
     # Starting cherokee web server 
     /etc/init.d/cherokee start
     # Creating tina tree
@@ -19,6 +21,7 @@ then
     mkdir /mnt/rd/tina
     mkdir /mnt/rd/tina/html
     mkdir /mnt/rd/tina/log
+    ln -s /home/carr/tina/log /mnt/rd/tina/log/old
     # Copying existent log files for today
     echo "Copying existent log files for today"
     cp /home/carr/tina/log/*$TODAY.txt /mnt/rd/tina/log/
