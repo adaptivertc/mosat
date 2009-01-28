@@ -319,9 +319,9 @@ int main(int argc, char *argv[])
   for (int i=0; !done; i++)
   {
     ta.start();
-    printf("Waiting for the next interval . . . \n");
+    //printf("Waiting for the next interval . . . \n");
     utimer.wait_next();
-    printf("DONE, next upate . . . \n");
+    //printf("DONE, next upate . . . \n");
     tj.start_of_interval();
     done = reactdb->update((double) i / (double) sample_rate, execute_script);
     if (signal_recieved)

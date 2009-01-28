@@ -71,7 +71,7 @@ int get_expr_token_list(char *line, expr_list_t list[], int max)
   }
   if (list[i].token == BAD_TOKEN)
   {
-    rtexperror.set(EXP_BAD_TOKEN, "Bad Token");
+    //rtexperror.set(EXP_BAD_TOKEN, "Bad Token");
     return FAILED;
   }
   if (i == 0)
@@ -220,7 +220,7 @@ static expr_list_t next_token(char *line)
       if (*(p + 1) == '=')
       {
 	next = p + 2;
-	list.token = GE_OP;
+	list.token = NE_OP;
       }
       else
       {

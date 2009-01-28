@@ -104,6 +104,8 @@ public:
   int num_do;
   calc_point_t **calcs;
   int num_calc;
+  timer_point_t **timers;
+  int num_timer;
   dcalc_point_t **d_calcs;
   int num_d_calc;
   dcalc_t **dcalcs;

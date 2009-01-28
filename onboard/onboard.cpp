@@ -493,7 +493,11 @@ int main(int argc, char *argv[])
       mvprintw(26,2,"File: %s %s", fname, base_name);
       #endif
       pfp = fopen(fname, "w");
-
+      if (pfp == NULL)
+      {
+        spd_endwin(); 
+        printf("Can't open file: %s\n", fname);
+      }
     }
     else
     {

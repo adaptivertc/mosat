@@ -58,6 +58,7 @@ void logfile_t::vprint(const char *fmt, ...)
   va_list arg_ptr;
   va_start(arg_ptr, fmt);
   vsnprintf(myline, sizeof(myline), fmt, arg_ptr);
+  va_end(arg_ptr);
   if (screen_print_enabled)
   {
     printf("%s", myline);

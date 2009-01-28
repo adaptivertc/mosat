@@ -24,7 +24,7 @@ LIBS = -ldl $(RTCOMMON)
 
 GENFILES =  gen_case.cpp gen_script.cpp gen_script.h
 
-DRIVERDIRS = drivers/sim_pump_low drivers/dallas_1wire drivers/sim_ac
+DRIVERDIRS = drivers/sim_pump_low drivers/dallas_1wire drivers/sim_ac drivers/simple_ascii 
 
 CDEBUG =
 

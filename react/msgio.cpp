@@ -29,6 +29,7 @@ void msgio_t::print_to(char *fmt, ...)
   va_list arg_ptr;
   va_start(arg_ptr, fmt);
   vsnprintf(myline, sizeof(myline), fmt, arg_ptr);
+  va_end(arg_ptr);
 
 }
 

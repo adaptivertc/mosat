@@ -47,6 +47,7 @@ void rtexperror_t::set(int error_n, const char *fmt, ... )
   error_num = error_n;
   va_start(arg_pointer, fmt);
   vsnprintf(error_str, sizeof(error_str), fmt, arg_pointer);
+  va_end(arg_pointer);
 }
 
 /********************************************************************/

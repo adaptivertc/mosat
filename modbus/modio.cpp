@@ -113,6 +113,34 @@ int MODSerial::read_di(uint16 start_address, int n_to_read, bool *vals)
 
 /**********************************************************************/
 
+int MODSerial::read_di_register(unsigned short start_register, int n_di, bool *vals)
+{
+  if (n_di > 128)
+  {
+    n_di = 128;
+  }
+  int n_registers = n_di / 16;
+  if ((n_di % 16) != 0)
+  {
+    n_registers++;
+  }
+  uint16 reg_vals[8];
+  int n = this->read_reg(start_register, n_registers,  reg_vals);
+  if (n != n_registers)
+  {
+    return -1;
+  }
+  for (int i = 0; i < n_di; i++)
+  {
+    int word = i / 16;
+    int bit = i % 16;
+    vals[i] = (reg_vals[word] & (1 << bit)) != 0;
+  }
+  return n_di;
+}
+
+/**********************************************************************/
+
 int MODSerial::read_di_req(request_t *req)
 {
   int count;

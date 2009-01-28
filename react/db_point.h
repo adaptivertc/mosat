@@ -545,6 +545,32 @@ public:
   void check_alarms(void);
 };
 
+/*#SCRIPT_OBJECT#(TIMER_POINT)*/
+class timer_point_t : public analog_point_t
+{
+private:
+  bool mode_count_up; 
+  bool running;
+  double last_time;
+
+public:
+/*#SCRIPT_FUNCTION#*/
+  void zero(void) {pv = 0.0;};
+/*#SCRIPT_FUNCTION#*/
+  void set(double aval) {pv = aval;};
+/*#SCRIPT_FUNCTION#*/
+  void stop(void);
+/*#SCRIPT_FUNCTION#*/
+  void count_up(void);
+/*#SCRIPT_FUNCTION#*/
+  void count_down(void);
+/*#SCRIPT_FUNCTION#*/
+  void start(void);
+  void update(void);
+  point_type_t point_type(void) {return TIMER_POINT;};
+  static timer_point_t *read_one(int argc, char *argv[], char *err, int esz);
+  static timer_point_t **read(int *cnt, const char * home_dir);
+};
 
 /*#SCRIPT_OBJECT#(PID_POINT)*/
 class pid_point_t : public control_point_t
@@ -772,7 +798,6 @@ struct int_ref_t
   int_t *ip;
   int_ref_t *next;
 };
-
 
 class web_point_t : public discrete_point_t
 {

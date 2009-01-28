@@ -78,6 +78,7 @@ public:
   MODSerial(mod_io_t *an_io) {address = 2; modio = an_io;};
   int reply_size(uint8 *buf);
   int read_di(uint16 start_address, int n, bool *vals);
+  int read_di_register(unsigned short start_register, int n_di, bool *vals);
   int read_do(uint16 start_address, int n, bool *vals);
   int read_ai(uint16 start_address, int n, uint16 *vals);
   int read_reg(uint16 start_address, int n, uint16 *vals);

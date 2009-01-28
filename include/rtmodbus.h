@@ -13,6 +13,8 @@ class rtmodbus_t
 {
 public:
   virtual int read_di(unsigned short start_address, int n, bool *vals) = 0;
+  // The following is non-standard, but, Phoenix Contact does it, and probably others
+  virtual int read_di_register(unsigned short start_register, int n_di, bool *vals) = 0;
   virtual int read_do(unsigned short start_address, int n, bool *vals) = 0;
   virtual int read_ai(unsigned short start_address, int n, unsigned short *vals) = 0;
   virtual int read_reg(unsigned short start_address, int n, unsigned short *vals) = 0;

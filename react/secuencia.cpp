@@ -311,12 +311,19 @@ secuencia_t::secuencia_t(const char *fname, const char *home_dir)
     safe_strcpy(tmp, (const char*) line, sizeof(tmp));
     printf("%s", line);
     secuencia_step_t *stp;
+    error[0] = '\0';
     stp = new_script_type(line, error, sizeof(error), true);
+
     if (stp != NULL)
     {
       steps[num_steps] = stp;
       num_steps++;
     }
+    else
+    {
+      printf("***** %s\n", error);
+    }
+
     if (num_steps >= max_steps)
     {
        printf("Too many steps: %d\n", num_steps);

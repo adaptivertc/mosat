@@ -15,6 +15,12 @@ libsimple_ascii_drv.so: simple_ascii.o simple_ascii_read.o
 sim_simple_ascii: sim_simple_ascii.cpp  
 	g++ -Wall -o sim_simple_ascii sim_simple_ascii.cpp -lrt ../../../modbus/librtmodbus.a
 
+temps: temps.o
+	g++ -g -Wall -lrt -o temps temps.o ../../../modbus/librtmodbus.a ../../../librtcommon/librtcommon.a
+
+convert: convert.cpp
+	g++ -o convert convert.cpp ../../../librtcommon/librtcommon.a 
+
 clean:
 	rm *.o *.so sim_simple_ascii
 

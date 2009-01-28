@@ -157,6 +157,27 @@ public:
   step_type_t get_type() {return STEP_UNDEFINED;};
 };
 
+class step_wait_until_min_t : public secuencia_step_t
+{
+private:
+  double timeout;
+  double min_true;
+  double end_time;
+  bool first_time;
+  bool detected;
+  time_t detect_time;
+  const char *expr_string;
+  discrete_expr_t expression;
+public:
+  step_wait_until_min_t(int argc, char *argv[], char *error, int esize);
+  bool check(void);
+  void reset(void) {first_time = true;};
+  void set_param(int n, char *val);
+  int execute(double time);
+  step_type_t get_type() {return STEP_UNDEFINED;};
+};
+
+
 class step_start_acq_t : public secuencia_step_t
 {
 private:

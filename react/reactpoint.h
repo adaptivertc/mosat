@@ -66,7 +66,8 @@ enum point_type_t
   PUMP_POINT,
   AC_POINT,
   LEVEL_POINT,
-  PCI_POINT
+  PCI_POINT,
+  TIMER_POINT
 };
 
 enum pv_type_t

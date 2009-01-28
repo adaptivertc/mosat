@@ -235,7 +235,7 @@ void utimer_t::wait_next(void)
     //usleep(dif);
     struct timespec remain;
     struct timespec request = timespec_dif(tv2);
-    printf("waiting (%ld, %ld)\n", request.tv_sec, request.tv_nsec);
+    //printf("waiting (%ld, %ld)\n", request.tv_sec, request.tv_nsec);
     int retval = nanosleep(&request, &remain);
     while (retval == -1)
     { 
@@ -263,7 +263,7 @@ void utimer_t::wait_next(void)
   }
   gettimeofday(&tv2, NULL);
   dif = usec_timer_dif(tv2);
-  printf("wait difference: %ld\n", dif);
+  //printf("wait difference: %ld\n", dif);
   //struct timespec ts;
   //ts.tv_sec = 0;
   //ts.tv_nsec = dif * 1000L;
@@ -300,6 +300,20 @@ utimer_t::utimer_t()
 }
 
 /*******************************************************************
+  struct timespec res, mc, rc;
+
+  clock_getres(CLOCK_REALTIME, &res);
+  printf("Res = %ld secs, %ld nanoseconds\n", res.tv_sec, res.tv_nsec);
+  clock_getres(CLOCK_MONOTONIC, &res);
+  printf("Res = %ld secs, %ld nanoseconds\n", res.tv_sec, res.tv_nsec);
+
+  clock_gettime(CLOCK_MONOTONIC, &mc);
+  clock_gettime(CLOCK_REALTIME, &rc);
+  time_t now = time(NULL);
+  printf("MonotonicClock = %ld secs, %ld nanoseconds\n", mc.tv_sec, mc.tv_nsec);
+  printf("RealtimeClock = %ld secs, %ld nanoseconds\n", rc.tv_sec, rc.tv_nsec);
+  printf("Time = %ld\n", now);
+
 
 int main(int argc, char *argv[])
 {

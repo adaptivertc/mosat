@@ -397,6 +397,10 @@ secuencia_step_t *create_system_step(int argc, char *argv[],
   {
     return new step_wait_until_t(argc, argv, error, esize);
   }
+  if (0 == strcasecmp(argv[1], "wait_until_min"))
+  {
+    return new step_wait_until_min_t(argc, argv, error, esize);
+  }
   if (0 == strcasecmp(argv[1], "if"))
   {
     return new step_if_t(argc, argv, error, esize);

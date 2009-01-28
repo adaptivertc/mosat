@@ -61,18 +61,18 @@ rtmodbus_t *rt_create_modbus(const char *device)
   tv.tv_sec = 2;
   tv.tv_usec = 0;
   int err;
+
   err = setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
   if (err != 0)
   {
     react_trace.dperror(6, "setsockopt");
   }
+
   err = setsockopt(sockfd, SOL_SOCKET, SO_SNDTIMEO, &tv, sizeof(tv));
   if (err != 0)
   {
     react_trace.dperror(6, "setsockopt");
   }
-
-
 
   dest_addr.sin_family = AF_INET;        /* host byte order */
   short temp = (short) atol(dest_port); 
@@ -81,7 +81,6 @@ rtmodbus_t *rt_create_modbus(const char *device)
   printf("Using %s\n", dest_ip);
   memset(&(dest_addr.sin_zero), 8, 0);       /* zero the rest of the struct */
 
-   /* don't forget to error check the connect()! */
   printf("Connecting on %s\n", dest_port);
   int n = connect(sockfd, (struct sockaddr *)&dest_addr,
                   sizeof(struct sockaddr));

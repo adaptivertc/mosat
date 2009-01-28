@@ -23,6 +23,9 @@ simple_ascii.o:	simple_ascii.cpp simple_ascii.h
 sim_simple_ascii: sim_simple_ascii.cpp simple_ascii_read.cpp 
 	$(CPP) -o sim_simple_ascii sim_simple_ascii.cpp simple_ascii_read.cpp -lrt $(RTCOMMON) $(RTMODBUS)
 
+temps: temps.o
+	$(CPP) -g -Wall -lrt -o temps temps.o $(RTMODBUS) $(RTCOMMON)
+
 clean:
 	rm *.o *.so sim_simple_ascii
 

@@ -732,7 +732,7 @@ int step_wait_until_t::execute(double current_time)
     }
     else
     {
-      time_t tnow = time(NULL);
+      //time_t tnow = time(NULL);
       //printf("****************************************** FALSE: %s, %s", expr_string, ctime(&tnow));
       //printf("%s:%d\n", __FILE__, __LINE__);
       return 0;
@@ -759,6 +759,133 @@ bool step_wait_until_t::check(void)
 
 /*****************************************************************/
 
+/****************************************************************/
+
+step_wait_until_min_t::step_wait_until_min_t(int argc, char *argv[], char *the_error, int esize)
+{
+  first_time = true;
+  expr_string = "Error";
+  if (argc != 5)
+  {
+    timeout = 0.0;
+    expression.expr = new expr_op_t[2];
+    expression.expr[0].token_type = LOGICAL_VAL;
+    expression.expr[0].val.logical_val = true;
+    expression.expr[1].token_type = END_EXPR;
+    logfile->vprint("Wrong number of args for 'wait_until_min', %d\n", argc);
+    return;
+  }
+
+  printf("expr: '%s'\n", argv[2]);
+  expression.expr = make_expr(argv[2]);
+  if (expression.expr == NULL)
+  {
+    logfile->vprint("Bad expression for 'wait_until_min': %s\n", rtexperror.str());
+    expression.expr = new expr_op_t[2];
+    expression.expr[0].token_type = LOGICAL_VAL;
+    expression.expr[0].val.logical_val = true;
+    expression.expr[1].token_type = END_EXPR;
+    return;
+  }
+  expr_string = strdup(argv[2]);
+  MALLOC_CHECK(expr_string);
+  timeout = split_time(argv[3]);
+  min_true = split_time(argv[4]);
+  return;
+}
+
+/*****************************************************************/
+
+int step_wait_until_min_t::execute(double current_time)
+{
+  if (first_time)
+  {
+    end_time = current_time + timeout;
+    first_time = false;
+    time_t tnow = time(NULL);
+    logfile->vprint("%s", ctime(&tnow));
+    logfile->vprint("Start wait until at: %lf\n", current_time);
+    logfile->vprint("sys.wait_until_min(%s, %0.2lf)\n", expr_string, timeout);
+    //printf("%s:%d\n", __FILE__, __LINE__);
+    if (!expression.evaluate())
+    {
+      //printf("%s:%d\n", __FILE__, __LINE__);
+      //printf("****************************** FALSE: %s", ctime(&tnow));
+      logfile->vprint("FALSE: %s", ctime(&tnow));
+      return 0;
+    }
+    else
+    {
+      first_time = true;
+      time_t tnow = time(NULL);
+      logfile->vprint("wait_until_min condition TRUE at start: %lf\n", current_time);
+      logfile->vprint("TRUE: %s", ctime(&tnow));
+      //printf("------------------------------- TRUE: %s", ctime(&tnow));
+      //printf("%s:%d\n", __FILE__, __LINE__);
+      return 1; // if the expresion is true, advance right away.
+    }
+  }
+  else
+  {
+    //printf("waiting: %lf, %lf\n", current_time, end_time);
+    if (current_time >= end_time)
+    {
+      first_time = true;
+      time_t tnow = time(NULL);
+      logfile->vprint("**TIMEOUT**: %lf\n", current_time);
+      logfile->vprint("**TIMEOUT**: %s", ctime(&tnow));
+      //printf("%s:%d\n", __FILE__, __LINE__);
+      return 1;
+    }
+    else if (expression.evaluate())
+    {
+      time_t tnow = time(NULL);
+      if (not detected)
+      {
+        detected = true;
+        detect_time = tnow;
+      }
+      else if (double(tnow - detect_time) > min_true)
+      {
+        first_time = true;
+        logfile->vprint("wait_until_min TRUE: %lf\n", current_time);
+        logfile->vprint("wait_until_min TRUE: %s", ctime(&tnow));
+        //printf("****************************** TRUE: %s", ctime(&tnow));
+        //printf("%s:%d\n", __FILE__, __LINE__);
+        return 1;
+      }
+    }
+    else
+    {
+      detected = false;
+      //time_t tnow = time(NULL);
+      //printf("****************************************** FALSE: %s, %s", expr_string, ctime(&tnow));
+      //printf("%s:%d\n", __FILE__, __LINE__);
+      return 0;
+    }
+  }
+  return 0;
+}
+
+/*****************************************************************/
+
+void step_wait_until_min_t::set_param(int n, char *val)
+{
+  if (n == 0)
+  {
+
+  }
+}
+
+/*****************************************************************/
+
+bool step_wait_until_min_t::check(void)
+{
+  return true;
+}
+
+/*****************************************************************/
+/*****************************************************************/
 /****************************************************************/
 
 step_if_t::step_if_t(int argc, char *argv[], char *the_error, int esize)

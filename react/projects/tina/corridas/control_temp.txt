@@ -1,5 +1,9 @@
+lo_temp.send(54);
+hi_temp.send(56);
 valve_1.send(F)
-sys.wait_until("avg_temp > hi_temp", 59:59)
+#sys.wait_until("avg_temp > hi_temp", 59:59)
+sys.wait(2)
 valve_1.send(T)
-sys.wait_until("avg_temp < lo_temp", 59:59)
+#sys.wait_until("avg_temp < lo_temp", 59:59)
+sys.wait(2)
 sys.loop()

@@ -164,6 +164,10 @@ void react_t::print_all_points(void)
   {
     printf("DCalc: %s\n", dcalcs[i]->tag);
   }
+  for (int i=0; i < num_timer; i++)
+  {
+    printf("Timer: %s\n", timers[i]->tag);
+  }
   for (int i=0; i < num_int; i++)
   {
     printf("Int: %s\n", ints[i]->tag);
@@ -280,9 +284,9 @@ void react_t::read_inputs(void)
   taa[j].start();
   for (int i=0; i < num_io_drivers; i++)
   {
-    printf("------------------------------- In read for driver %d\n", i);
+    //printf("------------------------------- In read for driver %d\n", i);
     io_driver[i]->read();
-    printf("------------------------------- Out of read for driver %d\n", i);
+    //printf("------------------------------- Out of read for driver %d\n", i);
   }
   taa[j].stop();
 
@@ -320,9 +324,9 @@ void react_t::read_inputs(void)
   taa[j].stop();
   for (int i=0; i < num_io_drivers; i++)
   {
-    printf("------------------------------- In end read for driver %d\n", i);
+    //printf("------------------------------- In end read for driver %d\n", i);
     io_driver[i]->end_read();
-    printf("------------------------------- Finished end read for driver %d\n", i);
+    //printf("------------------------------- Finished end read for driver %d\n", i);
   }
 
 
@@ -399,6 +403,11 @@ void react_t::read_inputs(void)
     dcalcs[i]->update();
   }
   taa[j].stop();
+
+  for (int i=0; i < num_timer; i++)
+  {
+    timers[i]->update();
+  }
 
   j++;
   taa[j].start();
@@ -545,6 +554,8 @@ react_t::react_t()
   do_points = NULL;
   num_dcalc = 0;
   dcalcs = NULL;
+  num_timer = 0;
+  timers = NULL;
   num_calc = 0;
   calcs = NULL;
   num_d_calc = 0;
@@ -815,10 +826,13 @@ void react_t::read_all_points(const char *a_home_dir)
   printf("Reading discrete calc ........\n\r");
   d_calcs = dcalc_point_t::read(&num_d_calc, a_home_dir);
   printf("%d discrete calcs readn\r", num_d_calc);
-  
 
   printf("Reading dcalc ........\n");
   dcalcs = dcalc_t::read(&num_dcalc, a_home_dir);
+
+  printf("Reading timer ........\n");
+  timers = timer_point_t::read(&num_timer, a_home_dir);
+  printf("num_timer = %d\n", num_timer);
 
   printf("Reading int ........\n");
   ints = int_t::read(&num_int, a_home_dir);
@@ -1422,7 +1436,7 @@ db_point_t *react_t::get_db_point(char *tag)
 
   for (i=0; i < num_ai; i++)
   {
-    if (!strcasecmp(ai_points[i]->tag, tag))
+    if (0 == strcasecmp(ai_points[i]->tag, tag))
     {
       return ai_points[i];
     }
@@ -1430,7 +1444,7 @@ db_point_t *react_t::get_db_point(char *tag)
 
   for (i=0; i < num_pci; i++)
   {
-    if (!strcasecmp(pci_points[i]->tag, tag))
+    if (0 == strcasecmp(pci_points[i]->tag, tag))
     {
       return pci_points[i];
     }
@@ -1439,7 +1453,7 @@ db_point_t *react_t::get_db_point(char *tag)
 
   for (i=0; i < num_ao; i++)
   {
-    if (!strcasecmp(ao_points[i]->tag, tag))
+    if (0 == strcasecmp(ao_points[i]->tag, tag))
     {
       return ao_points[i];
     }
@@ -1447,7 +1461,7 @@ db_point_t *react_t::get_db_point(char *tag)
 
   for (i=0; i < num_di; i++)
   {
-    if (!strcasecmp(di_points[i]->tag, tag))
+    if (0 == strcasecmp(di_points[i]->tag, tag))
     {
       return di_points[i];
     }
@@ -1456,7 +1470,7 @@ db_point_t *react_t::get_db_point(char *tag)
 
   for (i=0; i < num_do; i++)
   {
-    if (!strcasecmp(do_points[i]->tag, tag))
+    if (0 == strcasecmp(do_points[i]->tag, tag))
     {
       return do_points[i];
     }
@@ -1464,7 +1478,7 @@ db_point_t *react_t::get_db_point(char *tag)
 
   for (i=0; i < num_calc; i++)
   {
-    if (!strcasecmp(calcs[i]->tag, tag))
+    if (0 == strcasecmp(calcs[i]->tag, tag))
     {
       return calcs[i];
     }
@@ -1472,24 +1486,31 @@ db_point_t *react_t::get_db_point(char *tag)
 
   for (i=0; i < num_d_calc; i++)
   {
-    if (!strcasecmp(d_calcs[i]->tag, tag))
+    if (0 == strcasecmp(d_calcs[i]->tag, tag))
     {
       return d_calcs[i];
     }
   }
 
-
   for (i=0; i < num_dcalc; i++)
   {
-    if (!strcasecmp(dcalcs[i]->tag, tag))
+    if (0 == strcasecmp(dcalcs[i]->tag, tag))
     {
       return dcalcs[i];
     }
   }
 
+  for (i=0; i < num_timer; i++)
+  {
+    if (0 == strcasecmp(timers[i]->tag, tag))
+    {
+      return timers[i];
+    }
+  }
+
   for (i=0; i < num_int; i++)
   {
-    if (!strcasecmp(ints[i]->tag, tag))
+    if (0 == strcasecmp(ints[i]->tag, tag))
     {
       return ints[i];
     }
@@ -1497,7 +1518,7 @@ db_point_t *react_t::get_db_point(char *tag)
 
   for (i=0; i < num_pid; i++)
   {
-    if (!strcasecmp(pid_points[i]->tag, tag))
+    if (0 == strcasecmp(pid_points[i]->tag, tag))
     {
       return pid_points[i];
     }
@@ -1505,7 +1526,7 @@ db_point_t *react_t::get_db_point(char *tag)
 
   for (i=0; i < num_pump; i++)
   {
-    if (!strcasecmp(pump_points[i]->tag, tag))
+    if (0 == strcasecmp(pump_points[i]->tag, tag))
     {
       return pump_points[i];
     }
@@ -1513,7 +1534,7 @@ db_point_t *react_t::get_db_point(char *tag)
 
   for (i=0; i < num_ac; i++)
   {
-    if (!strcasecmp(ac_points[i]->tag, tag))
+    if (0 == strcasecmp(ac_points[i]->tag, tag))
     {
       return ac_points[i];
     }
@@ -1522,7 +1543,7 @@ db_point_t *react_t::get_db_point(char *tag)
 
   for (i=0; i < num_level; i++)
   {
-    if (!strcasecmp(level_points[i]->tag, tag))
+    if (0 == strcasecmp(level_points[i]->tag, tag))
     {
       return level_points[i];
     }
@@ -1531,7 +1552,7 @@ db_point_t *react_t::get_db_point(char *tag)
 
   for (i=0; i < num_data; i++)
   {
-    if (!strcasecmp(data_points[i]->tag, tag))
+    if (0 == strcasecmp(data_points[i]->tag, tag))
     {
       return data_points[i];
     }
@@ -1539,7 +1560,7 @@ db_point_t *react_t::get_db_point(char *tag)
 
   for (i=0; i < num_file_logger; i++)
   {
-    if (!strcasecmp(file_logger_points[i]->tag, tag))
+    if (0 == strcasecmp(file_logger_points[i]->tag, tag))
     {
       return file_logger_points[i];
     }
@@ -1547,7 +1568,7 @@ db_point_t *react_t::get_db_point(char *tag)
 
   for (i=0; i < num_discrete_logger; i++)
   {
-    if (!strcasecmp(discrete_logger_points[i]->tag, tag))
+    if (0 == strcasecmp(discrete_logger_points[i]->tag, tag))
     {
       return discrete_logger_points[i];
     }
@@ -1555,7 +1576,7 @@ db_point_t *react_t::get_db_point(char *tag)
 
   for (i=0; i < num_scan; i++)
   {
-    if (!strcasecmp(scan_points[i]->tag, tag))
+    if (0 == strcasecmp(scan_points[i]->tag, tag))
     {
       return scan_points[i];
     }
@@ -1563,7 +1584,7 @@ db_point_t *react_t::get_db_point(char *tag)
 
   for (i=0; i < num_web; i++)
   {
-    if (!strcasecmp(web_points[i]->tag, tag))
+    if (0 == strcasecmp(web_points[i]->tag, tag))
     {
       return web_points[i];
     }

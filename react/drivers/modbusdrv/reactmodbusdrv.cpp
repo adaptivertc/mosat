@@ -162,7 +162,7 @@ reactmodbus_driver_t::reactmodbus_driver_t(react_drv_base_t *react, const char *
   }
   else
   {
-    printf("Uing ip passed to driver: %s\n", option);
+    printf("Using ip passed to driver: %s\n", option);
     modbus = rt_create_modbus(option);
   }
   if (modbus == NULL)
