@@ -39,6 +39,8 @@ Contains code for react modbus driver.
 
 #include "rtmodbus.h"
 
+#include "arg.h"
+
 #include "reactpoint.h"
 #include "db_point.h"
 #include "db.h"
@@ -117,10 +119,17 @@ Contains code for react modbus driver.
 ****/
 /***********************************************************************/
 
+int xx_printf(const char *format, ...)
+{
+  return 0;
+}
+
 static void *rtmodbus_start_read_thread(void *driver_ptr)
 {
   reactmodbus_driver_t *p = (reactmodbus_driver_t *)driver_ptr;
+  printf("Calling read_thread method\n");
   p->read_thread();
+  printf("*** Error read_thread returned\n");
   return NULL; // Should never return, but without a return, gives warning.
 }
 
@@ -130,6 +139,85 @@ extern "C" io_driver_t *new_reactmodbus(react_drv_base_t *r, const char *option)
 {
   printf("Creating new reactmodbus iodriver\n");
   return new reactmodbus_driver_t(r, option);
+}
+
+/***********************************************************************/
+
+void reactmodbus_driver_t::add_io(const char *io_type, int opcode, int n_io, int modbus_offset, int channel_offset)
+{
+  if (n_mod_io == REACT_MAX_MOD_IO)
+  {
+    printf("******* Too many modbus io definitions\n");
+    return;
+  }
+
+  if ((channel_offset + n_io) > 64)
+  {
+    printf("******* can not map past 64 for %s definitions, chan offset: %d, n: %d, total: %d\n", 
+           io_type, channel_offset, n_io, channel_offset + n_io);
+    return;
+  }
+
+  if (0 == strcasecmp("DI", io_type))
+  {
+    mod_io[n_mod_io].type = REACT_MOD_DI; 
+    printf("Type DI, ");
+  }
+  else if (0 == strcasecmp("AI", io_type))
+  {
+    mod_io[n_mod_io].type = REACT_MOD_AI; 
+    printf("Type DI, ");
+  }
+  else
+  {
+    printf("******* invalid io type: %s\n", io_type);
+    return;
+  }
+  
+  mod_io[n_mod_io].opcode = opcode; 
+  mod_io[n_mod_io].n = n_io; 
+  mod_io[n_mod_io].modbus_offset = modbus_offset; 
+  mod_io[n_mod_io].channel_offset = channel_offset; 
+  printf("opcode: %d, n: %d, mod offset: %d, ch offset: %d\n", opcode, n_io, modbus_offset, channel_offset);
+  switch (mod_io[n_mod_io].type)
+  {
+    case REACT_MOD_DI:
+      switch (mod_io[n_mod_io].opcode)
+      {
+        case 1:
+          printf("Will read DIs using read_do()\n");
+          break;
+        case 2:
+          printf("Will read DIs using read_di()\n");
+          break;
+        case 3:
+          printf("Will read DIs using read_di_register()\n");
+          break;
+        default:
+          printf("Invalid opcode for DI: %d\n", mod_io[n_mod_io].opcode);
+          break;
+      }
+      break;
+    case REACT_MOD_AI:
+      switch (mod_io[n_mod_io].opcode)
+      {
+        case 3:
+          printf("Will read AIs using read_reg()\n");
+          break;
+        case 4:
+          printf("Will read AIs using read_ai()\n");
+          break;
+        default:
+          printf("Invalid opcode for AI: %d\n", mod_io[n_mod_io].opcode);
+          break;
+      }
+      break;
+    default:
+      printf("Invalid type: %d\n", mod_io[n_mod_io].type);
+      break;
+  }
+  n_mod_io++;
+
 }
 
 /***********************************************************************/
@@ -183,6 +271,38 @@ reactmodbus_driver_t::reactmodbus_driver_t(react_drv_base_t *react, const char *
   }
   printf("DONE Initializing semaphores\n");
   
+  delim_file_t *df = new delim_file_t(200, 10, '|', '#');
+  char **argv;
+  int argc;
+  int line_num;
+  
+  // <DI or AI>|<opcode>|<>|<modbus offset|<channel offset>|
+ 
+  argv = df->first("./dbfiles/modbus.dat", &argc, &line_num);
+
+  n_mod_io = 0;
+  while (argv != NULL)
+  {
+    if (argc != 5)
+    {
+      printf("**** modbus.dat: wrong number of args: %d, on line %d\n", argc, line_num);
+      argv = df->next(&argc, &line_num);
+      continue;
+    }
+    for (int i=0; i < 5; i++)
+    {
+      printf("'%s', ", argv[i]);
+    } 
+    printf("\n");
+
+    printf("Adding I/O\n");
+
+    this->add_io(argv[0], atoi(argv[1]), atoi(argv[2]), atoi(argv[3]), atoi(argv[4]));
+
+    argv = df->next(&argc, &line_num);
+  }
+  printf("Done with modbus.dat\n");
+
   printf("Creating thread\n");
   pthread_t thr;
   int retval;
@@ -238,7 +358,7 @@ double reactmodbus_driver_t::get_ai(int channel)
   if ((channel >= 0) && (channel < 32))
   {
     read_val = (double) ai_vals[channel];
-    printf("AI %d, read %lf\n", channel, read_val);
+    xx_printf("AI %d, read %lf\n", channel, read_val);
     return read_val;
   }
   else
@@ -255,7 +375,7 @@ bool reactmodbus_driver_t::get_di(int channel)
   if ((channel >= 0) && (channel < 32))
   {
     read_val = di_vals[channel];
-    printf("DI %d, read %s\n", channel, read_val ? "T" : "F");
+    xx_printf("DI %d, read %s\n", channel, read_val ? "T" : "F");
     return read_val;
   }
   else
@@ -279,30 +399,84 @@ long reactmodbus_driver_t::get_count(int channel)
 }
 
 /***********************************************************************/
+
+void reactmodbus_driver_t::read_mod_io(void)
+{
+  for (int i=0; i < n_mod_io; i++)
+  {
+    switch (mod_io[i].type)
+    {
+      case REACT_MOD_DI:
+        switch (mod_io[i].opcode)
+        {
+          case 1:
+            modbus->read_do(mod_io[i].modbus_offset, mod_io[i].n, tmp_di_vals + mod_io[i].channel_offset);
+            break;
+          case 2:
+            modbus->read_di(mod_io[i].modbus_offset, mod_io[i].n, tmp_di_vals + mod_io[i].channel_offset);
+            break;
+          case 3:
+            modbus->read_di_register(mod_io[i].modbus_offset, mod_io[i].n, tmp_di_vals + mod_io[i].channel_offset);
+            break;
+          default:
+            xx_printf("Invalid opcode for DI: %d\n", mod_io[i].opcode);
+            break;
+        }
+        break;
+      case REACT_MOD_AI:
+        switch (mod_io[i].opcode)
+        {
+          case 3:
+            modbus->read_reg(mod_io[i].modbus_offset, mod_io[i].n, tmp_ai_vals + mod_io[i].channel_offset);
+            break;
+          case 4:
+            modbus->read_ai(mod_io[i].modbus_offset, mod_io[i].n, tmp_ai_vals + mod_io[i].channel_offset);
+            break;
+          default:
+            xx_printf("Invalid opcode for AI: %d\n", mod_io[i].opcode);
+            break;
+        }
+        break;
+      default:
+        xx_printf("Invalid type: %d\n", mod_io[i].type);
+        break;
+    }
+  }
+}
+
+/***********************************************************************/
+
 static int mycounter = 0;
 
 void reactmodbus_driver_t::read_thread(void)
 {
   while(true)
   {
-    printf("read thread reading modbus values . . .\n");
-    modbus->read_ai(0, 16, tmp_ai_vals);
-    modbus->read_di(0, 16, tmp_di_vals);
-    printf("read thread DONE reading modbus values . . .\n");
+    xx_printf("read thread reading modbus values . . .\n");
+    if (n_mod_io == 0)
+    {
+      modbus->read_ai(0, 16, tmp_ai_vals);
+      modbus->read_di(0, 16, tmp_di_vals);
+    }
+    else
+    {
+      read_mod_io();
+    }
+    xx_printf("read thread DONE reading modbus values . . .\n");
 
-    printf("read thread copying values . . .\n");
+    xx_printf("read thread copying values . . .\n");
     sem_wait(&read_mutex_sem);
-      printf("  -- read thread in critical section . . .\n");
+      xx_printf("  -- read thread in critical section . . .\n");
       memcpy(ai_vals, tmp_ai_vals, sizeof(ai_vals));
       memcpy(di_vals, tmp_di_vals, sizeof(di_vals));
       read_values = true;
-      printf("  -- read thread leaving critical section . . .\n");
+      xx_printf("  -- read thread leaving critical section . . .\n");
     sem_post(&read_mutex_sem);
-    printf("read thread DONE copying values . . .\n");
+    xx_printf("read thread DONE copying values . . .\n");
 
-    printf("read thread waiting %d\n", mycounter++);
+    xx_printf("read thread waiting %d\n", mycounter++);
     sem_wait(&read_wait_sem);
-    printf("thread woke up\n");
+    xx_printf("thread woke up\n");
   }
 }
 
@@ -311,7 +485,7 @@ void reactmodbus_driver_t::read_thread(void)
 void reactmodbus_driver_t::read(void)
 {
     sem_wait(&read_mutex_sem);
-    printf("  -- main thread in critical section . . .\n");
+    xx_printf("  -- main thread in critical section . . .\n");
     if (read_values)
     {
       wake_him_up = true;
@@ -332,17 +506,17 @@ void reactmodbus_driver_t::read(void)
 void reactmodbus_driver_t::end_read(void)
 {
   read_values = false;
-  printf("  -- main thread leaving critical section . . .\n");
+  xx_printf("  -- main thread leaving critical section . . .\n");
   sem_post(&read_mutex_sem);
   if (wake_him_up)
   {
-    printf("waking up reader\n");
+    xx_printf("waking up reader\n");
     sem_post(&read_wait_sem); // wake up the read thread to read the next values.
-    printf("DONE waking up reader\n");
+    xx_printf("DONE waking up reader\n");
   }
   else
   {
-    printf("The read thread is stalled, no reason to keep incrementing . . .\n");
+    xx_printf("The read thread is stalled, no reason to keep incrementing . . .\n");
   } 
 }
 

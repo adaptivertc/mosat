@@ -382,8 +382,9 @@ void web_point_t::read_file(void)
       }
       else
       {
-        tmp_r->true_string = "255,255,153";
-        tmp_r->false_string = "192,192,192";
+        printf("Wrong number of args for discrete $$$$DI: %d\n", argc);
+        tmp_r->true_string = "*** Wrong number of args ***";
+        tmp_r->false_string = "*** Wrong number of args ***";
         tmp_r->dp = NULL;
       }
     }
@@ -477,6 +478,7 @@ void web_point_t::read_file(void)
       }
       else
       {
+        printf("Wrong number of args for $$$$AI: %d\n", argc);
         tmp_r->ap = NULL;
       }
     }

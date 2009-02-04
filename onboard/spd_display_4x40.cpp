@@ -281,8 +281,8 @@ int d4x40_printf(int row, int col, const char *fmt, ...)
   va_end(arg_ptr);
 
   
-  buf[0] = 0xFE;  // goto xy
-  buf[1] = 0x47;
+  buf[0] = 0xFE; 
+  buf[1] = 0x47; // goto xy
   buf[2] = col; // column
   buf[3] = row; // row
 

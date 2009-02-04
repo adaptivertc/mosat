@@ -300,7 +300,7 @@ void file_logger_t::update(void)
 
   fprintf(instantaneous_fp, "%s", buf);
 
-  printf("Hr avgs so far: %s", buf);
+  //printf("Hr avgs so far: %s", buf);
   for (int i=0; i < num_points; i++)
   {
     double val = 0.0;
@@ -310,10 +310,10 @@ void file_logger_t::update(void)
     }
     fprintf(instantaneous_fp, "\t%lf", val);
     hour_averages[i] += val;
-    printf(" %lf", hour_averages[i] / (n_hour_samples + 1));
+    //printf(" %lf", hour_averages[i] / (n_hour_samples + 1));
   }
   n_hour_samples++;
-  printf("\n");
+  //printf("\n");
 
   fprintf(instantaneous_fp, "\n");
   //fflush(instantaneous_fp);

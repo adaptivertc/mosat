@@ -477,12 +477,15 @@ public:
   void delete_old_files(time_t now);
 };
 
+
 class discrete_logger_t : public discrete_point_t
 {
 public:
   char base_name[50];
   int num_points;
   discrete_point_t **discrete_points;
+  bool *log_rising;
+  bool *log_falling;
   bool *last_discrete_vals;
   FILE *instantaneous_fp;
   bool collecting;

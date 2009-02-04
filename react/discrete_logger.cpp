@@ -194,7 +194,7 @@ discrete_logger_t **discrete_logger_t::read(int *cnt, const char *home_dir)
     {
       continue;
     }
-    else if (argc < 4)
+    else if (argc < 5)
     {
       printf("%s: Wrong number of args (minimum 4), line %d\n", path, i+1);
       continue;
@@ -219,11 +219,19 @@ discrete_logger_t **discrete_logger_t::read(int *cnt, const char *home_dir)
       printf("collection is on for %s\n", p->tag);
     }
 
-    p->num_points = argc - 3;
+    int n_extra = argc - 3;
+    if ((n_extra % 2) != 0)
+    {
+      printf("%s: There must be an even number of extra parameters - each with tag, and log type (rise, fall, or both (RFB))\n", p->tag);
+    }
+    p->num_points = n_extra / 2; 
     p->discrete_points = new discrete_point_t *[p->num_points + 1];
     p->last_discrete_vals = new bool[p->num_points + 1];
+    p->log_rising = new bool[p->num_points + 1];
+    p->log_falling = new bool[p->num_points + 1];
 
-    for (int j=3; j < argc; j++)
+     
+    for (int nd=0, j=3; (j + 1) < argc; j += 2, nd++)
     {
       char temp_tag[50];
       db_point_t *db_point;
@@ -232,15 +240,42 @@ discrete_logger_t **discrete_logger_t::read(int *cnt, const char *home_dir)
       db_point = db->get_db_point(temp_tag);
       if ((db_point == NULL) || (db_point->pv_type() != DISCRETE_VALUE))
       {
-        p->discrete_points[j-3] = NULL;
+        p->discrete_points[nd] = NULL;
         printf("Bad discrete point: %s\n", temp_tag);
       }
       else
       {
-        p->discrete_points[j-3] = (discrete_point_t *) db_point;
+        p->discrete_points[nd] = (discrete_point_t *) db_point;
       }
-      printf("discrete point %d: %s\n", j-3, temp_tag);
-      p->last_discrete_vals[j-3] = false;
+      printf("discrete point [%d]: %s, ", nd, temp_tag);
+      p->last_discrete_vals[nd] = false;
+      switch (argv[j+1][0])
+      {
+        case 'R':
+        case 'r':
+          printf("rising only\n");
+          p->log_rising[nd] = true;
+          p->log_falling[nd] = false;
+          break;
+        case 'F':
+        case 'f':
+          printf("falling only\n");
+          p->log_rising[nd] = false;
+          p->log_falling[nd] = true;
+          break;
+        case 'B':
+        case 'b':
+          printf("both rising and falling\n");
+          p->log_rising[nd] = true;
+          p->log_falling[nd] = true;
+          break;
+        default:
+          printf("******* Error %s: discrete %d, bad param: '%s' log type must be R, F, or B (rising, falling, or both)\n", p->tag, nd, argv[j+1]); 
+          printf("defaulting to both rising and falling\n");
+          p->log_rising[nd] = true;
+          p->log_falling[nd] = true;
+          break;
+      }
     }
     p->last_log_time = time(NULL);
 

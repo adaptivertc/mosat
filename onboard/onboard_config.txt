@@ -16,5 +16,3 @@ door_invert|F
 4x40_baudrate|19200
 max_maintain|30.000000
 auto_timeout|40
-
-

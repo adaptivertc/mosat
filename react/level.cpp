@@ -133,7 +133,7 @@ void level_point_t::update(void)
   {
     if (!lo_state && !hi_state) // We reached the bottom
     {
-      printf("Bottom reached\n"); 
+      //printf("Bottom reached\n"); 
       time_at_bottom = time(NULL);
       pumping = false;
     }
@@ -144,7 +144,7 @@ void level_point_t::update(void)
     {
       double fill_rate = 
         (60.0 * volume) / double (now - time_at_bottom);
-      printf("Top reached, fill rate = %0.2lf\n", fill_rate); 
+      //printf("Top reached, fill rate = %0.2lf\n", fill_rate); 
       total_day_fill_rates += fill_rate;
       total_day_samples++;
       total_hour_fill_rates += fill_rate;
