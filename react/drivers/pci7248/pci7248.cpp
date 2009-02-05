@@ -198,7 +198,7 @@ void PCI7248_driver_t::send_do(int channel, bool val)
     }
   }
   int ret = DO_WritePort(cardnum, port, tbuf);
-  printf("Writting, ch: %d, v: %c,  port_num: %d, port: %hu, tbuf: %02x\n",
+  printf("Writting, ch: %d, v: %c,  port_num: %d, port: %hu, tbuf: %02lx\n",
 		  channel, val?'1':'0', port_num, port, tbuf);
   if (ret != 0)
   {
@@ -244,7 +244,7 @@ void PCI7248_driver_t::read(void)
       }
       input = ~input;
       input &= 0xFF;
-      printf("Value read from PORT %d: %02x\n", ports[i], input);
+      printf("Value read from PORT %d: %02lx\n", ports[i], input);
       for (int j=0; j < 8; j++)
       {
         mask = ((U32) 1) << j;

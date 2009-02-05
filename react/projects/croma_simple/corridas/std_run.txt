@@ -1,0 +1,6 @@
+sys.new_test()
+sys.print("--------- Data Acquisition start ---------")
+sys.startdaq(opa.txt,FLM1)
+sys.wait($1)
+sys.mark()
+sys.stopdaq()

@@ -775,7 +775,7 @@ void react_t::read_factory_points(const char *a_home_dir)
     rtrim(line);
     if (0 == strlen(line)) continue;
     if (line[0] == '#') continue;
-    db_point_factory_t *factory = load_db_point("./ai.so");
+    db_point_factory_t *factory = load_db_point(line);
     if (factory == NULL)
     {
       exit(0);
