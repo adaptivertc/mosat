@@ -77,5 +77,25 @@ typedef long int32;
 #define dir_exists(f) (0 == access(f,F_OK))
 #define file_exists(f) (0 == access(f,F_OK))
 
+class rt_system_log_t
+{
+private:
+  int n_errors_logged;
+  int n_logged;
+  char output_file_name[200];
+  FILE *fp;
+  bool log_to_stdout;
+  bool log_to_file;
+public:
+  rt_system_log_t(void);
+  void set_output_file_name(const char *a_file_name);
+  void set_log_to_stdout(bool val) {log_to_stdout = val;};
+  void set_log_to_file(bool val) {log_to_file = val;};
+  void log_message(const char *message);
+  void log_error(const char *message);
+};
+
+extern rt_system_log_t sys_log;
+
 #endif
 

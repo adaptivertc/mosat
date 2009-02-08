@@ -68,6 +68,7 @@ void edit_files(const char *base, int n)
   const char *the_editor = ap_config.get_config("editor");
   if (the_editor == NULL)
   {
+    printf("No editor defined, using gedit\n");
     the_editor = "gedit --new-window";
   }
 
@@ -76,7 +77,7 @@ void edit_files(const char *base, int n)
   {
     char tmp[50];
     snprintf(tmp, sizeof(tmp), " %s%d.txt", base, i);
-    safe_strcat(cmd, (const char*) tmp, sizeof(cmd));
+    safe_strcat(cmd, tmp, sizeof(cmd));
   }
   system(cmd);
 }

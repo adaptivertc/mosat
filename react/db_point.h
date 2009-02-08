@@ -483,11 +483,17 @@ class discrete_logger_t : public discrete_point_t
 public:
   char base_name[50];
   int num_points;
+  bool log_hour_totals;
   discrete_point_t **discrete_points;
   bool *log_rising;
   bool *log_falling;
   bool *last_discrete_vals;
+  time_t *last_detect;
+  int *n_hour_detects;
+  int *n_day_detects;
+
   FILE *instantaneous_fp;
+  FILE *hour_fp;
   bool collecting;
   time_t last_log_time;
   void update(void);

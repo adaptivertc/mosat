@@ -122,7 +122,7 @@ const char *ap_config_t::get_config(const char *aKey)
       return val[i];
     }
   }
-  printf("NOT found: %s, returning NULL\n", aKey);
+  //printf("NOT found: %s, returning NULL\n", aKey);
   return NULL;
 }
 

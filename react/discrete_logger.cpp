@@ -37,10 +37,21 @@ changes to discrete points given in the list.
 #include "rtcommon.h"
 #include "db_point.h"
 #include "db.h"
-#include "arg.h"
-#include "ap_config.h"
+#include "arg.h" 
+#include "ap_config.h" 
 
 /**********************************************************************/
+
+static bool hour_changed(time_t t1, time_t t2)
+{
+  struct tm mytm1;
+  struct tm mytm2;
+  localtime_r(&t1, &mytm1);
+  localtime_r(&t2, &mytm2);
+  return (mytm1.tm_hour != mytm2.tm_hour);
+}
+
+/********************************************************************/
 
 static bool day_changed(time_t t1, time_t t2)
 {
@@ -116,11 +127,53 @@ void discrete_logger_t::update(void)
 
   bool day_change = day_changed(now, last_log_time);
 
+  if (log_hour_totals)
+  {
+    bool hour_change = hour_changed(now, last_log_time);
+  
+    if (hour_change)
+    {
+      struct tm mytm;
+      localtime_r(&last_log_time, &mytm);
+      fprintf(hour_fp, "%d", mytm.tm_hour);
+      for (int i=0; i < num_points; i++)
+      {
+        if (discrete_points[i] == NULL) continue;
+        fprintf(hour_fp, "\t%d", n_hour_detects[i]);
+        n_hour_detects[i] = 0;
+      }
+      fprintf(hour_fp, "\n");
+    }
+  }
+
   if (day_change)
   {
     instantaneous_fp = open_day_history_file(base_name, 
-                         ".txt", instantaneous_fp);
+            ".txt", instantaneous_fp);
+    
+    if (log_hour_totals)
+    {
+      fprintf(hour_fp, "--------------\n");
+      fprintf(hour_fp, "total");
+      for (int i=0; i < num_points; i++)
+      {
+        if (discrete_points[i] == NULL) continue;
+        fprintf(hour_fp, "\t%d", n_day_detects[i]);
+        n_day_detects[i] = 0;
+      }
+      fprintf(hour_fp, "\n");
+
+      hour_fp = open_day_history_file(base_name, "_hour.txt", hour_fp);
+
+      for (int i=0; i < num_points; i++)
+      {
+        if (discrete_points[i] == NULL) continue;
+        fprintf(hour_fp, "\t%s", discrete_points[i]->tag);
+      }
+      fprintf(hour_fp, "\n");
+    }
   }
+
   int n_changes = 0;
   for (int i=0; i < num_points; i++)
   {
@@ -132,6 +185,7 @@ void discrete_logger_t::update(void)
       const char *snow;
       const char *slast;
       //printf("Tag changed: %s\n", tg);
+
       if (vnow) 
       {
         snow = discrete_points[i]->hi_desc;
@@ -142,9 +196,24 @@ void discrete_logger_t::update(void)
         snow = discrete_points[i]->lo_desc;
         slast = discrete_points[i]->hi_desc;
       }
-      fprintf(instantaneous_fp, "%s\t%s\t%s --> %s\n", 
-            buf, tg, slast, snow);
+
+      if ((log_falling[i] && !vnow) || (log_rising[i] && vnow))
+      {
+        int elapsed_secs = now - last_detect[i];
+        int n_mins = elapsed_secs / 60;
+        int n_secs = elapsed_secs % 60;
+        fprintf(instantaneous_fp, "%s\t%s\t%s --> %s\t%02d:%02d\n", 
+           //log_falling[i] ? 'T' : 'F', 
+           //log_rising[i] ? 'T' : 'F', 
+           buf, tg, slast, snow, n_mins, n_secs);
+        last_detect[i] = now; 
+      }
       last_discrete_vals[i] = vnow;
+      if (log_hour_totals) 
+      {
+        n_hour_detects[i]++;
+        n_day_detects[i]++;
+      }
       n_changes++;
     }
   }
@@ -176,6 +245,8 @@ discrete_logger_t **discrete_logger_t::read(int *cnt, const char *home_dir)
     printf("Can't open: %s\n", path);
     return NULL;
   }
+
+  time_t now = time(NULL);
   char line[300];
 
   for (int i=0; NULL != fgets(line, sizeof(line), fp); i++)
@@ -194,9 +265,9 @@ discrete_logger_t **discrete_logger_t::read(int *cnt, const char *home_dir)
     {
       continue;
     }
-    else if (argc < 5)
+    else if (argc < 6)
     {
-      printf("%s: Wrong number of args (minimum 4), line %d\n", path, i+1);
+      printf("%s: Wrong number of args (minimum 5), line %d\n", path, i+1);
       continue;
     }
 
@@ -206,20 +277,36 @@ discrete_logger_t **discrete_logger_t::read(int *cnt, const char *home_dir)
     safe_strcpy(p->tag, (const char*) argv[0], sizeof(p->tag));
     safe_strcpy(p->description, (const char*) argv[1], sizeof(p->description));
     safe_strcpy(p->base_name, (const char*) argv[2], sizeof(p->base_name));
+    p->log_hour_totals = (argv[3][0] == '1') || 
+                         (argv[3][0] == 'T') || 
+                         (argv[3][0] == 't');
+    if (p->log_hour_totals) printf("Logging hour totals\n");
     p->collecting = true;
-    //p->instantaneous_fp = fopen(p->base_name, "w");
+
     p->instantaneous_fp = open_day_history_file(p->base_name, ".txt", NULL);
     if (p->instantaneous_fp == NULL)
     {
       perror(p->base_name);
       p->collecting = false;
     } 
+
+    if (p->log_hour_totals)
+    {
+      p->hour_fp = open_day_history_file(p->base_name, "_hour.txt", NULL);
+
+      if (p->hour_fp == NULL)
+      {
+        perror(p->base_name);
+        p->collecting = false;
+      } 
+    }
+
     if (p->collecting)
     {
       printf("collection is on for %s\n", p->tag);
     }
 
-    int n_extra = argc - 3;
+    int n_extra = argc - 4;
     if ((n_extra % 2) != 0)
     {
       printf("%s: There must be an even number of extra parameters - each with tag, and log type (rise, fall, or both (RFB))\n", p->tag);
@@ -229,9 +316,12 @@ discrete_logger_t **discrete_logger_t::read(int *cnt, const char *home_dir)
     p->last_discrete_vals = new bool[p->num_points + 1];
     p->log_rising = new bool[p->num_points + 1];
     p->log_falling = new bool[p->num_points + 1];
+    p->last_detect = new time_t[p->num_points + 1];
+    p->n_hour_detects = new int[p->num_points + 1];
+    p->n_day_detects = new int[p->num_points + 1];
 
      
-    for (int nd=0, j=3; (j + 1) < argc; j += 2, nd++)
+    for (int nd=0, j=4; (j + 1) < argc; j += 2, nd++)
     {
       char temp_tag[50];
       db_point_t *db_point;
@@ -249,6 +339,9 @@ discrete_logger_t **discrete_logger_t::read(int *cnt, const char *home_dir)
       }
       printf("discrete point [%d]: %s, ", nd, temp_tag);
       p->last_discrete_vals[nd] = false;
+      p->last_detect[nd] = now; 
+      p->n_day_detects[nd] = 0;
+      p->n_hour_detects[nd] = 0;
       switch (argv[j+1][0])
       {
         case 'R':
@@ -277,6 +370,17 @@ discrete_logger_t **discrete_logger_t::read(int *cnt, const char *home_dir)
           break;
       }
     }
+
+    if ((p->log_hour_totals) && (p->hour_fp != NULL))
+    {
+      for (int i=0; i < p->num_points; i++)
+      {
+        if (p->discrete_points[i] == NULL) continue;
+        fprintf(p->hour_fp, "\t%s", p->discrete_points[i]->tag);
+      }
+      fprintf(p->hour_fp, "\n");
+    }
+
     p->last_log_time = time(NULL);
 
     logger_points[count] = p;
