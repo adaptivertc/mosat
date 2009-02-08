@@ -290,10 +290,10 @@ int get_int (char argv[],char n_exit[][200],char int_type[][200],int size)
     {
      for(w=y;w<x-1;w++)
      {
-      snprintf(n_exit[w],size,"%s",n_exit[w+1]);
+      snprintf(n_exit[w], size, "%s", n_exit[w+1]);
       /*strcpy(n_exit[w],n_exit[w+1]);
       strcpy(int_type[w],int_type[w+1]);*/
-      snprintf(int_type[w],size,int_type[w+1]);
+      snprintf(int_type[w], size, "%s", int_type[w+1]);
      }
      x--;
     }
