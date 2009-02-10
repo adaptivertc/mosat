@@ -9,7 +9,7 @@ trap "" 1 15
 test -x /usr/local/bin/react || exit 0
 
 RUN_DAEMON=yes
-WU_OPTIONS="-d /home/carr/tina"
+WU_OPTIONS="-d /home/artc/tina"
 if [ -f /etc/default/react ]; then
     . /etc/default/react
 fi
