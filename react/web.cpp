@@ -167,27 +167,23 @@ web_point_t **web_point_t::read(int *cnt, const char *home_dir)
     const char *template_home = ap_config.get_config("templatehome");
     if (html_home == NULL)
     {
-      //p->dest_file = strdup(argv[4]);
       safe_strcpy(p->dest_file, argv[4], sizeof(p->dest_file));
     }
     else
     {
       char stmp[200];
       snprintf(stmp, sizeof(stmp), "%s/%s", html_home, argv[4]);
-      //p->dest_file = strdup(stmp);
       safe_strcpy(p->dest_file, stmp, sizeof(p->dest_file));
     }
 
     if (template_home == NULL)
     {
-      //p->source_file = strdup(argv[3]);
       safe_strcpy(p->source_file, argv[3], sizeof(p->source_file));
     }
     else
     {
       char stmp[200];
       snprintf(stmp, sizeof(stmp), "%s/%s",template_home, argv[3]);
-      //p->source_file = strdup(stmp);
       safe_strcpy(p->source_file, stmp, sizeof(p->source_file));
     }
 
@@ -271,11 +267,12 @@ void web_point_t::read_file(void)
       newiref->size = j - i + 1;
       int len = newiref->size-8;
       char *tmp = new char[len+1];
+      newiref->arg_str = tmp; // Save so we can delete it later.
       strncpy(tmp, file_buf + i + 8, len);
       tmp[len] = '\0';
       int argc;
-      char *argv[20];
-      argc = get_delim_args(tmp, argv, '|', 20);
+      char *argv[30];
+      argc = get_delim_args(tmp, argv, '|', 30);
       for (int m=0; m < argc; m++)
       {
         printf("argv[%d]: %s\n", m, argv[m]);
@@ -308,6 +305,11 @@ void web_point_t::read_file(void)
       newiref->nvals = 0;
       for (int k=2; k < (argc - 1); k += 2)
       {
+        if (newiref->nvals >= (sizeof(newiref->strings) / sizeof(newiref->strings[0])))
+        {
+          printf("***** Too many values for integer ref\n");
+          break;
+        }
         rtrim(argv[k]);
         ltrim(argv[k]);
         rtrim(argv[k+1]);
@@ -341,6 +343,7 @@ void web_point_t::read_file(void)
       tmp_r->size = j - i + 1;
       int len = tmp_r->size-7;
       char *tmp = new char[len+1];
+      tmp_r->arg_str = tmp; // Save so you can delete it
       strncpy(tmp, file_buf + i + 7, len);
       tmp[len] = '\0';
       int argc;
@@ -400,6 +403,7 @@ void web_point_t::read_file(void)
       tmp_r->size = j - i + 1;
       int len = tmp_r->size-7;
       char *tmp = new char[len+1];
+      tmp_r->arg_str = tmp; // Save so it can be deleted 
       strncpy(tmp, file_buf + i + 7, len);
       tmp[len] = '\0';
       int argc;
@@ -440,9 +444,9 @@ void web_point_t::read_file(void)
             ltrim(argv[2]);
             rtrim(argv[3]);
             ltrim(argv[3]);
-            tmp_r->bar = strdup(argv[1]);
-            tmp_r->half_off = strdup(argv[2]);
-            tmp_r->half_on = strdup(argv[3]);
+            tmp_r->bar = argv[1];
+            tmp_r->half_off = argv[2];
+            tmp_r->half_on = argv[3];
             tmp_r->bar_top = 30;
             tmp_r->bar_left = 710;
             tmp_r->bar_length = 400;
@@ -460,9 +464,9 @@ void web_point_t::read_file(void)
             ltrim(argv[2]);
             rtrim(argv[3]);
             ltrim(argv[3]);
-            tmp_r->bar = strdup(argv[1]);
-            tmp_r->half_off = strdup(argv[2]);
-            tmp_r->half_on = strdup(argv[3]);
+            tmp_r->bar = argv[1];
+            tmp_r->half_off = argv[2];
+            tmp_r->half_on = argv[3];
             tmp_r->bar_top = atol(argv[4]);
             tmp_r->bar_left = atol(argv[5]);
             tmp_r->bar_length = atol(argv[6]);
@@ -514,6 +518,52 @@ static bool test[12] =
   {false, false, false, false,false, false, false, false,false, false, false, false};
 static int tcount = 0;
 ***/
+
+/********************************************************************/
+
+web_point_t::~web_point_t(void)
+{
+  this->free_all();
+}
+
+/********************************************************************/
+
+void web_point_t::free_all(void)
+{
+  // This frees all of the data allocated for a web point, so that it can be re-loaded;
+  int_ref_t *ir, *inext;
+  ir = irefs;
+  while (ir != NULL)
+  {
+    inext = ir->next;
+    if (ir->arg_str != NULL) delete ir->arg_str;
+    delete ir;
+    ir = inext;
+  }
+  irefs = NULL;
+
+  discrete_ref_t *dr, *dnext;
+  dr = drefs;
+  while (dr != NULL)
+  {
+    dnext = dr->next;
+    if (dr->arg_str != NULL) delete dr->arg_str;
+    delete dr;
+    dr = dnext; 
+  }
+  drefs = NULL;
+
+  analog_ref_t *ar, *anext;
+  ar = arefs;
+  while (ar != NULL)
+  {
+    anext = ar->next;
+    if (ar->arg_str != NULL) delete ar->arg_str;
+    delete ar;
+    ar = anext;
+  }
+  arefs = NULL;
+}
 
 /********************************************************************/
 

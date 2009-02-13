@@ -43,12 +43,23 @@ int int_t::eval_expr(void)
 {
   // Ok, do a bitwise or of all the points.
   int tmp = 0;
+  bool val;
   for (int i=0; i < n_dpoints; i++)
   {
-    if (dpoints[i]->get_pv())
+    if (dpoints[i] == NULL) 
+    {
+      val = false; 
+    }
+    else 
+    {
+      val = dpoints[i]->get_pv();
+    }
+
+    if (val)
     {
       tmp |= 0x1;
     }
+
     if (i < (n_dpoints - 1))
     {
       tmp = tmp << 1;

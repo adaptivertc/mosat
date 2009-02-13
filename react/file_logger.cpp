@@ -70,7 +70,7 @@ static bool hour_changed(time_t t1, time_t t2)
   }
   else 
   {
-    printf("********* Hour Changed\n");
+    //printf("********* Hour Changed\n");
     return true;
   }
 }
@@ -190,7 +190,7 @@ static FILE *open_day_history_file(const char * pre, const char *post, FILE *fp)
   time_t now = time(NULL);
   make_day_file_name(now, fname, sizeof(fname), pre, post);
 
-  printf("Opening %s\n", fname);
+  //printf("Opening %s\n", fname);
   fp = fopen(fname, "a");
   if (fp == NULL)
   {
@@ -274,10 +274,10 @@ void file_logger_t::update(void)
       for (int i=0; i < num_points; i++)
       {
         fprintf(hour_fp, "\t%lf", hour_averages[i] / n_hour_samples);
-        fflush(hour_fp);
         hour_averages[i] = 0;
       }
       fprintf(hour_fp, "\n");
+      fflush(hour_fp);
     }
   }
   if (day_change)
@@ -316,7 +316,7 @@ void file_logger_t::update(void)
   //printf("\n");
 
   fprintf(instantaneous_fp, "\n");
-  //fflush(instantaneous_fp);
+  fflush(instantaneous_fp);
   last_log_time = now;
 }
 

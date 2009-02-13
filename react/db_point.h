@@ -772,6 +772,7 @@ public:
 struct discrete_ref_t
 {
   char *str;
+  char *arg_str;
   int size;
   const char *true_string;
   const char *false_string;
@@ -782,6 +783,7 @@ struct discrete_ref_t
 struct analog_ref_t
 {
   char *str;
+  char *arg_str;
   int size;
   bool is_bar;
   char *bar;
@@ -799,6 +801,7 @@ struct analog_ref_t
 struct int_ref_t
 {
   char *str;
+  char *arg_str;
   int size;
   char *default_str;
   int nvals;
@@ -829,6 +832,8 @@ public:
   point_type_t point_type(void) {return WEB_POINT;};
   void update(void);
   static web_point_t **read(int *cnt, const char * home_dir);
+  ~web_point_t(void);
+  void free_all(void);
 };
 
 void enable_alarm_display(db_point_t *db_point);

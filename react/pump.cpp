@@ -55,7 +55,7 @@ static FILE *open_day_history_file(const char *home, const char *post, FILE *fp)
   localtime_r(&now, &mytm);
   strftime(buf1, sizeof(buf1), "%Y%m%d", &mytm);
   snprintf(fname, sizeof(fname), "%s/%s%s", home, buf1, post);
-  printf("Opening %s\n", fname);
+  //printf("Opening %s\n", fname);
   fp = fopen(fname, "a");
   if (fp == NULL)
   {

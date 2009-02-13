@@ -33,7 +33,7 @@ ap_config_t::ap_config_t(char a_delimiter)
   n_keys = 0;
   cur_key = 0;
   delimiter = a_delimiter;
-  printf("Init done, %d, %d\n", n_keys, cur_key);
+  //printf("Init done, %d, %d\n", n_keys, cur_key);
 }
 
 /**********************************************************************/
@@ -43,7 +43,7 @@ ap_config_t::ap_config_t(void)
   n_keys = 0;
   cur_key = 0;
   delimiter = '|';
-  printf("Init done, %d, %d\n", n_keys, cur_key);
+  //printf("Init done, %d, %d\n", n_keys, cur_key);
 }
 
 /**********************************************************************/
@@ -54,11 +54,11 @@ int ap_config_t::get_int(const char *aKey, int default_value)
   {
     if (0 == strcasecmp(aKey, key[i]))
     {
-      printf("Found: %s, using %s\n", aKey, val[i]);
+      //printf("Found: %s, using %s\n", aKey, val[i]);
       return atol(val[i]);
     }
   }
-  printf("NOT found: %s, returning default: %d\n", aKey, default_value);
+  //printf("NOT found: %s, returning default: %d\n", aKey, default_value);
   return default_value;
 }
 
@@ -70,11 +70,11 @@ int ap_config_t::get_int(const char *aKey)
   {
     if (0 == strcasecmp(aKey, key[i]))
     {
-      printf("Found: %s, using %s\n", aKey, val[i]);
+      //printf("Found: %s, using %s\n", aKey, val[i]);
       return atol(val[i]);
     }
   }
-  printf("NOT found: %s, returning -1\n", aKey);
+  //printf("NOT found: %s, returning -1\n", aKey);
   return -1;
 }
 
@@ -86,11 +86,11 @@ double ap_config_t::get_double(const char *aKey)
   {
     if (0 == strcasecmp(aKey, key[i]))
     {
-      printf("Found: %s, using %s\n", aKey, val[i]);
+      //printf("Found: %s, using %s\n", aKey, val[i]);
       return atof(val[i]);
     }
   }
-  printf("NOT found: %s, returning 0.0\n", aKey);
+  //printf("NOT found: %s, returning 0.0\n", aKey);
   return 0.0;
 }
 
@@ -102,11 +102,11 @@ double ap_config_t::get_double(const char *aKey, double default_value)
   {
     if (0 == strcasecmp(aKey, key[i]))
     {
-      printf("Found: %s, using %s\n", aKey, val[i]);
+      //printf("Found: %s, using %s\n", aKey, val[i]);
       return atof(val[i]);
     }
   }
-  printf("NOT found: %s, using default: %lf\n", aKey, default_value);
+  //printf("NOT found: %s, using default: %lf\n", aKey, default_value);
   return default_value;
 }
 
@@ -118,7 +118,7 @@ const char *ap_config_t::get_config(const char *aKey)
   {
     if (0 == strcasecmp(aKey, key[i]))
     {
-      printf("Found: %s, using %s\n", aKey, val[i]);
+      //printf("Found: %s, using %s\n", aKey, val[i]);
       return val[i];
     }
   }
@@ -134,11 +134,11 @@ const char *ap_config_t::get_config(const char *aKey, const char *default_value)
   {
     if (0 == strcasecmp(aKey, key[i]))
     {
-      printf("Found: %s, using %s\n", aKey, val[i]);
+      //printf("Found: %s, using %s\n", aKey, val[i]);
       return val[i];
     }
   }
-  printf("NOT found: %s, using default: %s\n", aKey, default_value);
+  //printf("NOT found: %s, using default: %s\n", aKey, default_value);
   return default_value;
 }
 
@@ -150,7 +150,7 @@ bool ap_config_t::get_bool(const char *aKey, bool default_value)
   {
     if (0 == strcasecmp(aKey, key[i]))
     {
-      printf("Found: %s, using %s\n", aKey, val[i]);
+      //printf("Found: %s, using %s\n", aKey, val[i]);
       return ( (val[i][0] == 'T') || 
                (val[i][0] == 'T') ||
                (val[i][0] == '1') ||
@@ -158,7 +158,7 @@ bool ap_config_t::get_bool(const char *aKey, bool default_value)
                (val[i][0] == 'Y') );
     }
   }
-  printf("NOT found: %s, using default: %s\n", aKey, default_value ? "true" : "false");
+  //printf("NOT found: %s, using default: %s\n", aKey, default_value ? "true" : "false");
   return default_value;
 }
 

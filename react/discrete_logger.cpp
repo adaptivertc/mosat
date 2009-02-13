@@ -48,7 +48,14 @@ static bool hour_changed(time_t t1, time_t t2)
   struct tm mytm2;
   localtime_r(&t1, &mytm1);
   localtime_r(&t2, &mytm2);
-  return (mytm1.tm_hour != mytm2.tm_hour);
+  if (mytm1.tm_hour != mytm2.tm_hour)
+  {
+    return true;
+  }
+  else
+  {
+    return false;
+  }
 }
 
 /********************************************************************/
@@ -99,7 +106,7 @@ static FILE *open_day_history_file(const char * pre, const char *post, FILE *fp)
   localtime_r(&now, &mytm);
   strftime(buf1, sizeof(buf1), "%Y%m%d", &mytm);
   snprintf(fname, sizeof(fname), "%s/%s%s%s", loghome, pre, buf1, post);
-  printf("Opening %s\n", fname);
+  //printf("Opening %s\n", fname);
   fp = fopen(fname, "a");
   if (fp == NULL)
   {
@@ -127,10 +134,10 @@ void discrete_logger_t::update(void)
 
   bool day_change = day_changed(now, last_log_time);
 
-  if (log_hour_totals)
+  if (log_hour_totals && (hour_fp != NULL))
   {
     bool hour_change = hour_changed(now, last_log_time);
-  
+   
     if (hour_change)
     {
       struct tm mytm;
@@ -143,6 +150,7 @@ void discrete_logger_t::update(void)
         n_hour_detects[i] = 0;
       }
       fprintf(hour_fp, "\n");
+      fflush(hour_fp);
     }
   }
 
@@ -207,14 +215,14 @@ void discrete_logger_t::update(void)
            //log_rising[i] ? 'T' : 'F', 
            buf, tg, slast, snow, n_mins, n_secs);
         last_detect[i] = now; 
+        if (log_hour_totals) 
+        {
+          n_hour_detects[i]++;
+          n_day_detects[i]++;
+        }
+        n_changes++;
       }
       last_discrete_vals[i] = vnow;
-      if (log_hour_totals) 
-      {
-        n_hour_detects[i]++;
-        n_day_detects[i]++;
-      }
-      n_changes++;
     }
   }
   if (n_changes > 0)
