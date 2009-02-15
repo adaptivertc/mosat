@@ -71,14 +71,14 @@ int read_simple_ascii(int fd,
     ai_vals[i] = atof(buf);
   }
 
-  ret_val = rt_read_serial(fd, buf, 14);
-  buf[12] = '\0'; // Get rid of the /n/r
+  ret_val = rt_read_serial(fd, buf, 15);
+  buf[13] = '\0'; // Get rid of the /n/r
   printf("Got: %s\n", buf);
   if (ret_val < 0)
   {
     printf("Error reading serial port\n");
   }
-  for (int i=0; i < 12; i++)
+  for (int i=0; i < 13; i++)
   {
     di_vals[i] = (buf[i] == '1');
   }

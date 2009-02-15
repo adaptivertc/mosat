@@ -171,7 +171,7 @@ int step_wait_t::execute(double current_time)
     end_time = current_time + wait_time;
     time_t tnow = time(NULL);
     logfile->vprint("%s", ctime(&tnow));
-    logfile->vprint("Start wait at: %lf\n", current_time);
+    //logfile->vprint("Start wait at: %lf\n", current_time);
     logfile->vprint("sys.wait(%02d:%02d)\n",
 		    int(wait_time) / 60, int(wait_time) % 60);
     if (wait_time > 0)
@@ -192,7 +192,7 @@ int step_wait_t::execute(double current_time)
     {
       first_time = true;
       time_t tnow = time(NULL);
-      logfile->vprint("End wait at: %lf\n", current_time);
+      //logfile->vprint("End wait at: %lf\n", current_time);
       logfile->vprint("End wait: %s", ctime(&tnow));
       return 1;
     }
@@ -687,24 +687,18 @@ int step_wait_until_t::execute(double current_time)
     first_time = false;
     time_t tnow = time(NULL);
     logfile->vprint("%s", ctime(&tnow));
-    logfile->vprint("Start wait until at: %lf\n", current_time);
+    //logfile->vprint("Start wait until at: %lf\n", current_time);
     logfile->vprint("sys.wait_until(%s, %0.2lf)\n", expr_string, timeout);
-    //printf("%s:%d\n", __FILE__, __LINE__);
     if (!expression.evaluate())
     {
-      //printf("%s:%d\n", __FILE__, __LINE__);
-      //printf("****************************** FALSE: %s", ctime(&tnow));
-      logfile->vprint("FALSE: %s", ctime(&tnow));
+      //logfile->vprint("FALSE: %s", ctime(&tnow));
       return 0;
     }
     else
     {
       first_time = true;
-      time_t tnow = time(NULL);
-      logfile->vprint("wait_until condition TRUE at start: %lf\n", current_time);
-      logfile->vprint("TRUE: %s", ctime(&tnow));
-      //printf("------------------------------- TRUE: %s", ctime(&tnow));
-      //printf("%s:%d\n", __FILE__, __LINE__);
+      //time_t tnow = time(NULL);
+      //logfile->vprint("TRUE: %s", ctime(&tnow));
       return 1; // if the expresion is true, advance right away.
     }
   }
@@ -715,26 +709,21 @@ int step_wait_until_t::execute(double current_time)
     {
       first_time = true;
       time_t tnow = time(NULL);
-      logfile->vprint("**TIMEOUT**: %lf\n", current_time);
       logfile->vprint("**TIMEOUT**: %s", ctime(&tnow));
-      //printf("%s:%d\n", __FILE__, __LINE__);
       return 1;
     }
     else if (expression.evaluate())
     {
       first_time = true;
-      time_t tnow = time(NULL);
-      logfile->vprint("wait_until TRUE: %lf\n", current_time);
-      logfile->vprint("wait_until TRUE: %s", ctime(&tnow));
-      //printf("****************************** TRUE: %s", ctime(&tnow));
-      //printf("%s:%d\n", __FILE__, __LINE__);
+      //time_t tnow = time(NULL);
+      //logfile->vprint("wait_until TRUE: %lf\n", current_time);
+      //logfile->vprint("wait_until TRUE: %s", ctime(&tnow));
       return 1;
     }
     else
     {
       //time_t tnow = time(NULL);
       //printf("****************************************** FALSE: %s, %s", expr_string, ctime(&tnow));
-      //printf("%s:%d\n", __FILE__, __LINE__);
       return 0;
     }
   }
@@ -804,22 +793,19 @@ int step_wait_until_min_t::execute(double current_time)
     first_time = false;
     time_t tnow = time(NULL);
     logfile->vprint("%s", ctime(&tnow));
-    logfile->vprint("Start wait until at: %lf\n", current_time);
+    //logfile->vprint("Start wait until at: %lf\n", current_time);
     logfile->vprint("sys.wait_until_min(%s, %0.2lf)\n", expr_string, timeout);
-    //printf("%s:%d\n", __FILE__, __LINE__);
     if (!expression.evaluate())
     {
-      //printf("%s:%d\n", __FILE__, __LINE__);
-      //printf("****************************** FALSE: %s", ctime(&tnow));
-      logfile->vprint("FALSE: %s", ctime(&tnow));
+      //logfile->vprint("FALSE: %s", ctime(&tnow));
       return 0;
     }
     else
     {
       first_time = true;
-      time_t tnow = time(NULL);
-      logfile->vprint("wait_until_min condition TRUE at start: %lf\n", current_time);
-      logfile->vprint("TRUE: %s", ctime(&tnow));
+      //time_t tnow = time(NULL);
+      //logfile->vprint("wait_until_min condition TRUE at start: %lf\n", current_time);
+      //logfile->vprint("TRUE: %s", ctime(&tnow));
       //printf("------------------------------- TRUE: %s", ctime(&tnow));
       //printf("%s:%d\n", __FILE__, __LINE__);
       return 1; // if the expresion is true, advance right away.
@@ -848,8 +834,8 @@ int step_wait_until_min_t::execute(double current_time)
       else if (double(tnow - detect_time) > min_true)
       {
         first_time = true;
-        logfile->vprint("wait_until_min TRUE: %lf\n", current_time);
-        logfile->vprint("wait_until_min TRUE: %s", ctime(&tnow));
+        //logfile->vprint("wait_until_min TRUE: %lf\n", current_time);
+        //logfile->vprint("wait_until_min TRUE: %s", ctime(&tnow));
         //printf("****************************** TRUE: %s", ctime(&tnow));
         //printf("%s:%d\n", __FILE__, __LINE__);
         return 1;

@@ -285,10 +285,6 @@ int main(int argc, char *argv[])
     ntests = num_tests(secname);
     logfile->vprint("Corrida: %s\n", secname);
   }
-  else
-  {
-    logfile->vprint("No foreground script executing, use \"kill -1 %d\" or <CTRL-C> to stop\n", getpid());
-  }
 
   reactdb->read_background_sequences(home_dir, secpath);
   
@@ -316,6 +312,12 @@ int main(int argc, char *argv[])
   utimer.set_interval(usecs_per_sample);
   utimer.set_start_time();
   bool done = false;
+
+  if (not execute_script)
+  {
+    logfile->vprint("No foreground script executing, use \"kill -1 %d\" or <CTRL-C> to stop\n", getpid());
+  }
+
   system("pwd");
   for (int i=0; !done; i++)
   {

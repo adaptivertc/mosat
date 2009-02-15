@@ -157,7 +157,7 @@ void simple_ascii_driver_t::send_do(int ch, bool val)
 double simple_ascii_driver_t::get_ai(int channel)
 {
   double read_val;
-  if ((channel >= 0) && (channel < 64))
+  if ((channel >= 0) && (channel < 32))
   {
     read_val = (double) ai_vals[channel];
     //printf("AI %d, read %lf\n", channel, read_val);
@@ -174,7 +174,7 @@ double simple_ascii_driver_t::get_ai(int channel)
 bool simple_ascii_driver_t::get_di(int channel)
 {
   bool read_val;
-  if ((channel >= 0) && (channel < 64))
+  if ((channel >= 0) && (channel < 32))
   {
     read_val = di_vals[channel];
     //printf("DI %d, read %s\n", channel, read_val ? "T" : "F");
@@ -190,7 +190,7 @@ bool simple_ascii_driver_t::get_di(int channel)
 
 long simple_ascii_driver_t::get_count(int channel)
 {
-  if ((channel >= 0) && (channel < 64))
+  if ((channel >= 0) && (channel < 32))
   {
     return 0;
   }
