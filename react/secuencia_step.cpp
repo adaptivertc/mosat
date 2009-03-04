@@ -806,8 +806,7 @@ int step_wait_until_min_t::execute(double current_time)
       //time_t tnow = time(NULL);
       //logfile->vprint("wait_until_min condition TRUE at start: %lf\n", current_time);
       //logfile->vprint("TRUE: %s", ctime(&tnow));
-      //printf("------------------------------- TRUE: %s", ctime(&tnow));
-      //printf("%s:%d\n", __FILE__, __LINE__);
+      // Important trick for tina, if true to start, return right away.
       return 1; // if the expresion is true, advance right away.
     }
   }
@@ -820,7 +819,6 @@ int step_wait_until_min_t::execute(double current_time)
       time_t tnow = time(NULL);
       logfile->vprint("**TIMEOUT**: %lf\n", current_time);
       logfile->vprint("**TIMEOUT**: %s", ctime(&tnow));
-      //printf("%s:%d\n", __FILE__, __LINE__);
       return 1;
     }
     else if (expression.evaluate())
@@ -836,17 +834,12 @@ int step_wait_until_min_t::execute(double current_time)
         first_time = true;
         //logfile->vprint("wait_until_min TRUE: %lf\n", current_time);
         //logfile->vprint("wait_until_min TRUE: %s", ctime(&tnow));
-        //printf("****************************** TRUE: %s", ctime(&tnow));
-        //printf("%s:%d\n", __FILE__, __LINE__);
         return 1;
       }
     }
     else
     {
       detected = false;
-      //time_t tnow = time(NULL);
-      //printf("****************************************** FALSE: %s, %s", expr_string, ctime(&tnow));
-      //printf("%s:%d\n", __FILE__, __LINE__);
       return 0;
     }
   }

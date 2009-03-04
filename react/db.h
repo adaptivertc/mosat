@@ -58,6 +58,8 @@ public:
   virtual void send_do(int drv, int crd, int chnl, bool val) = 0;
   virtual void send_ao(int drv, int crd, int chnl, double val) = 0;
   virtual db_point_t *get_db_point(char *tag) = 0;
+  //rt_bool_ref_t *get_bool_ref(char *tag);
+  //rt_double_ref_t *get_double_ref(char *tag);
   virtual bool global_alarm_disabled(void) = 0;
   virtual void set_shutdown(void) = 0;
   virtual void clear_kb_buf(void) = 0;

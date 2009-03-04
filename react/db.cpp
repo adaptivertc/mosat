@@ -502,10 +502,31 @@ point_type_t fast_get_point_type(char *tag)
 
 /***********************************************************************/
 
+rt_bool_ref_t *react_get_discrete_ref_fn(char *tag)
+{
+  db_point_t *db_point;
+  db_point = reactdb->get_db_point(tag);
+  if (db_point == NULL) return NULL;
+  if (db_point->pv_type() != DISCRETE_VALUE)
+  {
+    return NULL;
+  }
+  else
+  {
+    char err[20];
+    discrete_point_t *discrete_point;
+    discrete_point = (discrete_point_t *) db_point;
+    return discrete_point->get_bool_ref("pv", err, sizeof(err));
+  }
+}
+
+/***********************************************************************/
+
 bool *react_get_discrete_ptr_fn(char *tag)
 {
   db_point_t *db_point;
   db_point = reactdb->get_db_point(tag);
+  if (db_point == NULL) return NULL;
   if (db_point->pv_type() != DISCRETE_VALUE)
   {
     return NULL;
@@ -518,10 +539,33 @@ bool *react_get_discrete_ptr_fn(char *tag)
   }
 }
 
+/***********************************************************************/
+
+rt_double_ref_t *react_get_analog_ref_fn(char *tag)
+{
+  db_point_t *db_point;
+  db_point = reactdb->get_db_point(tag);
+  if (db_point == NULL) return NULL;
+  if (db_point->pv_type() != ANALOG_VALUE)
+  {
+    return NULL;
+  }
+  else
+  {
+    char err[20];
+    analog_point_t *analog_point;
+    analog_point = (analog_point_t *) db_point;
+    return analog_point->get_double_ref("pv", err, sizeof(err));
+  }
+}
+
+/***********************************************************************/
+
 double *react_get_analog_ptr_fn(char *tag)
 {
   db_point_t *db_point;
   db_point = reactdb->get_db_point(tag);
+  if (db_point == NULL) return NULL;
   if (db_point->pv_type() != ANALOG_VALUE)
   {
     return NULL;
@@ -533,7 +577,6 @@ double *react_get_analog_ptr_fn(char *tag)
     return analog_point->pv_ptr();
   }
 }
-
 
 /***********************************************************************/
 
@@ -1426,6 +1469,7 @@ void db_point_t::disable_display(void)
     display_is_on = false;
   }
 }
+
 /*************************************************************************/
 
 db_point_t *react_t::get_db_point(char *tag)

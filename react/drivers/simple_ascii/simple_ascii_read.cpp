@@ -35,7 +35,7 @@ int read_simple_ascii(int fd,
 {
   for (int i=0; i < max_ai; i++)
   {
-    ai_vals[i] = 0;
+    ai_vals[i] = 0.0;
   }
   for (int i=0; i < max_di; i++)
   {
@@ -78,7 +78,7 @@ int read_simple_ascii(int fd,
   {
     printf("Error reading serial port\n");
   }
-  for (int i=0; i < 13; i++)
+  for (int i=0; (i < 13) && (i < max_di); i++)
   {
     di_vals[i] = (buf[i] == '1');
   }
@@ -90,11 +90,10 @@ int read_simple_ascii(int fd,
   {
     printf("Error reading serial port\n");
   }
-  for (int i=0; i < 12; i++)
+  for (int i=0; (i < 12) && (i < max_do); i++)
   {
     do_vals[i] = (buf[i] == '1');
   }
-  printf("----------- The message was complete\n");
   return 0;
 }
 

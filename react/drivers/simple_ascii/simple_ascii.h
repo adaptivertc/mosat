@@ -50,6 +50,7 @@ public:
   long get_count(int channel);
   void send_do(int channel, bool val);
   void send_ao(int channel, double val);
+  void resend_dos(void);
   void close(void);
 };
 

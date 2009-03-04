@@ -142,11 +142,25 @@ void simple_ascii_driver_t::close(void)
 
 /***********************************************************************/
 
+void simple_ascii_driver_t::resend_dos(void)
+{
+  for (int i=0; i < 12; i++)
+  {
+    if (tmp_do_vals[i] != do_vals[i])
+    {
+      this->send_do(i, do_vals[i]);
+    }
+  }
+}
+
+/***********************************************************************/
+
 void simple_ascii_driver_t::send_do(int ch, bool val)
 {
   if ((ch >= 0) && (ch < 12))
   {
     char error[50];
+    do_vals[ch] = val;
     send_simple_ascii(serial_fd, ch, val,
            error, sizeof(error));
   }
@@ -206,10 +220,11 @@ void simple_ascii_driver_t::read(void)
 {
     char error[50];
     read_simple_ascii(serial_fd, 
-             ai_vals, 16, 
-             di_vals, 12, 
-             do_vals, 12, 
+             ai_vals, 32, 
+             di_vals, 32, 
+             tmp_do_vals, 32, 
              error, sizeof(error));
+    this->resend_dos();
 }
 
 /***********************************************************************/

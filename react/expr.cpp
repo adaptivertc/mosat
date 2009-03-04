@@ -34,6 +34,7 @@ Contains code for making executable instructions.
 #include "db_point.h"
 #include "db.h"
 #include "exp.h"
+#include "dbref.h"
 
 //typedef double *(*get_analog_ptr_fn_t)(char *tag);
 //typedef bool *(*get_discrete_ptr_fn_t)(char *tag);
@@ -127,6 +128,21 @@ int expr_tree_t::make_post_fix(expr_op_t *op)
   switch(token)
   {
     case DISCRETE_TAG:
+      rt_bool_ref_t *bref;
+      bref = react_get_discrete_ref_fn(data.tag);
+      if (bref == NULL)
+      {
+         printf("BAD tag for expression: %s\n", data.tag);
+	 op[n].token_type = LOGICAL_VAL;
+	 op[n].val.logical_val = DISCRETE_LO;
+      }
+      else
+      {
+        printf("Ref created: good discrete tag for expression: %s\n", data.tag);
+        op[n].token_type = LOGICAL_REF;
+        op[n].val.logical_ref = bref;
+      }
+      /**
       bool *dptr;
       dptr = (*get_discrete_ptr_fn)(data.tag);
       if (dptr == NULL)
@@ -141,6 +157,7 @@ int expr_tree_t::make_post_fix(expr_op_t *op)
         op[n].token_type = LOGICAL_PTR;
 	op[n].val.logical_ptr = dptr;
       }
+      ***/
       /*****
       db_point = db->get_db_point(data.tag);
       if (db_point->pv_type() != DISCRETE_VALUE)
@@ -157,6 +174,21 @@ int expr_tree_t::make_post_fix(expr_op_t *op)
       break;
 
     case ANALOG_TAG:
+      rt_double_ref_t *aref;
+      aref = react_get_analog_ref_fn(data.tag);
+      if (aref == NULL)
+      {
+        printf("BAD tag for expression: %s\n", data.tag);
+        op[n].token_type = FLOAT_VAL;
+        op[n].val.float_val = 0.0;
+      }
+      else
+      {
+        printf("Ref created: good analog tag for expression: %s\n", data.tag);
+	op[n].token_type = FLOAT_REF;
+	op[n].val.float_ref = aref;
+      }
+      /***
       double *fptr;
       fptr = (*get_analog_ptr_fn)(data.tag);
       if (fptr == NULL)
@@ -169,6 +201,7 @@ int expr_tree_t::make_post_fix(expr_op_t *op)
 	op[n].token_type = FLOAT_PTR;
 	op[n].val.float_ptr = fptr;
       }
+      ****/
       /**********
       db_point = db->get_db_point(data.tag);
       if ((db_point == NULL) ||

@@ -28,6 +28,8 @@ Header file for expression routines in exp.lib.
 #ifndef __EXP_INC__
 #define __EXP_INC__
 
+#include "dbref.h"
+
 typedef enum
 {
   PLUS_OP,
@@ -46,16 +48,19 @@ typedef enum
   OR_OP,
   POWER_OP,
   FLOAT_PTR,
+  FLOAT_REF,
   FLOAT_VAL,
   INT_VAL,
   INT_PTR,
+  INT_REF,
   LOGICAL_PTR,
+  LOGICAL_REF,
   LOGICAL_VAL,
   VALUE_PTR,
   DISCRETE_TAG,
-  DISCRETE_POINT,
+  //DISCRETE_POINT,
   ANALOG_TAG,
-  ANALOG_POINT,
+  //ANALOG_POINT,
   POINT_TAG,
   LEFT_PAREN,
   RIGHT_PAREN,
@@ -94,9 +99,11 @@ union expr_data_t
 typedef union
 {
   double *float_ptr;
-  void *analog_point;
+  rt_double_ref_t *float_ref;
+  //void *analog_point;
   bool *logical_ptr;
-  void *discrete_point;
+  rt_bool_ref_t *logical_ref; 
+  //void *discrete_point;
   int *int_ptr;
   double float_val;
   bool logical_val;

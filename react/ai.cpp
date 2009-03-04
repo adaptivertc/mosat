@@ -86,7 +86,7 @@ void ai_point_t::update(double new_raw_value)
   {
     pv = ((raw_value - raw_lo) * conversion_factor) + eu_lo;
 
-  //printf("pv = %lf\n", pv);
+    //printf("%s, pv = %lf\n", tag, pv);
     if (pv <= zero_cutoff)
     {
       pv = 0.0;

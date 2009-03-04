@@ -151,9 +151,9 @@ public:
   void send_sms_group(const char *msg, const char *group);
   const char *get_tag(void) {return tag;};
   const char *get_description(void) {return description;};
-  rt_double_ref_t *get_double_ref(const char *expr, char *err, int sz);
-  rt_bool_ref_t *get_bool_ref(const char *expr, char *err, int sz);
-  rt_long_ref_t *get_long_ref(const char *expr, char *err, int sz);
+  virtual rt_double_ref_t *get_double_ref(const char *expr, char *err, int sz) = 0;
+  virtual rt_bool_ref_t *get_bool_ref(const char *expr, char *err, int sz) = 0;
+  virtual rt_long_ref_t *get_long_ref(const char *expr, char *err, int sz) = 0;
 
   virtual ~db_point_t(void) {};
 };
@@ -180,6 +180,12 @@ public:
   void display(void);
   void display_pv(void);
   inline double *pv_ptr(void) {printf("Got ptr: %s\n", tag);return &pv;};
+  rt_double_ref_t *get_double_ref(const char *expr, char *err, int sz)
+          {return new rt_double_ptr_ref_t(&pv);};
+  rt_bool_ref_t *get_bool_ref(const char *expr, char *err, int sz)
+          {snprintf(err, sz, "No bool values"); return NULL;};
+  rt_long_ref_t *get_long_ref(const char *expr, char *err, int sz)
+          {snprintf(err, sz, "No long values"); return NULL;};
   pv_type_t pv_type(void) {return ANALOG_VALUE;};
 };
 
@@ -303,17 +309,29 @@ public:
   void display_pv(void);
   inline bool get_pv(void) {return pv;};
   bool *pv_ptr(void) {return &pv;};
+  rt_double_ref_t *get_double_ref(const char *expr, char *err, int sz)
+          {snprintf(err, sz, "No double values"); return NULL;};
+  rt_bool_ref_t *get_bool_ref(const char *expr, char *err, int sz)
+          {return new rt_bool_ptr_ref_t(&pv);};
+  rt_long_ref_t *get_long_ref(const char *expr, char *err, int sz)
+          {snprintf(err, sz, "No long values"); return NULL;};
   pv_type_t pv_type(void) {return DISCRETE_VALUE;};
 };
 
 class integer_point_t : public db_point_t
 {
 public:
-  int pv;
+  long pv;
   //void display(void);
   //void display_pv(void);
   inline int get_pv(void) {return pv;};
-  int *pv_ptr(void) {return &pv;};
+  long *pv_ptr(void) {return &pv;};
+  rt_double_ref_t *get_double_ref(const char *expr, char *err, int sz)
+          {snprintf(err, sz, "No double values"); return NULL;};
+  rt_bool_ref_t *get_bool_ref(const char *expr, char *err, int sz)
+          {snprintf(err, sz, "No bool values"); return NULL;};
+  rt_long_ref_t *get_long_ref(const char *expr, char *err, int sz)
+          {return new rt_long_ptr_ref_t(&pv);};
   pv_type_t pv_type(void) {return INTEGER_VALUE;};
 };
 

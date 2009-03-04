@@ -372,7 +372,7 @@ file_logger_t **file_logger_t::read(int *cnt, const char *home_dir)
     {
       continue;
     }
-    else if (argc <  FL_MIN_ARGS)
+    else if (argc < FL_MIN_ARGS)
     {
       printf("%s: Wrong number of args (minimum %d), line %d\n", path, FL_MIN_ARGS, i+1);
       continue;

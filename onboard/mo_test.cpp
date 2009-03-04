@@ -40,6 +40,21 @@ void spd_init_screen();
 
 /*********************************************************************/
 
+void horizontal_bar_graph(int row, int col, int pix)
+{
+  char buf[10];
+
+  buf[0] = 0xFE;
+  buf[1] = 0x7C;
+  buf[2] = col;
+  buf[3] = row;
+  buf[4] = 0;
+  buf[5] = pix;
+  write(serial_fd, buf, 6);
+}
+
+/*********************************************************************/
+
 void d4x40_cls(void)
 {
   char buf[5];
@@ -51,14 +66,18 @@ void d4x40_cls(void)
 
 /***************************************************************/
 
-int d4x40_printf(int row, int col, const char *fmt, ...)
+int scr_goto_xy(int row, int col)
 {
   char buf[5];
-  char myline[41];
 
-  if (col > 80)
+  buf[0] = 0xFE;  // goto xy
+  buf[1] = 0x47;
+  buf[2] = col; // column
+  buf[3] = row; // row
+
+  if (col > 40)
   {
-    return 0;
+    col = 40;
   }
   if (col < 1)
   {
@@ -76,6 +95,16 @@ int d4x40_printf(int row, int col, const char *fmt, ...)
   {
     spd_init_screen();
   }
+  write(serial_fd, buf, 4);
+}
+
+/***************************************************************/
+
+int d4x40_printf(int row, int col, const char *fmt, ...)
+{
+  char myline[41];
+
+  scr_goto_xy(row, col);
 
   va_list arg_ptr;
   va_start(arg_ptr, fmt);
@@ -83,20 +112,40 @@ int d4x40_printf(int row, int col, const char *fmt, ...)
   //printf("writing to display: '%s'\n", myline);
   myline[sizeof(myline) - 1] = '\0';
   va_end(arg_ptr);
-
   
-  buf[0] = 0xFE;  // goto xy
-  buf[1] = 0x47;
-  buf[2] = col; // column
-  buf[3] = row; // row
-
-  write(serial_fd, buf, 4);
   write(serial_fd, myline, strlen(myline));
   return n;
 }
 
 /***************************************************************/
-static const char *serial_device = "/dev/ttyT8S0";
+
+char map_char(char a_char)
+{
+  switch (a_char)
+  {
+    case 'F': return '0';
+    case 'X': return '1';
+    case 'U': return '2';
+    case 'V': return '3';
+    case 'S': return '4';
+    case 'P': return '5';
+    case 'Q': return '6';
+    case 'N': return '7';
+    case 'K': return '8';
+    case 'L': return '9';
+    case 'W': return 'A';
+    case 'R': return 'B';
+    case 'M': return 'C';
+    case 'H': return 'D';
+    case 'I': return '+';
+    case 'G': return '-';
+    default: return '?';
+  }
+}
+
+/***************************************************************/
+//static const char *serial_device = "/dev/ttyT8S0";
+static const char *serial_device = "/dev/ttyUSB0";
 
 void spd_init_screen()
 {
@@ -149,7 +198,7 @@ int main(int argc, char *argv[])
   buf[1] = 0x56; 
   write(serial_fd, buf, 3);
   printf("printing line 1 . . .\n");
-  d4x40_printf(1, 1, "Hello Cesar, buzzer off");
+  d4x40_printf(1, 1, "Hello SITEUR: %lf, %c buzzer off", 99.9, 'X');
   sleep(1);
   buf[1] = 0x57; 
   write(serial_fd, buf, 3);
@@ -168,6 +217,27 @@ int main(int argc, char *argv[])
   sleep(1);
   buf[1] = 0x56;
   write(serial_fd, buf, 3);
+
+  sleep(1);
+  d4x40_cls();
+
+  void d4x40_cls(void);
+  for (int i=0; i <= 100; i++)
+  {
+    horizontal_bar_graph(3, 8, i);
+    usleep(8000);
+  }
+  sleep(1);
+  for (int i=100; i >= 0; i--)
+  {
+    horizontal_bar_graph(3, 8, i);
+    usleep(8000);
+  }
+
+  sleep(1);
+  d4x40_printf(4, 1, "Jugar con el Teclado!!!");
+  scr_goto_xy(1, 1);
+
   while (true)
   {
     char buf[5];
@@ -175,7 +245,9 @@ int main(int argc, char *argv[])
     int n = read(serial_fd, buf, sizeof(buf) - 1);
     if (n > 0)
     {
-      printf("Char recieved: %c\n", buf[n-1]);
+      char mych = map_char(buf[n-1]);
+      printf("Char recieved: %c, mapped to %c\n", buf[n-1], mych);
+      write(serial_fd, &mych, 1); 
     }
   } 
   close(serial_fd);

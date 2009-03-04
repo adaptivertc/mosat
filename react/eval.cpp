@@ -34,21 +34,20 @@ Procedures to evaluate expressions.
 analog_point_handler_t analog_point_handler = NULL;
 discrete_point_handler_t discrete_point_handler = NULL;
 
-/***********************************************************************/
+/***********************************************************************
 
 void set_eval_analog_point_handler(analog_point_handler_t handler)
 {
   analog_point_handler = handler;
 }
 
-/***********************************************************************/
 
 void set_eval_discrete_point_handler(discrete_point_handler_t handler)
 {
   discrete_point_handler = handler;
 }
 
-/***********************************************************************/
+***********************************************************************/
 
 double analog_expr_t::evaluate(void)
 {
@@ -290,6 +289,11 @@ stack_value_t *eval_expr(expr_op_t *expr_ptr)
       case LOGICAL_PTR:
 	(stack_ptr++)->logical_val = *expr_ptr->val.logical_ptr;
 	break;
+      case LOGICAL_REF:
+        //printf("ref val = %s\n", expr_ptr->val.logical_ref->val() ? "T":"F");
+	(stack_ptr++)->logical_val = expr_ptr->val.logical_ref->val();
+	break;
+      /***
       case DISCRETE_POINT:
 	if (discrete_point_handler == NULL)
 	{
@@ -299,9 +303,15 @@ stack_value_t *eval_expr(expr_op_t *expr_ptr)
 	(stack_ptr++)->logical_val =
 	      (*discrete_point_handler)(expr_ptr->val.discrete_point);
 	break;
+      ***/
       case FLOAT_PTR:
 	(stack_ptr++)->float_val = *expr_ptr->val.float_ptr;
 	break;
+      case FLOAT_REF:
+        //printf("ref val = %lf\n", expr_ptr->val.float_ref->val());
+	(stack_ptr++)->float_val = expr_ptr->val.float_ref->val();
+	break;
+      /***
       case ANALOG_POINT:
 	if (analog_point_handler == NULL)
 	{
@@ -311,6 +321,7 @@ stack_value_t *eval_expr(expr_op_t *expr_ptr)
 	fop1 = (*analog_point_handler)(expr_ptr->val.analog_point);
 	(stack_ptr++)->float_val = fop1;
 	break;
+      ***/
       case INT_PTR:
 	(stack_ptr++)->float_val = double(*expr_ptr->val.int_ptr);
 	break;
