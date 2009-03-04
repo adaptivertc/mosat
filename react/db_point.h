@@ -123,6 +123,7 @@ public:
   virtual rt_double_ref_t *get_double_ref(const char *expr, char *err, int sz) = 0;
   virtual rt_bool_ref_t *get_bool_ref(const char *expr, char *err, int sz) = 0;
   virtual rt_long_ref_t *get_long_ref(const char *expr, char *err, int sz) = 0;
+  virtual  pv_type_t get_ref_type(const char *expr, char *err, int sz) = 0; 
 
   virtual ~db_point_interface_t(void) {};
 };
@@ -186,7 +187,9 @@ public:
           {snprintf(err, sz, "No bool values"); return NULL;};
   rt_long_ref_t *get_long_ref(const char *expr, char *err, int sz)
           {snprintf(err, sz, "No long values"); return NULL;};
-  pv_type_t pv_type(void) {return ANALOG_VALUE;};
+  virtual  pv_type_t get_ref_type(const char *expr, char *err, int sz) 
+          {return ANALOG_VALUE;};
+  pv_type_t pv_type(void) {printf("pv type is ANALOG_VALUE\n"); return ANALOG_VALUE;};
 };
 
 class analog_update_point_t;
@@ -315,6 +318,8 @@ public:
           {return new rt_bool_ptr_ref_t(&pv);};
   rt_long_ref_t *get_long_ref(const char *expr, char *err, int sz)
           {snprintf(err, sz, "No long values"); return NULL;};
+  virtual  pv_type_t get_ref_type(const char *expr, char *err, int sz) 
+          {return DISCRETE_VALUE;};
   pv_type_t pv_type(void) {return DISCRETE_VALUE;};
 };
 
@@ -332,6 +337,8 @@ public:
           {snprintf(err, sz, "No bool values"); return NULL;};
   rt_long_ref_t *get_long_ref(const char *expr, char *err, int sz)
           {return new rt_long_ptr_ref_t(&pv);};
+  virtual  pv_type_t get_ref_type(const char *expr, char *err, int sz) 
+    {return INTEGER_VALUE;};
   pv_type_t pv_type(void) {return INTEGER_VALUE;};
 };
 

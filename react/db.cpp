@@ -545,9 +545,14 @@ rt_double_ref_t *react_get_analog_ref_fn(char *tag)
 {
   db_point_t *db_point;
   db_point = reactdb->get_db_point(tag);
-  if (db_point == NULL) return NULL;
+  if (db_point == NULL) 
+  {
+    printf("Tag not found: %s\n", tag);
+    return NULL;
+  }
   if (db_point->pv_type() != ANALOG_VALUE)
   {
+    printf("Wrong point type: %d\n", db_point->pv_type());
     return NULL;
   }
   else
