@@ -24,6 +24,7 @@ Data Stack size     : 512
 #include <mega32.h>
 #include <string.h>
 #include <ctype.h>
+#include <stdlib.h>
 
 // 1 Wire Bus functions
 #asm
@@ -45,6 +46,8 @@ unsigned char ds1820_devices;
 // 9 bytes are used for each device
 // (see the w1_search function description in the help)
 unsigned char ds1820_rom_codes[MAX_DS1820][9];
+
+#define MAX_TIME 90000
 
 #define RXB8 1
 #define TXB8 0
@@ -155,16 +158,27 @@ else
 #include <stdio.h>
 
 // Declare your global variables here
+eeprom int garbage;
+eeprom unsigned int dallas_number;
+eeprom unsigned int dallas_last_number;
+unsigned int temperature_fail;
+int timer;
+
 
 
 void send_temperatures(unsigned char devices)
 {
-        int i;
+        int i, temp;
         
         printf("%02d\n\r",devices);
         
         for (i=0;i<devices;i++)
-               printf("%+010d\n\r",(int)ds18b20_temperature(&ds1820_rom_codes[i][0]));
+        {
+                temp = (int)ds18b20_temperature(&ds1820_rom_codes[i][0]);
+                if(temp == -9999)
+                        temperature_fail = 1;
+                printf("%+010d\n\r",);
+        }
 
 }
 
@@ -174,6 +188,10 @@ void read_di_do()
                         
         printf("%d%d%d%d%d%d%d%d%d%d%d%d\n\r",PORTA.4,PORTA.5,PORTA.6,PORTA.7,PORTC.7,PORTC.6,PORTC.5,PORTC.4,PORTC.3,PORTC.2,PORTC.1,PORTC.0);
 }
+
+/*!
+  Send two characters representing th number of detected one wire devices followed by the serial number of each one
+*/
 
 void show_serials(unsigned char devices)
 {
@@ -191,6 +209,10 @@ void show_serials(unsigned char devices)
 
        };
 }
+
+/*!
+  Escribe las salidas discretas
+*/
 
 void write_do(char ch1, char ch2, char val)
 {
@@ -305,22 +327,28 @@ void write_do(char ch1, char ch2, char val)
         printf("OK\n\r");
 }
 
-/*void test(unsigned char devices)
-{       
-        int k;
-        int temp;
-        
-        k = 0;
-        
-        if(devices > 0)
-                while(k < 30)
-                {
-                        temp=ds18b20_temperature(&ds1820_rom_codes[0][0]);
-                        printf("%d:%+010d\n\r", k, temp);
-                        k++;
-                }
-                
-}*/
+void set_dallas(char ch1, char ch2)
+{
+        if(isdigit(ch1) != 1 || isdigit(ch2) != 1)
+        {
+                printf("01\n\r");
+                return;
+        }
+        dallas_number = ((ch1-48) * 10) + (ch2-48);
+}
+
+void give_dallas()
+{
+        printf("%d\n\r",dallas_number);
+        printf("%d\n\r",dallas_last_number);
+        printf("%d\n\r",ds1820_devices);
+}
+
+//!  El main
+/*!
+*  Aqui inician todas las tonterias
+*/
+
 
 void main(void)
 {
@@ -433,17 +461,21 @@ ds1820_devices=w1_search(0xf0,ds1820_rom_codes);
 
 letra = '#';
 time_out = 0;
+temperature_fail = 0;
+timer = 0;
+
 for (i=0;i<ds1820_devices;i++)
     {
         ds18b20_init(&ds1820_rom_codes[i][0],25,35,DS18B20_9BIT_RES);
-
-
     };
 
 
 while (1)
       {
       // Place your code here
+                if(temperature_fail == 1)
+                        timer++;
+      
                 if(rx_counter > 0)
                         letra = getchar();
                if(letra == 'R' || letra == 'r')
@@ -465,9 +497,7 @@ while (1)
                         
                         if(time_out == 900000)
                         {
-                                putchar('2');
-                                putchar('\n');
-                                putchar('\r');
+                                printf("2\n\r");
                         }
                         else
                         {
@@ -480,11 +510,47 @@ while (1)
                         time_out = 0;
                         letra = '#';
                }
-               /*if(letra == 'T' || letra == 't')
+               if(letra == 'N' || letra == 'n')
                {
-                        test(ds1820_devices);
-                        letra = '#';
-               }*/
+                        while(rx_counter < 3 && time_out < 900000)
+                                time_out++;
+                        
+                        if(time_out == 900000)
+                        {
+                                printf("2\n\r");
+                        }
+                        else
+                        {
+                                ch1 = getchar();
+                                ch2 = getchar();
+                                set_dallas(ch1,ch2);
+                        }
 
+                        time_out = 0;
+                        letra = '#';
+               }
+               if(letra == 'G' || letra == 'g')
+               {
+                        give_dallas(); 
+                        letra = '#';
+               }
+               if(letra == 'D' || letra == 'd')
+               {
+                        dallas_last_number = ds1820_devices;
+                        ds1820_devices = w1_search(0xf0,ds1820_rom_codes);
+                        if(ds1820_devices == dallas_number)
+                        {
+                                timer = 0;
+                                temperature_fail = 0;
+                        }
+                        letra = '#';
+               }
+               if(timer == MAX_TIME)
+               {
+                        dallas_last_number = ds1820_devices;
+                        ds1820_devices = w1_search(0xf0,ds1820_rom_codes);
+                        if(ds1820_devices == dallas_number)
+                                timer = 0;
+               }
       };
 }
