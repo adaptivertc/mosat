@@ -103,7 +103,7 @@ dcalc_point_t **dcalc_point_t::read(int *cnt, const char *home_dir)
     printf("Expression: %s\n", p->expr_string);
 
     safe_strcpy(p->lo_desc, (const char*) argv[3], sizeof(p->lo_desc));
-    safe_strcpy(p->hi_desc, (const char*) argv[4], sizeof(p->lo_desc));
+    safe_strcpy(p->hi_desc, (const char*) argv[4], sizeof(p->hi_desc));
 
     switch (argv[5][0])
     {

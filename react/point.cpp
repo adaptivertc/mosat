@@ -43,12 +43,14 @@ pv_type_t get_pv_type(point_type_t point_type)
     case PID_POINT:
     case ANALOG_OUTPUT:
     case TIMER_POINT:
+    case ANALOG_VALUE_POINT:
       return ANALOG_VALUE;
     case DISCRETE_INPUT:
     case DISCRETE_OUTPUT:
     case DCALC_POINT:
     case DARRAY_POINT:
     case DVAR_POINT:
+    case DISCRETE_VALUE_POINT:
       return DISCRETE_VALUE;
     default:
       return UNDEFINED_VALUE;

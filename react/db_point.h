@@ -320,7 +320,7 @@ public:
           {snprintf(err, sz, "No long values"); return NULL;};
   virtual  pv_type_t get_ref_type(const char *expr, char *err, int sz) 
           {return DISCRETE_VALUE;};
-  pv_type_t pv_type(void) {return DISCRETE_VALUE;};
+  pv_type_t pv_type(void) {printf("pv type is ANALOG_VALUE\n"); return DISCRETE_VALUE;};
 };
 
 class integer_point_t : public db_point_t
@@ -578,6 +578,35 @@ public:
   void reset_alarms(void);
   void check_alarms(void);
 };
+
+/*#SCRIPT_OBJECT#(ANALOG_VALUE_POINT)*/
+class analog_value_point_t : public analog_point_t
+{
+private:
+
+public:
+/*#SCRIPT_FUNCTION#*/
+  void zero(void) {pv = 0.0;};
+/*#SCRIPT_FUNCTION#*/
+  void set(double aval) {pv = aval;};
+  point_type_t point_type(void) {return ANALOG_VALUE_POINT;};
+  static analog_value_point_t *read_one(int argc, char *argv[], char *err, int esz);
+  static analog_value_point_t **read(int *cnt, const char * home_dir);
+};
+
+/*#SCRIPT_OBJECT#(DISCRETE_VALUE_POINT)*/
+class discrete_value_point_t : public discrete_point_t
+{
+private:
+
+public:
+/*#SCRIPT_FUNCTION#*/
+  void set(bool aval) {pv = aval;};
+  point_type_t point_type(void) {return DISCRETE_VALUE_POINT;};
+  static discrete_value_point_t *read_one(int argc, char *argv[], char *err, int esz);
+  static discrete_value_point_t **read(int *cnt, const char * home_dir);
+};
+
 
 /*#SCRIPT_OBJECT#(TIMER_POINT)*/
 class timer_point_t : public analog_point_t

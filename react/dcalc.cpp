@@ -127,7 +127,7 @@ dcalc_t **dcalc_t::read(int *cnt, const char *home_dir)
     safe_strcpy(p->description, (const char*) argv[1], sizeof(p->description));
 
     safe_strcpy(p->lo_desc, (const char*) argv[2], sizeof(p->lo_desc));
-    safe_strcpy(p->hi_desc, (const char*) argv[3], sizeof(p->lo_desc));
+    safe_strcpy(p->hi_desc, (const char*) argv[3], sizeof(p->hi_desc));
 
     switch (argv[4][0])
     {

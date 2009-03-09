@@ -168,6 +168,14 @@ void react_t::print_all_points(void)
   {
     printf("Timer: %s\n", timers[i]->tag);
   }
+  for (int i=0; i < num_analog_val; i++)
+  {
+    printf("Analog value: %s\n", analog_vals[i]->tag);
+  }
+  for (int i=0; i < num_discrete_val; i++)
+  {
+    printf("Discrete value: %s\n", discrete_vals[i]->tag);
+  }
   for (int i=0; i < num_int; i++)
   {
     printf("Int: %s\n", ints[i]->tag);
@@ -604,6 +612,10 @@ react_t::react_t()
   dcalcs = NULL;
   num_timer = 0;
   timers = NULL;
+  num_analog_val = 0;
+  analog_vals = NULL;
+  num_discrete_val = 0;
+  discrete_vals = NULL;
   num_calc = 0;
   calcs = NULL;
   num_d_calc = 0;
@@ -881,6 +893,14 @@ void react_t::read_all_points(const char *a_home_dir)
   printf("Reading timer ........\n");
   timers = timer_point_t::read(&num_timer, a_home_dir);
   printf("num_timer = %d\n", num_timer);
+
+  printf("Reading analog values ........\n");
+  analog_vals = analog_value_point_t::read(&num_analog_val, a_home_dir);
+  printf("num analog values = %d\n", num_analog_val);
+
+  printf("Reading discrete values ........\n");
+  discrete_vals = discrete_value_point_t::read(&num_discrete_val, a_home_dir);
+  printf("num discrete values = %d\n", num_discrete_val);
 
   printf("Reading int ........\n");
   ints = int_t::read(&num_int, a_home_dir);
@@ -1556,6 +1576,23 @@ db_point_t *react_t::get_db_point(char *tag)
       return timers[i];
     }
   }
+
+  for (i=0; i < num_analog_val; i++)
+  {
+    if (0 == strcasecmp(analog_vals[i]->tag, tag))
+    {
+      return analog_vals[i];
+    }
+  }
+
+  for (i=0; i < num_discrete_val; i++)
+  {
+    if (0 == strcasecmp(discrete_vals[i]->tag, tag))
+    {
+      return discrete_vals[i];
+    }
+  }
+
 
   for (i=0; i < num_int; i++)
   {

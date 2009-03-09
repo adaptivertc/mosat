@@ -108,6 +108,10 @@ public:
   int num_calc;
   timer_point_t **timers;
   int num_timer;
+  analog_value_point_t **analog_vals;
+  int num_analog_val;
+  discrete_value_point_t **discrete_vals;
+  int num_discrete_val;
   dcalc_point_t **d_calcs;
   int num_d_calc;
   dcalc_t **dcalcs;

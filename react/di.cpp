@@ -121,7 +121,7 @@ di_point_t **di_point_t::read(int *cnt, const char *home_dir)
     p->channel = atol(argv[4]);
 
     safe_strcpy(p->lo_desc, (const char*) argv[5], sizeof(p->lo_desc));
-    safe_strcpy(p->hi_desc, (const char*) argv[6], sizeof(p->lo_desc));
+    safe_strcpy(p->hi_desc, (const char*) argv[6], sizeof(p->hi_desc));
 
     switch (argv[7][0])
     {
