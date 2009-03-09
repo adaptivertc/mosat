@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class simple_ascii_driver_t : public io_driver_t
 {
 private:
+  double last_good[2];
   double ai_vals[32];
   double tmp_ai_vals[32];
   bool di_vals[32];

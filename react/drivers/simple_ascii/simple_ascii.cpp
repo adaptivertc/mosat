@@ -123,6 +123,8 @@ simple_ascii_driver_t::simple_ascii_driver_t(react_drv_base_t *react,
     printf("Error initializing the simple ascii interface: %s\n", err);
   }
   printf("DONE initializing simple ascii\n");
+  last_good[0] = 55.0;
+  last_good[1] = 55.0;
 }
 
 /***********************************************************************/
@@ -225,6 +227,18 @@ void simple_ascii_driver_t::read(void)
              tmp_do_vals, 32, 
              error, sizeof(error));
     this->resend_dos();
+    for (int i=0; i < 2; i++)
+    {
+      ai_vals[i+10] = ai_vals[i];
+      if (ai_vals[i] < -99.0)
+      {
+        ai_vals[i] = last_good[i];
+      }
+      else
+      {
+        last_good[i] = ai_vals[i];
+      }
+    }
 }
 
 /***********************************************************************/
