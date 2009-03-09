@@ -1,6 +1,6 @@
 sys.print("*** This is back ground script 1")
 sys.print("### bg1 step 2")
-AO1.send(aval1 + 2.0)
+AO1.send(AO1 + 2.0)
 aval1.set(aval1 + 2)
 aval2.set(aval2 + 4)
 dval1.set(not dval1)
