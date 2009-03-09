@@ -929,3 +929,17 @@ bool step_if_t::check(void)
 
 /*****************************************************************/
 
+int step_yield_t::execute(double time)
+{
+  if (first_time)
+  {
+    logfile->vprint("sys.yield()\n");
+    first_time = false;
+    return 0;
+  }
+  first_time = true;
+  return 1;
+}
+
+/*****************************************************************/
+

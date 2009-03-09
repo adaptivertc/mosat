@@ -98,6 +98,9 @@ expr_op_t *make_expr(char *line)
 
   expr[n_nodes].token_type = END_EXPR;
 
+  expr_type_t expr_type;
+  expr_type = tree->type;
+
   delete tree;
 
   return expr;

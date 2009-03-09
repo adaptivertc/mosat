@@ -44,6 +44,7 @@ private:
   int do_offset;
   int ai_offset;
   int ao_offset;
+  sem_t transmit_mutex_sem; 
   sem_t read_mutex_sem; 
   sem_t read_wait_sem; 
   int n_mod_io; 

@@ -713,7 +713,7 @@ void react_t::init_driver(void)
     io_driver =  
     ****/
 
-    if (num_io_drivers >= sizeof(io_driver)/sizeof(io_driver[0]))
+    if (num_io_drivers >= int(sizeof(io_driver)/sizeof(io_driver[0])))
     {
       printf("********** Maximum number of drivers loaded - can not load:\n\t%s\n", line);
       continue;
@@ -1254,7 +1254,7 @@ void react_t::execute_background_scripts(void)
 {
   for (int i=0; i < n_background; i++)
   {
-    bool done = background_sequences[i]->run(current_time);
+    background_sequences[i]->run(current_time);
   }
 }
 

@@ -33,6 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 bool checkdouble(char *param, char *error, int esize)
 {
+  return true;
   int dec_cnt = 0;
   for (char *p = param; *p != '\0'; p++)
   {
@@ -58,6 +59,7 @@ bool checkdouble(char *param, char *error, int esize)
 
 bool checkbool(char *param, char *error, int esize)
 {
+  return true;
   if (strlen(param) > 1)
   {
     snprintf(error, esize, "Bad boolean value: %s", param);
@@ -440,6 +442,10 @@ secuencia_step_t *create_system_step(int argc, char *argv[],
   else if (0 == strcasecmp(argv[1], "mark"))
   {
     return new step_mark_t(argc, argv, error, esize);
+  }
+  else if (0 == strcasecmp(argv[1], "yield"))
+  {
+    return new step_yield_t(argc, argv, error, esize);
   }
   else
   {

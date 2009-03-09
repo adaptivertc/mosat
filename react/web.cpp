@@ -305,7 +305,8 @@ void web_point_t::read_file(void)
       newiref->nvals = 0;
       for (int k=2; k < (argc - 1); k += 2)
       {
-        if (newiref->nvals >= (sizeof(newiref->strings) / sizeof(newiref->strings[0])))
+        if (newiref->nvals >= 
+             int(sizeof(newiref->strings) / sizeof(newiref->strings[0])))
         {
           printf("***** Too many values for integer ref\n");
           break;

@@ -393,18 +393,41 @@ void generate_constructor(const char *script_obj_type, const char *obj_type,
     fprintf(code_fp, "  }\n");
     for (int i=0; i < n_params; i++)
     {
-      fprintf(code_fp, "  p%d = ", i);
       switch (ptypes[i])
       {
         case PARAM_DOUBLE:
+          fprintf(code_fp, "  //p%d = ", i);
           fprintf(code_fp, "atof(argv[%d]);\n", i+2);
+          fprintf(code_fp, "  expr%d.expr = make_expr(argv[%d]);\n", i, i+2); 
+          fprintf(code_fp, "  if (expr%d.expr == NULL)\n", i);
+          fprintf(code_fp, "  {\n");
+          fprintf(code_fp, "    logfile->vprint(\"Bad expression for '%s.%%s': %%s\\n\", argv[1], rtexperror.str());\n", obj_type);
+          fprintf(code_fp, "    expr%d.expr = new expr_op_t[2];\n", i);
+          fprintf(code_fp, "    expr%d.expr[0].token_type = FLOAT_VAL;\n", i);
+          fprintf(code_fp, "    expr%d.expr[0].val.float_val = 0.0;\n", i);
+          fprintf(code_fp, "    expr%d.expr[1].token_type = END_EXPR;\n", i);
+          fprintf(code_fp, "    p%d = 0.0;\n", i);
+          fprintf(code_fp, "  }\n");
   	  break;
         case PARAM_BOOL:
+          fprintf(code_fp, "  //p%d = ", i);
           fprintf(code_fp, "((argv[%d][0] == 'T') ||\n", i+2);
-          fprintf(code_fp, "    (argv[%d][0] == 't') ||\n", i+2);
-          fprintf(code_fp, "    (argv[%d][0] == '1'));\n", i+2);
+          fprintf(code_fp, "    //(argv[%d][0] == 't') ||\n", i+2);
+          fprintf(code_fp, "    //(argv[%d][0] == '1'));\n", i+2);
+          fprintf(code_fp, "  expr%d.expr = make_expr(argv[%d]);\n", i, i+2); 
+          fprintf(code_fp, "  if (expr%d.expr == NULL)\n", i);
+          fprintf(code_fp, "  {\n");
+          fprintf(code_fp, "    logfile->vprint(\"Bad expression for '%s.%%s': %%s\\n\", argv[1], rtexperror.str());\n", obj_type);
+          fprintf(code_fp, "    expr%d.expr = new expr_op_t[2];\n", i);
+          fprintf(code_fp, "    expr%d.expr[0].token_type = LOGICAL_VAL;\n", i);
+          fprintf(code_fp, "    expr%d.expr[0].val.logical_val = false;\n", i);
+          fprintf(code_fp, "    expr%d.expr[1].token_type = END_EXPR;\n", i);
+          fprintf(code_fp, "    p%d = false;\n", i);
+          fprintf(code_fp, "  }\n");
+
 	  break;
         case PARAM_INT:
+          fprintf(code_fp, "  p%d = ", i);
           fprintf(code_fp, "atol(argv[%d]);\n", i+2);
 	  break;
        default:
@@ -426,6 +449,22 @@ void generate_execute_function(char *object_type, char *function_name,
 {
   fprintf(code_fp, "int %s::execute(double time)\n{\n", object_type);
 
+  for (int i=0; i < n_params; i++)
+  {
+    switch(ptypes[i])
+    {
+      case PARAM_DOUBLE:
+        fprintf(code_fp, "  if (is_valid)");
+        fprintf(code_fp, "  p%d = expr%d.evaluate();\n", i, i); 
+        break;
+      case PARAM_BOOL:
+        fprintf(code_fp, "  if (is_valid)");
+        fprintf(code_fp, "  p%d = expr%d.evaluate();\n", i, i); 
+        break;
+      default:
+  	break;
+    }
+  }
   //fprintf(code_fp, "  printf(\"%%s\\n\", text);\n");
   fprintf(code_fp, "  log_start(text);\n");
   for (int i=0; i < n_params; i++)
@@ -499,6 +538,17 @@ void generate_script_object(char *name, char *type,
   for (int i=0; i < n_params; i++)
   {
     fprintf(header_fp, "  %s p%d;\n", script_type_to_string(ptype[i]), i);
+    switch(ptype[i])
+    {
+      case PARAM_DOUBLE:
+        fprintf(header_fp, "  analog_expr_t expr%d;\n", i); 
+        break;
+      case PARAM_BOOL:
+        fprintf(header_fp, "  discrete_expr_t expr%d;\n", i); 
+        break;
+      default:
+        break;
+    }
   }
   fprintf(header_fp, "public:\n");
   fprintf(header_fp, "  %s(int argc, char *argv[], char *error, int esize);\n", name);
@@ -704,6 +754,8 @@ void parse_file(const char *fname)
 
   fprintf(code_fp, "#include \"db.h\"\n");
   fprintf(code_fp, "#include \"secuencia.h\"\n");
+  fprintf(code_fp, "#include \"exp.h\"\n");
+  fprintf(code_fp, "#include \"error.h\"\n");
   fprintf(code_fp, "#include \"%s\"\n", header_name);
   fprintf(code_fp, "\n/***************/\n\n");
   generate_heading(header_fp, header_name);
@@ -718,6 +770,8 @@ void parse_file(const char *fname)
   fprintf(case_fp, "#include <sys/timeb.h>\n");
   fprintf(case_fp, "#include \"db.h\"\n");
   fprintf(case_fp, "#include \"secuencia.h\"\n");
+  fprintf(code_fp, "#include \"exp.h\"\n");
+  fprintf(code_fp, "#include \"error.h\"\n");
   fprintf(case_fp, "#include \"%s\"\n", header_name);
   fprintf(case_fp, "\n/***************/\n\n");
   generate_case_start();

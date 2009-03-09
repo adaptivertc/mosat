@@ -37,7 +37,7 @@ enum step_type_t
 {
   STEP_SENDDO, STEP_WAIT, STEP_WAITKEY, STEP_STARTDAQ,
   STEP_STOPDAQ, STEP_PRINTMSG, STEP_MARK, STEP_LOOP, 
-  STEP_IF, STEP_ENDIF, STEP_UNDEFINED
+  STEP_IF, STEP_ENDIF, STEP_UNDEFINED, STEP_YIELD
 };
 
 /***/
@@ -274,6 +274,21 @@ public:
   int execute(double time);
   step_type_t get_type() {return STEP_UNDEFINED;};
 };
+
+class step_yield_t : public secuencia_step_t
+{
+private:
+  bool first_time;
+public:
+  step_yield_t(int argc, char *argv[], char *error, int esize)
+            {first_time = true;};
+  bool check(void) {return true;};
+  void reset(void) {first_time = true;};
+  void set_param(int n, char *val) {};
+  int execute(double time);
+  step_type_t get_type() {return STEP_YIELD;};
+};
+
 
 struct secuencia_param_loc_t
 {

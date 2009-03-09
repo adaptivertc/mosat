@@ -265,6 +265,10 @@ reactmodbus_driver_t::reactmodbus_driver_t(react_drv_base_t *react, const char *
   {
     perror("sem_init");
   }
+  if (0 != sem_init(& transmit_mutex_sem, 0, 1))
+  {
+    perror("sem_init");
+  }
   if (0 != sem_init(&read_wait_sem, 0, 0))
   {
     perror("sem_init");
@@ -346,7 +350,9 @@ void reactmodbus_driver_t::send_do(int ch, bool val)
   if ((ch >= 0) && (ch < 32))
   {
     //shm->do_val[ch] = val;
+    sem_wait(&transmit_mutex_sem);
     modbus->send_do(ch, val);
+    sem_post(&transmit_mutex_sem);
   }
 }
 
@@ -410,13 +416,19 @@ void reactmodbus_driver_t::read_mod_io(void)
         switch (mod_io[i].opcode)
         {
           case 1:
+            sem_wait(&transmit_mutex_sem);
             modbus->read_do(mod_io[i].modbus_offset, mod_io[i].n, tmp_di_vals + mod_io[i].channel_offset);
+            sem_post(&transmit_mutex_sem);
             break;
           case 2:
+            sem_wait(&transmit_mutex_sem);
             modbus->read_di(mod_io[i].modbus_offset, mod_io[i].n, tmp_di_vals + mod_io[i].channel_offset);
+            sem_post(&transmit_mutex_sem);
             break;
           case 3:
+            sem_wait(&transmit_mutex_sem);
             modbus->read_di_register(mod_io[i].modbus_offset, mod_io[i].n, tmp_di_vals + mod_io[i].channel_offset);
+            sem_post(&transmit_mutex_sem);
             break;
           default:
             xx_printf("Invalid opcode for DI: %d\n", mod_io[i].opcode);
@@ -427,10 +439,14 @@ void reactmodbus_driver_t::read_mod_io(void)
         switch (mod_io[i].opcode)
         {
           case 3:
+            sem_wait(&transmit_mutex_sem);
             modbus->read_reg(mod_io[i].modbus_offset, mod_io[i].n, tmp_ai_vals + mod_io[i].channel_offset);
+            sem_post(&transmit_mutex_sem);
             break;
           case 4:
+            sem_wait(&transmit_mutex_sem);
             modbus->read_ai(mod_io[i].modbus_offset, mod_io[i].n, tmp_ai_vals + mod_io[i].channel_offset);
+            sem_post(&transmit_mutex_sem);
             break;
           default:
             xx_printf("Invalid opcode for AI: %d\n", mod_io[i].opcode);
@@ -455,8 +471,12 @@ void reactmodbus_driver_t::read_thread(void)
     xx_printf("read thread reading modbus values . . .\n");
     if (n_mod_io == 0)
     {
+      sem_wait(&transmit_mutex_sem);
       modbus->read_ai(0, 16, tmp_ai_vals);
+      sem_post(&transmit_mutex_sem);
+      sem_wait(&transmit_mutex_sem);
       modbus->read_di(0, 16, tmp_di_vals);
+      sem_post(&transmit_mutex_sem);
     }
     else
     {
