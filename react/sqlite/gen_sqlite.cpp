@@ -442,7 +442,7 @@ int main(int argc, char *argv[])
   gen_read_dat(fp_out);
   fclose(fp_out);
   char cmd[200];
-  snprintf(cmd, sizeof(cmd), "cp %s out_%s.cpp", out_temp, table_name);
+  snprintf(cmd, sizeof(cmd), "mv %s out_%s.cpp", out_temp, table_name);
   printf("Executing: %s\n", cmd);
   system(cmd);
 }
