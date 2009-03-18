@@ -148,7 +148,7 @@ pci_point_t **pci_point_t::read(int *cnt, const char *home_dir)
     pci->min_counts_for_calc = atol(argv[7]);
     pci->rollover_count = atol(argv[8]);
     pci->time_factor = atof(argv[9]);
-    pci->decimal = atol(argv[10]);
+    pci->decimal_places = atol(argv[10]);
     pci->zero_cutoff = atof(argv[11]);
     pci->lo_alarm = atof(argv[12]);
     pci->lo_caution = atof(argv[13]);

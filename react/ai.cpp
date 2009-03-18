@@ -151,7 +151,7 @@ ai_point_t *ai_point_t::read_one(int argc, char *argv[], char *err, int esz)
   ai->eu_hi = atof(argv[7]);
   ai->raw_lo = atof(argv[8]);
   ai->raw_hi = atof(argv[9]);
-  ai->decimal = atol(argv[10]);
+  ai->decimal_places = atol(argv[10]);
   ai->zero_cutoff = atof(argv[11]);
   ai->lo_alarm = atof(argv[12]);
   ai->lo_caution = atof(argv[13]);

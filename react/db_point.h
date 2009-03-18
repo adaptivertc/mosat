@@ -174,7 +174,7 @@ public:
   char eu[8];
   char fmt[8];
   int round;
-  int decimal;
+  int decimal_places;
   analog_point_t(void);
   void set_format(void);
   inline double get_pv(void) {return pv;};

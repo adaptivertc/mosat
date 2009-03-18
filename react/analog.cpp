@@ -181,7 +181,7 @@ analog_point_t::analog_point_t(void)
   /* Constructor for an analog point */
 
   round = 0;
-  decimal = 0;
+  decimal_places = 0;
   eu[0] = '\0';
   pv = 0.0;
   safe_strcpy(fmt, "%-6.0f", sizeof(fmt));
@@ -194,13 +194,13 @@ void analog_point_t::set_format(void)
 {
   /* Set up display formating for an analog point */
 
-  if (decimal > 4)
+  if (decimal_places > 4)
   {
-    decimal = 4;
+    decimal_places = 4;
   }
-  if (decimal < -1)
+  if (decimal_places < -1)
   {
-    decimal = -1;
+    decimal_places = -1;
   }
   if (display_width < 1)
   {
@@ -211,13 +211,13 @@ void analog_point_t::set_format(void)
     display_width = 9;
   }
 
-  if (decimal == -1)
+  if (decimal_places == -1)
   {
     snprintf(fmt, sizeof(fmt), "%%-%d.0f", display_width);
   }
   else
   {
-    snprintf(fmt, sizeof(fmt), "%%-%d.%df", display_width, decimal);
+    snprintf(fmt, sizeof(fmt), "%%-%d.%df", display_width, decimal_places);
   }
 
 }

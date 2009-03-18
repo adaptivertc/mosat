@@ -2,7 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../../include/arg.h"
+#include "rtcommon.h"
+#include "arg.h"
 
 static char *table_name;
 static char *field_file_name;
@@ -287,12 +288,12 @@ void process_file(FILE *fp_out)
   int first = true;
   for (int i=0; i < nf; i++)
   {
-    if (!first) strcat(qs, ", ");
-    strcat(qs, field_spec(dbfs[i]));
+    if (!first) safe_strcat(qs, ", ", sizeof(qs));
+    safe_strcat(qs, field_spec(dbfs[i]), sizeof(qs));
     first = false;
   }
-  strcat(qs, ", PRIMARY KEY (TAG)"); 
-  strcat(qs, ");");
+  safe_strcat(qs, ", PRIMARY KEY (TAG)", sizeof(qs)); 
+  safe_strcat(qs, ");", sizeof(qs));
   printf("%s\n", qs);
   printf("%s\n", table_name);
 
@@ -301,8 +302,8 @@ void process_file(FILE *fp_out)
   fprintf(fp_out, "***************************/\n");
   fprintf(fp_out, "#include <stdio.h>\n");
   fprintf(fp_out, "#include <sqlite3.h>\n");
-  fprintf(fp_out, "#include \"../../include/rtcommon.h\"\n");
-  fprintf(fp_out, "#include \"../../include/arg.h\"\n");
+  fprintf(fp_out, "#include \"rtcommon.h\"\n");
+  fprintf(fp_out, "#include \"arg.h\"\n");
   fprintf(fp_out, "\n\n/***************************/\n\n");
   fprintf(fp_out, "int write_one_%s(sqlite3 *sqdb, int argc, char *argv[]);\n", table_name);
   fprintf(fp_out, "int read_dat_file(sqlite3 *sqdb, const char *fname);\n");
@@ -337,8 +338,6 @@ void process_file(FILE *fp_out)
   fprintf(fp_out, "    sqlite3_close(sqdb);\n");
   fprintf(fp_out, "    return 0;\n");
   fprintf(fp_out, "  }\n");
-  fprintf(fp_out, "   //const char *args[] = { \"AI1\", \"First Analog Input\", \"PSI\", \"modbus\", \"0\", \"5\", \"0\", \"500\", \"0\", \"4095\", \"1\", \"0.5\", \"0\", \"0\", \"0\", \"0\", \"0\", \"F\", \"F\", \"F\", \"F\", \"true\"};\n");
-  fprintf(fp_out, "  //write_one_%s(sqdb, 22, args);\n", table_name);
   fprintf(fp_out, "  read_dat_file(sqdb, \"%s\");\n", data_file_name);
   fprintf(fp_out, "  sqlite3_close(sqdb);\n");
   fprintf(fp_out, "}\n");
@@ -365,17 +364,17 @@ void gen_write_one(FILE *fp_out)
    "  snprintf(qs, sizeof(qs), \"insert into \\\"%s\\\" values(", table_name);
   for (int i=0; i < nf; i++)
   {
-    if (!first) strcat(str, ","); 
-    strcat(str, gen_format(dbfs[i]));
+    if (!first) safe_strcat(str, ",", sizeof(str)); 
+    safe_strcat(str, gen_format(dbfs[i]), sizeof(str));
     first = false;
   }
-  strcat(str, ");\""); 
+  safe_strcat(str, ");\"", sizeof(str)); 
 
   for (int i=0; i < nf; i++)
   {
-    strcat(str, gen_value(dbfs[i], i));
+    safe_strcat(str, gen_value(dbfs[i], i), sizeof(str));
   }
-  strcat(str, ");"); 
+  safe_strcat(str, ");", sizeof(str)); 
   fprintf(fp_out, "  %s\n", str);
 
   
@@ -419,6 +418,13 @@ void process_dat_file(FILE *fp_out)
   }
 }
 
+
+/**************************************/
+
+void gen_for_one_config(FILE *fp_out, 
+           const char *config_name, const char *dat_name)
+{
+}
 
 /**************************************/
 

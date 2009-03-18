@@ -126,7 +126,7 @@ ao_point_t *ao_point_t::read_one(int argc, char *argv[], char *err, int esz)
     p->eu_hi = atof(argv[7]);
     p->raw_lo = atof(argv[8]);
     p->raw_hi = atof(argv[9]);
-    p->decimal = atoi(argv[10]);
+    p->decimal_places = atoi(argv[10]);
 
     p->output_limit_lo = atof(argv[11]);
     p->output_limit_hi = atof(argv[12]);
@@ -223,27 +223,6 @@ ao_point_t **ao_point_t::read(int *cnt, const char *home_dir)
     printf("%s", line);
     count++;
     /**********/
-
-    /***********
-    safe_strcpy(p->tag, (const char*) argv[0], sizeof(p->tag));
-    safe_strcpy(p->description, (const char*) argv[1], sizeof(p->description));
-    safe_strcpy(p->eu, (const char*) argv[2], sizeof(p->eu));
-    p->driver = atol(argv[3]);
-    p->card = atol(argv[4]);
-    p->channel = atol(argv[5]);
-    p->eu_lo = atof(argv[6]);
-    p->eu_hi = atof(argv[7]);
-    p->raw_lo = atof(argv[8]);
-    p->raw_hi = atof(argv[9]);
-    p->decimal = atoi(argv[10]);
-
-    p->output_limit_lo = atof(argv[11]);
-    p->output_limit_hi = atof(argv[12]);
-
-    p->set_format();
-    p->pv = 0.0;
-    //p->pv_attr = NORMAL_PV_ATTR;
-    ************/
 
   }
 

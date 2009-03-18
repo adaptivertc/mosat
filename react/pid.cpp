@@ -372,7 +372,7 @@ pid_point_t **pid_point_t::read(int *cnt, const char *home_dir)
     safe_strcpy(pid->tag, (const char*) argv[0], sizeof(pid->tag));
     safe_strcpy(pid->description, (const char*) argv[1], sizeof(pid->description));
     safe_strcpy(pid->eu, (const char*) argv[2], sizeof(pid->eu));
-    pid->decimal = atol(argv[3]);
+    pid->decimal_places = atol(argv[3]);
 
 
     pid->setpoint_limit_hi = atof(argv[4]);

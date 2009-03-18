@@ -53,7 +53,7 @@ analog_value_point_t *analog_value_point_t::read_one(int argc, char *argv[], cha
   safe_strcpy(p->description, argv[1], sizeof(p->description));
   safe_strcpy(p->eu, argv[2], sizeof(p->eu));
 
-  p->decimal = atoi(argv[3]);
+  p->decimal_places = atoi(argv[3]);
   p->pv = atof(argv[4]);
 
   return p;

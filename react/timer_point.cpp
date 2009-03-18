@@ -105,7 +105,7 @@ timer_point_t *timer_point_t::read_one(int argc, char *argv[], char *err, int es
   safe_strcpy(p->description, argv[1], sizeof(p->description));
   safe_strcpy(p->eu, argv[2], sizeof(p->eu));
 
-  p->decimal = atoi(argv[3]);
+  p->decimal_places = atoi(argv[3]);
   p->mode_count_up = ((argv[4][0] == '1') || 
                  (argv[4][0] == 'T') || 
                  (argv[4][0] == 't'));

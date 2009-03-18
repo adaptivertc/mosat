@@ -75,7 +75,7 @@ calc_point_t *calc_point_t::read_one(int argc, char *argv[], char *err, int esz)
   MALLOC_CHECK(p->expr_string);
   printf("Expression: %s\n", p->expr_string);
 
-  p->decimal = atoi(argv[4]);
+  p->decimal_places = atoi(argv[4]);
   p->lo_alarm = atof(argv[5]);
   p->lo_caution = atof(argv[6]);
   p->hi_caution = atof(argv[7]);

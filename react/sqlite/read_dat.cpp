@@ -1,8 +1,8 @@
 
 #include <stdio.h>
 
-#include "../../include/rtcommon.h"
-#include "../../include/arg.h"
+#include "rtcommon.h"
+#include "arg.h"
 
 int read_dat_file(const char *fname)
 {
