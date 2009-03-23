@@ -1,13 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/types.h>
+#include <dirent.h>
 
 #include "rtcommon.h"
 #include "arg.h"
-
-static char *table_name;
-static char *field_file_name;
-static char *data_file_name;
 
 enum field_type_t {RT_FLOAT, RT_INT, RT_BOOL, RT_STRING, RT_SELECT};
 
@@ -23,8 +21,17 @@ struct db_field_t
   
 };
 
-static db_field_t *dbfs[500]; 
-static int nf = 0; 
+
+struct gen_names_t
+{
+  const char *table_name;
+  const char *field_file_name;
+  const char *data_file_name;
+  db_field_t *dbfs[500];
+  int nf;
+};
+
+/************************************/
 
 const char *field_type_to_string(field_type_t f)
 {
@@ -205,7 +212,7 @@ db_field_t *create_field(int argc, char *argv[])
 
 /**************************************/
 
-void gen_read_dat(FILE *fp_out)
+void gen_read_dat(FILE *fp_out, gen_names_t *gnames)
 {
   fprintf(fp_out, "\n\n/***************************/\n\n");
   fprintf(fp_out, "int read_dat_file(sqlite3 *sqdb, const char *fname)\n");
@@ -234,7 +241,7 @@ void gen_read_dat(FILE *fp_out)
   fprintf(fp_out, "      continue;\n");
   fprintf(fp_out, "    }\n");
   fprintf(fp_out, "    printf(\"%%s\\n\", line);\n");
-  fprintf(fp_out, "    write_one_%s(sqdb, argc, argv);\n", table_name);
+  fprintf(fp_out, "    write_one_%s(sqdb, argc, argv);\n", gnames->table_name);
   fprintf(fp_out, "  }\n");
   fprintf(fp_out, "  return 0;\n");
   fprintf(fp_out, "}\n");
@@ -242,17 +249,63 @@ void gen_read_dat(FILE *fp_out)
 
 /**************************************/
 
-void process_file(FILE *fp_out)
+void  gen_header(FILE *fp_out)
+{
+  fprintf(fp_out, "/***************************\n");
+  fprintf(fp_out, "This is an auto-generated file, do NOT edit!!\n");
+  fprintf(fp_out, "***************************/\n");
+  fprintf(fp_out, "#include <stdio.h>\n");
+  fprintf(fp_out, "#include <sqlite3.h>\n");
+  fprintf(fp_out, "#include \"rtcommon.h\"\n");
+  fprintf(fp_out, "#include \"arg.h\"\n");
+}
+
+/**************************************/
+
+void write_main_start(FILE *fp_out)
+{
+  fprintf(fp_out, "#include \"gen_common.h\"\n");
+
+  fprintf(fp_out, "int main(int argc, char *argv[])\n");
+  fprintf(fp_out, "{\n");
+  fprintf(fp_out, "  sqlite3 *sqdb;\n");
+  fprintf(fp_out, "  int retval;\n");
+  fprintf(fp_out, "  char *errmsg;\n");
+  fprintf(fp_out, "\n");
+  fprintf(fp_out, "  retval = sqlite3_open_v2(\"react_def.sqlite\",  &sqdb,\n");
+  fprintf(fp_out, "     SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);\n");
+  fprintf(fp_out, "  if (retval != SQLITE_OK)\n");
+  fprintf(fp_out, "  {\n");
+  fprintf(fp_out, "    printf(\"Can not open db, error = %%d\\n\", retval);\n");
+  fprintf(fp_out, "    printf(\"Err = %%s\\n\", sqlite3_errmsg(sqdb));\n");
+  fprintf(fp_out, "    return 0;\n");
+  fprintf(fp_out, "  }\n");
+  fprintf(fp_out, "  \n");
+}
+
+/**************************************/
+
+void write_main_end(FILE *fp_out)
+{
+  fprintf(fp_out, "  sqlite3_close(sqdb);\n");
+  fprintf(fp_out, "}\n");
+}
+
+/**************************************/
+
+void xprocess_file(FILE *fp_out, gen_names_t *gnames)
 {
   char **argv;
   int argc;
   int line_num;
 
+  gnames->nf = 0;
+
   delim_file_t df(300, 20, '|', '#');
   df.print_lines(true);
 
 
-  for (argv = df.first(field_file_name, &argc, &line_num);
+  for (argv = df.first(gnames->field_file_name, &argc, &line_num);
          (argv != NULL); 
             argv = df.next(&argc, &line_num))
   {
@@ -269,53 +322,91 @@ void process_file(FILE *fp_out)
     printf("\n");
     if (0 == strcasecmp(argv[0], "table"))
     {
-      table_name = strdup(argv[2]);
+      gnames->table_name = strdup(argv[2]);
     }
     db_field_t *dbf; 
     dbf = create_field(argc, argv);
     if (dbf != NULL)
     {
-      dbfs[nf] = dbf;
-      nf++;
+      gnames->dbfs[gnames->nf] = dbf;
+      gnames->nf++;
     }
   }
-  printf("Done parsing file, %d fields found\n", nf);
+  printf("Done parsing file, %d fields found\n", gnames->nf);
+}
+
+/**************************************/
+
+void process_file(FILE *fp_out, gen_names_t *gnames)
+{
+  char **argv;
+  int argc;
+  int line_num;
+
+  gnames->nf = 0;
+
+  delim_file_t df(300, 20, '|', '#');
+  df.print_lines(true);
+
+
+  for (argv = df.first(gnames->field_file_name, &argc, &line_num);
+         (argv != NULL); 
+            argv = df.next(&argc, &line_num))
+  {
+    if (argc < 2)
+    {
+      printf("Wrong number of args, line %d\n", line_num);
+      continue;
+    }
+    printf("%d: %s", line_num, argv[2]);
+    for (int i=1; i < argc; i++)
+    {
+      printf(", %s", argv[i]);
+    }  
+    printf("\n");
+    if (0 == strcasecmp(argv[0], "table"))
+    {
+      gnames->table_name = strdup(argv[2]);
+    }
+    db_field_t *dbf; 
+    dbf = create_field(argc, argv);
+    if (dbf != NULL)
+    {
+      gnames->dbfs[gnames->nf] = dbf;
+      gnames->nf++;
+    }
+  }
+  printf("Done parsing file, %d fields found\n", gnames->nf);
 
   char qs[5000];
-  snprintf(qs, sizeof(qs), "create table %s(", table_name);
+  snprintf(qs, sizeof(qs), "create table %s(", gnames->table_name);
  
 // "create table tbl2(a_string varchar(10), a_number smallint);",
   int first = true;
-  for (int i=0; i < nf; i++)
+  for (int i=0; i < gnames->nf; i++)
   {
     if (!first) safe_strcat(qs, ", ", sizeof(qs));
-    safe_strcat(qs, field_spec(dbfs[i]), sizeof(qs));
+    safe_strcat(qs, field_spec(gnames->dbfs[i]), sizeof(qs));
     first = false;
   }
   safe_strcat(qs, ", PRIMARY KEY (TAG)", sizeof(qs)); 
   safe_strcat(qs, ");", sizeof(qs));
   printf("%s\n", qs);
-  printf("%s\n", table_name);
+  printf("%s\n", gnames->table_name);
 
-  fprintf(fp_out, "/***************************\n");
-  fprintf(fp_out, "This is an auto-generated file, do NOT edit!!\n");
-  fprintf(fp_out, "***************************/\n");
-  fprintf(fp_out, "#include <stdio.h>\n");
-  fprintf(fp_out, "#include <sqlite3.h>\n");
-  fprintf(fp_out, "#include \"rtcommon.h\"\n");
-  fprintf(fp_out, "#include \"arg.h\"\n");
   fprintf(fp_out, "\n\n/***************************/\n\n");
-  fprintf(fp_out, "int write_one_%s(sqlite3 *sqdb, int argc, char *argv[]);\n", table_name);
+  fprintf(fp_out, "int write_one_%s(sqlite3 *sqdb, int argc, char *argv[]);\n",
+            gnames->table_name);
   fprintf(fp_out, "int read_dat_file(sqlite3 *sqdb, const char *fname);\n");
   fprintf(fp_out, "\n");
   fprintf(fp_out, "int main(int argc, char *argv[])\n");
   fprintf(fp_out, "{\n");
   fprintf(fp_out, "  sqlite3 *sqdb;\n");
-  //fprintf(fp_out, "  const char *tail;\n");
   fprintf(fp_out, "  int retval;\n");
   fprintf(fp_out, "  char *errmsg;\n");
   fprintf(fp_out, "\n");
-  fprintf(fp_out, "  retval = sqlite3_open_v2(\"react_%s.sqlite\",  &sqdb,\n", table_name);
+  fprintf(fp_out, "  retval = sqlite3_open_v2(\"react_%s.sqlite\",  &sqdb,\n", 
+         gnames->table_name);
   fprintf(fp_out, "     SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);\n");
   fprintf(fp_out, "  if (retval != SQLITE_OK)\n");
   fprintf(fp_out, "  {\n");
@@ -338,17 +429,18 @@ void process_file(FILE *fp_out)
   fprintf(fp_out, "    sqlite3_close(sqdb);\n");
   fprintf(fp_out, "    return 0;\n");
   fprintf(fp_out, "  }\n");
-  fprintf(fp_out, "  read_dat_file(sqdb, \"%s\");\n", data_file_name);
+  fprintf(fp_out, "  read_dat_file(sqdb, \"%s\");\n", gnames->data_file_name);
   fprintf(fp_out, "  sqlite3_close(sqdb);\n");
   fprintf(fp_out, "}\n");
 }
 
 /**************************************/
 
-void gen_write_one(FILE *fp_out)
+void gen_write_one(FILE *fp_out, gen_names_t *gnames)
 {
   fprintf(fp_out, "\n\n/***************************/\n\n");
-  fprintf(fp_out, "int write_one_%s(sqlite3 *sqdb, int argc, char *argv[])\n", table_name);
+  fprintf(fp_out, "int write_one_%s(sqlite3 *sqdb, int argc, char *argv[])\n", 
+          gnames->table_name);
 
   fprintf(fp_out, "{\n");
   //snprintf(str, sizeof(str), "insert into '%s' values(\n"); '%s',%d);",
@@ -361,18 +453,19 @@ void gen_write_one(FILE *fp_out)
   char str[5000];
   bool first = true;
   snprintf(str, sizeof(str), 
-   "  snprintf(qs, sizeof(qs), \"insert into \\\"%s\\\" values(", table_name);
-  for (int i=0; i < nf; i++)
+   "  snprintf(qs, sizeof(qs), \"insert into \\\"%s\\\" values(", 
+            gnames->table_name);
+  for (int i=0; i < gnames->nf; i++)
   {
     if (!first) safe_strcat(str, ",", sizeof(str)); 
-    safe_strcat(str, gen_format(dbfs[i]), sizeof(str));
+    safe_strcat(str, gen_format(gnames->dbfs[i]), sizeof(str));
     first = false;
   }
   safe_strcat(str, ");\"", sizeof(str)); 
 
-  for (int i=0; i < nf; i++)
+  for (int i=0; i < gnames->nf; i++)
   {
-    safe_strcat(str, gen_value(dbfs[i], i), sizeof(str));
+    safe_strcat(str, gen_value(gnames->dbfs[i], i), sizeof(str));
   }
   safe_strcat(str, ");", sizeof(str)); 
   fprintf(fp_out, "  %s\n", str);
@@ -398,7 +491,7 @@ void gen_write_one(FILE *fp_out)
   
 /**************************************/
 
-void process_dat_file(FILE *fp_out)
+void process_dat_file(FILE *fp_out, gen_names_t *gnames)
 {
   char **argv;
   int argc;
@@ -408,7 +501,7 @@ void process_dat_file(FILE *fp_out)
   df.print_lines(true);
 
 
-  for (argv = df.first(field_file_name, &argc, &line_num);
+  for (argv = df.first(gnames->field_file_name, &argc, &line_num);
          (argv != NULL);
             argv = df.next(&argc, &line_num))
   {
@@ -421,21 +514,28 @@ void process_dat_file(FILE *fp_out)
 
 /**************************************/
 
-void gen_for_one_config(FILE *fp_out, 
-           const char *config_name, const char *dat_name)
+void gen_for_one_config(FILE *fp_out, gen_names_t *gnames) 
 {
+  process_file(fp_out, gnames);
+  gen_write_one(fp_out, gnames);
+  gen_read_dat(fp_out, gnames);
 }
 
 /**************************************/
+int xmain(char *dir_name);
 
 int main(int argc, char *argv[])
 {
+  struct gen_names_t gnames;
+
   if (argc < 3)
   {
     printf("You must specify the file definition file, and input file - exiting . . .\n"); exit(0);
   }
-  field_file_name = argv[1];
-  data_file_name = argv[2];
+
+  gnames.field_file_name = argv[1];
+  gnames.data_file_name = argv[2];
+
   const char *out_temp = "out.cpp";
   FILE *fp_out = fopen(out_temp, "w");
   if (fp_out == NULL)
@@ -443,14 +543,144 @@ int main(int argc, char *argv[])
     perror(out_temp);
     exit(0);
   }
-  process_file(fp_out);
-  gen_write_one(fp_out);
-  gen_read_dat(fp_out);
+
+  gen_header(fp_out);
+  gen_for_one_config(fp_out, &gnames);
+
   fclose(fp_out);
+
   char cmd[200];
-  snprintf(cmd, sizeof(cmd), "mv %s out_%s.cpp", out_temp, table_name);
+  snprintf(cmd, sizeof(cmd), "mv %s out_%s.cpp", out_temp, gnames.table_name);
   printf("Executing: %s\n", cmd);
   system(cmd);
+  xmain("../dbfiles");
 }
 
 /**************************************/
+
+void gen_create_table(FILE *fp, gen_names_t *gnames)
+{
+  char qs[5000];
+  snprintf(qs, sizeof(qs), "create table %s(", gnames->table_name);
+
+  int first = true;
+  for (int i=0; i < gnames->nf; i++)
+  {
+    if (!first) safe_strcat(qs, ", ", sizeof(qs));
+    safe_strcat(qs, field_spec(gnames->dbfs[i]), sizeof(qs));
+    first = false;
+  }
+  safe_strcat(qs, ", PRIMARY KEY (TAG)", sizeof(qs));
+  safe_strcat(qs, ");", sizeof(qs));
+
+  fprintf(fp, "  retval = sqlite3_exec(sqdb,\n");
+  fprintf(fp, "      \"%s\",\n", qs);
+  fprintf(fp, "             NULL, NULL, &errmsg);\n");
+  fprintf(fp, "  if (retval != SQLITE_OK)\n");
+  fprintf(fp, "  {\n");
+  fprintf(fp, "    printf(\"Can not execute query, error = %%d\\n\", retval);\n");
+  fprintf(fp, "    if (errmsg != NULL)\n");
+  fprintf(fp, "    {\n");
+  fprintf(fp, "      printf(\"errmsg: %%s\\n\", errmsg);\n");
+  fprintf(fp, "      sqlite3_free(errmsg);\n");
+  fprintf(fp, "    }\n");
+  fprintf(fp, "    sqlite3_close(sqdb);\n");
+  fprintf(fp, "    return 0;\n");
+  fprintf(fp, "  }\n");
+
+}
+
+/**************************************/
+void gen_insert_call(FILE *fp, gen_names_t *gnames)
+{
+  fprintf(fp, "  extern int write_one_%s(sqlite3 *sqdb, int argc, char *argv[]);\n", 
+            gnames->table_name);
+  fprintf(fp, "  insert_from_dat_file(sqdb, \"%s\", write_one_%s);\n", 
+            gnames->data_file_name, gnames->table_name);
+}
+
+/**************************************/
+
+void xgen_for_one_config(FILE *fp_out, FILE *fp_main, gen_names_t *gnames) 
+{
+  xprocess_file(fp_out, gnames);
+  gen_create_table(fp_main, gnames);
+  gen_insert_call(fp_main, gnames);
+  gen_write_one(fp_out, gnames);
+  //gen_read_dat(fp_out, gnames);
+}
+
+/**************************************/
+
+//int xmain(int argc, char *argv[])
+int xmain(char *dir_name)
+{
+  DIR *dir;
+  struct dirent *dent;
+  char base_name[100];
+  char config_name[100];
+  char dat_name[100];
+  struct gen_names_t gnames;
+
+  /**
+  if (argc < 2)
+  {
+    printf("You must specify a directory\n");
+    return -1;
+  }
+  dir_name = argv[1];
+  **/
+  dir = opendir(dir_name);
+
+  if (dir == NULL)
+  {
+    perror(dir_name);
+    return -1;
+  }
+
+  const char *out_temp = "gen_one_fns.cpp";
+  FILE *fp_out = fopen(out_temp, "w");
+  if (fp_out == NULL)
+  {
+    perror(out_temp);
+    exit(0);
+  }
+
+  const char *out_main = "outmain.cpp";
+  FILE *fp_main = fopen(out_main, "w");
+  if (fp_main == NULL)
+  {
+    perror(out_main);
+    exit(0);
+  }
+
+  gen_header(fp_main);
+  write_main_start(fp_main);
+
+  gen_header(fp_out);
+  
+  dent = readdir(dir);
+  while (dent != NULL)
+  {
+    int len = strlen(dent->d_name);
+    if (0 == strncmp(".config", dent->d_name + len - 7, 7)) 
+    {
+      snprintf(config_name, sizeof(config_name), "%s/%s", 
+                    dir_name, dent->d_name);
+      snprintf(base_name, sizeof(base_name), "%s", dent->d_name);
+      base_name[len-7] = '\0';
+      snprintf(dat_name, sizeof(dat_name), "%s/%s.dat", 
+                    dir_name, base_name);
+      printf("%s\n", base_name); 
+      printf("%s\n", config_name); 
+      printf("%s\n", dat_name); 
+      gnames.field_file_name = config_name;
+      gnames.data_file_name = dat_name;
+      xgen_for_one_config(fp_out, fp_main, &gnames);
+    }
+    dent = readdir(dir);
+  }
+  write_main_end(fp_main);
+  fclose(fp_out);
+  fclose(fp_main);
+}

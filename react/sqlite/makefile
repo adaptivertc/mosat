@@ -1,5 +1,4 @@
 
-
 export CPATH=../../include
 
 RTCOMMON=../../librtcommon/librtcommon.a
@@ -36,5 +35,8 @@ react_ai.sqlite: out_ai
 	rm -f react_ai.sqlite
 	./out_ai
 
+xx: gen_one_fns.cpp outmain.cpp insert_from_dat.cpp
+	g++ -o xx -g -Wall gen_one_fns.cpp outmain.cpp insert_from_dat.cpp -lsqlite3 $(RTCOMMON)
+
 clean: 
-	rm -fv main gen_sqlite out_di out_ai out_di.cpp out_ai.cpp read_dat
+	rm -fv main gen_sqlite out_di out_ai out_di.cpp out_ai.cpp read_dat react_def.sqlit  gen_one_fns.cpp outmain.cpp
