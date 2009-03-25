@@ -41,7 +41,7 @@ Procedure to get delimited arguments for a single line.
 /***********************************************************************/
 delim_separator_t::~delim_separator_t(void)
 {
-  printf("Deleting delim_separator_t\n");
+  //printf("Deleting delim_separator_t\n");
   if (tmp != NULL)
   {
     free(tmp);
@@ -58,7 +58,7 @@ delim_separator_t::delim_separator_t(int a_max_line_size,
                            int a_max_args, 
                            char a_delim)
 {
-  printf("Creating delim_separator_t\n");
+  //printf("Creating delim_separator_t\n");
   max_line_size = a_max_line_size;
   max_args = a_max_args;
   delim = a_delim;

@@ -318,10 +318,10 @@ void xprocess_file(FILE *fp_out, gen_names_t *gnames)
       printf("Wrong number of args, line %d\n", line_num);
       continue;
     }
-    printf("%d: %s", line_num, argv[2]);
-    for (int i=1; i < argc; i++)
+    printf("%d: ", line_num);
+    for (int i=0; i < argc; i++)
     {
-      printf(", %s", argv[i]);
+      printf("%s ", argv[i]);
     }  
     printf("\n");
     if (0 == strcasecmp(argv[0], "table"))

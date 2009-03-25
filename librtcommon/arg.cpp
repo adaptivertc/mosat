@@ -42,7 +42,7 @@ Procedure to get delimited arguments.
 /***********************************************************************/
 delim_file_t::~delim_file_t(void)
 {
-  printf("Deleting delim_file_t\n");
+  //printf("Deleting delim_file_t\n");
   if (fp != NULL)
   {
     fclose(fp);
@@ -67,7 +67,7 @@ delim_file_t::delim_file_t(int a_max_line_size,
                            int a_max_args, 
                            char a_delim, char a_comment)
 {
-  printf("Creating delim_file_t\n");
+  //printf("Creating delim_file_t\n");
   fp = NULL;
   max_line_size = a_max_line_size;
   max_args = a_max_args;
@@ -87,18 +87,20 @@ char **delim_file_t::first(const char *fname, int *n_args, int *a_line_num)
 {
   if (fp != NULL)
   {
-    printf("Closing previous file\n");
+    //printf("Closing previous file\n");
     fclose(fp);
   }
-  printf("Opening file: %s\n", fname);
+  //printf("Opening file: %s\n", fname);
   fp = fopen(fname, "r");
   if (fp == NULL)
   {
-    printf("Can't open %s\n", fname);
+    *n_args = 0;
+    *a_line_num = 0;
+    perror(fname);
     return NULL;
   }
   line_num = 0;
-  printf("File opened, getting first args %p\n", fp);
+  //printf("File opened, getting first args %p\n", fp);
   return next(n_args, a_line_num);
 }
 
@@ -116,7 +118,7 @@ char **delim_file_t::next(int *n_args, int *a_line_num)
     {
     }
     safe_strcpy(tmp, line, max_line_size);
-    printf("%s", tmp);
+    //printf("%s", tmp);
     argc = get_delim_args(tmp, argv, delim, max_args);
     if (argc == 0)
     {
