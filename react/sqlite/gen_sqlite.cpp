@@ -51,54 +51,54 @@ const char *field_type_to_string(field_type_t f)
   return "";
 }
 
-static char xval[200];
-const char *gen_value(db_field_t *dbf, int i)
+
+const char *gen_value(db_field_t *dbf, int i, char *buf, int sz)
 {
   const char *indent = "          ";
   switch(dbf->type)
   {
     case RT_FLOAT:
-      snprintf(xval, sizeof(xval), ",\n%sargv[%d]", indent, i);
+      snprintf(buf, sz, ",\n%sargv[%d]", indent, i);
       break;
     case RT_INT:
-      snprintf(xval, sizeof(xval), ",\n%sargv[%d]", indent, i);
+      snprintf(buf, sz, ",\n%sargv[%d]", indent, i);
       break;
     case RT_BOOL:
-      snprintf(xval, sizeof(xval), 
+      snprintf(buf, sz, 
          ",\n%s((argv[%d][0] == 't') || (argv[%d][0] == 'T') || (argv[%d][0] == 'y') || (argv[%d][0] == 'Y') || (argv[%d][0] == '1')) ? \"'T'\" : \"'F'\"", 
          indent, i, i, i, i, i);
       break;
     case RT_STRING:
-      snprintf(xval, sizeof(xval), ",\n%sargv[%d]", indent, i);
+      snprintf(buf, sz, ",\n%sargv[%d]", indent, i);
       break;
     case RT_SELECT:
-      snprintf(xval, sizeof(xval), ",\n%sargv[%d]", indent, i);
+      snprintf(buf, sz, ",\n%sargv[%d]", indent, i);
       break;
   }
-  return xval;
+  return buf;
 }
 
-const char *gen_format(db_field_t *dbf)
+const char *gen_format(db_field_t *dbf, char *buf, int sz)
 {
   switch(dbf->type)
   {
     case RT_FLOAT:
-      snprintf(xval, sizeof(xval), "%%s");
+      snprintf(buf, sz, "%%s");
       break;
     case RT_INT:
-      snprintf(xval, sizeof(xval), "%%s");
+      snprintf(buf, sz, "%%s");
       break;
     case RT_BOOL:
-      snprintf(xval, sizeof(xval), "%%s");
+      snprintf(buf, sz, "%%s");
       break;
     case RT_STRING:
-      snprintf(xval, sizeof(xval), "'%%s'");
+      snprintf(buf, sz, "'%%s'");
       break;
     case RT_SELECT:
-      snprintf(xval, sizeof(xval), "'%%s'");
+      snprintf(buf, sz, "'%%s'");
       break;
   }
-  return xval;
+  return buf;
 }
 
 static char xspec[100];
@@ -199,6 +199,10 @@ db_field_t *create_field(int argc, char *argv[])
     f->length = lmax;
   }
   else if (0 == strcasecmp(argv[0], "separator"))
+  {
+    return NULL;
+  }
+  else if (0 == strcasecmp(argv[0], "table"))
   {
     return NULL;
   }
@@ -389,7 +393,7 @@ void process_file(FILE *fp_out, gen_names_t *gnames)
     safe_strcat(qs, field_spec(gnames->dbfs[i]), sizeof(qs));
     first = false;
   }
-  safe_strcat(qs, ", PRIMARY KEY (TAG)", sizeof(qs)); 
+  safe_strcat(qs, ", PRIMARY KEY (tag)", sizeof(qs)); 
   safe_strcat(qs, ");", sizeof(qs));
   printf("%s\n", qs);
   printf("%s\n", gnames->table_name);
@@ -457,15 +461,19 @@ void gen_write_one(FILE *fp_out, gen_names_t *gnames)
             gnames->table_name);
   for (int i=0; i < gnames->nf; i++)
   {
+    char buf[200];
     if (!first) safe_strcat(str, ",", sizeof(str)); 
-    safe_strcat(str, gen_format(gnames->dbfs[i]), sizeof(str));
+    safe_strcat(str, 
+           gen_format(gnames->dbfs[i], buf, sizeof(buf)), sizeof(str));
     first = false;
   }
   safe_strcat(str, ");\"", sizeof(str)); 
 
   for (int i=0; i < gnames->nf; i++)
   {
-    safe_strcat(str, gen_value(gnames->dbfs[i], i), sizeof(str));
+    char buf[200];
+    safe_strcat(str, 
+        gen_value(gnames->dbfs[i], i, buf, sizeof(buf)), sizeof(str));
   }
   safe_strcat(str, ");", sizeof(str)); 
   fprintf(fp_out, "  %s\n", str);
@@ -524,7 +532,7 @@ void gen_for_one_config(FILE *fp_out, gen_names_t *gnames)
 /**************************************/
 int xmain(char *dir_name);
 
-int main(int argc, char *argv[])
+int xxxmain(int argc, char *argv[])
 {
   struct gen_names_t gnames;
 
@@ -553,7 +561,8 @@ int main(int argc, char *argv[])
   snprintf(cmd, sizeof(cmd), "mv %s out_%s.cpp", out_temp, gnames.table_name);
   printf("Executing: %s\n", cmd);
   system(cmd);
-  xmain("../dbfiles");
+  //xmain("../dbfiles");
+  return 0;
 }
 
 /**************************************/
@@ -570,7 +579,7 @@ void gen_create_table(FILE *fp, gen_names_t *gnames)
     safe_strcat(qs, field_spec(gnames->dbfs[i]), sizeof(qs));
     first = false;
   }
-  safe_strcat(qs, ", PRIMARY KEY (TAG)", sizeof(qs));
+  safe_strcat(qs, ", PRIMARY KEY (tag)", sizeof(qs));
   safe_strcat(qs, ");", sizeof(qs));
 
   fprintf(fp, "  retval = sqlite3_exec(sqdb,\n");
@@ -612,9 +621,9 @@ void xgen_for_one_config(FILE *fp_out, FILE *fp_main, gen_names_t *gnames)
 
 /**************************************/
 
-//int xmain(int argc, char *argv[])
-int xmain(char *dir_name)
+int main(int argc, char *argv[])
 {
+  char *dir_name;
   DIR *dir;
   struct dirent *dent;
   char base_name[100];
@@ -622,14 +631,14 @@ int xmain(char *dir_name)
   char dat_name[100];
   struct gen_names_t gnames;
 
-  /**
   if (argc < 2)
   {
     printf("You must specify a directory\n");
     return -1;
   }
+
   dir_name = argv[1];
-  **/
+
   dir = opendir(dir_name);
 
   if (dir == NULL)
