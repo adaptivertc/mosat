@@ -647,7 +647,7 @@ int main(int argc, char *argv[])
     return -1;
   }
 
-  const char *out_temp = "gen_one_fns.cpp";
+  const char *out_temp = "write_one_fns.cpp";
   FILE *fp_out = fopen(out_temp, "w");
   if (fp_out == NULL)
   {

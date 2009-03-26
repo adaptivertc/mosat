@@ -54,7 +54,6 @@ void secuencia_t::advance(void)
 
 void secuencia_t::skip_to_endif(void)
 {
-  //printf("step_number: %d, num_steps: %d\n", step_number, num_steps);
   int count = 0;
   while (step_number < num_steps)
   {
@@ -82,7 +81,6 @@ void secuencia_t::skip_to_endif(void)
 
 void secuencia_t::skip_to_mark(void)
 {
-  //printf("step_number: %d, num_steps: %d\n", step_number, num_steps);
   while (step_number < num_steps)
   {
     if(steps[step_number]->get_type() == STEP_MARK)
@@ -107,18 +105,11 @@ bool secuencia_t::run(double t)
   }
 
   run_data_collect(t);
-  //printf("step number: %d, num_steps: %d\n", step_number, num_steps);
-  //logfile->vprint("step number: %d, num_steps: %d\n", step_number, num_steps);
-
   while (!done)
   {
     if (first_time)
     {
-      //printf("Executing: %s\n", descriptions[step_number]);
-      //printf("Line %d %p %p\n", __LINE__,
-		  //    steps[step_number], &secuencia_step_t::execute);
     }
-    //printf("step number: %d, num_steps: %d\n", step_number, num_steps);
     if (steps[step_number] == NULL)
     {
       printf("NULL pointer\n");
@@ -126,9 +117,7 @@ bool secuencia_t::run(double t)
     }
     else if (steps[step_number]->check())
     {
-      //printf("%s %d\n", __FILE__, __LINE__);
       n = steps[step_number]->execute(t);
-      //printf("%s %d\n", __FILE__, __LINE__);
     }
     else
     {
@@ -151,7 +140,6 @@ bool secuencia_t::run(double t)
     else
     {
       first_time = true;
-      //printf("Advancing %d steps\n", n);
       step_number += n; // jump to the next instruction.
       if ((step_number < 0) || (step_number >= num_steps))
       {
@@ -171,26 +159,12 @@ void secuencia_t::set_params(int argc, char *argv[])
     logfile->vprint("Parameter miss-match in %s: %d %d\n\r",
 		    name, argc, max_params);
   }
-  /***
-  for (int i=0; i < argc; i++)
-  {
-    printf("arg[%d] = %s\n", i, argv[i]);
-  }
-  ***/
   secuencia_param_loc_t *spl;
   spl = this->param_locs;
   while (spl != NULL)
   {
      if (spl->call_param_number < argc)
      {
-	     /***
-       printf("setting: %d, %d, %d, %s\n",
-         spl->step_number,
-         spl->step_param_number,
-         spl->call_param_number,
-         argv[spl->call_param_number]);
-	 ***/
-
        steps[spl->step_number]->set_param(spl->step_param_number,
 		    argv[spl->call_param_number]);
     }
@@ -204,14 +178,6 @@ secuencia_step_t *secuencia_t::new_script_type(char *str,
      char *error, int esize, bool script_mode)
 {
   secuencia_step_t *stp;
-  /****
-  for (p=str; (*p != '\0') && (*p != '|'); p++);
-  for (p++; (*p != '\0') && (*p != '|'); p++);
-  p++;
-  ltrim(p);
-  rtrim(p);
-  *****/
-  //printf("%s\n", str);
   char *argv[25];
   int argc;
   char line[500];
@@ -221,20 +187,6 @@ secuencia_step_t *secuencia_t::new_script_type(char *str,
     return NULL;
   }
 
-  /**
-  if (0 == strncasecmp(argv[0], "sys", 3))
-  {
-    stp = create_system_step(argc, argv, error, esize);
-  }
-  else if (0 == strncasecmp(argv[0], "run", 3))
-  {
-    stp = create_run_step(argc, argv, error, esize);
-  }
-  else
-  {
-    stp = create_step(argc, argv, error, esize);
-  }
-  **/
   stp = create_step(argc, argv, error, esize);
   bool have_error = false;
   if (stp == NULL)
@@ -333,125 +285,7 @@ secuencia_t::secuencia_t(const char *fname, const char *home_dir)
   }
   printf("----- done reading %s -----\n", path);
 
-    /****
-    int argc = get_delim_args(tmp, argv,  '|', 99);
-    if (argc < 3)
-    {
-      //printf("Line %d, not enough args: %s", line_number, line);
-      continue;
-    }
-    int type  = atoi(argv[1]);
-    //printf("Line %d\n", __LINE__);
-    descriptions[num_steps] = strdup(argv[0]);
-    MALLOC_CHECK(descriptions[num_steps]);
-    //printf("Line %d\n", __LINE__);
-    //printf("Step %d\n", num_steps);
-    //printf("Line %d\n", __LINE__);
-    switch (type)
-    {
-      case 1:
-	steps[num_steps] = new step_sendDO_wait_t(argc, argv, error);
-        //printf("Line %d %p %p\n", __LINE__,
-	//		steps[num_steps], &secuencia_step_t::execute);
-	num_steps++;
-	//printf("SendDO_wait\n");
-        break;
-      case 2:
-	steps[num_steps] = new step_start_acq_t(argc, argv, error);
-	num_steps++;
-	//printf("start_acq\n");
-        break;
-      case 3:
-	steps[num_steps] = new step_stop_acq_t(argc, argv, error);
-	num_steps++;
-	//printf("stop_acq\n");
-        break;
-      case 4:
-	steps[num_steps] = new step_sendDO_t(argc, argv, error);
-	num_steps++;
-	//printf("SendDO\n");
-        break;
-      case 5:
-	steps[num_steps] = new step_wait_t(argc, argv, error);
-	num_steps++;
-	//printf("wait\n");
-        break;
-      case 6:
-	steps[num_steps] = new step_print_t(argc, argv, error);
-	num_steps++;
-	//printf("print\n");
-        break;
-      case 7:
-	steps[num_steps] = new step_change_setpoint_t(argc, argv, error);
-	num_steps++;
-	//printf("print\n");
-        break;
-      case 8:
-	steps[num_steps] = new step_stop_control_t(argc, argv, error);
-	num_steps++;
-	//printf("print\n");
-        break;
-      case 9:
-	steps[num_steps] = new step_sendAO_t(argc, argv, error);
-	num_steps++;
-	//printf("print\n");
-        break;
-      case 10:
-        secuencia_step_t *stp;
-        stp = new_script_type(line);
-	if (stp != NULL)
-	{
-	  steps[num_steps] = stp;
-	  num_steps++;
-	}
-        break;
-      default:
-	printf("Bad instruction: %s: \n", line);
-        break;
-    }
-    *****/
-
-  /**/
 }
 
-/**************************************************************************
-
-int main(int argc, char *argv[])
-{
-  if (argc  < 2)
-  {
-    printf("You must enter the file name\n");
-    exit(0);
-  }
-  secuencia_t *sec = new secuencia_t(argv[1]);
-  bool done = false;
-  time_t start_time;
-  time_t now;
-  struct timeb tb1, tb2;
-  ftime(&tb1);
-  ftime(&tb2);
-  while ((tb1.time == tb2.time) && (tb1.millitm == tb2.millitm))
-  {
-    ftime(&tb2);
-  }
-  printf("%ld %hu %ld %hu\n", tb1.time, tb1.millitm, tb2.time, tb2.millitm);
-
-  start_time = time(NULL);
-  //printf("clocks per sec: %d\n", (int) CLK_TCK);
-  for (int i=0; !done; i++)
-  {
-    while (true)
-    {
-      now = time(NULL);
-      if (now >= start_time + i)
-      {
-        break;
-      }
-    }
-    done = sec->run((double) i);
-  }
-}
-
-**************************************************************************/
-
+/**************************************************************************/
 
