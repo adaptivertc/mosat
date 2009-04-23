@@ -51,7 +51,9 @@ int n_read_actual(char *fname, time_t times[], int max,
     }
     last_time = this_time;
     this_time = mktime(&mytm);
-    if (sensor != exit_event)
+    //if (sensor != exit_event)
+    if ((sensor < 51 || sensor > 59)) 
+    /* exit event numers are between 51 and 59 */
     {
       continue;
     }

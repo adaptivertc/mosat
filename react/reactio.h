@@ -24,6 +24,9 @@ class io_object_t
 {
 public:
   virtual int print_to(char *fmt, ...) = 0;
+#ifdef __GNUC__
+          __attribute__ (( format( printf, 2, 3 ) ));
+#endif
   virtual ~io_object_t(void) {};
 };
 

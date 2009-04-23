@@ -101,26 +101,25 @@ const char *gen_format(db_field_t *dbf, char *buf, int sz)
   return buf;
 }
 
-static char xspec[100];
 
-const char *field_spec(db_field_t *dbf)
+const char *field_spec(db_field_t *dbf, char *xspec, int sz)
 {
   switch(dbf->type)
   {
     case RT_FLOAT:
-      snprintf(xspec, sizeof(xspec), "%s FLOAT", dbf->name);
+      snprintf(xspec, sz, "%s FLOAT", dbf->name);
       break;
     case RT_INT:
-      snprintf(xspec, sizeof(xspec), "%s INT", dbf->name);
+      snprintf(xspec, sz, "%s INT", dbf->name);
       break;
     case RT_BOOL:
-      snprintf(xspec, sizeof(xspec), "%s BOOLEAN", dbf->name);
+      snprintf(xspec, sz, "%s BOOLEAN", dbf->name);
       break;
     case RT_STRING:
-      snprintf(xspec, sizeof(xspec), "%s VARCHAR(%d)", dbf->name, dbf->length);
+      snprintf(xspec, sz, "%s VARCHAR(%d)", dbf->name, dbf->length);
       break;
     case RT_SELECT:
-      snprintf(xspec, sizeof(xspec), "%s VARCHAR(%d)", dbf->name, dbf->length);
+      snprintf(xspec, sz, "%s VARCHAR(%d)", dbf->name, dbf->length);
       break;
   }
   return xspec;
@@ -383,6 +382,7 @@ void process_file(FILE *fp_out, gen_names_t *gnames)
   printf("Done parsing file, %d fields found\n", gnames->nf);
 
   char qs[5000];
+  char fspec[100];
   snprintf(qs, sizeof(qs), "create table %s(", gnames->table_name);
  
 // "create table tbl2(a_string varchar(10), a_number smallint);",
@@ -390,7 +390,7 @@ void process_file(FILE *fp_out, gen_names_t *gnames)
   for (int i=0; i < gnames->nf; i++)
   {
     if (!first) safe_strcat(qs, ", ", sizeof(qs));
-    safe_strcat(qs, field_spec(gnames->dbfs[i]), sizeof(qs));
+    safe_strcat(qs, field_spec(gnames->dbfs[i], fspec, sizeof(fspec)), sizeof(qs));
     first = false;
   }
   safe_strcat(qs, ", PRIMARY KEY (tag)", sizeof(qs)); 
@@ -522,53 +522,10 @@ void process_dat_file(FILE *fp_out, gen_names_t *gnames)
 
 /**************************************/
 
-void gen_for_one_config(FILE *fp_out, gen_names_t *gnames) 
-{
-  process_file(fp_out, gnames);
-  gen_write_one(fp_out, gnames);
-  gen_read_dat(fp_out, gnames);
-}
-
-/**************************************/
-int xmain(char *dir_name);
-
-int xxxmain(int argc, char *argv[])
-{
-  struct gen_names_t gnames;
-
-  if (argc < 3)
-  {
-    printf("You must specify the file definition file, and input file - exiting . . .\n"); exit(0);
-  }
-
-  gnames.field_file_name = argv[1];
-  gnames.data_file_name = argv[2];
-
-  const char *out_temp = "out.cpp";
-  FILE *fp_out = fopen(out_temp, "w");
-  if (fp_out == NULL)
-  {
-    perror(out_temp);
-    exit(0);
-  }
-
-  gen_header(fp_out);
-  gen_for_one_config(fp_out, &gnames);
-
-  fclose(fp_out);
-
-  char cmd[200];
-  snprintf(cmd, sizeof(cmd), "mv %s out_%s.cpp", out_temp, gnames.table_name);
-  printf("Executing: %s\n", cmd);
-  system(cmd);
-  //xmain("../dbfiles");
-  return 0;
-}
-
-/**************************************/
 
 void gen_create_table(FILE *fp, gen_names_t *gnames)
 {
+  char fspec[100];
   char qs[5000];
   snprintf(qs, sizeof(qs), "create table %s(", gnames->table_name);
 
@@ -576,7 +533,7 @@ void gen_create_table(FILE *fp, gen_names_t *gnames)
   for (int i=0; i < gnames->nf; i++)
   {
     if (!first) safe_strcat(qs, ", ", sizeof(qs));
-    safe_strcat(qs, field_spec(gnames->dbfs[i]), sizeof(qs));
+    safe_strcat(qs, field_spec(gnames->dbfs[i], fspec, sizeof(fspec)), sizeof(qs));
     first = false;
   }
   safe_strcat(qs, ", PRIMARY KEY (tag)", sizeof(qs));
@@ -610,7 +567,7 @@ void gen_insert_call(FILE *fp, gen_names_t *gnames)
 
 /**************************************/
 
-void xgen_for_one_config(FILE *fp_out, FILE *fp_main, gen_names_t *gnames) 
+void gen_for_one_config(FILE *fp_out, FILE *fp_main, gen_names_t *gnames) 
 {
   xprocess_file(fp_out, gnames);
   gen_create_table(fp_main, gnames);
@@ -685,7 +642,7 @@ int main(int argc, char *argv[])
       printf("%s\n", dat_name); 
       gnames.field_file_name = config_name;
       gnames.data_file_name = dat_name;
-      xgen_for_one_config(fp_out, fp_main, &gnames);
+      gen_for_one_config(fp_out, fp_main, &gnames);
     }
     dent = readdir(dir);
   }

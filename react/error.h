@@ -49,6 +49,9 @@ class rtexperror_t
 public:
   rtexperror_t(void);
   void set(int err_num, const char *fmt, ... );
+#ifdef __GNUC__
+          __attribute__ (( format( printf, 3, 4 ) ));
+#endif
   char *str() {return error_str;}
   int number() {return error_num;}
 };

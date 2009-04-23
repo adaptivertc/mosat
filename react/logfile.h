@@ -56,7 +56,10 @@ public:
   void close(void);
   void write(const char *txt);
   void print(const char *txt);
-  void vprint(const char *fmt, ...);
+  void vprint(const char *fmt, ...)
+#ifdef __GNUC__
+          __attribute__ (( format( printf, 2, 3 ) ));
+#endif 
   FILE *open_file_in_log_dir(const char *name);
   void copy_file_to_log_dir(const char *file, const char *name);
   void write_final_logs(int n);

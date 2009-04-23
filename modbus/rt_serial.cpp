@@ -12,7 +12,6 @@
 #include <sys/signal.h>
 #include <sys/types.h>
 
-#include <semaphore.h>
 
 #include "rt_serial.h"
 
@@ -31,58 +30,12 @@ int rt_read_serial(int fd, void *data, int sz)
 {
   int total_read = 0;
   char *dp = (char *) data;
-  bool first = true;
-
-/**********
-    fd_set rfds;
-    struct timeval tv;
-    int retval;
-
-    FD_ZERO(&rfds);
-    FD_SET(fd, &rfds);
-*********/
 
   while (total_read < sz)
   {
-
-/*******
-    tv.tv_sec = 5;
-    tv.tv_usec = 0;
-    if (serial_no_timeout)
-    {
-      printf("Calling select with NULL for tv\n");
-      retval = select(1, &rfds, NULL, NULL, NULL);
-    }
-    else
-    {
-      tv = serial_tv;
-      printf("Calling select with {%ld, %ld} for tv\n", tv.tv_sec, tv.tv_usec);
-      retval = select(1, &rfds, NULL, NULL, &tv);
-    }
-    printf("select returned\n");
-    usleep(10000);
-
-    if (retval == -1)
-    {
-      return -1;
-      perror("select()");
-    }
-    else if (retval == 0)
-    {
-      return total_read;
-      printf("No data within five seconds.\n");
-    }
-    else
-    {
-      printf("Data is available now.\n");
-    }
-***/
-
     int n = read(fd, dp + total_read, sz - total_read); 
-    //int n = read(fd, dp + total_read, 1); 
     if (n == 0)
     {
-      // we timed out waiting for our characters.
       return total_read;
     } 
     total_read += n;

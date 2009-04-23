@@ -16,6 +16,9 @@ public:
   debug_trace_t(void);
   ~debug_trace_t(void);
   int dprintf(int level, const char *fmt, ... );
+#ifdef __GNUC__
+          __attribute__ (( format( printf, 3, 4 ) ));
+#endif
   void dperror(int a_level, const char *prefix);
   void print_buf(int level, const char *prefix, uint8 *buf, int n);
   void set_level(int level) {current_level = level;};
