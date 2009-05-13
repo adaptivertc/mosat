@@ -12,7 +12,7 @@ void header(const char Y[10], const char M[10], const char D[10],const char  P[1
  struct tm mytm;
  time_t mytime;
  FILE *fd;
- char Path[100];
+ char Path[200];
  localtime_r(&mytime,&mytm);
  int weekday = mytm.tm_wday;
  int month_day = mytm.tm_mday;
@@ -143,7 +143,7 @@ void get_pdc(char pdc[20],const char dir[20])
  time_t tt=time(NULL);
  struct tm stm;
  localtime_r(&tt,&stm);
- char path[60]="/var/www/html/react/log/",day[10],c[2];
+ char path[160]="/var/www/html/react/log/",day[20],c[4];
  int cont=0;
  strftime(day,sizeof(day),"%d",&stm);
  strcat(path,dir);
@@ -190,27 +190,40 @@ void get_pdc(char pdc[20],const char dir[20])
 void frame_generator(int refresh,const char L[3])
 {
  FILE *fr;
- char Day[100],Day2[100],D[10],M[10],Y[10],pdc[20][10];
+ char Day[200],Day2[200],D[20],M[20],Y[20],pdc[20][10];
  time_t tim;
  struct tm tim1;
- strncpy(Day2,"/var/www/html/react/log/",24);
- Day2[24]='\x0';
  tim = time(NULL);
  localtime_r(&tim,&tim1);
  strftime(Day,sizeof(Day),"%Y%m%d",&tim1);
  strftime(D,sizeof(D),"%d",&tim1);     D[2]='\x0';
  strftime(M,sizeof(M),"%m",&tim1);     M[2]='\x0';
  strftime(Y,sizeof(Y),"%Y",&tim1);     Y[4]='\x0';
- get_pdc(pdc[1],"periferico_sur");
+
  get_pdc(pdc[0],"tetlan");
+ get_pdc(pdc[1],"periferico_sur");
  get_pdc(pdc[2],"juarez2");
+ 
+ //Added one line here to fix percent completion problem
+ get_pdc(pdc[3],"periferico_norte");
+
+ strncpy(Day2,"/var/www/html/react/log/",24);
+ Day2[24]='\x0';
  header(Y,M,D,Day2,"Perif&eacute;rico","Sur","49,112,207","per_sur","periferico_sur",pdc,1);
+
  strncpy(Day2,"/var/www/html/react/log/",24);
  Day2[24]='\x0';
  header(Y,M,D,Day2,"Tetl&aacute;n","","74,200,48","tetlan","tetlan",pdc,0);
+
  strncpy(Day2,"/var/www/html/react/log/",24);
  Day2[24]='\x0';
  header(Y,M,D,Day2,"Ju&aacute;rez","2","74,200,48","juarez2","juarez2",pdc,2);
+
+ //Added 3 lines here to fix percent completion problem
+ strncpy(Day2,"/var/www/html/react/log/",24);
+ Day2[24]='\x0';
+ header(Y,M,D,Day2,"Perif&eacute;rico","Norte","49,112,207","per_norte","periferico_norte",pdc,3);
+
  strncat(Day2,"Reporte_Hoy",35);
  Day2[35]='\x0';
  strncat(Day2,"_",36);
