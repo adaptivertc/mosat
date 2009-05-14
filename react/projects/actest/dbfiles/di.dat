@@ -8,4 +8,6 @@
 #    Alarm State (drop down {high, low, none})
 #    Shutdown State  (drop down {high, low, none})
 ON_AC1|AC unit one is on|0|0|0|ON|OFF|N|N|
-COM_FAILED|Communications Failed|0|0|16|ON|OFF|N|N|
+ON_AC1|AC unit two is on|0|0|1|ON|OFF|N|N|
+DRIP_PAN_AC1|AC unit one drip pan is full|0|0|3|ON|OFF|N|N|
+DRIP_PAN_AC2|AC unit two drip pan is full|0|0|4|ON|OFF|N|N|

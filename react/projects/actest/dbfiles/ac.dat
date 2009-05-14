@@ -1,4 +1,4 @@
-AC1|First AC Unit|TEMP_COLD_AC1|TEMP_HOT_AC1|ON_AC1|SHUTOFF_AC1|120|
+AC1|First AC Unit|TEMP_COLD_AC1|TEMP_HOT_AC1|ON_AC1|SHUTOFF_AC1|10|
 # tag
 # description
 # Cold Temperature (AI)
