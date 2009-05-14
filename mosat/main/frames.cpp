@@ -252,10 +252,10 @@ void frame_generator(int refresh,const char L[3])
  }
  else
  {
-  fprintf(fr,"   <FRAME src=\"periferico_norte/periferico_norte_header.html\">\n");
   fprintf(fr,"   <FRAME src=\"periferico_sur/periferico_sur_header.html\">\n");
-  fprintf(fr,"   <FRAME src=\"periferico_norte/%s_report_p_norte.html\">\n",Day);
+  fprintf(fr,"   <FRAME src=\"periferico_norte/periferico_norte_header.html\">\n");
   fprintf(fr,"   <FRAME src=\"periferico_sur/%s_report_p_sur.html\">\n",Day);
+  fprintf(fr,"   <FRAME src=\"periferico_norte/%s_report_p_norte.html\">\n",Day);
  }
  fprintf(fr,"  </FRAMESET>\n");
  fprintf(fr,"</HTML>");
