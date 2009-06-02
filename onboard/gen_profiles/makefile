@@ -23,4 +23,4 @@ gen_profiles:	gen_profiles.o restriction_reader.o
 	g++ -g -o gen_profiles gen_profiles.o restriction_reader.o $(RTMODBUS) $(RTCOMMON)
 
 clean: 
-	rm -v *.o gen_profiles gnuplotoptions.txt  plot.txt  profile_out.txt
+	rm -v *.o gen_profiles calc_savings gnuplotoptions.txt  plot.txt  profile_out.txt
