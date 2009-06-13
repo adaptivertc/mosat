@@ -40,12 +40,15 @@ int rt_modbus_read_output_table(uint8_t *buf, int n)
   }
 
   buf[2] = byte_count;
-
+  
+  /*******************/
+  // put call to read actual values here
   p = buf + 3;
   for (i=0; i < byte_count; i++)
   {
     *(p++) = 0xFF;
   }
+  /*******************/
 
   add_CRC(buf, 5 + byte_count, 0xffff);
   //trace.print_buf(0, "Reply:\n", buf, 5 + byte_count);
@@ -85,11 +88,14 @@ int rt_modbus_read_input_table(uint8_t *buf, int n)
   }
   buf[2] = byte_count;
 
+  /*******************/
+  // put call to read actual values here
   p = buf + 3;
   for (i=0; i < byte_count; i++)
   {
     *(p++) = 0xFF;
   }
+  /*******************/
 
   add_CRC(buf, 5 + byte_count, 0xffff);
   //trace.print_buf(0, "Reply:\n", buf, 5 + byte_count);
@@ -127,6 +133,8 @@ int rt_modbus_read_registers(uint8_t *buf, int n)
 
   buf[2] = byte_count;
 
+  /*******************/
+  // put call to read actual values here
   p = buf + 3;
   for (i=0; i < num_points; i++)
   {
@@ -142,6 +150,7 @@ int rt_modbus_read_registers(uint8_t *buf, int n)
     memcpy(p, &tmp, 2);
     p += 2;
   }
+  /*******************/
 
   add_CRC(buf, 5 + byte_count, 0xffff);
   //trace.print_buf(0, "Reply:\n", buf, 5 + byte_count);
@@ -179,6 +188,8 @@ int rt_modbus_read_analog_inputs(uint8_t *buf, int sz)
   byte_count = num_points * 2;
   buf[2] = byte_count;
 
+  /*******************/
+  // put call to read actual values here
   p = buf + 3;
   for (i=0; i < num_points; i++)
   {
@@ -187,6 +198,7 @@ int rt_modbus_read_analog_inputs(uint8_t *buf, int sz)
     memcpy(p, &tmp, 2);
     p += 2;
   }
+  /*******************/
 
   add_CRC(buf, 5 + byte_count, 0xffff);
   //trace.print_buf(0, "Reply:\n", buf, 5 + byte_count);
@@ -202,6 +214,13 @@ int rt_modbus_force_single_output(uint8_t *buf, int sz)
 
   //trace.print_buf(1, "Reply:\n", buf, 8);
   //PutBuffer(buf, 8);
+  
+  /*******************/
+  // put call to send the actual values here
+
+
+  /*******************/
+
   return 8;
 }
 
@@ -213,6 +232,13 @@ int rt_modbus_preset_single_register(uint8_t *buf, int sz)
 
   //trace.print_buf(1, "Reply:\n", buf, 8);
   //PutBuffer(buf, 8);
+  
+  /*******************/
+  // put call to send the actual values here
+
+
+  /*******************/
+
   return 8;
 }
 
@@ -220,6 +246,9 @@ int rt_modbus_preset_single_register(uint8_t *buf, int sz)
 
 int rt_modbus_read_exception_status(uint8_t *buf, int sz)
 {
+
+  // ************ Probably eliminate, no longer used??
+
   //trace.print_buf(1, "Read Exception Status:\n", buf, 4);
   buf[2] = 0;
   add_CRC(buf, 5, 0xffff);
@@ -248,6 +277,12 @@ int rt_modbus_force_multiple_outputs(uint8_t *buf, int sz)
 
   data_bytes = buf[6];
   size = 9 + data_bytes;
+
+  /*******************/
+  // put call to send the actual values here
+
+
+  /*******************/
 
   add_CRC(buf, 8, 0xffff);
   //trace.print_buf(1, "Force Multiple Outputs:\n", buf, size);
@@ -278,6 +313,9 @@ int rt_modbus_preset_multiple_registers(uint8_t *buf, int sz)
 
 int rt_modbus_report_device_type(uint8_t *buf, int sz)
 {
+
+  // ************ Probably eliminate, no longer used??
+
   //trace.print_buf(1, "Report Device Type:\n", buf, 4);
   buf[2] = 5;
   buf[3] = 0;
@@ -295,6 +333,9 @@ int rt_modbus_report_device_type(uint8_t *buf, int sz)
 
 int rt_modbus_read_scratch_pad(uint8_t *buf, int sz)
 {
+
+  // ************ Probably eliminate, no longer used??
+
   //trace.print_buf(1, "Read Scratch Pad:\n", buf, 8);
   buf[2] = 0;
   add_CRC(buf, 5, 0xffff);

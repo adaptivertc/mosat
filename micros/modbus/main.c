@@ -160,6 +160,15 @@ int main(int argc, char *argv[])
   buf[5] = 0x03;
   add_CRC(buf, 8, 0xFFFF);
 
+  // ******* Special note
+  // For as many known opcodes as possible, we should at least
+  // determine the size, read the whole message check the CRC, 
+  // and return "opcode not supported".
+  //
+  // If it is a completely unknown opcode, then we need to wait a 
+  // timeout period, flush the input buffer, then return the
+  // appropriate error.
+
   printf("\nExample 0x99 bad opcode  ---------------------\n\n");
   doit();
 
