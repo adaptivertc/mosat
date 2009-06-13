@@ -55,15 +55,85 @@ int main(int argc, char *argv[])
   int min_size;
   int total_size;
   int reply_size;
-  buf[0] = 5;
-  buf[1] = 1;
-  buf[2] = 0;
+  buf[0] = 0x05;
+  buf[1] = 0x01;
+  buf[2] = 0x00;
   buf[3] = 0x99;
-  buf[4] = 0;
-  buf[5] = 55;
+  buf[4] = 0x00;
+  buf[5] = 0x55;
   add_CRC(buf, 8, 0xFFFF);
 
-  printf("\nExample 1 ---------------------\n\n");
+  printf("\nExample 0x01 ---------------------\n\n");
+  doit();
+
+  buf[0] = 0x05;
+  buf[1] = 0x02;
+  buf[2] = 0x00;
+  buf[3] = 0xC4;
+  buf[4] = 0x00;
+  buf[5] = 0x16;
+  add_CRC(buf, 8, 0xFFFF);
+
+  printf("\nExample 0x02 ---------------------\n\n");
+  doit();
+
+  buf[0] = 0x05;
+  buf[1] = 0x03;
+  buf[2] = 0x00;
+  buf[3] = 0x10;
+  buf[4] = 0x00;
+  buf[5] = 0x05;
+  add_CRC(buf, 8, 0xFFFF);
+
+  printf("\nExample 0x03 ---------------------\n\n");
+  doit();
+
+  buf[0] = 0x05;
+  buf[1] = 0x04;
+  buf[2] = 0x00;
+  buf[3] = 0x12;
+  buf[4] = 0x00;
+  buf[5] = 0x06;
+  add_CRC(buf, 8, 0xFFFF);
+
+  printf("\nExample 0x04 ---------------------\n\n");
+  doit();
+
+  buf[0] = 0x05;
+  buf[1] = 0x05;
+  buf[2] = 0x00;
+  buf[3] = 0xAC;
+  buf[4] = 0xFF;
+  buf[5] = 0x00;
+  add_CRC(buf, 8, 0xFFFF);
+
+  printf("\nExample 0x05 ---------------------\n\n");
+  doit();
+
+  buf[0] = 0x05;
+  buf[1] = 0x06;
+  buf[2] = 0x00;
+  buf[3] = 0x01;
+  buf[4] = 0x00;
+  buf[5] = 0x03;
+  add_CRC(buf, 8, 0xFFFF);
+
+  printf("\nExample 0x06 ---------------------\n\n");
+  doit();
+
+
+  buf[0] = 0x05;
+  buf[1] = 0x0F;
+  buf[2] = 0x00;
+  buf[3] = 0x13;
+  buf[4] = 0x00;
+  buf[5] = 0x0A;
+  buf[6] = 0x02;
+  buf[7] = 0xCD;
+  buf[8] = 0x01;
+  add_CRC(buf, 11, 0xFFFF);
+
+  printf("\nExample 0x0F ---------------------\n\n");
   doit();
 
   buf[0] = 0x05;
@@ -79,7 +149,7 @@ int main(int argc, char *argv[])
   buf[10] = 0x02;
   add_CRC(buf, 13, 0xFFFF);
 
-  printf("\nExample 2 ---------------------\n\n");
+  printf("\nExample 0x10 ---------------------\n\n");
   doit();
   
 }

@@ -10,7 +10,7 @@ main.o: main.c
 crc.o: crc.c 
 	gcc -c crc.c 
 
-mod_server_msg.o: mod_server_msg.c 
+mod_server_msg.o: mod_server_msg.c rt_modbus_opcodes.h 
 	gcc -c mod_server_msg.c 
 
 swap.o: swap.c

@@ -60,8 +60,8 @@ int binary_to_hexascii(uint8_t hex_buf[], uint8_t bin_buf[], int n_bin)
 
   for (i=0, j=0; j < n_bin; i+= 2, j++)
   {
-    hex_buf[i+1] = bin_to_hex(bin_buf[j] >> 4);
-    hex_buf[i] = bin_to_hex(bin_buf[j] & 0x0F);
+    hex_buf[i] = bin_to_hex(bin_buf[j] >> 4);
+    hex_buf[i+1] = bin_to_hex(bin_buf[j] & 0x0F);
   }
   hex_buf[i] = '\0';
   return i;
