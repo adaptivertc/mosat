@@ -411,32 +411,57 @@ int rt_modbus_process_request(uint8_t *buf, int n)
   switch (buf[1])
   {
     case READ_OUTPUT_TABLE:
+      printf("READ_OUTPUT_TABLE:\n");
       return rt_modbus_read_output_table(buf, n);
     case READ_INPUT_TABLE:
+      printf("READ_INPUT_TABLE:\n");
       return rt_modbus_read_input_table(buf, n);
     case READ_REGISTERS:
+      printf("READ_REGISTERS:\n");
       return rt_modbus_read_registers(buf, n);
     case READ_ANALOG_INPUTS:
+      printf("READ_ANALOG_INPUTS:\n");
       return rt_modbus_read_analog_inputs(buf, n);
     case FORCE_SINGLE_OUTPUT:
+      printf("FORCE_SINGLE_OUTPUT:\n"); 
       return rt_modbus_force_single_output(buf, n);
     case PRESET_SINGLE_REGISTER:
+      printf("PRESET_SINGLE_REGISTER:\n"); 
       return rt_modbus_preset_single_register(buf, n);
     case READ_EXCEPTION_STATUS:
-      return rt_modbus_read_exception_status(buf, n);
+      printf("READ_EXCEPTION_STATUS:\n"); 
+      return rt_modbus_read_exception_status(buf, n); 
     case LOOPBACK:
+      printf("LOOPBACK:\n"); 
       return rt_modbus_loopback(buf, n);
     case FORCE_MULTIPLE_OUTPUTS:
+      printf("FORCE_MULTIPLE_OUTPUTS:\n"); 
       return rt_modbus_force_multiple_outputs(buf, n);
     case PRESET_MULTIPLE_REGISTERS:
+      printf("PRESET_MULTIPLE_REGISTERS:\n"); 
       return rt_modbus_preset_multiple_registers(buf, n);
     case REPORT_DEVICE_TYPE:
+      printf("REPORT_DEVICE_TYPE:\n"); 
       return rt_modbus_report_device_type(buf, n);
     case READ_SCRATCH_PAD:
-      return rt_modbus_read_scratch_pad(buf, n);
+      printf("READ_SCRATCH_PAD:\n"); 
+      return rt_modbus_read_scratch_pad(buf, n); 
     default:
-      buf[1] = 128;
-      buf[2] = 1;
+      printf("UNSUPORTED OPCODE:\n"); 
+      if (buf[1] < 80) buf[1] += 0x80;
+      else buf[1] = 0xFF;
+      buf[2] = 0x01;  // unsuported or illegal opcode 
+          // Note: we will probably only ever use 0x01 to 0x04.
+          // Error Codes:
+          // 0x01 = Illegal or unsuported opcode
+          // 0x02 = Illegal or out of range address 
+          // 0x03 = Illegal data value
+          // 0x04 = Slave device failure
+          // 0x05 = Acknowledge
+          // 0x06 = Slave device busy
+          // 0x07 = Memory parity error
+          // 0x0A = Gateway path unavailable
+          // 0x0B = Gateway target device failed to respond
       add_CRC(buf, 5, 0xffff);
       return 5;
       //trace.dprintf(5, "Un-supported opcode!!!!\n", int(buf[1]));

@@ -153,7 +153,7 @@ int main(int argc, char *argv[])
   doit();
 
   buf[0] = 0x05;
-  buf[1] = 0x99; // bad opcode
+  buf[1] = 0x0A; // bad opcode
   buf[2] = 0x00;
   buf[3] = 0x01;
   buf[4] = 0x00;
@@ -169,7 +169,7 @@ int main(int argc, char *argv[])
   // timeout period, flush the input buffer, then return the
   // appropriate error.
 
-  printf("\nExample 0x99 bad opcode  ---------------------\n\n");
+  printf("\nExample 0x0A bad opcode  ---------------------\n\n");
   doit();
 
   
