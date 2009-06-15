@@ -15,6 +15,9 @@ int rt_modbus_read_output_table(uint8_t *buf, int n)
   int i;
   uint8_t *p;
   int byte_count;
+  uint8_t val;
+  int byte, bit;
+  uint8_t mask;
 
   //trace.print_buf(0, "Read Output Table:\n", buf, 8);
   //print_binary_buf("Read Output Table: ", buf, 8);
@@ -46,7 +49,20 @@ int rt_modbus_read_output_table(uint8_t *buf, int n)
   p = buf + 3;
   for (i=0; i < byte_count; i++)
   {
-    *(p++) = 0xFF;
+    *(p++) = 0x00;
+  }
+
+  for (i=0; i < num_points; i++)
+  {
+    // val = read_do(i + start_point); 
+    val = (i % 2) != 0;
+    if (val)
+    {
+      byte = i / 8;
+      bit = i % 8;
+      mask = 1 << bit;
+      buf[byte + 3] |= mask;
+    }
   }
   /*******************/
 
@@ -65,6 +81,9 @@ int rt_modbus_read_input_table(uint8_t *buf, int n)
   int byte_count;
   uint8_t *p;
   int i;
+  uint8_t val;
+  int byte, bit;
+  uint8_t mask;
 
   //trace.print_buf(0, "Read Input Table:\n", buf, 8);
   memcpy(&start_point, buf + 2, 2);
@@ -93,7 +112,20 @@ int rt_modbus_read_input_table(uint8_t *buf, int n)
   p = buf + 3;
   for (i=0; i < byte_count; i++)
   {
-    *(p++) = 0xFF;
+    *(p++) = 0x00;
+  }
+
+  for (i=0; i < num_points; i++)
+  {
+    // val = read_di(i + start_point); 
+    val = (i % 2) == 0;
+    if (val)
+    {
+      byte = i / 8;
+      bit = i % 8;
+      mask = 1 << bit;
+      buf[byte + 3] |= mask;
+    }
   }
   /*******************/
 
@@ -296,6 +328,7 @@ int rt_modbus_force_multiple_outputs(uint8_t *buf, int sz)
   int byte, bit;
   uint8_t mask;
   int sz_check;
+  uint8_t val;
 
   data_bytes = buf[6];
   size = 9 + data_bytes;
@@ -329,18 +362,10 @@ int rt_modbus_force_multiple_outputs(uint8_t *buf, int sz)
     byte = i / 8;
     bit = i % 8;
     mask = 1 << bit;
-    printf("byte: %d, bit %d:", byte, bit);
-    if (buf[byte + 7] & mask)
-    {
-      //send_do(start_point + i, true);
-      printf(" T (buf[%d]), addr: %d\n", byte + 7, ((int) start_point) + i);
-    }
-    else
-    {
-      //send_do(start_point + i, false);
-      printf(" F (buf[%d]), addr: %d\n", byte + 7, ((int) start_point) + i);
-    }
-    //write_register(start_point + i, tmp); 
+    val = (buf[byte + 7] & mask) != 0;
+    printf("byte: %d (buf[%d]), bit %d: %c, addr: %d\n", 
+               byte, byte + 7, bit, val?'T':'F', ((int) start_point) + i);
+    //send_do(start_point + i, val);
   }
 
   /*******************/
