@@ -6,14 +6,13 @@
 #include "mod_server_msg.h"
 #include "rt_modbus_crc.h"
 
-uint8_t buf[512];
-uint8_t ascii[1024];
 
-void doit(void)
+void doit(uint8_t buf[])
 {
   int min_size;
   int total_size;
   int reply_size;
+  uint8_t ascii[1024];
 
   min_size = rt_modbus_min_bytes(buf);
   printf("Min size = %d\n", min_size);
@@ -52,9 +51,8 @@ void doit(void)
 
 int main(int argc, char *argv[])
 {
-  int min_size;
-  int total_size;
-  int reply_size;
+  uint8_t buf[512];
+
   buf[0] = 0x05;
   buf[1] = 0x01;
   buf[2] = 0x00;
@@ -64,7 +62,7 @@ int main(int argc, char *argv[])
   add_CRC(buf, 8, 0xFFFF);
 
   printf("\nExample 0x01 ---------------------\n\n");
-  doit();
+  doit(buf);
 
   buf[0] = 0x05;
   buf[1] = 0x02;
@@ -75,7 +73,7 @@ int main(int argc, char *argv[])
   add_CRC(buf, 8, 0xFFFF);
 
   printf("\nExample 0x02 ---------------------\n\n");
-  doit();
+  doit(buf);
 
   buf[0] = 0x05;
   buf[1] = 0x03;
@@ -86,7 +84,7 @@ int main(int argc, char *argv[])
   add_CRC(buf, 8, 0xFFFF);
 
   printf("\nExample 0x03 ---------------------\n\n");
-  doit();
+  doit(buf);
 
   buf[0] = 0x05;
   buf[1] = 0x04;
@@ -97,7 +95,7 @@ int main(int argc, char *argv[])
   add_CRC(buf, 8, 0xFFFF);
 
   printf("\nExample 0x04 ---------------------\n\n");
-  doit();
+  doit(buf);
 
   buf[0] = 0x05;
   buf[1] = 0x05;
@@ -108,7 +106,7 @@ int main(int argc, char *argv[])
   add_CRC(buf, 8, 0xFFFF);
 
   printf("\nExample 0x05 ---------------------\n\n");
-  doit();
+  doit(buf);
 
   buf[0] = 0x05;
   buf[1] = 0x06;
@@ -119,7 +117,7 @@ int main(int argc, char *argv[])
   add_CRC(buf, 8, 0xFFFF);
 
   printf("\nExample 0x06 ---------------------\n\n");
-  doit();
+  doit(buf);
 
 
   buf[0] = 0x05;
@@ -129,12 +127,12 @@ int main(int argc, char *argv[])
   buf[4] = 0x00;
   buf[5] = 0x0A;
   buf[6] = 0x02;
-  buf[7] = 0xCD;
-  buf[8] = 0x01;
+  buf[7] = 0x55;
+  buf[8] = 0x55;
   add_CRC(buf, 11, 0xFFFF);
 
   printf("\nExample 0x0F ---------------------\n\n");
-  doit();
+  doit(buf);
 
   buf[0] = 0x05;
   buf[1] = 0x10;
@@ -150,7 +148,7 @@ int main(int argc, char *argv[])
   add_CRC(buf, 13, 0xFFFF);
 
   printf("\nExample 0x10 ---------------------\n\n");
-  doit();
+  doit(buf);
 
   buf[0] = 0x05;
   buf[1] = 0x0A; // bad opcode
@@ -170,7 +168,7 @@ int main(int argc, char *argv[])
   // appropriate error.
 
   printf("\nExample 0x0A bad opcode  ---------------------\n\n");
-  doit();
+  doit(buf);
 
-  
+  return 0;
 }

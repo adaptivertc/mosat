@@ -119,7 +119,7 @@ int rt_modbus_read_registers(uint8_t *buf, int n)
   swap16(&start_point);
   memcpy(&num_points, buf + 4, 2);
   swap16(&num_points);
-  if (num_points > 128)
+  if (num_points > 120)
   {
     //trace.dprintf(5, "*** Too many points specified!\n");
     //trace.dprintf(5, "Start %u, Num %u\n", start_point, num_points);
@@ -174,7 +174,7 @@ int rt_modbus_read_analog_inputs(uint8_t *buf, int sz)
   swap16(&start_point);
   memcpy(&num_points, buf + 4, 2);
   swap16(&num_points);
-  if (num_points > 128)
+  if (num_points > 120)
   {
     //trace.dprintf(5, "*** Too many points specified!\n");
     //trace.dprintf(5, "Start %u, Num %u\n", start_point, num_points);
@@ -224,6 +224,8 @@ int rt_modbus_force_single_output(uint8_t *buf, int sz)
   /*******************/
   // put call to send the actual values here
 
+  printf("value: %c, addr: %hu\n", (value != 0)?'T':'F', address);
+  // send_do(address, value != 0);
 
   /*******************/
 
@@ -248,6 +250,8 @@ int rt_modbus_preset_single_register(uint8_t *buf, int sz)
   memcpy(&value, buf + 4, 2);
   swap16(&value);
 
+  printf("value: %hx, addr: %hu\n", value, address);
+  // void write_register(address, value);
 
   /*******************/
 
@@ -284,15 +288,60 @@ int rt_modbus_loopback(uint8_t *buf, int sz)
 
 int rt_modbus_force_multiple_outputs(uint8_t *buf, int sz)
 {
+  uint16_t start_point;
+  uint16_t num_points;
   int data_bytes;
   int size;
+  int i;
+  int byte, bit;
+  uint8_t mask;
+  int sz_check;
 
   data_bytes = buf[6];
   size = 9 + data_bytes;
 
+  memcpy(&start_point, buf + 2, 2);
+  swap16(&start_point);
+  memcpy(&num_points, buf + 4, 2);
+  swap16(&num_points);
+
+  printf("start = %hu, num = %hu\n", start_point, num_points);
+
+  sz_check = num_points / 8;
+  if ((num_points % 8) != 0) sz_check++;
+
+  printf("data bytes = %hu, calculated size = %d\n", data_bytes, sz_check);
+  if (sz_check == data_bytes)
+  {
+    printf("Size matches\n");
+  }
+  else
+  {
+    printf("*** Data error size does NOT match\n");
+  }
+
+
   /*******************/
   // put call to send the actual values here
 
+  for (i=0; i < num_points; i++)
+  {
+    byte = i / 8;
+    bit = i % 8;
+    mask = 1 << bit;
+    printf("byte: %d, bit %d:", byte, bit);
+    if (buf[byte + 7] & mask)
+    {
+      //send_do(start_point + i, true);
+      printf(" T (buf[%d]), addr: %d\n", byte + 7, ((int) start_point) + i);
+    }
+    else
+    {
+      //send_do(start_point + i, false);
+      printf(" F (buf[%d]), addr: %d\n", byte + 7, ((int) start_point) + i);
+    }
+    //write_register(start_point + i, tmp); 
+  }
 
   /*******************/
 
@@ -311,18 +360,40 @@ int rt_modbus_preset_multiple_registers(uint8_t *buf, int sz)
   int size;
   uint16_t start_point;
   uint16_t num_points;
+  uint16_t tmp;
+  int i;
 
   data_bytes = buf[6];
   size = 9 + data_bytes;
-
-  //trace.print_buf(1, "Preset Multiple Registers:\n", buf, size);
-
-  add_CRC(buf, 8, 0xffff);
 
   memcpy(&start_point, buf + 2, 2);
   swap16(&start_point);
   memcpy(&num_points, buf + 4, 2);
   swap16(&num_points);
+  printf("start = %hu, num = %hu\n", start_point, num_points);
+
+  printf("data bytes = %hu, calculated size = %d\n", data_bytes, num_points * 2);
+  if ((num_points * 2) == data_bytes)
+  {
+    printf("Size matches\n");
+  }
+  else
+  {
+    printf("*** Data error size does NOT match\n");
+  }
+
+  //trace.print_buf(1, "Preset Multiple Registers:\n", buf, size);
+  /**************/
+  for (i=0; i < num_points; i++)
+  {
+    memcpy(&tmp, buf + (i * 2) + 7, 2);
+    swap16(&tmp);
+    printf("value %d: %04hx, addr: %d\n", i, tmp, start_point + i);
+    //write_register(start_point + i, tmp); 
+  }
+  /************/
+
+  add_CRC(buf, 8, 0xffff);
 
   //trace.print_buf(1, "Reply:\n", buf, 8);
   //PutBuffer(buf, 8);
