@@ -210,11 +210,17 @@ int rt_modbus_read_analog_inputs(uint8_t *buf, int sz)
 
 int rt_modbus_force_single_output(uint8_t *buf, int sz)
 {
+  uint16_t address;
+  uint16_t value;
   //trace.print_buf(1, "Force Single Output:\n", buf, 8);
 
   //trace.print_buf(1, "Reply:\n", buf, 8);
   //PutBuffer(buf, 8);
   
+  memcpy(&address, buf + 2, 2);
+  swap16(&address);
+  memcpy(&value, buf + 4, 2);
+  swap16(&value);
   /*******************/
   // put call to send the actual values here
 
@@ -228,6 +234,8 @@ int rt_modbus_force_single_output(uint8_t *buf, int sz)
 
 int rt_modbus_preset_single_register(uint8_t *buf, int sz)
 {
+  uint16_t address;
+  uint16_t value;
   //trace.print_buf(1, "Preset Single Register:", buf, 8);
 
   //trace.print_buf(1, "Reply:\n", buf, 8);
@@ -235,6 +243,10 @@ int rt_modbus_preset_single_register(uint8_t *buf, int sz)
   
   /*******************/
   // put call to send the actual values here
+  memcpy(&address, buf + 2, 2);
+  swap16(&address);
+  memcpy(&value, buf + 4, 2);
+  swap16(&value);
 
 
   /*******************/
@@ -297,6 +309,8 @@ int rt_modbus_preset_multiple_registers(uint8_t *buf, int sz)
 {
   int data_bytes;
   int size;
+  uint16_t start_point;
+  uint16_t num_points;
 
   data_bytes = buf[6];
   size = 9 + data_bytes;
@@ -304,8 +318,15 @@ int rt_modbus_preset_multiple_registers(uint8_t *buf, int sz)
   //trace.print_buf(1, "Preset Multiple Registers:\n", buf, size);
 
   add_CRC(buf, 8, 0xffff);
+
+  memcpy(&start_point, buf + 2, 2);
+  swap16(&start_point);
+  memcpy(&num_points, buf + 4, 2);
+  swap16(&num_points);
+
   //trace.print_buf(1, "Reply:\n", buf, 8);
   //PutBuffer(buf, 8);
+
   return 8;
 }
 
