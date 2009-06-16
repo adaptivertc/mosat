@@ -15,31 +15,52 @@
 //#include "hp2mod.h"
 #include "rtmodbus.h"
 
+#define tp_serial (1)
+#define tp_tcpip (2)
+
 // ssh dcarr@coyote2.dyndns.org:52483
 int main(int argc, char *argv[])
 {
-  const char * ip_addr;
+  const char *ip_addr;
+  const char *serial_dev;
+  float timeout;
+  int baudrate;
+  int connection_type;
+ 
   int unit_id;
-  if (argc > 1)
-  {
-    ip_addr = argv[1];
-    printf("Using: %s\n", ip_addr);
-  }
-  else
-  {
-    ip_addr = "127.0.0.1:502";
-    printf("Using default: %s\n", ip_addr); 
-  }
 
-  if (argc > 2)
+  if (argc == 5)
   {
-    unit_id = atol(argv[2]);
-    printf("Using unit id: %d\n", unit_id);
+    connection_type = tp_serial;
+    serial_dev = argv[1];
+    baudrate = atoi(argv[2]);
+    timeout = atof(argv[3]); 
+    unit_id = atoi(argv[4]);
   }
   else
   {
-    unit_id = 0;
-    printf("Using default unit id:: %d\n", unit_id);
+    connection_type = tp_tcpip;
+    if (argc > 1)
+    {
+      ip_addr = argv[1];
+      printf("Using: %s\n", ip_addr);
+    }
+    else
+    {
+      ip_addr = "127.0.0.1:502";
+      printf("Using default: %s\n", ip_addr); 
+    }
+
+    if (argc > 2)
+    {
+      unit_id = atol(argv[2]);
+      printf("Using unit id: %d\n", unit_id);
+    }
+    else
+    {
+      unit_id = 0;
+      printf("Using default unit id:: %d\n", unit_id);
+    }
   }
 
 
@@ -57,10 +78,18 @@ int main(int argc, char *argv[])
   //rtmodbus_t *modc = rt_create_modbus("10.1.0.5");
   //rtmodbus_t *modc = rt_create_modbus("10.0.0.0");
 
-  rtmodbus_t *modc = rt_create_modbus(ip_addr);
+  rtmodbus_t *modc;
+  if (connection_type == tp_tcpip)
+  {
+    modc = rt_create_modbus(ip_addr);
+    printf("myconnect %s:%d\n", __FILE__, __LINE__);
+  }
+  else
+  {
+    modc = rt_create_modbus_serial(serial_dev, baudrate, timeout);
+  }
   modc->set_debug_level(0);
   modc->set_address(unit_id);
-  printf("myconnect %s:%d\n", __FILE__, __LINE__);
  
   while (true)
   {

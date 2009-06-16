@@ -1,9 +1,14 @@
 #include <stdio.h>
 #include <string.h>
 
+
 #include "mtype.h"
 #include "modio.h"
 #include "hprtu.h"
+
+#include "hp2mod.h"
+
+#include "rtmodbus_utility.h"
 
 /********************************************************************/
 
@@ -92,7 +97,7 @@ void add_CRC(uint8 *buf, int size, uint16 start_mask)
 //   2nd byte: opcode
 //   3rd byte: byte count or error code
 
-int rt_modbus_reply_size(uint8 *buf)
+int rt_modbus_reply_size_min(uint8 *buf)
 {
   switch (buf[1])
   {
@@ -100,25 +105,59 @@ int rt_modbus_reply_size(uint8 *buf)
     case READ_INPUT_TABLE:
     case READ_REGISTERS:
     case READ_ANALOG_INPUTS:
-      count = 5 + buf[2];
+    case READ_SCRATCH_PAD:
+      return 3;
       break;
     case FORCE_SINGLE_OUTPUT:
     case PRESET_SINGLE_REGISTER:
-      count = 8;
-      break;
-    case READ_EXCEPTION_STATUS:
-      count = 5;
-      break;
-    case LOOPBACK:
     case FORCE_MULTIPLE_OUTPUTS:
     case PRESET_MULTIPLE_REGISTERS:
-      count = 8;
+    case LOOPBACK:
+      return 8;
+      break;
+    case READ_EXCEPTION_STATUS:
+      return 5;
       break;
     case REPORT_DEVICE_TYPE:
-      count = 10;
+      return 10;
       break;
+    default:
+      if (buf[1] > 0x80) // Ok, this is an error return!
+      {
+        return 3;
+      }
+      else // oops, this is completely unexpected we can't determine the size.
+      {
+        return -1;
+      }
+  }
+}
+
+/********************************************************************/
+
+int rt_modbus_reply_size_total(uint8 *buf)
+{
+  switch (buf[1])
+  {
+    case READ_OUTPUT_TABLE:
+    case READ_INPUT_TABLE:
+    case READ_REGISTERS:
+    case READ_ANALOG_INPUTS:
     case READ_SCRATCH_PAD:
-      count = 5 + buf[2];
+      return 5 + buf[2];
+      break;
+    case FORCE_SINGLE_OUTPUT:
+    case PRESET_SINGLE_REGISTER:
+    case FORCE_MULTIPLE_OUTPUTS:
+    case PRESET_MULTIPLE_REGISTERS:
+    case LOOPBACK:
+      return 8;
+      break;
+    case READ_EXCEPTION_STATUS:
+      return 5;
+      break;
+    case REPORT_DEVICE_TYPE:
+      return 10;
       break;
     default:
       if (buf[1] > 0x80) // Ok, this is an error!
@@ -131,6 +170,5 @@ int rt_modbus_reply_size(uint8 *buf)
       }
   }
 }
-
 
 /*********************************************************************/

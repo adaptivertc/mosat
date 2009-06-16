@@ -46,14 +46,14 @@ int rt_mod_serial_client_t::wait_message(void)
   react_trace.dprintf(0, "Waiting for a message . . . \n");
   // Read the first 3 bytes, all modbus replies must have a minimum of 3 bytes.
   printf("--------------- Waiting message . . .\n");
-  int n1 = rt_read_serial(serial_fd, recv_buffer, 3);
+  int n1 = rt_read_serial(serial_fd, recv_buffer, 2);
   printf("--------------- Read %d bytes\n", n1);
-  if (n1 != 3)
+  if (n1 != 2)
   {
     react_trace.dperror(6, "read");
   }
-  int mod_size = rt_modbus_reply_size(recv_buffer);
-  printf("--------------- calculated size: %d bytes\n", mod_size);
+  int min_mod_size = rt_modbus_reply_size_min(recv_buffer);
+  printf("--------------- min size: %d bytes\n", min_mod_size);
   //int mod_size = 10; 
   uint8 tmp8;
   memcpy(&tmp8, recv_buffer + 0, 1);
@@ -63,24 +63,44 @@ int rt_mod_serial_client_t::wait_message(void)
     react_trace.dprintf(5, "Error, unit id in received message did not match\n");
   }
   // Read the rest of the buffer.
-  int n = rt_read_serial(serial_fd, recv_buffer + 3, mod_size -3);
+  int n = rt_read_serial(serial_fd, recv_buffer + 2, min_mod_size - 2);
 
-  if (n != mod_size - 3)
+  if (n != min_mod_size - 2)
   {
     react_trace.dprintf(5, "**** Wrong number of bytes in PLC reply\n");
     //RXFlush();
     return -1;
   }
 
-  if (!check_CRC(recv_buffer, n, 0xffff))
+  int total_mod_size = rt_modbus_reply_size_total(recv_buffer);
+  printf("--------------- total size: %d bytes\n", total_mod_size);
+  if (total_mod_size > min_mod_size)
+  {
+    printf("--------------- reading %d more bytes\n", 
+                   total_mod_size - min_mod_size);
+    n = rt_read_serial(serial_fd, recv_buffer + min_mod_size, total_mod_size - min_mod_size);
+
+    if (n != total_mod_size - min_mod_size)
+    {
+      react_trace.dprintf(5, "**** Wrong number of bytes in PLC reply\n");
+      //RXFlush();
+      return -1;
+    }
+  }
+  else
+  {
+    printf("--------------- no more bytes to read!\n");
+  }
+
+  if (!check_CRC(recv_buffer, total_mod_size, 0xffff))
   {
     react_trace.dprintf(5, "**** Bad CRC in message from PLC\n");
     //RXFlush();
     return -1;
   }
 
-  react_trace.print_buf(0, "Recived:\n", recv_buffer, mod_size);
-  return mod_size - 2;
+  react_trace.print_buf(0, "Recived:\n", recv_buffer, total_mod_size);
+  return total_mod_size - 2;
 }
 
 /***************/

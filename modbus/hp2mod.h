@@ -1,6 +1,6 @@
 
-#ifndef __HP2MOD_INC__
-#define __HP2MOD_INC__
+#ifndef __rt_modbus_opcodes_INC__
+#define __rt_modbus_opcodes_INC__
 
 const uint8 READ_OUTPUT_TABLE = 1;
 const uint8 READ_INPUT_TABLE = 2;
@@ -22,11 +22,5 @@ const uint8 MOD_ANALOG_IN = 3;
 const uint8 MOD_DISCRETE_IN = 4;
 const uint8 MOD_DISCRETE_OUT = 5;
 
-const uint8 HP_UNDEFINED = 0;
-const uint8 HP_ANALOG_IN = 1;
-const uint8 HP_ANALOG_OUT = 12;
-const uint8 HP_DISCRETE_IN = 5;
-const uint8 HP_DISCRETE_OUT = 13;
-const uint8 HP_TDO = 14;
 
 #endif
