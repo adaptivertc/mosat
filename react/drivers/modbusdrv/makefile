@@ -7,6 +7,6 @@ reactmodbusdrv.o:	reactmodbusdrv.cpp reactmodbusdrv.h
 	g++ -fpic -Wall -c reactmodbusdrv.cpp 
 
 clean:
-	rm *.o *.so
+	rm -v *.o *.so
 
 

@@ -237,6 +237,7 @@ reactmodbus_driver_t::reactmodbus_driver_t(react_drv_base_t *react, const char *
 
   read_values = false;
   wake_him_up = true;
+  n_dos_to_send = 0;
   printf("initializing modbus\n");
   //modbus = rt_create_modbus("127.0.0.1:502");
   //modbus = rt_create_modbus("192.168.1.104:502");
@@ -265,7 +266,7 @@ reactmodbus_driver_t::reactmodbus_driver_t(react_drv_base_t *react, const char *
   {
     perror("sem_init");
   }
-  if (0 != sem_init(& transmit_mutex_sem, 0, 1))
+  if (0 != sem_init(&do_mutex_sem, 0, 1))
   {
     perror("sem_init");
   }
@@ -350,10 +351,18 @@ void reactmodbus_driver_t::send_do(int ch, bool val)
   if ((ch >= 0) && (ch < 32))
   {
     //shm->do_val[ch] = val;
-    sem_wait(&transmit_mutex_sem);
-    modbus->send_do(ch, val);
-    sem_post(&transmit_mutex_sem);
+    //modbus->send_do(ch, val);
+
+    if (n_dos_to_send >= 64) return;
+
+    sem_wait(&do_mutex_sem);
+    do_vals_to_send[n_dos_to_send].ch = ch;
+    do_vals_to_send[n_dos_to_send].val = val;
+    n_dos_to_send++;
+    //modbus->send_do(ch, val);
+    sem_post(&do_mutex_sem);
   }
+
 }
 
 /***********************************************************************/
@@ -416,19 +425,13 @@ void reactmodbus_driver_t::read_mod_io(void)
         switch (mod_io[i].opcode)
         {
           case 1:
-            sem_wait(&transmit_mutex_sem);
             modbus->read_do(mod_io[i].modbus_offset, mod_io[i].n, tmp_di_vals + mod_io[i].channel_offset);
-            sem_post(&transmit_mutex_sem);
             break;
           case 2:
-            sem_wait(&transmit_mutex_sem);
             modbus->read_di(mod_io[i].modbus_offset, mod_io[i].n, tmp_di_vals + mod_io[i].channel_offset);
-            sem_post(&transmit_mutex_sem);
             break;
           case 3:
-            sem_wait(&transmit_mutex_sem);
             modbus->read_di_register(mod_io[i].modbus_offset, mod_io[i].n, tmp_di_vals + mod_io[i].channel_offset);
-            sem_post(&transmit_mutex_sem);
             break;
           default:
             xx_printf("Invalid opcode for DI: %d\n", mod_io[i].opcode);
@@ -439,14 +442,10 @@ void reactmodbus_driver_t::read_mod_io(void)
         switch (mod_io[i].opcode)
         {
           case 3:
-            sem_wait(&transmit_mutex_sem);
             modbus->read_reg(mod_io[i].modbus_offset, mod_io[i].n, tmp_ai_vals + mod_io[i].channel_offset);
-            sem_post(&transmit_mutex_sem);
             break;
           case 4:
-            sem_wait(&transmit_mutex_sem);
             modbus->read_ai(mod_io[i].modbus_offset, mod_io[i].n, tmp_ai_vals + mod_io[i].channel_offset);
-            sem_post(&transmit_mutex_sem);
             break;
           default:
             xx_printf("Invalid opcode for AI: %d\n", mod_io[i].opcode);
@@ -468,15 +467,29 @@ void reactmodbus_driver_t::read_thread(void)
 {
   while(true)
   {
+    while (n_dos_to_send > 0)
+    {
+      int ch;
+      bool val;
+
+      sem_wait(&do_mutex_sem);
+      n_dos_to_send--;
+      ch = do_vals_to_send[n_dos_to_send].ch;
+      val = do_vals_to_send[n_dos_to_send].val;
+      sem_post(&do_mutex_sem);
+
+      // Be extremely careful, NEVER do a modbus transmit when a semaphore
+      // is held that could hold up the main thread!!!
+      // Also, ONLY do modbus trainsmits from a background thread.
+      // You must NEVER block react.
+      modbus->send_do(ch, val);
+    }
+
     xx_printf("read thread reading modbus values . . .\n");
     if (n_mod_io == 0)
     {
-      sem_wait(&transmit_mutex_sem);
       modbus->read_ai(0, 16, tmp_ai_vals);
-      sem_post(&transmit_mutex_sem);
-      sem_wait(&transmit_mutex_sem);
       modbus->read_di(0, 16, tmp_di_vals);
-      sem_post(&transmit_mutex_sem);
     }
     else
     {

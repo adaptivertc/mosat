@@ -24,7 +24,8 @@ rtmodbus_t *rt_create_modbus_serial(const char *device_name, int baudrate, float
   return modc;
 }
 
-rtmodbus_t *rt_create_modbus(const char *device)
+
+rtmodbus_t *rt_create_modbus_tcpip(const char *device)
 {
   // For right now, it only works with TCP/IP, but we need
   // to make it work with serial devices as well.
@@ -96,3 +97,41 @@ rtmodbus_t *rt_create_modbus(const char *device)
 }
 
 
+rtmodbus_t *rt_create_modbus(const char *device)
+{
+  int baudrate;
+  float timeout;
+  char sdev[80];
+  if (0 == strncmp("/dev/", device, 5))
+  {
+    const char *p = device;
+    int i;
+    for (i=0; (*p != ':') && (*p != '\0'); i++, p++)
+    {
+      sdev[i] = device[i]; 
+    }
+    sdev[i] = '\0';
+    if (*p == '\0')
+    {
+      react_trace.dprintf(6, "Bad format for modbus string: %s\n", device);
+      exit(0); 
+    }
+    p++;
+    baudrate = atoi(p);
+    for ( ; (*p != ':') && (*p != '\0'); p++)
+    {
+    }
+    if (*p == '\0')
+    {
+      react_trace.dprintf(6, "Bad format for modbus string: %s\n", device);
+      exit(0); 
+    }
+    p++;
+    timeout = atof(p);
+    return rt_create_modbus_serial(sdev, baudrate, timeout);
+  }
+  else
+  {
+    return rt_create_modbus_tcpip(device);
+  }
+}

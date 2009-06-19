@@ -30,6 +30,13 @@ struct mod_io_def_t
   int channel_offset;   
 };
 
+
+struct do_send_t
+{
+  int ch;
+  bool val;
+};
+
 class reactmodbus_driver_t : public io_driver_t
 {
 private:
@@ -40,11 +47,13 @@ private:
   bool di_vals[64];
   unsigned short tmp_ai_vals[64];
   bool tmp_di_vals[64];
+  do_send_t do_vals_to_send[64];  
+  int n_dos_to_send;
   int di_offset;
   int do_offset;
   int ai_offset;
   int ao_offset;
-  sem_t transmit_mutex_sem; 
+  sem_t do_mutex_sem; 
   sem_t read_mutex_sem; 
   sem_t read_wait_sem; 
   int n_mod_io; 
