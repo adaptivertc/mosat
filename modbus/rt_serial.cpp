@@ -36,8 +36,14 @@ int rt_read_serial(int fd, void *data, int sz)
     int n = read(fd, dp + total_read, sz - total_read); 
     if (n == 0)
     {
+      perror("read");
       return total_read;
     } 
+    else if (n < 0)
+    {
+      perror("read");
+      return n;
+    }
     total_read += n;
   }
   return total_read;

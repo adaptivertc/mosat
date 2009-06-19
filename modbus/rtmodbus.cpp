@@ -19,7 +19,7 @@
 
 rtmodbus_t *rt_create_modbus_serial(const char *device_name, int baudrate, float timeout)
 {
-  rt_mod_serial_client_t *msc = new rt_mod_serial_client_t(1, device_name, baudrate, timeout);
+  rt_mod_serial_client_t *msc = new rt_mod_serial_client_t(device_name, baudrate, timeout);
   MODSerial *modc = new MODSerial(msc);
   return modc;
 }

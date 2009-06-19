@@ -20,6 +20,8 @@ public:
   virtual int read_reg(unsigned short start_address, int n, unsigned short *vals) = 0;
   virtual int write_reg(unsigned short num, unsigned short val) = 0;
   virtual int send_do(unsigned short num, unsigned char val) = 0;
+  virtual int write_multiple_regs(unsigned short, int n, unsigned short *vals) = 0;
+  virtual int send_multiple_dos(unsigned short num, int n, unsigned char *vals) = 0;
 
   virtual void set_address(unsigned char an_addr) = 0; 
   virtual void set_timeout(double a_timeout) = 0;

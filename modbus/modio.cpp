@@ -556,6 +556,96 @@ int MODSerial::send_do(uint16 num, uint8 val)
 
   return 0;
 }
+
+/***********************************************************************/
+
+int  MODSerial::write_multiple_regs(uint16 start_reg, int n, uint16 *vals)
+{
+  react_trace.dprintf(0, "write multiple regs: Start = %d, Num = %d", 
+              int(start_reg), n);
+  //uint8 msg[8];
+  int msg_size = 6 + 2 * n; 
+  uint8 msg[512];
+  uint8 reply[512];
+  msg[0] = address;
+  msg[1] = PRESET_MULTIPLE_REGISTERS;
+  uint16 tmp = start_reg;
+  swap16(&tmp);
+  memcpy(msg+2, &tmp, 2);
+  tmp = n;
+  swap16(&tmp);
+  memcpy(msg+4, &tmp, 2);
+  msg[6] = uint8(2 * n);
+  uint8 *p = msg + 7;
+  for (int i=0; i < n; i++)
+  {
+    tmp = vals[i];
+    swap16(&tmp);
+    memcpy(p, &tmp, 2);
+    p += 2;
+  }
+
+  int n_sent = send(msg, (2 * n) + 7);
+
+  int n_recv = receive(reply, sizeof(reply));
+  if (n_recv != 6)
+  {
+    react_trace.dprintf(5, "*** Wrong reply size for write multiple regs\n");
+    return -1;
+  }
+
+  return 0;
+
+}
+
+/***********************************************************************/
+
+int  MODSerial::send_multiple_dos(uint16 start_do, int n, uint8 *vals)
+{
+  react_trace.dprintf(0, "write multiple dos: Start = %d, Num = %d", 
+              int(start_do), n);
+  int data_bytes = n / 8; 
+  if ((n % 8) != 0) data_bytes++;
+  uint8 msg[512];
+  uint8 reply[512];
+  msg[0] = address;
+  msg[1] = FORCE_MULTIPLE_OUTPUTS;
+  uint16 tmp = start_do;
+  swap16(&tmp);
+  memcpy(msg+2, &tmp, 2);
+  tmp = n;
+  swap16(&tmp);
+  memcpy(msg+4, &tmp, 2);
+  msg[6] = uint8(data_bytes);
+
+  for (int i=0; i < data_bytes; i++)
+  {
+    msg[7 + i] = 0;
+  }
+  for (int i=0; i < n; i++)
+  {
+    if (vals[i])
+    {
+      int byte = i / 8;
+      int bit = i % 8;;
+      uint8 mask = 1 << bit;
+      msg[7 + byte] |= mask;
+    }
+  }
+
+  int n_sent = send(msg, data_bytes + 7);
+
+  int n_recv = receive(reply, sizeof(reply));
+  if (n_recv != 6)
+  {
+    react_trace.dprintf(5, "*** Wrong reply size for write multiple regs\n");
+    return -1;
+  }
+
+
+  return 0;
+}
+ 
 /***********************************************************************/
 
 void MODSerial::set_debug_level(int a_debug_level)
@@ -594,7 +684,8 @@ int MODSerial::receive(uint8 *buf, int size)
     }
     if (buf[0] != address)
     {
-      react_trace.dprintf(5, "**** Incorrect address\n");
+      react_trace.dprintf(5, "**** Incorrect address, got %u, expected %u\n",
+                buf[0], address);
       done = true;
       continue;
     }

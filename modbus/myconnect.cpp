@@ -93,19 +93,22 @@ int main(int argc, char *argv[])
  
   while (true)
   {
-    printf("1 (5) - send DO\n");
-    printf("2 (2) - read discrete inputs and outputs\n");
-    printf("3 (4) - read analog inputs and counters\n");
-    printf("4 (1) - read discrete outputs\n");
-    printf("5 (3) - read registers\n");
-    printf("6 (6) - write registers\n");
-    printf("7 (3) - read DIs in register\n");
-    printf("8 (-) - Set modbus address\n");
+    printf("1 (opcode 0x01) - read discrete outputs\n");
+    printf("2 (opcode 0x02) - read discrete inputs\n");
+    printf("3 (opcode 0x03) - read registers\n");
+    printf("4 (opcode 0x04) - read analog inputs\n");
+    printf("5 (opcode 0x05) - send DO\n");
+    printf("6 (opcode 0x06) - write registers\n");
+    printf("7 (opcode 0x03) - read DIs in register\n");
+    printf("8 (opcode 0x0F) - write multiple discrete outputs\n");
+    printf("9 (opcode 0x10) - write multiple registers\n");
+    printf("10 (-) - Set modbus address\n");
     printf("99 (-)- Exit\n");
     printf("Enter your choice: ");
     fflush(stdin);
     int option;
     scanf("%d", &option);
+    fflush(stdin);
     /*fgets(mybuf, sizeof(mybuf), stdin);
     if (0 == strncmp(mybuf, "quit", 4))
     {
@@ -119,11 +122,13 @@ int main(int argc, char *argv[])
     }
     unsigned short uvals[20];
     bool vals[50];
+    unsigned char bvals[50];
     int start;
+    int num;
     int bval;
     switch (option)
     {
-      case 1:
+      case 5:
 	printf("Enter the do number: ");
 	scanf("%d", &start);
 	printf("Enter the value (0/1): ");
@@ -141,7 +146,7 @@ int main(int argc, char *argv[])
         }
         printf("\n");
         break;
-      case 3:
+      case 4:
 	printf("Enter the start ai: ");
 	scanf("%d", &start);
         modc->read_ai(start, 16, uvals); 
@@ -163,7 +168,7 @@ int main(int argc, char *argv[])
         }
         printf("\n");
         break;
-      case 4:
+      case 1:
 	printf("Enter the start do: ");
 	scanf("%d", &start);
         modc->read_do(start, 16, vals); 
@@ -173,7 +178,7 @@ int main(int argc, char *argv[])
         }
         printf("\n");
 	break;
-      case 5:
+      case 3:
 	printf("Enter the start reg: ");
 	scanf("%d", &start);
         modc->read_reg(start, 16, uvals); 
@@ -202,7 +207,36 @@ int main(int argc, char *argv[])
         }
         printf("\n");
         break;
+      case 9:
+	printf("Enter the start register to write: ");
+	scanf("%d", &start);
+	printf("How many registers to write? (max 8): ");
+	scanf("%d", &num);
+        if (num > 8) num = 8;
+        if (num < 1) num = 1;
+        for (int i=0; i < num; i++)
+        {
+	  printf("Value for register %d: ", i+1);
+	  scanf("%hu", &uvals[i]);
+        }
+        modc->write_multiple_regs(start, num,  uvals);
+        break;
       case 8:
+	printf("Enter the start discrete out to write: ");
+	scanf("%d", &start);
+	printf("How many discrete outs to write? (max 8): ");
+	scanf("%d", &num);
+        if (num > 8) num = 8;
+        if (num < 1) num = 1;
+        for (int i=0; i < num; i++)
+        {
+	  printf("Value for discrete out %d: ", i+1);
+	  scanf("%d", &bval);
+          bvals[i] = bval != 0;
+        }
+        modc->send_multiple_dos(start, num,  bvals);
+        break;
+      case 10:
 	printf("Enter the modbus address: ");
 	scanf("%d", &start);
         modc->set_address(start); 

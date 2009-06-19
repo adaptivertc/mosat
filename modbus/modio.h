@@ -25,14 +25,13 @@ private:
   char device_name[128];
   uint8 recv_buffer[1024];
   uint8 send_buffer[1024];
-  uint8 unit_id;
 
   int send_ptr;
   int recv_ptr;
   int total_read;
   int total_written;
 public:  
-  rt_mod_serial_client_t(uint8 unit_id, const char *dev_name, int baudrate, float timeout); 
+  rt_mod_serial_client_t(const char *dev_name, int baudrate, float timeout); 
   int wait_message(void);
   int get_buffer(uint8 *buf, int n);
   int put_buffer(uint8 *buf, int max);
@@ -50,7 +49,6 @@ private:
   uint16 transaction_id; 
   uint16 protocol_id; 
   uint16 length;
-  uint8 unit_id;
   /* end header */
   int send_ptr;
   int recv_ptr;
@@ -76,7 +74,6 @@ private:
   uint16 transaction_id; 
   uint16 protocol_id; 
   uint16 length;
-  uint8 unit_id;
   /* end header */
   int send_ptr;
   int recv_ptr;

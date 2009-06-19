@@ -88,7 +88,10 @@ public:
   int read_reg_req(request_t *req);
   int write_reg(uint16 num, uint16 val);
   int send_do(uint16 num, uint8 val);
-  void set_address(uint8 an_addr) {address = an_addr;};
+  int write_multiple_regs(uint16 num, int n, uint16 *vals);
+  int send_multiple_dos(uint16 num, int n, uint8 *vals);
+  void set_address(uint8 an_addr) 
+        {printf("setting address to %u\n", an_addr); address = an_addr;};
   void set_timeout(double a_timeout) {timeout = a_timeout;};
   void set_debug_level(int a_debug_level);
   int send(uint8 *buf, int size);

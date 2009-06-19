@@ -39,15 +39,46 @@ int main(int argc, char *argv[])
   while (true)
   {
     printf("Waiting for next message . . . \n");
-    rt_read_serial(serial_fd, buf, 2); 
+    int n = rt_read_serial(serial_fd, buf, 2); 
+
+    printf("First read: %d bytes\n", n);
+
+    if (n != 2)
+    {
+      perror("rt_read_serial");
+      return 0; 
+    }
 
     int min_size =  rt_modbus_min_bytes(buf);
 
-    rt_read_serial(serial_fd, buf + 2, min_size - 2); 
+    n = rt_read_serial(serial_fd, buf + 2, min_size - 2); 
+
+    printf("Second read: %d bytes, expecting %d\n", n, min_size - 2);
+
+    if (n != (min_size - 2))
+    {
+      perror("rt_read_serial");
+      return 0; 
+    }
 
     int total_size = rt_modbus_total_bytes(buf, min_size);
 
-    rt_read_serial(serial_fd, buf + min_size, total_size - min_size); 
+    if (total_size > min_size)
+    {
+      n = rt_read_serial(serial_fd, buf + min_size, total_size - min_size); 
+
+      printf("Third read: %d bytes, expecting\n", n, total_size - min_size);
+   
+      if (n != (total_size - min_size))
+      {
+        perror("rt_read_serial");
+        return 0; 
+      }
+    }
+    else
+    {
+      printf("Third read not needed\n");
+    }
 
     binary_to_hexascii(ascii, buf, total_size);
     printf("Message: %s\n", ascii);

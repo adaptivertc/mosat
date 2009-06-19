@@ -185,10 +185,6 @@ int mod_tcpip_client_t::wait_message(void)
   uint8 tmp8;
   memcpy(&tmp8, recv_buffer + 6, 1);
   react_trace.dprintf(0, "unit id = %d, ", (int) tmp8);
-  if (unit_id != tmp8)
-  {
-    react_trace.dprintf(5, "Error, unit id in received message did not match\n");
-  }
   memcpy(&tmp8, recv_buffer + 7, 1);
   react_trace.dprintf(0, "opcode = %d\n", (int) tmp8);
 
@@ -244,13 +240,9 @@ int mod_tcpip_client_t::send_message(void)
   swap16(&tmp16);
   memcpy(send_buffer + 4, &tmp16, 2);
 
-  //unit_id = 5;
-  react_trace.dprintf(0, "unit id = %d, ", (int) unit_id);
-  memcpy(&unit_id, send_buffer + 6, 1);
-  /* No need to swap the unit id, it is only one byte. */
   react_trace.dprintf(0, "opcode = %d\n", (int) send_buffer[7]);
 
-  react_trace.print_buf(0, "Sending:\n", send_buffer, total_written+6);
+  react_trace.print_buf(0, "Sending (including TCP/IP header):\n", send_buffer, total_written+6);
   int n = send(sock, send_buffer, total_written + 6, 0);
   //write(sock, "junk", 4);
   //send_ptr = 6;

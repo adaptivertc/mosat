@@ -46,7 +46,7 @@ int hexascii_to_binary(uint8 bin_buf[], uint8 hex_buf[], int n_hex)
 
   for (i=0, j=0; i < n_hex; i+= 2, j++)
   {
-    bin_buf[j] = (hex_to_bin(hex_buf[i+1]) << 4) | hex_to_bin(hex_buf[i]);
+    bin_buf[j] = (hex_to_bin(hex_buf[i]) << 4) | hex_to_bin(hex_buf[i+1]);
   }
   return j;
 }
@@ -58,8 +58,8 @@ int binary_to_hexascii(uint8 hex_buf[], uint8 bin_buf[], int n_bin)
   int i, j;
   for (i=0, j=0; j < n_bin; i+= 2, j++)
   {
-    hex_buf[i+1] = bin_to_hex(bin_buf[j] >> 4);
-    hex_buf[i] = bin_to_hex(bin_buf[j] & 0x0F);
+    hex_buf[i] = bin_to_hex(bin_buf[j] >> 4);
+    hex_buf[i+1] = bin_to_hex(bin_buf[j] & 0x0F);
   }
   hex_buf[i] = '\0';
   return i;

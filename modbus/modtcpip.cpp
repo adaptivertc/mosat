@@ -74,10 +74,6 @@ int mod_tcpip_t::wait_message(void)
   }
   total_read = n1 + n2;
   
-  /* Unit ID */
-  memcpy(&unit_id, recv_buffer + 6, 1);
-  /* No need to swap the unit id, it is only one byte. */
-
   if (length != (total_read - 6))
   {
     react_trace.dprintf(5, "Did not recieve complete message %d, %d\n",
@@ -120,10 +116,6 @@ int mod_tcpip_t::send_message(void)
   uint16 tmp16 = total_written;
   swap16(&tmp16);
   memcpy(send_buffer + 4, &tmp16, 2);
-
-  //unit_id = 1;
-  memcpy(&unit_id, send_buffer + 6, 1);
-  /* No need to swap the unit id, it is only one byte. */
 
   react_trace.print_buf(0, "Sending:\n", send_buffer, total_written+6);
   int n = send(sock, send_buffer, total_written + 6, 0);

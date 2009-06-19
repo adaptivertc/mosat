@@ -29,22 +29,22 @@ private:
   float timeout;
   uint8 recv_buffer[1024];
   uint8 send_buffer[1024];
-  uint8 unit_id;
 
   int send_ptr;
   int recv_ptr;
   int total_read;
   int total_written;
 public:
-  rt_mod_serial_client_t(uint8 unit_id, char *dev_name, int baudrate, float timeout);
+  rt_mod_serial_client_t(char *dev_name, int baudrate, float timeout);
 *********/
 
 /***************/
 
 int rt_mod_serial_client_t::wait_message(void)
 {
+  recv_ptr = 0;
   react_trace.dprintf(0, "Waiting for a message . . . \n");
-  // Read the first 3 bytes, all modbus replies must have a minimum of 3 bytes.
+  // Read the first 2 bytes, all modbus replies must have a minimum of 3 bytes.
   printf("--------------- Waiting message . . .\n");
   int n1 = rt_read_serial(serial_fd, recv_buffer, 2);
   printf("--------------- Read %d bytes\n", n1);
@@ -58,10 +58,6 @@ int rt_mod_serial_client_t::wait_message(void)
   uint8 tmp8;
   memcpy(&tmp8, recv_buffer + 0, 1);
   react_trace.dprintf(0, "unit id = %d, ", (int) tmp8);
-  if (unit_id != tmp8)
-  {
-    react_trace.dprintf(5, "Error, unit id in received message did not match\n");
-  }
   // Read the rest of the buffer.
   int n = rt_read_serial(serial_fd, recv_buffer + 2, min_mod_size - 2);
 
@@ -100,7 +96,9 @@ int rt_mod_serial_client_t::wait_message(void)
   }
 
   react_trace.print_buf(0, "Recived:\n", recv_buffer, total_mod_size);
-  return total_mod_size - 2;
+  return total_mod_size - 2; // Important to subtract 2, we only check
+                             // the CRC, but receiving module knows 
+                             // nothing about CRC.
 }
 
 /***************/
@@ -128,7 +126,6 @@ int rt_mod_serial_client_t::send_message(void)
 {
   add_CRC(send_buffer, total_written + 2, 0xffff);
   react_trace.print_buf(0, "\nSending to PLC ....\n", send_buffer, total_written+2);
-  memcpy(send_buffer + 0, &unit_id, 1);
   printf("++++++++++++ sending: %d bytes\n", total_written+2);
   int n = write(serial_fd, send_buffer, total_written+2);  
   printf("++++++++++++ sent: %d bytes\n", n);
@@ -139,9 +136,8 @@ int rt_mod_serial_client_t::send_message(void)
 
 /***************/
 
-rt_mod_serial_client_t::rt_mod_serial_client_t(uint8 a_unit_id, const char *a_dev_name, int a_baudrate, float a_timeout)
+rt_mod_serial_client_t::rt_mod_serial_client_t(const char *a_dev_name, int a_baudrate, float a_timeout)
 {
-  unit_id = a_unit_id;
   snprintf(device_name, sizeof(device_name), "%s", a_dev_name);
   baudrate = a_baudrate;
   timeout = a_timeout;
