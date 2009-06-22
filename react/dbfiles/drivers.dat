@@ -2,7 +2,8 @@
 #1;2R
 #./drivers/sim_ac/libsimacdrv.so|new_sim_ac_drv|||
 #./drivers/modbusdrv/libreactmodbusdrv.so|new_reactmodbus|librtmodbus.so|/dev/ttyUSB0|
-./drivers/modbusdrv/libreactmodbusdrv.so|new_reactmodbus||127.0.0.1:502|
+#./drivers/modbusdrv/libreactmodbusdrv.so|new_reactmodbus||127.0.0.1:502|
+./drivers/modbusdrv/libreactmodbusdrv.so|new_reactmodbus||/dev/ttyUSB0:9600:1:55|
 #./drivers/simple_ascii/libsimple_ascii_drv.so|new_simple_ascii||/dev/ttyUSB1|
 #./drivers/process/libprocess_drv.so|new_process_drv|||
 #./drivers/modbusdrv/libreactmodbusdrv.so|new_reactmodbus||
