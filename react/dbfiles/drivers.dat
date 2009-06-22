@@ -1,6 +1,8 @@
 #./drivers/sim_pump_low/libsimpumpdrv.so|new_simpumpdrv|||
+#1;2R
 #./drivers/sim_ac/libsimacdrv.so|new_sim_ac_drv|||
-./drivers/modbusdrv/libreactmodbusdrv.so|new_reactmodbus|librtmodbus.so|127.0.0.1:502|
+#./drivers/modbusdrv/libreactmodbusdrv.so|new_reactmodbus|librtmodbus.so|/dev/ttyUSB0|
+./drivers/modbusdrv/libreactmodbusdrv.so|new_reactmodbus||127.0.0.1:502|
 #./drivers/simple_ascii/libsimple_ascii_drv.so|new_simple_ascii||/dev/ttyUSB1|
 #./drivers/process/libprocess_drv.so|new_process_drv|||
 #./drivers/modbusdrv/libreactmodbusdrv.so|new_reactmodbus||

@@ -42,6 +42,7 @@ class reactmodbus_driver_t : public io_driver_t
 private:
   bool read_values;
   bool wake_him_up;
+  int x[20];
   rtmodbus_t *modbus;
   unsigned short ai_vals[64];
   bool di_vals[64];

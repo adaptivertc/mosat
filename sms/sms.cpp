@@ -4,6 +4,7 @@ The following example program (in file prog.c) should be compiled with this Unix
      gcc -I/usr/include/mysql sms.c -lmysqlclient -lnsl -lm -lz -o sms
 
 */
+#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 

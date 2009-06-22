@@ -253,6 +253,8 @@ reactmodbus_driver_t::reactmodbus_driver_t(react_drv_base_t *react, const char *
   {
     printf("Using ip passed to driver: %s\n", option);
     modbus = rt_create_modbus(option);
+    printf("modptr = %p\n", modbus);
+    modbus->read_ai(0, 16, tmp_ai_vals);
   }
   if (modbus == NULL)
   {
@@ -485,17 +487,21 @@ void reactmodbus_driver_t::read_thread(void)
       modbus->send_do(ch, val);
     }
 
-    xx_printf("read thread reading modbus values . . .\n");
+    printf("read thread reading modbus values . . .\n");
     if (n_mod_io == 0)
     {
+      printf("read thread before read_ai . . .\n");
+      printf("modptr = %p\n", modbus);
       modbus->read_ai(0, 16, tmp_ai_vals);
+      printf("read thread after read_ai . . .\n");
       modbus->read_di(0, 16, tmp_di_vals);
+      printf("read thread after read_di . . .\n");
     }
     else
     {
       read_mod_io();
     }
-    xx_printf("read thread DONE reading modbus values . . .\n");
+    printf("read thread DONE reading modbus values . . .\n");
 
     xx_printf("read thread copying values . . .\n");
     sem_wait(&read_mutex_sem);

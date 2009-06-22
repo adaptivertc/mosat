@@ -355,7 +355,7 @@ int MODSerial::read_ai(uint16 start_address, int n_to_read, uint16 *vals)
   n = receive(reply, sizeof(reply));
   if (n != receive_size)
   {
-    react_trace.dprintf(5, "**** Incorrect reply size for read analog input\n");
+    react_trace.dprintf(6, "**** Incorrect reply size for read analog input\n");
     return -1;
   }
 
