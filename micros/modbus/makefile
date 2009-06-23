@@ -18,18 +18,23 @@ crc.o: crc.c
 mod_server_msg.o: mod_server_msg.c rt_modbus_opcodes.h 
 	gcc -Wall -c mod_server_msg.c 
 
+mod_server_test.o: mod_server_test.c
+	gcc -Wall -c mod_server_test.c
+
 swap.o: swap.c
 	gcc -Wall -c swap.c
 
-main: main.o mod_server_msg.o crc.o swap.o hexascii.o
-	gcc -Wall -o main main.o mod_server_msg.o crc.o swap.o hexascii.o
+main: main.o mod_server_msg.o crc.o swap.o hexascii.o mod_server_test.o
+	gcc -Wall -o main main.o mod_server_msg.o crc.o swap.o \
+             hexascii.o mod_server_test.o
 
 serial_mod_server.o: serial_mod_server.cpp
 	g++ -Wall -c serial_mod_server.cpp
 
-serial_mod_server: serial_mod_server.o
+serial_mod_server: serial_mod_server.o  crc.o  hexascii.o mod_server_msg.o \
+                 swap.o mod_server_test.o 
 	g++ -o serial_mod_server serial_mod_server.o crc.o \
-		 hexascii.o mod_server_msg.o  swap.o $(RTMODBUS)
+		 hexascii.o mod_server_msg.o  swap.o mod_server_test.o $(RTMODBUS)
 
 clean: 
 	rm -v *.o main serial_mod_server

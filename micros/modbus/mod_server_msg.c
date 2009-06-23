@@ -5,6 +5,7 @@
 
 #include "rt_modbus_opcodes.h"
 #include "rt_modbus_crc.h"
+#include "mod_local_implementation.h"
 
 /**********************************************************************/
 
@@ -225,7 +226,8 @@ int rt_modbus_read_analog_inputs(uint8_t *buf, int sz)
   p = buf + 3;
   for (i=0; i < num_points; i++)
   {
-    tmp = start_point + i;
+    //tmp = start_point + i;
+    tmp =read_ai(start_point + i); 
     swap16(&tmp);
     memcpy(p, &tmp, 2);
     p += 2;
@@ -253,13 +255,9 @@ int rt_modbus_force_single_output(uint8_t *buf, int sz)
   swap16(&address);
   memcpy(&value, buf + 4, 2);
   swap16(&value);
-  /*******************/
-  // put call to send the actual values here
 
-  printf("value: %c, addr: %hu\n", (value != 0)?'T':'F', address);
-  // send_do(address, value != 0);
+  send_do(address, value != 0);
 
-  /*******************/
 
   return 8;
 }
@@ -275,17 +273,12 @@ int rt_modbus_preset_single_register(uint8_t *buf, int sz)
   //trace.print_buf(1, "Reply:\n", buf, 8);
   //PutBuffer(buf, 8);
   
-  /*******************/
-  // put call to send the actual values here
   memcpy(&address, buf + 2, 2);
   swap16(&address);
   memcpy(&value, buf + 4, 2);
   swap16(&value);
 
-  printf("value: %hx, addr: %hu\n", value, address);
-  // void write_register(address, value);
-
-  /*******************/
+  write_register(address, value);
 
   return 8;
 }
@@ -365,7 +358,7 @@ int rt_modbus_force_multiple_outputs(uint8_t *buf, int sz)
     val = (buf[byte + 7] & mask) != 0;
     printf("byte: %d (buf[%d]), bit %d: %c, addr: %d\n", 
                byte, byte + 7, bit, val?'T':'F', ((int) start_point) + i);
-    //send_do(start_point + i, val);
+    send_do(start_point + i, val);
   }
 
   /*******************/
@@ -408,15 +401,13 @@ int rt_modbus_preset_multiple_registers(uint8_t *buf, int sz)
   }
 
   //trace.print_buf(1, "Preset Multiple Registers:\n", buf, size);
-  /**************/
   for (i=0; i < num_points; i++)
   {
     memcpy(&tmp, buf + (i * 2) + 7, 2);
     swap16(&tmp);
     printf("value %d: %04hx, addr: %d\n", i, tmp, start_point + i);
-    //write_register(start_point + i, tmp); 
+    write_register(start_point + i, tmp); 
   }
-  /************/
 
   add_CRC(buf, 8, 0xffff);
 

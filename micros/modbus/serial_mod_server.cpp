@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
     {
       n = rt_read_serial(serial_fd, buf + min_size, total_size - min_size); 
 
-      printf("Third read: %d bytes, expecting\n", n, total_size - min_size);
+      printf("Third read: %d bytes, expecting %d\n", n, total_size - min_size);
    
       if (n != (total_size - min_size))
       {
