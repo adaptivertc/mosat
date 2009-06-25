@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
   }
   else
   {
-    modc = rt_create_modbus_serial(serial_dev, baudrate, timeout);
+    modc = rt_create_modbus_serial(serial_dev, baudrate, timeout, 0);
   }
   modc->set_debug_level(0);
   modc->set_address(unit_id);

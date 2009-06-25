@@ -17,10 +17,11 @@
 #include "hp2mod.h"
 #include "trace.h"
 
-rtmodbus_t *rt_create_modbus_serial(const char *device_name, int baudrate, float timeout)
+rtmodbus_t *rt_create_modbus_serial(const char *device_name, int baudrate, float timeout, int unit_id)
 {
   rt_mod_serial_client_t *msc = new rt_mod_serial_client_t(device_name, baudrate, timeout);
   MODSerial *modc = new MODSerial(msc);
+  modc->set_address(unit_id);
   return modc;
 }
 
@@ -101,6 +102,7 @@ rtmodbus_t *rt_create_modbus(const char *device)
 {
   int baudrate;
   float timeout;
+  int unit_id;
   char sdev[80];
   if (0 == strncmp("/dev/", device, 5))
   {
@@ -128,7 +130,19 @@ rtmodbus_t *rt_create_modbus(const char *device)
     }
     p++;
     timeout = atof(p);
-    return rt_create_modbus_serial(sdev, baudrate, timeout);
+    for ( ; (*p != ':') && (*p != '\0'); p++)
+    {
+    }
+    if (*p == '\0')
+    {
+      unit_id = 0;
+    }
+    else
+    {
+      p++;
+      unit_id = atoi(p);
+    }
+    return rt_create_modbus_serial(sdev, baudrate, timeout, unit_id);
   }
   else
   {
