@@ -268,7 +268,7 @@ reactmodbus_driver_t::reactmodbus_driver_t(react_drv_base_t *react, const char *
   {
     perror("sem_init");
   }
-  if (0 != sem_init(&do_mutex_sem, 0, 1))
+  if (0 != sem_init(&output_mutex_sem, 0, 1))
   {
     perror("sem_init");
   }
@@ -335,7 +335,16 @@ void reactmodbus_driver_t::send_ao(int ch, double val)
 {
   if ((ch >= 0) && (ch < 32))
   {
-    //shm->ao_val[ch] = val;
+    //shm->do_val[ch] = val;
+    //modbus->send_do(ch, val);
+
+    if (n_dos_to_send >= 64) return;
+
+    sem_wait(&output_mutex_sem);
+    ao_vals_to_send[n_aos_to_send].ch = ch;
+    ao_vals_to_send[n_aos_to_send].val = (unsigned short) val;
+    n_aos_to_send++;
+    sem_post(&output_mutex_sem);
   }
   //printf("Send AO ch = %d, val = %lf\n", ch, val);
 }
@@ -357,12 +366,12 @@ void reactmodbus_driver_t::send_do(int ch, bool val)
 
     if (n_dos_to_send >= 64) return;
 
-    sem_wait(&do_mutex_sem);
+    sem_wait(&output_mutex_sem);
     do_vals_to_send[n_dos_to_send].ch = ch;
     do_vals_to_send[n_dos_to_send].val = val;
     n_dos_to_send++;
     //modbus->send_do(ch, val);
-    sem_post(&do_mutex_sem);
+    sem_post(&output_mutex_sem);
   }
 
 }
@@ -469,16 +478,34 @@ void reactmodbus_driver_t::read_thread(void)
 {
   while(true)
   {
+    while (n_aos_to_send > 0)
+    {
+      int ch;
+      unsigned short val;
+
+      sem_wait(&output_mutex_sem);
+      n_aos_to_send--;
+      ch = ao_vals_to_send[n_aos_to_send].ch;
+      val = ao_vals_to_send[n_aos_to_send].val;
+      sem_post(&output_mutex_sem);
+
+      // Be extremely careful, NEVER do a modbus transmit when a semaphore
+      // is held that could hold up the main thread!!!
+      // Also, ONLY do modbus trainsmits from a background thread.
+      // You must NEVER block react.
+      modbus->write_reg(ch, val);
+    }
+
     while (n_dos_to_send > 0)
     {
       int ch;
       bool val;
 
-      sem_wait(&do_mutex_sem);
+      sem_wait(&output_mutex_sem);
       n_dos_to_send--;
       ch = do_vals_to_send[n_dos_to_send].ch;
       val = do_vals_to_send[n_dos_to_send].val;
-      sem_post(&do_mutex_sem);
+      sem_post(&output_mutex_sem);
 
       // Be extremely careful, NEVER do a modbus transmit when a semaphore
       // is held that could hold up the main thread!!!

@@ -37,6 +37,13 @@ struct do_send_t
   bool val;
 };
 
+struct ao_send_t
+{
+  int ch;
+  unsigned short val;
+};
+
+
 class reactmodbus_driver_t : public io_driver_t
 {
 private:
@@ -49,12 +56,14 @@ private:
   unsigned short tmp_ai_vals[64];
   bool tmp_di_vals[64];
   do_send_t do_vals_to_send[64];  
+  ao_send_t ao_vals_to_send[64];  
   int n_dos_to_send;
+  int n_aos_to_send;
   int di_offset;
   int do_offset;
   int ai_offset;
   int ao_offset;
-  sem_t do_mutex_sem; 
+  sem_t output_mutex_sem; 
   sem_t read_mutex_sem; 
   sem_t read_wait_sem; 
   int n_mod_io; 
