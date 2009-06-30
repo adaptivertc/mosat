@@ -48,6 +48,8 @@ Contains code for react modbus driver.
 
 #include "reactmodbusdrv.h"
 
+#include "logfile.h"
+
 /****
   Ok, this is a first stab at a modbus driver. There are many issues
   to deal with, such as what is the round trip delay, and how many
@@ -137,7 +139,7 @@ static void *rtmodbus_start_read_thread(void *driver_ptr)
 
 extern "C" io_driver_t *new_reactmodbus(react_drv_base_t *r, const char *option)
 {
-  printf("Creating new reactmodbus iodriver\n");
+  logfile->vprint("Creating new reactmodbus iodriver\n");
   return new reactmodbus_driver_t(r, option);
 }
 
@@ -148,26 +150,26 @@ void reactmodbus_driver_t::add_io(const char *io_type, int opcode, int n_io, int
   if (0 == strcasecmp("DO", io_type))
   {
     // This needs more thought, but, for now, for now, just switch opcode.
-    printf("Will use alternate opcode for DO");
+    logfile->vprint("Will use alternate opcode for DO");
     alt_do_opcode = true;
     return;
   }
   if (0 == strcasecmp("AO", io_type))
   {
-    printf("Will use alternate opcode for AO");
+    logfile->vprint("Will use alternate opcode for AO");
     alt_ao_opcode = true;
     return;
   }
 
   if (n_mod_io == REACT_MAX_MOD_IO)
   {
-    printf("******* Too many modbus io definitions\n");
+    logfile->vprint("******* Too many modbus io definitions\n");
     return;
   }
 
   if ((channel_offset + n_io) > 64)
   {
-    printf("******* can not map past 64 for %s definitions, chan offset: %d, n: %d, total: %d\n", 
+    logfile->vprint("******* can not map past 64 for %s definitions, chan offset: %d, n: %d, total: %d\n", 
            io_type, channel_offset, n_io, channel_offset + n_io);
     return;
   }
@@ -175,16 +177,16 @@ void reactmodbus_driver_t::add_io(const char *io_type, int opcode, int n_io, int
   if (0 == strcasecmp("DI", io_type))
   {
     mod_io[n_mod_io].type = REACT_MOD_DI; 
-    printf("Type DI, ");
+    logfile->vprint("Type DI, ");
   }
   else if (0 == strcasecmp("AI", io_type))
   {
     mod_io[n_mod_io].type = REACT_MOD_AI; 
-    printf("Type DI, ");
+    logfile->vprint("Type DI, ");
   }
   else
   {
-    printf("******* invalid io type: %s\n", io_type);
+    logfile->vprint("******* invalid io type: %s\n", io_type);
     return;
   }
   
@@ -192,23 +194,23 @@ void reactmodbus_driver_t::add_io(const char *io_type, int opcode, int n_io, int
   mod_io[n_mod_io].n = n_io; 
   mod_io[n_mod_io].modbus_offset = modbus_offset; 
   mod_io[n_mod_io].channel_offset = channel_offset; 
-  printf("opcode: %d, n: %d, mod offset: %d, ch offset: %d\n", opcode, n_io, modbus_offset, channel_offset);
+  logfile->vprint("opcode: %d, n: %d, mod offset: %d, ch offset: %d\n", opcode, n_io, modbus_offset, channel_offset);
   switch (mod_io[n_mod_io].type)
   {
     case REACT_MOD_DI:
       switch (mod_io[n_mod_io].opcode)
       {
         case 1:
-          printf("Will read DIs using read_do()\n");
+          logfile->vprint("Will read DIs using read_do()\n");
           break;
         case 2:
-          printf("Will read DIs using read_di()\n");
+          logfile->vprint("Will read DIs using read_di()\n");
           break;
         case 3:
-          printf("Will read DIs using read_di_register()\n");
+          logfile->vprint("Will read DIs using read_di_register()\n");
           break;
         default:
-          printf("Invalid opcode for DI: %d\n", mod_io[n_mod_io].opcode);
+          logfile->vprint("Invalid opcode for DI: %d\n", mod_io[n_mod_io].opcode);
           break;
       }
       break;
@@ -216,18 +218,18 @@ void reactmodbus_driver_t::add_io(const char *io_type, int opcode, int n_io, int
       switch (mod_io[n_mod_io].opcode)
       {
         case 3:
-          printf("Will read AIs using read_reg()\n");
+          logfile->vprint("Will read AIs using read_reg()\n");
           break;
         case 4:
-          printf("Will read AIs using read_ai()\n");
+          logfile->vprint("Will read AIs using read_ai()\n");
           break;
         default:
-          printf("Invalid opcode for AI: %d\n", mod_io[n_mod_io].opcode);
+          logfile->vprint("Invalid opcode for AI: %d\n", mod_io[n_mod_io].opcode);
           break;
       }
       break;
     default:
-      printf("Invalid type: %d\n", mod_io[n_mod_io].type);
+      logfile->vprint("Invalid type: %d\n", mod_io[n_mod_io].type);
       break;
   }
   n_mod_io++;
@@ -255,7 +257,7 @@ reactmodbus_driver_t::reactmodbus_driver_t(react_drv_base_t *react, const char *
   n_aos_to_send = 0;
   alt_do_opcode = false;
   alt_ao_opcode = false;
-  printf("initializing modbus\n");
+  logfile->vprint("initializing modbus\n");
   //modbus = rt_create_modbus("127.0.0.1:502");
   //modbus = rt_create_modbus("192.168.1.104:502");
   if (option == NULL)
@@ -268,9 +270,9 @@ reactmodbus_driver_t::reactmodbus_driver_t(react_drv_base_t *react, const char *
   }
   else
   {
-    printf("Using ip passed to driver: %s\n", option);
+    logfile->vprint("Using ip passed to driver: %s\n", option);
     modbus = rt_create_modbus(option);
-    printf("modptr = %p\n", modbus);
+    logfile->vprint("modptr = %p\n", modbus);
     modbus->read_ai(0, 16, tmp_ai_vals);
   }
   if (modbus == NULL)
@@ -278,9 +280,9 @@ reactmodbus_driver_t::reactmodbus_driver_t(react_drv_base_t *react, const char *
     exit(0);
   }
   modbus->set_debug_level(3);
-  printf("DONE initializing modbus\n");
+  logfile->vprint("DONE initializing modbus\n");
 
-  printf("Initializing semaphores\n");
+  logfile->vprint("Initializing semaphores\n");
   if (0 != sem_init(&read_mutex_sem, 0, 1))
   {
     perror("sem_init");
@@ -293,7 +295,7 @@ reactmodbus_driver_t::reactmodbus_driver_t(react_drv_base_t *react, const char *
   {
     perror("sem_init");
   }
-  printf("DONE Initializing semaphores\n");
+  logfile->vprint("DONE Initializing semaphores\n");
   
   delim_file_t *df = new delim_file_t(200, 10, '|', '#');
   char **argv;
@@ -309,25 +311,25 @@ reactmodbus_driver_t::reactmodbus_driver_t(react_drv_base_t *react, const char *
   {
     if (argc != 5)
     {
-      printf("**** modbus.dat: wrong number of args: %d, on line %d\n", argc, line_num);
+      logfile->vprint("**** modbus.dat: wrong number of args: %d, on line %d\n", argc, line_num);
       argv = df->next(&argc, &line_num);
       continue;
     }
     for (int i=0; i < 5; i++)
     {
-      printf("'%s', ", argv[i]);
+      logfile->vprint("'%s', ", argv[i]);
     } 
-    printf("\n");
+    logfile->vprint("\n");
 
-    printf("Adding I/O\n");
+    logfile->vprint("Adding I/O\n");
 
     this->add_io(argv[0], atoi(argv[1]), atoi(argv[2]), atoi(argv[3]), atoi(argv[4]));
 
     argv = df->next(&argc, &line_num);
   }
-  printf("Done with modbus.dat\n");
+  logfile->vprint("Done with modbus.dat\n");
 
-  printf("Creating thread\n");
+  logfile->vprint("Creating thread\n");
   pthread_t thr;
   int retval;
   retval = pthread_create(&thr, NULL, rtmodbus_start_read_thread, this);
@@ -342,7 +344,7 @@ reactmodbus_driver_t::reactmodbus_driver_t(react_drv_base_t *react, const char *
     perror("can't detach thread");
     exit(0);
   }
-  printf("DONE Creating thread\n");
+  logfile->vprint("DONE Creating thread\n");
 
 }
 
