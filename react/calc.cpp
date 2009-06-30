@@ -73,7 +73,7 @@ calc_point_t *calc_point_t::read_one(int argc, char *argv[], char *err, int esz)
   rtrim(temp);
   p->expr_string = strdup(temp);
   MALLOC_CHECK(p->expr_string);
-  printf("Expression: %s\n", p->expr_string);
+  logfile->vprint("Expression: %s\n", p->expr_string);
 
   p->decimal_places = atoi(argv[4]);
   p->lo_alarm = atof(argv[5]);
@@ -121,6 +121,8 @@ calc_point_t **calc_point_t::read(int *cnt, const char *home_dir)
     int argc;
     char *argv[25];
     char tmp[300];
+    ltrim(line);
+    rtrim(line);
     safe_strcpy(tmp, line, sizeof(tmp));
     argc = get_delim_args(tmp, argv, '|', 25);
     if (argc == 0)
@@ -133,10 +135,10 @@ calc_point_t **calc_point_t::read(int *cnt, const char *home_dir)
     }
     else if (argc != 14)
     {
-      printf("calc.dat: Wrong number of args, line %d", i+1);
+      logfile->vprint("calc.dat: Wrong number of args, line %d", i+1);
       continue;
     }
-    printf("%s\n", line);
+    logfile->vprint("%s\n", line);
     /*****
     tag
     description
@@ -165,7 +167,7 @@ calc_point_t **calc_point_t::read(int *cnt, const char *home_dir)
     calc_points[count] = calc_point_t::read_one(argc, argv, errbuf, sizeof(errbuf));
     if (calc_points[count] == NULL)
     {
-      printf("%s:%d %s\n", path, i+1, errbuf);
+      logfile->vprint("%s:%d %s\n", path, i+1, errbuf);
       continue;
     }
     count++;
@@ -186,7 +188,7 @@ calc_point_t **calc_point_t::read(int *cnt, const char *home_dir)
 void calc_point_t::parse_expr(void)
 {
   /* Parse the expression for the given calc point. */
-  printf("%s Parsing \"%s\"\n", tag, expr_string);
+  logfile->vprint("%s Parsing \"%s\"\n", tag, expr_string);
   expression.expr = make_expr(expr_string);
   if (expression.expr == NULL)
   {
@@ -194,7 +196,7 @@ void calc_point_t::parse_expr(void)
     expression.expr[0].token_type = FLOAT_VAL;
     expression.expr[0].val.float_val = 0.0;
     expression.expr[1].token_type = END_EXPR;
-    printf("Analog Calc %s: Bad Expression: \"%s\", %s\n",
+    logfile->vprint("Analog Calc %s: Bad Expression: \"%s\", %s\n",
           tag, expr_string, rtexperror.str());
   }
 }

@@ -135,6 +135,8 @@ timer_point_t **timer_point_t::read(int *cnt, const char *home_dir)
   FILE *fp = fopen(path, "r");
   if (fp == NULL)
   {
+    logfile->perror(path);
+    logfile->vprint("Can't open file: %s\n", path);
     return NULL;
   }
   char line[300];
@@ -156,10 +158,10 @@ timer_point_t **timer_point_t::read(int *cnt, const char *home_dir)
     }
     else if (argc != 5)
     {
-      printf("timer.dat, line %d: Should be 5 args, found %d\n", i+1, argc);
+      logfile->vprint("timer.dat, line %d: Should be 5 args, found %d\n", i+1, argc);
       continue;
     }
-    printf("%s\n", line);
+    logfile->vprint("%s\n", line);
     /*****
     tag
     description
@@ -179,7 +181,7 @@ timer_point_t **timer_point_t::read(int *cnt, const char *home_dir)
     timer_points[count] = timer_point_t::read_one(argc, argv, errbuf, sizeof(errbuf));
     if (timer_points[count] == NULL)
     {
-      printf("%s:%d %s\n", path, i+1, errbuf);
+      logfile->vprint("%s:%d %s\n", path, i+1, errbuf);
       continue;
     }
     count++;

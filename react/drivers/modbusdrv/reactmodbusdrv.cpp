@@ -145,6 +145,20 @@ extern "C" io_driver_t *new_reactmodbus(react_drv_base_t *r, const char *option)
 
 void reactmodbus_driver_t::add_io(const char *io_type, int opcode, int n_io, int modbus_offset, int channel_offset)
 {
+  if (0 == strcasecmp("DO", io_type))
+  {
+    // This needs more thought, but, for now, for now, just switch opcode.
+    printf("Will use alternate opcode for DO");
+    alt_do_opcode = true;
+    return;
+  }
+  if (0 == strcasecmp("AO", io_type))
+  {
+    printf("Will use alternate opcode for AO");
+    alt_ao_opcode = true;
+    return;
+  }
+
   if (n_mod_io == REACT_MAX_MOD_IO)
   {
     printf("******* Too many modbus io definitions\n");
@@ -238,6 +252,9 @@ reactmodbus_driver_t::reactmodbus_driver_t(react_drv_base_t *react, const char *
   read_values = false;
   wake_him_up = true;
   n_dos_to_send = 0;
+  n_aos_to_send = 0;
+  alt_do_opcode = false;
+  alt_ao_opcode = false;
   printf("initializing modbus\n");
   //modbus = rt_create_modbus("127.0.0.1:502");
   //modbus = rt_create_modbus("192.168.1.104:502");
@@ -493,13 +510,22 @@ void reactmodbus_driver_t::read_thread(void)
       // is held that could hold up the main thread!!!
       // Also, ONLY do modbus trainsmits from a background thread.
       // You must NEVER block react.
-      modbus->write_reg(ch, val);
+      if (alt_ao_opcode)
+      {
+        // SOME do NOT support write single register!!
+        modbus->write_multiple_regs(ch, 1, &val);
+
+      }
+      else
+      {
+        modbus->write_reg(ch, val);
+      }
     }
 
     while (n_dos_to_send > 0)
     {
-      int ch;
-      bool val;
+      unsigned short ch;
+      unsigned char val;
 
       sem_wait(&output_mutex_sem);
       n_dos_to_send--;
@@ -511,7 +537,15 @@ void reactmodbus_driver_t::read_thread(void)
       // is held that could hold up the main thread!!!
       // Also, ONLY do modbus trainsmits from a background thread.
       // You must NEVER block react.
-      modbus->send_do(ch, val);
+      if (alt_ao_opcode)
+      {
+        // SOME do NOT support send single DO!!
+        modbus->send_multiple_dos(ch, 1, &val);
+      }
+      else
+      {
+        modbus->send_do(ch, val);
+      }
     }
 
     printf("read thread reading modbus values . . .\n");

@@ -52,11 +52,11 @@ static FILE *open_day_history_file(const char *home, const char *post, FILE *fp)
   localtime_r(&now, &mytm);
   strftime(buf1, sizeof(buf1), "%Y%m%d", &mytm);
   snprintf(fname, sizeof(fname), "%s/%s%s", home, buf1, post);
-  printf("Opening %s\n", fname);
+  logfile->vprint("Opening %s\n", fname);
   fp = fopen(fname, "a");
   if (fp == NULL)
   {
-    printf("**** Error Opening: %s\n", fname);
+    logfile->vprint("**** Error Opening: %s\n", fname);
   }
   return fp;
 }
@@ -223,7 +223,7 @@ void ac_point_t::update(void)
     time_t now = time(NULL);
     if (now > (last_change_time + int(delay) + 1))
     {
-      printf("------- %s: Delay expired, %0.1lf\n", tag, delay);
+      logfile->vprint("------- %s: Delay expired, %0.1lf\n", tag, delay);
       fflush(ac_fp);
       delay_elapsed = true;
       change_started = false;
@@ -232,7 +232,7 @@ void ac_point_t::update(void)
 
   if (unit_running != last_state_at_change)
   {
-    printf("------- %s: AC change state, %s\n", tag, unit_running ? "RUN" : "OFF");
+    logfile->vprint("------- %s: AC change state, %s\n", tag, unit_running ? "RUN" : "OFF");
     last_state_at_change = unit_running;
     last_change_time = now;
     if (unit_running) change_started = true;
@@ -244,7 +244,7 @@ void ac_point_t::update(void)
   {
     if ((hot_temp - cold_temp) < 30.0)
     {
-      printf("%s: Difference is low: %0.1lf %s, %ld %ld\n", 
+      logfile->vprint("%s: Difference is low: %0.1lf %s, %ld %ld\n", 
           tag, hot_temp - cold_temp, diff_alarm ? "ALARM" : "OK",
                       now, small_difference_detect_time);
       if (!small_diference_dectected)
@@ -258,7 +258,7 @@ void ac_point_t::update(void)
         {
           if (!diff_alarm)
           {
-            printf("Sending diff alarm SMS *********************************************************************************\n");
+            logfile->vprint("Sending diff alarm SMS *********************************************************************************\n");
             send_sms_group("Unit NOT working", "NORMAL");
             diff_alarm = true;
             unit_disable_point->send(true);
@@ -274,7 +274,7 @@ void ac_point_t::update(void)
     
     if (cold_temp < 2.0)
     {
-      printf("%s: Freeze Danger: %0.1lf %s\n", 
+      logfile->vprint("%s: Freeze Danger: %0.1lf %s\n", 
           tag, cold_temp,  cold_alarm ? "ALARM" : "OK");
       if (!cold_detected)
       {
@@ -287,7 +287,7 @@ void ac_point_t::update(void)
         {
           if (!cold_alarm)
           {
-            printf("Sending cold alarm SMS *********************************************************************************\n");
+            logfile->vprint("Sending cold alarm SMS *********************************************************************************\n");
             send_sms_group("Unit TOO cold", "NORMAL");
             cold_alarm = true;
             unit_disable_point->send(true);
@@ -368,7 +368,8 @@ ac_point_t **ac_point_t::read(int *cnt, const char *home_dir)
   FILE *fp = fopen(path, "r");
   if (fp == NULL)
   {
-    printf("Can't open %s\n", path);
+    logfile->perror(path);
+    logfile->vprint("Can't open %s\n", path);
     *cnt = 0;
     return NULL;
   }
@@ -379,6 +380,9 @@ ac_point_t **ac_point_t::read(int *cnt, const char *home_dir)
     char tmp[300];
     int argc;
     char *argv[25];
+    ltrim(line);
+    rtrim(line);
+
     safe_strcpy(tmp, (const char*)line, sizeof(tmp));
     argc = get_delim_args(tmp, argv, '|', 25);
     if (argc == 0)
@@ -391,10 +395,10 @@ ac_point_t **ac_point_t::read(int *cnt, const char *home_dir)
     }
     else if (argc != 7)
     {
-      printf("%s: Wrong number of args, line %d\n", path, i+1);
+      logfile->vprint("%s: Wrong number of args, line %d\n", path, i+1);
       continue;
     }
-    printf("%s", line);
+    logfile->vprint("%s\n", line);
     ac_point_t *ac = new ac_point_t;
 
     safe_strcpy(ac->tag, (const char*) argv[0], sizeof(ac->tag));
@@ -408,7 +412,7 @@ ac_point_t **ac_point_t::read(int *cnt, const char *home_dir)
     if ((db_point == NULL) || (db_point->point_type() != ANALOG_INPUT))
     {
       ac->cold_temp_point = NULL;
-      printf("%s - bad analog input point: %s\n", ac->tag, temp_tag);
+      logfile->vprint("%s - bad analog input point: %s\n", ac->tag, temp_tag);
     }
     else
     {
@@ -421,7 +425,7 @@ ac_point_t **ac_point_t::read(int *cnt, const char *home_dir)
     if ((db_point == NULL) || (db_point->point_type() != ANALOG_INPUT))
     {
       ac->hot_temp_point = NULL;
-      printf("%s - bad analog input point: %s\n", ac->tag, temp_tag);
+      logfile->vprint("%s - bad analog input point: %s\n", ac->tag, temp_tag);
     }
     else
     {
@@ -434,7 +438,7 @@ ac_point_t **ac_point_t::read(int *cnt, const char *home_dir)
     if ((db_point == NULL) || (db_point->point_type() != DISCRETE_INPUT))
     {
       ac->unit_running_point = NULL;
-      printf("%s - bad discrete input point: %s\n", ac->tag, temp_tag);
+      logfile->vprint("%s - bad discrete input point: %s\n", ac->tag, temp_tag);
     }
     else
     {
@@ -447,7 +451,7 @@ ac_point_t **ac_point_t::read(int *cnt, const char *home_dir)
     if ((db_point == NULL) || (db_point->point_type() != DISCRETE_OUTPUT))
     {
       ac->unit_disable_point = NULL;
-      printf("%s - bad discrete output point: %s\n", ac->tag, temp_tag);
+      logfile->vprint("%s - bad discrete output point: %s\n", ac->tag, temp_tag);
     }
     else
     {
@@ -486,7 +490,7 @@ ac_point_t **ac_point_t::read(int *cnt, const char *home_dir)
     const char *html_home = ap_config.get_config("htmlhome");
     if (html_home == NULL)
     {
-      printf("Warning: htmlhome variable not set\n");
+      logfile->vprint("Warning: htmlhome variable not set\n");
       snprintf(ac_log_home, sizeof(ac_log_home), "./log/");
     }
     else

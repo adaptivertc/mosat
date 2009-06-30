@@ -34,7 +34,7 @@ struct mod_io_def_t
 struct do_send_t
 {
   int ch;
-  bool val;
+  unsigned char val;
 };
 
 struct ao_send_t
@@ -59,6 +59,8 @@ private:
   ao_send_t ao_vals_to_send[64];  
   int n_dos_to_send;
   int n_aos_to_send;
+  bool alt_do_opcode;
+  bool alt_ao_opcode;
   int di_offset;
   int do_offset;
   int ai_offset;

@@ -115,7 +115,8 @@ web_point_t **web_point_t::read(int *cnt, const char *home_dir)
   FILE *fp = fopen(path, "r");
   if (fp == NULL)
   {
-    printf("Can't open: %s\n", path);
+    logfile->perror(path);
+    logfile->vprint("Can't open: %s\n", path);
     return NULL;
   }
   char line[300];
@@ -127,6 +128,9 @@ web_point_t **web_point_t::read(int *cnt, const char *home_dir)
     int argc;
     char *argv[25];
     //DI1|Discrete Input 1|0|0|1|HI|LO|N|N|
+    ltrim(line);
+    rtrim(line);
+
     safe_strcpy(tmp, (const char*) line, sizeof(tmp));
     argc = get_delim_args(tmp, argv, '|', 25);
     if (argc == 0)
@@ -139,11 +143,11 @@ web_point_t **web_point_t::read(int *cnt, const char *home_dir)
     }
     else if (argc != 5)
     {
-      printf("%s: wrong number of args for web point: line %d\n", path, i+1);
+      logfile->vprint("%s: wrong number of args for web point: line %d\n", path, i+1);
       continue;
     }
 
-    //printf(line);
+    logfile->vprint("%s\n", line);
     web_point_t *p = new web_point_t;
 
     /*****
@@ -223,7 +227,8 @@ void web_point_t::read_file(void)
   FILE *fp_html = fopen(source_file, "r");
   if (fp_html == NULL)
   {
-    printf("Can't open file: %s\n", source_file);
+    logfile->perror(source_file);
+    logfile->vprint("Can't open file: %s\n", source_file);
     drefs = NULL;
     irefs = NULL;
     file_buf = NULL;
@@ -275,7 +280,7 @@ void web_point_t::read_file(void)
       argc = get_delim_args(tmp, argv, '|', 30);
       for (int m=0; m < argc; m++)
       {
-        printf("argv[%d]: %s\n", m, argv[m]);
+        logfile->vprint("argv[%d]: %s\n", m, argv[m]);
       }
       rtrim(argv[0]);
       ltrim(argv[0]);
@@ -287,14 +292,14 @@ void web_point_t::read_file(void)
       {
         newiref->ip = NULL;
         newiref->nvals = 0;
-        printf("%s - NOT a database point: %s\n", source_file, argv[0]);
+        logfile->vprint("%s - NOT a database point: %s\n", source_file, argv[0]);
         continue;
       }
       else if (db_point->pv_type() != INTEGER_VALUE)
       {
         newiref->ip = NULL;
         newiref->nvals = 0;
-        printf("%s - NOT an integer point: %s\n", source_file, argv[0]);
+        logfile->vprint("%s - NOT an integer point: %s\n", source_file, argv[0]);
         continue;
       }
       else
@@ -308,7 +313,7 @@ void web_point_t::read_file(void)
         if (newiref->nvals >= 
              int(sizeof(newiref->strings) / sizeof(newiref->strings[0])))
         {
-          printf("***** Too many values for integer ref\n");
+          logfile->vprint("***** Too many values for integer ref\n");
           break;
         }
         rtrim(argv[k]);
@@ -325,11 +330,11 @@ void web_point_t::read_file(void)
         newiref->nvals++;
       }
 
-      printf("Integer point: %s, default value: %s\n",
+      logfile->vprint("Integer point: %s, default value: %s\n",
            newiref->ip->tag, newiref->default_str);
       for (int k=0; k < newiref->nvals; k++)
       {
-        printf("Value: %d, string: %s\n",
+        logfile->vprint("Value: %d, string: %s\n",
             newiref->values[k], newiref->strings[k]);
       }
     }
@@ -372,12 +377,12 @@ void web_point_t::read_file(void)
         if (db_point == NULL)
         {
           tmp_r->dp = NULL;
-          printf("%s - NOT a database point: %s\n", source_file, argv[0]);
+          logfile->vprint("%s - NOT a database point: %s\n", source_file, argv[0]);
         }
         else if (db_point->pv_type() != DISCRETE_VALUE)
         {
           tmp_r->dp = NULL;
-          printf("%s - NOT a discrete point: %s\n", source_file, argv[0]);
+          logfile->vprint("%s - NOT a discrete point: %s\n", source_file, argv[0]);
         }
         else
         {
@@ -386,7 +391,7 @@ void web_point_t::read_file(void)
       }
       else
       {
-        printf("Wrong number of args for discrete $$$$DI: %d\n", argc);
+        logfile->vprint("Wrong number of args for discrete $$$$DI: %d\n", argc);
         tmp_r->true_string = "*** Wrong number of args ***";
         tmp_r->false_string = "*** Wrong number of args ***";
         tmp_r->dp = NULL;
@@ -409,9 +414,9 @@ void web_point_t::read_file(void)
       tmp[len] = '\0';
       int argc;
       char *argv[10];
-      printf("%s\n", tmp);
+      logfile->vprint("%s\n", tmp);
       argc = get_delim_args(tmp, argv, '|', 10);
-      printf("Args for AI = %d\n", argc);
+      logfile->vprint("Args for AI = %d\n", argc);
       if ((argc == 1) || (argc == 4) || (argc == 9))
       {
         rtrim(argv[0]);
@@ -427,12 +432,12 @@ void web_point_t::read_file(void)
         if (db_point == NULL)
         {
           tmp_r->ap = NULL;
-          printf("%s - NOT a database point: %s\n", source_file, argv[0]);
+          logfile->vprint("%s - NOT a database point: %s\n", source_file, argv[0]);
         }
         else if (db_point->pv_type() != ANALOG_VALUE)
         {
           tmp_r->ap = NULL;
-          printf("%s - NOT an analog point: %s\n", source_file, argv[0]);
+          logfile->vprint("%s - NOT an analog point: %s\n", source_file, argv[0]);
         }
         else
         {
@@ -454,8 +459,8 @@ void web_point_t::read_file(void)
             tmp_r->bar_min = 0;
             tmp_r->bar_max = 500;
             tmp_r->is_bar = true;
-            printf("-- 4 parameter bar\n");
-            printf("Bar: %s, %s, %s\n", tmp_r->bar, tmp_r->half_off, tmp_r->half_on);
+            logfile->vprint("-- 4 parameter bar\n");
+            logfile->vprint("Bar: %s, %s, %s\n", tmp_r->bar, tmp_r->half_off, tmp_r->half_on);
           }
           else if (argc == 9)
           {
@@ -474,8 +479,8 @@ void web_point_t::read_file(void)
             tmp_r->bar_min = atol(argv[7]); 
             tmp_r->bar_max = atol(argv[8]);
             tmp_r->is_bar = true;
-            printf("-- 9 parameter bar\n");
-            printf("Bar: %s, %s, %s, %d, %d, %d, %d, %d\n", 
+            logfile->vprint("-- 9 parameter bar\n");
+            logfile->vprint("Bar: %s, %s, %s, %d, %d, %d, %d, %d\n", 
                 tmp_r->bar, tmp_r->half_off, tmp_r->half_on,
                 tmp_r->bar_top, tmp_r->bar_left, tmp_r->bar_length, tmp_r->bar_min, tmp_r->bar_max);
           }
@@ -483,7 +488,7 @@ void web_point_t::read_file(void)
       }
       else
       {
-        printf("Wrong number of args for $$$$AI: %d\n", argc);
+        logfile->vprint("Wrong number of args for $$$$AI: %d\n", argc);
         tmp_r->ap = NULL;
       }
     }
@@ -678,7 +683,8 @@ void web_point_t::update_file_and_write(void)
   FILE *fp = fopen(dest_file, "w");
   if (fp == NULL)
   {
-    printf("Can't open file: %s\n", dest_file);
+    logfile->perror(dest_file);
+    logfile->vprint("Can't open file: %s\n", dest_file);
     return;
   }
   fwrite(file_buf, file_size, 1, fp);

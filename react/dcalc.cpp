@@ -84,7 +84,8 @@ dcalc_t **dcalc_t::read(int *cnt, const char *home_dir)
   FILE *fp = fopen(path, "r");
   if (fp == NULL)
   {
-    printf("Can't open: %s\n", path);
+    logfile->perror(path);
+    logfile->vprint("Can't open: %s\n", path);
     return NULL;
   }
   char line[300];
@@ -94,6 +95,8 @@ dcalc_t **dcalc_t::read(int *cnt, const char *home_dir)
     char tmp[300];
     int argc;
     char *argv[25];
+    ltrim(line);
+    rtrim(line);
     safe_strcpy(tmp, (const char*) line, sizeof(tmp));
     argc = get_delim_args(tmp, argv, '|', 25);
     if (argc == 0)
@@ -106,11 +109,11 @@ dcalc_t **dcalc_t::read(int *cnt, const char *home_dir)
     }
     else if (argc < 7)
     {
-      printf("%s: Wrong number of args, line %d\n", path, i+1);
+      logfile->vprint("%s: Wrong number of args, line %d\n", path, i+1);
       continue;
     }
 
-    printf("%s", line);
+    logfile->vprint("%s\n", line);
     dcalc_t *p = new dcalc_t;
 
     /*****
@@ -173,7 +176,7 @@ dcalc_t **dcalc_t::read(int *cnt, const char *home_dir)
 
     int n_errors = 0;
     p->n_dpoints = 0;
-    printf("Discrete points: ");
+    logfile->vprint("Discrete points: ");
     for (int j=6; j < argc; j++)
     {
       char temp_tag[50];
@@ -183,17 +186,17 @@ dcalc_t **dcalc_t::read(int *cnt, const char *home_dir)
       db_point = db->get_db_point(temp_tag);
       if ((db_point == NULL) || (db_point->pv_type() != DISCRETE_VALUE))
       {
-        printf("Bad discrete point: %s\n", temp_tag);
+        logfile->vprint("Bad discrete point: %s\n", temp_tag);
         n_errors++;
       }
       else
       {
-        printf("%s ", temp_tag);
+        logfile->vprint("%s ", temp_tag);
         p->dpoints[j - 6 - n_errors] = (discrete_point_t *) db_point;
         p->n_dpoints++;
       }
     }
-    printf("\n");
+    logfile->vprint("\n");
 
 
     dcalcs[count] = p;

@@ -435,6 +435,15 @@ expr_tree_t *get_expr_tree(expr_list_t *list, int n_tokens)
        tree->data.number = list[0].data.number;
        tree = check_end(list + 1, n_tokens - 1, tree);
        return tree;
+     case LOGICAL_VAL:
+       tree = new expr_tree_t;
+       tree->token = list[0].token;
+       tree->type = DISCRETE_EXPR;
+       tree->left = NULL;
+       tree->right = NULL;
+       tree->data.boolean = list[0].data.boolean;
+       tree = check_end(list + 1, n_tokens - 1, tree);
+       return tree;
      default:
        rtexperror.set(EXP_UNEXPECTED_SYMBOL, "Unexpected symbol: '%s'",
 	   expr_token_string(list[0].token));
@@ -516,6 +525,7 @@ const char *expr_token_string(expr_token_t token)
     case LEFT_PAREN: return "(";
     case RIGHT_PAREN: return ")";
     case NUMBER: return "NUMBER";
+    case LOGICAL_VAL: return "LOGICAL_VAL";
     case END_EXPR: return "END_EXPR";
     case BAD_TOKEN: return "BAD_TOKEN";
     case SIN_OP: return "SIN";

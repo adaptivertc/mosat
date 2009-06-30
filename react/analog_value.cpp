@@ -78,6 +78,9 @@ analog_value_point_t **analog_value_point_t::read(int *cnt, const char *home_dir
   FILE *fp = fopen(path, "r");
   if (fp == NULL)
   {
+    logfile->perror(path);
+    logfile->vprint("Can't open file: %s\n", path);
+
     return NULL;
   }
   char line[300];
@@ -87,6 +90,8 @@ analog_value_point_t **analog_value_point_t::read(int *cnt, const char *home_dir
     int argc;
     char *argv[25];
     char tmp[300];
+    ltrim(line);
+    rtrim(line);
     safe_strcpy(tmp, line, sizeof(tmp));
     argc = get_delim_args(tmp, argv, '|', 25);
     if (argc == 0)
@@ -99,10 +104,10 @@ analog_value_point_t **analog_value_point_t::read(int *cnt, const char *home_dir
     }
     else if (argc != 5)
     {
-      printf("analog_value.dat, line %d: Should be 5 args, found %d\n", i+1, argc);
+      logfile->vprint("analog_value.dat, line %d: Should be 5 args, found %d\n", i+1, argc);
       continue;
     }
-    printf("%s\n", line);
+    logfile->vprint("%s\n", line);
     /*****
     tag
     description
@@ -122,7 +127,7 @@ analog_value_point_t **analog_value_point_t::read(int *cnt, const char *home_dir
     analog_values[count] = analog_value_point_t::read_one(argc, argv, errbuf, sizeof(errbuf));
     if (analog_values[count] == NULL)
     {
-      printf("%s:%d %s\n", path, i+1, errbuf);
+      logfile->vprint("%s:%d %s\n", path, i+1, errbuf);
       continue;
     }
     count++;

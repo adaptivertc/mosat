@@ -83,7 +83,8 @@ pci_point_t **pci_point_t::read(int *cnt, const char *home_dir)
   FILE *fp = fopen(path, "r");
   if (fp == NULL)
   {
-    printf("Can't open %s", path);
+    logfile->perror(path);
+    logfile->vprint("Can't open %s", path);
     return NULL;
   }
   char line[300];
@@ -95,6 +96,8 @@ pci_point_t **pci_point_t::read(int *cnt, const char *home_dir)
     char *argv[25];
 
     //safe_strcpy(line, "AI1|Analog Input 1|PSI|0|0|1|0|100|0|4095|1|5|10|20|80|90|5|0|0|0|0|");
+    ltrim(line);
+    rtrim(line);
     safe_strcpy(tmp, (const char*) line, sizeof(tmp));
     argc = get_delim_args(tmp, argv, '|', 25);
     if (argc == 0)
@@ -107,10 +110,10 @@ pci_point_t **pci_point_t::read(int *cnt, const char *home_dir)
     }
     else if (argc != 21)
     {
-      printf("%s: Wrong number of args, line %d", path, i+1);
+      logfile->vprint("%s: Wrong number of args, line %d", path, i+1);
       continue;
     }
-    printf("%s", line);
+    logfile->vprint("%s\n", line);
     pci_point_t *pci = new pci_point_t;
     /*****/
 
@@ -179,7 +182,7 @@ pci_point_t **pci_point_t::read(int *cnt, const char *home_dir)
 	      max_points * sizeof(pci_point_t*));
       MALLOC_CHECK(pci_points);
     }
-    printf("PCI[%d].tag = '%s'\n", i, pci->tag);
+    logfile->vprint("PCI[%d].tag = '%s'\n", i, pci->tag);
   }
   if (count == 0)
   {

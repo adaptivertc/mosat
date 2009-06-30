@@ -38,6 +38,7 @@ class logfile_t
 {
 private:
   FILE *fp;
+  FILE *fp_startup;
   const char *loghome;
   char path_to_dir[500];
   char path_to_day[500];
@@ -45,9 +46,11 @@ private:
   char exp_num[30];
   bool file_print_enabled;
   bool screen_print_enabled;
+  bool startup_print_enabled;
   void  previous_day(void);
   char *tests[100];
   int n_tests;
+
 public:
   logfile_t(void);
   logfile_t(bool print_to_file, bool print_to_screen);
@@ -56,6 +59,7 @@ public:
   void close(void);
   void write(const char *txt);
   void print(const char *txt);
+  void perror(const char *txt);
   void vprint(const char *fmt, ...)
 #ifdef __GNUC__
           __attribute__ (( format( printf, 2, 3 ) ));
@@ -67,10 +71,13 @@ public:
   void next_test(void);
   void close_test(void);
   void create_graph(void);
+  void set_startup_log_on(void);
+  void set_startup_log_off(void);
   //void screen_print_enabled(bool v);
 };
 
 extern logfile_t *logfile;
+ 
 
 /****************************************************************/
 #endif

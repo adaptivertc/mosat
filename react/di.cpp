@@ -70,7 +70,8 @@ di_point_t **di_point_t::read(int *cnt, const char *home_dir)
   FILE *fp = fopen(path, "r");
   if (fp == NULL)
   {
-    printf("Can't open %s\n", path);
+    logfile->perror(path);
+    logfile->vprint("Can't open %s\n", path);
     return NULL;
   }
   char line[300];
@@ -81,6 +82,8 @@ di_point_t **di_point_t::read(int *cnt, const char *home_dir)
     int argc;
     char *argv[25];
     //DI1|Discrete Input 1|0|0|1|HI|LO|N|N|
+    ltrim(line);
+    rtrim(line);
     safe_strcpy(tmp, (const char*) line, sizeof(tmp));
     argc = get_delim_args(tmp, argv, '|', 25);
     if (argc == 0)
@@ -94,12 +97,12 @@ di_point_t **di_point_t::read(int *cnt, const char *home_dir)
 
     else if (argc != 9)
     {
-      printf("%s: Wrong number of args, line %d\n", path, i+1);
+      logfile->vprint("%s: Wrong number of args, line %d\n", path, i+1);
       continue;
     }
 
     di_point_t *p = new di_point_t;
-    printf("%s", line);
+    logfile->vprint("%s\n", line);
 
     /*****
     Tag

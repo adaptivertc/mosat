@@ -50,10 +50,10 @@ void data_point_t::write_to_file(void)
   FILE *fp = fopen(fname, "w");
   if (fp == NULL)
   {
-    printf("Can not open output file: %s\n", fname);
+    logfile->vprint("Can not open output file: %s\n", fname);
     return;
   }
-  printf("Writing: %s . . .\n", fname);
+  logfile->vprint("Writing: %s . . .\n", fname);
   for (int i=0; i < count; i++)
   {
     fprintf(fp, "%lf", double(i) / db->get_sample_rate());
@@ -128,7 +128,8 @@ data_point_t **data_point_t::read(int *cnt, const char *home_dir)
   FILE *fp = fopen(path, "r");
   if (fp == NULL)
   {
-    printf("Can't open: %s\n", path);
+    logfile->perror(path);
+    logfile->vprint("Can't open: %s\n", path);
     return NULL;
   }
   char line[300];
@@ -140,6 +141,9 @@ data_point_t **data_point_t::read(int *cnt, const char *home_dir)
     char *argv[25];
     //DI1|Discrete Input 1|0|0|1|HI|LO|N|N|
     safe_strcpy(tmp, (const char*) line, sizeof(tmp));
+    ltrim(line);
+    rtrim(line);
+
     argc = get_delim_args(tmp, argv, '|', 25);
     if (argc == 0)
     {
@@ -151,11 +155,11 @@ data_point_t **data_point_t::read(int *cnt, const char *home_dir)
     }
     else if (argc < 5)
     {
-      printf("%s: Wrong number of args, line %d\n", path, i+1);
+      logfile->vprint("%s: Wrong number of args, line %d\n", path, i+1);
       continue;
     }
 
-    printf("%s", line);
+    logfile->vprint("%s\n", line);
     data_point_t *p = new data_point_t;
 
     /*****
@@ -174,7 +178,7 @@ data_point_t **data_point_t::read(int *cnt, const char *home_dir)
     safe_strcpy(p->file_name, (const char*) argv[2], sizeof(p->file_name));
     p->max_time = atol(argv[3]);
     p->max_samples = int(p->max_time * db->get_sample_rate());
-    printf("MaxSamples = %d MaxTime = %d\n", p->max_samples, p->max_time);
+    logfile->vprint("MaxSamples = %d MaxTime = %d\n", p->max_samples, p->max_time);
     p->num_points = argc - 4;
 
     p->analog_points = new analog_point_t *[p->num_points + 1];
@@ -193,13 +197,13 @@ data_point_t **data_point_t::read(int *cnt, const char *home_dir)
       if ((db_point == NULL) || (db_point->pv_type() != ANALOG_VALUE))
       {
         p->analog_points[j-4] = NULL;
-        printf("Bad analog point: %s\n", temp_tag);
+        logfile->vprint("Bad analog point: %s\n", temp_tag);
       }
       else
       {
         p->analog_points[j-4] = (analog_point_t *) db_point;
       }
-      printf("allocating space for  %d samples\n", p->max_samples);
+      logfile->vprint("allocating space for  %d samples\n", p->max_samples);
       p->data[j-4] = new double[p->max_samples + 1];
       MALLOC_CHECK(p->data[j-4]);
     }

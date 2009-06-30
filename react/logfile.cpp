@@ -18,6 +18,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 ***********************************************************************/
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <errno.h>
 
 #include "rtcommon.h"
 
@@ -34,7 +36,30 @@ void logfile_t::close(void)
   {
     fflush(fp);
     fclose(fp);
+    fp = NULL;
   }
+  if (fp_startup != NULL)
+  {
+    fflush(fp_startup);
+    fclose(fp_startup);
+    fp_startup = NULL;
+  }
+  file_print_enabled = false;
+  startup_print_enabled = false;
+}
+
+/****************************************************************/
+
+void logfile_t::perror(const char *txt)
+{
+  char myline[120];
+  myline[0] = '\0';
+  const char *sx = strerror_r(errno, myline, sizeof(myline));
+  //this->vprint("errno: %d, strerror return: %s\n", errno, sx);
+  this->print(txt);
+  this->print(": ");
+  this->print(sx);
+  this->print("\n");
 }
 
 /****************************************************************/
@@ -48,6 +73,12 @@ void logfile_t::print(const char *txt)
   if (file_print_enabled)
   {
     fprintf(fp, "%s", txt);
+    fflush(fp);
+  }
+  if (startup_print_enabled)
+  {
+    fprintf(fp_startup, "%s", txt);
+    fflush(fp_startup);
   }
 }
 
@@ -55,7 +86,7 @@ void logfile_t::print(const char *txt)
 
 void logfile_t::vprint(const char *fmt, ...)
 {
-  char myline[80];
+  char myline[120];
   va_list arg_ptr;
   va_start(arg_ptr, fmt);
   vsnprintf(myline, sizeof(myline), fmt, arg_ptr);
@@ -67,8 +98,13 @@ void logfile_t::vprint(const char *fmt, ...)
   if (file_print_enabled)
   {
     fprintf(fp, "%s", myline);
+    fflush(fp);
   }
-  fflush(fp);
+  if (startup_print_enabled)
+  {
+    fprintf(fp_startup, "%s", myline);
+    fflush(fp_startup);
+  }
 }
 
 /****************************************************************/
@@ -226,6 +262,11 @@ void logfile_t::close_test(void)
 logfile_t::logfile_t(void)
 {
   n_tests = 0;
+  fp = NULL;
+  fp_startup = NULL;
+  file_print_enabled = false;
+  startup_print_enabled = false;
+  
   this->do_init(true, true);
 }
 
@@ -351,6 +392,47 @@ void logfile_t::create_dir(void)
   fclose(last_fp);
 }
 
+/*******************************************************************/
+
+void logfile_t::set_startup_log_on(void)
+{
+  char path[500];
+
+  printf("Creating startup logfile . . . \n");
+  startup_print_enabled = true;
+  const char *logdir = ap_config.get_config("loghome");
+  if (logdir == NULL)
+  {
+    printf("****** Log home not specified, can not log startup\n");
+    startup_print_enabled = false;
+    fp_startup = NULL;
+    return;
+  }
+  snprintf(path, sizeof(path), "%s/startuplog.txt", logdir);
+  fp_startup = fopen(path, "w");
+  if (fp_startup == NULL)
+  {
+    perror(path);
+    startup_print_enabled = false;
+    printf("****** Startup log not enabled, can not open file\n");
+    exit(0);
+    return;
+  }
+}
+
+/*******************************************************************/
+
+void logfile_t::set_startup_log_off(void)
+{
+  startup_print_enabled = false;
+  if (fp_startup != NULL)
+  {
+    fclose(fp_startup);
+    fp_startup = NULL;
+  }
+}
+
+/*******************************************************************/
 
 /*******************************************************************
 

@@ -180,8 +180,8 @@ void calc_tune_coef(double data[], int n, double dt, tune_type_t tt)
       td.Td = 0;
       break;
   }
-  printf("Kp = %lf, Ti = %lf, Td = %lf\n", td.Kp, td.Ti, td.Td);
-  printf("A0 = %lf, A1 = %lf, L = %lf, T = %lf, k = %lf, a = %lf\n",
+  logfile->vprint("Kp = %lf, Ti = %lf, Td = %lf\n", td.Kp, td.Ti, td.Td);
+  logfile->vprint("A0 = %lf, A1 = %lf, L = %lf, T = %lf, k = %lf, a = %lf\n",
 		  td.A0, td.A1, td.L, td.T, td.k, td.a);
 }
 
@@ -194,16 +194,16 @@ void pid_point_t::auto_tune(double initial, double final, double time)
   tune_initial_output = initial;
   tune_final_output = final;
   ao_point->send(initial);
-  printf("sending %lf\n", initial);
+  logfile->vprint("sending %lf\n", initial);
   tune_start_time = db->get_time();
   tune_total_samples = (int)(time * db->get_sample_rate()) + 1;
   tune_data = new double[tune_total_samples];
   tune_n_samples = 0;
   tune_phase_2 = false;
   MALLOC_CHECK(tune_data);
-  printf("Tune phase 1, %lf\n", initial);
-  printf("sample rate: %lf\n", db->get_sample_rate());
-  printf("Total Samples: %d, initial: %lf, final: %lf, time: %lf\n",
+  logfile->vprint("Tune phase 1, %lf\n", initial);
+  logfile->vprint("sample rate: %lf\n", db->get_sample_rate());
+  logfile->vprint("Total Samples: %d, initial: %lf, final: %lf, time: %lf\n",
 		  tune_total_samples, initial, final, time);
 }
 
@@ -215,12 +215,12 @@ void pid_point_t::tune_update(void)
   if (tune_n_samples >= tune_total_samples)
   {
     tune = false;
-    printf("Tune finished, calculating gains\n");
+    logfile->vprint("Tune finished, calculating gains\n");
     calc_tune_coef(tune_data, tune_n_samples,
              1.0 / db->get_sample_rate(), TUNE_PID);
     const char *fname = "tuneout.txt";
     FILE *fp = fopen(fname, "w");
-    printf("Writing tune data to %s\n", fname);
+    logfile->vprint("Writing tune data to %s\n", fname);
     for (int i=0; i < tune_n_samples; i++)
     {
       fprintf(fp, "%d\t%lf\n", i, tune_data[i]);
@@ -236,10 +236,10 @@ void pid_point_t::tune_update(void)
   else if (elapsed_time > tune_delay)
   {
     ao_point->send(tune_final_output);
-    printf("sending %lf\n", tune_final_output);
+    logfile->vprint("sending %lf\n", tune_final_output);
     tune_data[0] = ai_point->get_pv();
     tune_n_samples++;
-    printf("Tune phase 2, starting data collection, %lf\n", tune_final_output);
+    logfile->vprint("Tune phase 2, starting data collection, %lf\n", tune_final_output);
     tune_phase_2 = true;
   }
 }
@@ -340,7 +340,8 @@ pid_point_t **pid_point_t::read(int *cnt, const char *home_dir)
   FILE *fp = fopen(path, "r");
   if (fp == NULL)
   {
-    printf("Can't open %s\n", path);
+    logfile->perror(path);
+    logfile->vprint("Can't open %s\n", path);
     *cnt = 0;
     return NULL;
   }
@@ -351,6 +352,9 @@ pid_point_t **pid_point_t::read(int *cnt, const char *home_dir)
     char tmp[300];
     int argc;
     char *argv[25];
+    ltrim(line);
+    rtrim(line);
+
     safe_strcpy(tmp, (const char*)line, sizeof(tmp));
     argc = get_delim_args(tmp, argv, '|', 25);
     if (argc == 0)
@@ -363,10 +367,10 @@ pid_point_t **pid_point_t::read(int *cnt, const char *home_dir)
     }
     else if (argc != 17)
     {
-      printf("%s: Wrong number of args, line %d\n", path, i+1);
+      logfile->vprint("%s: Wrong number of args, line %d\n", path, i+1);
       continue;
     }
-    printf("%s", line);
+    logfile->vprint("%s\n", line);
     pid_point_t *pid = new pid_point_t;
 
     safe_strcpy(pid->tag, (const char*) argv[0], sizeof(pid->tag));
@@ -390,13 +394,13 @@ pid_point_t **pid_point_t::read(int *cnt, const char *home_dir)
 
     if (db_point == NULL)
     {
-      printf("%s - bad TAGNAME: %s\n", pid->tag, temp_tag);
+      logfile->vprint("%s - bad TAGNAME: %s\n", pid->tag, temp_tag);
     }
 
     pid->ai_point = dynamic_cast <ai_point_t *> (db_point);
     if (pid->ai_point == NULL)
     {
-      printf("%s - bad analog input point: %s\n", pid->tag, temp_tag);
+      logfile->vprint("%s - bad analog input point: %s\n", pid->tag, temp_tag);
     }
 
     /**
@@ -417,13 +421,13 @@ pid_point_t **pid_point_t::read(int *cnt, const char *home_dir)
 
     if (db_point == NULL)
     {
-      printf("%s - bad TAGNAME: %s\n", pid->tag, temp_tag);
+      logfile->vprint("%s - bad TAGNAME: %s\n", pid->tag, temp_tag);
     }
 
     pid->ao_point = dynamic_cast <ao_point_t *> (db_point);
     if (pid->ai_point == NULL)
     {
-      printf("%s - bad analog output point: %s\n", pid->tag, temp_tag);
+      logfile->vprint("%s - bad analog output point: %s\n", pid->tag, temp_tag);
     }
 
     /********

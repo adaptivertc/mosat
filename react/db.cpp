@@ -67,7 +67,7 @@ void react_t::send_do(int drv, int crd, int channel, bool val)
   }
   else
   {
-    printf("*********************** Driver out of range: %d\n", drv);
+    logfile->vprint("*********************** Driver out of range: %d\n", drv);
   }
 }
 
@@ -85,7 +85,7 @@ void react_t::send_ao(int drv, int crd, int channel, double val)
   }
   else
   {
-    printf("*********************** Driver out of range: %d\n", drv);
+    logfile->vprint("*********************** Driver out of range: %d\n", drv);
   }
 }
 
@@ -93,16 +93,16 @@ void react_t::send_ao(int drv, int crd, int channel, double val)
 
 void react_t::exit_clean_up(void)
 {
-  if (num_do > 0) printf("Turning off %d discrete outputs:\n", num_do);
+  if (num_do > 0) logfile->vprint("Turning off %d discrete outputs:\n", num_do);
   for (int i=0; i < num_do; i++)
   {
-    printf("\t%s\n", do_points[i]->tag);
+    logfile->vprint("\t%s\n", do_points[i]->tag);
     do_points[i]->send(false);
   }
-  if (num_ao > 0) printf("Zeroing %d analog outputs:\n", num_ao);
+  if (num_ao > 0) logfile->vprint("Zeroing %d analog outputs:\n", num_ao);
   for (int i=0; i < num_ao; i++)
   {
-    printf("\t%s\n", ao_points[i]->tag);
+    logfile->vprint("\t%s\n", ao_points[i]->tag);
     ao_points[i]->send(0.0);
   }
 
@@ -146,87 +146,87 @@ void react_t::print_all_points(void)
 {
   for (int i=0; i < num_di; i++)
   {
-    printf("DI: %s\n", di_points[i]->tag);
+    logfile->vprint("DI: %s\n", di_points[i]->tag);
   }
   for (int i=0; i < num_do; i++)
   {
-    printf("DO: %s\n", do_points[i]->tag);
+    logfile->vprint("DO: %s\n", do_points[i]->tag);
   }
   for (int i=0; i < num_calc; i++)
   {
-    printf("Calc: %s\n", calcs[i]->tag);
+    logfile->vprint("Calc: %s\n", calcs[i]->tag);
   }
   for (int i=0; i < num_d_calc; i++)
   {
-    printf("DiscreteCalc: %s\n", d_calcs[i]->tag);
+    logfile->vprint("DiscreteCalc: %s\n", d_calcs[i]->tag);
   }
   for (int i=0; i < num_dcalc; i++)
   {
-    printf("DCalc: %s\n", dcalcs[i]->tag);
+    logfile->vprint("DCalc: %s\n", dcalcs[i]->tag);
   }
   for (int i=0; i < num_timer; i++)
   {
-    printf("Timer: %s\n", timers[i]->tag);
+    logfile->vprint("Timer: %s\n", timers[i]->tag);
   }
   for (int i=0; i < num_analog_val; i++)
   {
-    printf("Analog value: %s\n", analog_vals[i]->tag);
+    logfile->vprint("Analog value: %s\n", analog_vals[i]->tag);
   }
   for (int i=0; i < num_discrete_val; i++)
   {
-    printf("Discrete value: %s\n", discrete_vals[i]->tag);
+    logfile->vprint("Discrete value: %s\n", discrete_vals[i]->tag);
   }
   for (int i=0; i < num_int; i++)
   {
-    printf("Int: %s\n", ints[i]->tag);
+    logfile->vprint("Int: %s\n", ints[i]->tag);
   }
   for (int i=0; i < num_ai; i++)
   {
-    printf("AI: %s\n", ai_points[i]->tag);
+    logfile->vprint("AI: %s\n", ai_points[i]->tag);
   }
   for (int i=0; i < num_ao; i++)
   {
-    printf("AO: %s\n", ao_points[i]->tag);
+    logfile->vprint("AO: %s\n", ao_points[i]->tag);
   }
   for (int i=0; i < num_pci; i++)
   {
-    printf("PCI: %s\n", pci_points[i]->tag);
+    logfile->vprint("PCI: %s\n", pci_points[i]->tag);
   }
   for (int i=0; i < num_pid; i++)
   {
-    printf("PID: %s\n", pid_points[i]->tag);
+    logfile->vprint("PID: %s\n", pid_points[i]->tag);
   }
   for (int i=0; i < num_pump; i++)
   {
-    printf("PUMP: %s\n", pump_points[i]->tag);
+    logfile->vprint("PUMP: %s\n", pump_points[i]->tag);
   }
   for (int i=0; i < num_ac; i++)
   {
-    printf("AC: %s\n", ac_points[i]->tag);
+    logfile->vprint("AC: %s\n", ac_points[i]->tag);
   }
   for (int i=0; i < num_level; i++)
   {
-    printf("LEVEL: %s\n", level_points[i]->tag);
+    logfile->vprint("LEVEL: %s\n", level_points[i]->tag);
   }
   for (int i=0; i < num_data; i++)
   {
-    printf("Data: %s\n", data_points[i]->tag);
+    logfile->vprint("Data: %s\n", data_points[i]->tag);
   }
   for (int i=0; i < num_file_logger; i++)
   {
-    printf("FileLogger: %s\n", file_logger_points[i]->tag);
+    logfile->vprint("FileLogger: %s\n", file_logger_points[i]->tag);
   }
   for (int i=0; i < num_discrete_logger; i++)
   {
-    printf("DiscreteLogger: %s\n", discrete_logger_points[i]->tag);
+    logfile->vprint("DiscreteLogger: %s\n", discrete_logger_points[i]->tag);
   }
   for (int i=0; i < num_scan; i++)
   {
-    printf("Scan: %s\n", scan_points[i]->tag);
+    logfile->vprint("Scan: %s\n", scan_points[i]->tag);
   }
   for (int i=0; i < num_web; i++)
   {
-    printf("Web: %s\n", web_points[i]->tag);
+    logfile->vprint("Web: %s\n", web_points[i]->tag);
   }
 }
 
@@ -240,7 +240,7 @@ void react_t::verify_drivers(void)
     int drv = ai_points[i]->get_driver();
     if ((drv < 0) || (drv >= num_io_drivers))
     {
-      printf("Driver out of range for ai point %s: %d\n", ai_points[i]->tag, drv); 
+      logfile->vprint("Driver out of range for ai point %s: %d\n", ai_points[i]->tag, drv); 
       exit(0);
     } 
   }
@@ -249,7 +249,7 @@ void react_t::verify_drivers(void)
     int drv = di_points[i]->get_driver();
     if ((drv < 0) || (drv >= num_io_drivers))
     {
-      printf("Driver out of range for di point %s: %d\n", di_points[i]->tag, drv); 
+      logfile->vprint("Driver out of range for di point %s: %d\n", di_points[i]->tag, drv); 
       exit(0);
     } 
   }
@@ -258,7 +258,7 @@ void react_t::verify_drivers(void)
     int drv = do_points[i]->get_driver();
     if ((drv < 0) || (drv >= num_io_drivers))
     {
-      printf("Driver out of range for do point %s: %d\n", do_points[i]->tag, drv); 
+      logfile->vprint("Driver out of range for do point %s: %d\n", do_points[i]->tag, drv); 
       exit(0);
     } 
   }
@@ -267,7 +267,7 @@ void react_t::verify_drivers(void)
     int drv = ao_points[i]->get_driver();
     if ((drv < 0) || (drv >= num_io_drivers))
     {
-      printf("Driver out of range for ao point %s: %d\n", ao_points[i]->tag, drv); 
+      logfile->vprint("Driver out of range for ao point %s: %d\n", ao_points[i]->tag, drv); 
       exit(0);
     } 
   }
@@ -276,7 +276,7 @@ void react_t::verify_drivers(void)
     int drv = pci_points[i]->get_driver();
     if ((drv < 0) || (drv >= num_io_drivers))
     {
-      printf("Driver out of range for pci point %s: %d\n", ai_points[i]->tag, drv); 
+      logfile->vprint("Driver out of range for pci point %s: %d\n", ai_points[i]->tag, drv); 
       exit(0);
     } 
   }
@@ -440,7 +440,7 @@ void react_t::read_inputs(void)
   //printf("\n");
   if (shutdown)
   {
-    printf("\nShuting down, sending all discrete outputs\n\r");
+    logfile->vprint("\nShuting down, sending all discrete outputs\n");
     for (int i=0; i < num_do; i++)
     {
       do_points[i]->send(false);
@@ -449,7 +449,7 @@ void react_t::read_inputs(void)
     {
       ao_points[i]->send(0.0);
     }
-    printf("\n\r");
+    logfile->vprint("\n");
     exit(0);
   }
 }
@@ -481,7 +481,7 @@ bool react_t::update(double theTime, bool execute_script)
     retval = this->execute_secuencia();
     if (retval)
     {
-      printf("Execute returned true, time to exit\n");
+      logfile->vprint("Execute returned true, time to exit\n");
     }
     ta2.stop();
   }
@@ -555,12 +555,12 @@ rt_double_ref_t *react_get_analog_ref_fn(char *tag)
   db_point = reactdb->get_db_point(tag);
   if (db_point == NULL) 
   {
-    printf("Tag not found: %s\n", tag);
+    logfile->vprint("Tag not found: %s\n", tag);
     return NULL;
   }
   if (db_point->pv_type() != ANALOG_VALUE)
   {
-    printf("Wrong point type: %d\n", db_point->pv_type());
+    logfile->vprint("Wrong point type: %d\n", db_point->pv_type());
     return NULL;
   }
   else
@@ -675,10 +675,12 @@ void react_t::init_driver(void)
 
   safe_strcpy(path, this->get_home_dir(), sizeof(path));
   safe_strcat(path, "/dbfiles/drivers.dat", sizeof(path));
+  logfile->vprint("Loading iodrivers from: %s\n", path);
   FILE *fp = fopen(path, "r");
   if (fp == NULL)
   {
-    printf("Can't open %s, using default sim driver", path);
+    logfile->perror(path);
+    logfile->vprint("Can't open %s, using default sim driver\n", path);
     io_driver[0] = load_iodriver(db, "./drivers/sim/libsimdriver.so", "new_simdriver", NULL, NULL);
     num_io_drivers = 1;
     return;
@@ -693,6 +695,8 @@ void react_t::init_driver(void)
     char *argv[25];
 
     //safe_strcpy(line, "AI1|Analog Input 1|PSI|0|0|1|0|100|0|4095|1|5|10|20|80|90|5|0|0|0|0|");
+    ltrim(line);
+    rtrim(line);
     safe_strcpy(tmp, (const char*) line, sizeof(tmp));
     argc = get_delim_args(tmp, argv, '|', 25);
     if (argc == 0)
@@ -705,10 +709,12 @@ void react_t::init_driver(void)
     }
     else if ((argc != 3) && (argc != 4))
     {
-      printf("Line: %s", line);
-      printf("%s: Wrong number of args, line %d, %d\n", path, i+1, argc);
+      logfile->vprint("Line: %s\n", line);
+      logfile->vprint("%s: Wrong number of args, line %d, %d\n", path, i+1, argc);
       continue;
     }
+
+    logfile->vprint("%s\n", line);
 
     const char *option;
     if (argc == 3)
@@ -727,7 +733,7 @@ void react_t::init_driver(void)
 
     if (num_io_drivers >= int(sizeof(io_driver)/sizeof(io_driver[0])))
     {
-      printf("********** Maximum number of drivers loaded - can not load:\n\t%s\n", line);
+      logfile->vprint("********** Maximum number of drivers loaded - can not load:\n\t%s\n", line);
       continue;
     }
 
@@ -735,7 +741,8 @@ void react_t::init_driver(void)
     io_driver[num_io_drivers] = load_iodriver(db, argv[0], argv[1], argv[2], option);
     if (io_driver[num_io_drivers] == NULL)
     {
-      printf("Can't load %s, using default sim driver", argv[0]);
+      logfile->perror(argv[0]);
+      logfile->vprint("Can't load %s, using default sim driver\n", argv[0]);
       io_driver[num_io_drivers] = load_iodriver(db, "./drivers/sim/libsimdriver.so",
                "new_simdriver", NULL, NULL);
       //return;
@@ -752,7 +759,7 @@ void react_t::init_driver(void)
 db_point_t ** react_t::read_one_point_type(db_point_factory_t *factory, 
      const char *a_home_dir, int *cnt)
 {
-  printf("Reading %s ........\n", factory->abbreviation());
+  logfile->vprint("Reading %s ........\n", factory->abbreviation());
   int max_points = 50;
   db_point_t **db_points =
 	(db_point_t **) malloc(max_points * sizeof(db_point_t*));
@@ -765,7 +772,8 @@ db_point_t ** react_t::read_one_point_type(db_point_factory_t *factory,
   FILE *fp = fopen(path, "r");
   if (fp == NULL)
   {
-    printf("Can't open %s", path);
+    logfile->perror(path);
+    logfile->vprint("Can't open %s\n", path);
     return NULL;
   }
   char line[300];
@@ -793,10 +801,10 @@ db_point_t ** react_t::read_one_point_type(db_point_factory_t *factory,
 
     if (db_points[n] == NULL)
     {
-      printf("%s:%d %s\n", path, i+1, errbuf);
+      logfile->vprint("%s:%d %s\n", path, i+1, errbuf);
       continue;
     }
-    printf("%s", line);
+    logfile->vprint("%s", line);
     n++;
     if (n > max_points)
     {
@@ -824,7 +832,8 @@ void react_t::read_factory_points(const char *a_home_dir)
   FILE *fp = fopen(path, "r");
   if (fp == NULL)
   {
-    printf("Can't open %s", path);
+    logfile->perror(path);
+    logfile->vprint("Can't open %s\n", path);
     return;
   }
   char line[300];
@@ -863,83 +872,83 @@ void react_t::read_all_points(const char *a_home_dir)
   ***/
 
   /**
-  printf("Reading ai ........\n\r");
+  printf("Reading ai ........\n");
   //ai_points = read_ai_points(&num_ai, a_home_dir);
   ai_points = ai_point_t::read(&num_ai, a_home_dir);
   **/
 
-  printf("Reading ao ........\n\r");
+  logfile->vprint("Reading ao ........\n");
   ao_points = ao_point_t::read(&num_ao, a_home_dir);
 
-  printf("Reading di ........\n\r");
+  logfile->vprint("Reading di ........\n");
   di_points = di_point_t::read(&num_di, a_home_dir);
 
-  printf("Reading do ........\n\r");
+  logfile->vprint("Reading do ........\n");
   do_points = do_point_t::read(&num_do, a_home_dir);
 
-  printf("Reading pci ........\n\r");
+  logfile->vprint("Reading pci ........\n");
   pci_points = pci_point_t::read(&num_pci, a_home_dir);
 
-  printf("Reading calc ........\n\r");
+  logfile->vprint("Reading calc ........\n");
   calcs = calc_point_t::read(&num_calc, a_home_dir);
 
-  printf("Reading discrete calc ........\n\r");
+  logfile->vprint("Reading discrete calc ........\n");
   d_calcs = dcalc_point_t::read(&num_d_calc, a_home_dir);
-  printf("%d discrete calcs readn\r", num_d_calc);
+  logfile->vprint("%d discrete calcs read\n", num_d_calc);
 
-  printf("Reading dcalc ........\n");
+  logfile->vprint("Reading dcalc ........\n");
   dcalcs = dcalc_t::read(&num_dcalc, a_home_dir);
 
-  printf("Reading timer ........\n");
+  logfile->vprint("Reading timer ........\n");
   timers = timer_point_t::read(&num_timer, a_home_dir);
-  printf("num_timer = %d\n", num_timer);
+  logfile->vprint("num_timer = %d\n", num_timer);
 
-  printf("Reading analog values ........\n");
+  logfile->vprint("Reading analog values ........\n");
   analog_vals = analog_value_point_t::read(&num_analog_val, a_home_dir);
-  printf("num analog values = %d\n", num_analog_val);
+  logfile->vprint("num analog values = %d\n", num_analog_val);
 
-  printf("Reading discrete values ........\n");
+  logfile->vprint("Reading discrete values ........\n");
   discrete_vals = discrete_value_point_t::read(&num_discrete_val, a_home_dir);
-  printf("num discrete values = %d\n", num_discrete_val);
+  logfile->vprint("num discrete values = %d\n", num_discrete_val);
 
-  printf("Reading int ........\n");
+  logfile->vprint("Reading int ........\n");
   ints = int_t::read(&num_int, a_home_dir);
 
-  printf("Reading pid ........\n");
+  logfile->vprint("Reading pid ........\n");
   pid_points = pid_point_t::read(&num_pid, a_home_dir);
 
-  printf("Reading pump ........\n");
+  logfile->vprint("Reading pump ........\n");
   pump_points = pump_point_t::read(&num_pump, a_home_dir);
 
-  printf("Reading ac ........\n");
+  logfile->vprint("Reading ac ........\n");
   ac_points = ac_point_t::read(&num_ac, a_home_dir);
 
-  printf("Reading level ........\n");
+  logfile->vprint("Reading level ........\n");
   level_points = level_point_t::read(&num_level, a_home_dir);
 
-  printf("Reading data ........\n");
+  logfile->vprint("Reading data ........\n");
   data_points = data_point_t::read(&num_data, a_home_dir);
 
-  printf("Reading file logger ........\n");
+  logfile->vprint("Reading file logger ........\n");
   file_logger_points = file_logger_t::read(&num_file_logger, a_home_dir);
 
-  printf("Reading discrete logger ........\n");
+  logfile->vprint("Reading discrete logger ........\n");
   discrete_logger_points = discrete_logger_t::read(&num_discrete_logger, a_home_dir);
 
-  printf("Reading scan ........\n");
+  logfile->vprint("Reading scan ........\n");
   scan_points = scan_point_t::read(&num_scan, a_home_dir);
 
-  printf("Reading web points ........\n");
+  logfile->vprint("Reading web points ........\n");
   web_points = web_point_t::read(&num_web, a_home_dir);
 
   /* We can only parse the expressions after all points have been loaded! */
-  printf("Parsing %d Analog Expressions ......\n", num_calc);
+  logfile->vprint("Parsing %d Analog Expressions ......\n", num_calc);
   for (int i=0; i < num_calc; i++)
   {
     calcs[i]->parse_expr();
   }
 
-  printf("Parsing %d Discrete Expressions ......\n", num_d_calc);
+  logfile->vprint("Parsing %d Discrete Expressions ......\n", num_d_calc);
   for (int i=0; i < num_d_calc; i++)
   {
     d_calcs[i]->parse_expr();
@@ -989,7 +998,7 @@ void react_t::check_msg_queue(void)
     int ret = msgsnd(msgbuf.data.qid, &myreply, sizeof(myreply.data), 0);
     if (ret == -1)
     {
-      perror("Can't send message");
+      logfile->perror("Can't send message\n");
     }
   }
 }
@@ -1115,28 +1124,28 @@ void react_t::init_shared_memory(void)
   shmsize +=
         (n_discrete * sizeof(discrete_display_data_t)) +
        ((n_discrete * sizeof(discrete_display_data_t)) % 8);
-  printf("Analog offset = %d, discrete offset = %d\n",
+  logfile->vprint("Analog offset = %d, discrete offset = %d\n",
         analog_offset, discrete_offset);
 
   // Create a shared segment, read/write for me, read only for others.
   shmid =  shmget(IPC_PRIVATE, shmsize, IPC_CREAT | 0744);
   if (shmid == -1)
   {
-    perror("Could not create shared memory");
+    logfile->perror("Could not create shared memory");
     shmp = NULL;
     return;
   }
-  printf("Created %d bytes of shared memory, id = %d\n", shmsize, shmid);
+  logfile->vprint("Created %d bytes of shared memory, id = %d\n", shmsize, shmid);
 
   // Now attach to the shared memory.
   shmp = shmat(shmid, NULL, 0);
   if (shmp == (void *) -1)
   {
-    perror("Could not attach to shared memory");
+    logfile->perror("Could not attach to shared memory");
     shmp = NULL;
     return;
   }
-  printf("Attached to shared memory, addr = %p\n", shmp);
+  logfile->vprint("Attached to shared memory, addr = %p\n", shmp);
 
   // Now issue a command to delete the segment. Notice we issue a delete
   // command now, and it will only really be deleted when the LAST
@@ -1144,7 +1153,7 @@ void react_t::init_shared_memory(void)
   int ret = shmctl(shmid, IPC_RMID, NULL);
   if (ret == -1)
   {
-    perror("Could not remove shared memory");
+    logfile->perror("Could not remove shared memory");
     shmp = NULL;
     return;
   }
@@ -1164,12 +1173,12 @@ void react_t::init_shared_memory(void)
   FILE *fp = fopen(path, "w");
   if (fp == NULL)
   {
-    perror(path);
+    logfile->perror(path);
     return;
   }
-  fprintf(fp, "%d\n", shmid);
+  flogfile->vprint(fp, "%d\n", shmid);
   fclose(fp);
-  printf("%s: %d\n", path, shmid);
+  logfile->vprint("%s: %d\n", path, shmid);
 }
 
 /**********************************************************************/
@@ -1179,16 +1188,16 @@ void react_t::delete_shared_memory(void)
   // Detach from shared memory.
   if (shmp == NULL)
   {
-    printf("Shared memory pointer is null . . .  can not detach\n");
+    logfile->vprint("Shared memory pointer is null . . .  can not detach\n");
     return;
   }
   int ret = shmdt(shmp);
   if (ret == -1)
   {
-    perror("Could not detach from shared memory");
+    logfile->perror("Could not detach from shared memory");
     return;
   }
-  printf("Detach from shared memory successful\n");
+  logfile->vprint("Detach from shared memory successful\n");
 }
 
 #endif
@@ -1200,14 +1209,14 @@ void react_t::init_msg_queue(void)
 {
   /* create the message que */
 
-  printf("initializing queue . . \n");
+  logfile->vprint("initializing queue . . \n");
   int myqid = msgget(IPC_PRIVATE, IPC_CREAT | 0777);
   if (myqid == -1)
   {
-    perror("Could not create message queue");
+    logfile->perror("Could not create message queue");
     return;
   }
-  printf("I got a message queue, id = %d\n", myqid);
+  logfile->vprint("I got a message queue, id = %d\n", myqid);
 
   // Write the id to a file for others to use.
   char path[200];
@@ -1216,14 +1225,14 @@ void react_t::init_msg_queue(void)
   FILE *fp = fopen(path, "w");
   if (fp == NULL)
   {
-    perror(path);
+    logfile->perror(path);
     return;
   }
   fprintf(fp, "%d\n", myqid);
   double val;
   this->qid = myqid;
   fclose(fp);
-  printf("%s: %d\n", path, myqid);
+  logfile->vprint("%s: %d\n", path, myqid);
 }
 
 /**********************************************************************/
@@ -1232,16 +1241,16 @@ void react_t::delete_msg_queue(void)
 {
   if (qid == -1)
   {
-    printf("Message qid = -1, cannot destroy\n");
+    logfile->vprint("Message qid = -1, cannot destroy\n");
     return;
   }
   int ret = msgctl(this->qid, IPC_RMID, NULL);
   if (ret == -1)
   {
-    perror("Could not destroy the message queue");
+    logfile->perror("Could not destroy the message queue");
     return;
   }
-  printf("Message queue destroyed successfully\n");
+  logfile->vprint("Message queue destroyed successfully\n");
 }
 #endif
 
@@ -1289,7 +1298,7 @@ void react_t::read_background_sequences(const char *a_home_dir, const char *a_se
   FILE *fp = fopen(path, "r");
   if (fp == NULL)
   {
-    printf("Can't open background script file: %s\n", path);
+    logfile->vprint("Can't open background script file: %s\n", path);
     return;
   }
   char line[300];

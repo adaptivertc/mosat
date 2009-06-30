@@ -89,7 +89,7 @@ static bool day_changed(time_t t1, time_t t2)
   }
   else 
   {
-    printf("********* Day Changed\n");
+    logfile->vprint("********* Day Changed\n");
     return true;
   }
 }
@@ -106,7 +106,7 @@ static bool week_changed(time_t t1, time_t t2)
   if ( ((mytm1.tm_wday == 0) && (mytm1.tm_wday == 6)) ||
      ((mytm2.tm_wday == 0) && (mytm1.tm_wday == 6)) ) 
   {
-    printf("********* Week Changed\n");
+    logfile->vprint("********* Week Changed\n");
     return true;
   }
   else 
@@ -129,7 +129,7 @@ static bool month_changed(time_t t1, time_t t2)
   }
   else 
   {
-    printf("********* Month Changed\n");
+    logfile->vprint("********* Month Changed\n");
     return true;
   }
 }
@@ -148,7 +148,7 @@ static bool year_changed(time_t t1, time_t t2)
   }
   else 
   {
-    printf("********* Year Changed\n");
+    logfile->vprint("********* Year Changed\n");
     return true;
   }
 }
@@ -161,7 +161,7 @@ static void make_day_file_name(time_t the_time, char *fname, int size_fname, con
   if (loghome == NULL)
   {
     loghome = "./";
-    printf("Log home not specified, using: %s\n", loghome);
+    logfile->vprint("Log home not specified, using: %s\n", loghome);
   }
   if (pre == NULL)
   {
@@ -194,7 +194,7 @@ static FILE *open_day_history_file(const char * pre, const char *post, FILE *fp)
   fp = fopen(fname, "a");
   if (fp == NULL)
   {
-    printf("**** Error Opening %s\n", fname);
+    logfile->vprint("**** Error Opening %s\n", fname);
   }
   return fp;
 }
@@ -251,7 +251,7 @@ void file_logger_t::update(void)
   //fprintf(instantaneous_fp, "data:");
   if (!collecting)
   {
-    fprintf(stdout, " **** NOT collecting\n");
+    logfile->vprint(" **** NOT collecting\n");
     return;
   }
   time_t now = time(NULL);
@@ -352,7 +352,8 @@ file_logger_t **file_logger_t::read(int *cnt, const char *home_dir)
   FILE *fp = fopen(path, "r");
   if (fp == NULL)
   {
-    printf("Can't open: %s\n", path);
+    logfile->perror(path);
+    logfile->vprint("Can't open: %s\n", path);
     return NULL;
   }
   char line[300];
@@ -362,6 +363,9 @@ file_logger_t **file_logger_t::read(int *cnt, const char *home_dir)
     char tmp[300];
     int argc;
     char *argv[25];
+    ltrim(line);
+    rtrim(line);
+
     safe_strcpy(tmp, (const char*) line, sizeof(tmp));
     argc = get_delim_args(tmp, argv, '|', 25);
     if (argc == 0)
@@ -374,11 +378,11 @@ file_logger_t **file_logger_t::read(int *cnt, const char *home_dir)
     }
     else if (argc < FL_MIN_ARGS)
     {
-      printf("%s: Wrong number of args (minimum %d), line %d\n", path, FL_MIN_ARGS, i+1);
+      logfile->vprint("%s: Wrong number of args (minimum %d), line %d\n", path, FL_MIN_ARGS, i+1);
       continue;
     }
 
-    printf("%s", line);
+    logfile->vprint("%s\n", line);
     file_logger_t *p = new file_logger_t;
 
     safe_strcpy(p->tag, (const char*) argv[0], sizeof(p->tag));
@@ -403,40 +407,30 @@ file_logger_t **file_logger_t::read(int *cnt, const char *home_dir)
     } 
     if (p->collecting)
     {
-      printf("collection is on for %s\n", p->tag);
+      logfile->vprint("collection is on for %s\n", p->tag);
     }
 
-    //printf("File %s, line %d\n", __FILE__, __LINE__);
     p->num_points = argc - (FL_MIN_ARGS - 1);
-    //printf("File %s, line %d\n", __FILE__, __LINE__);
     p->analog_points = new analog_point_t *[p->num_points + 1];
-    //printf("File %s, line %d\n", __FILE__, __LINE__);
 
     for (int j=(FL_MIN_ARGS - 1); j < argc; j++)
     {
-    //printf("File %s, line %d\n", __FILE__, __LINE__);
       char temp_tag[50];
       db_point_t *db_point;
-    //printf("File %s, line %d\n", __FILE__, __LINE__);
       safe_strcpy(temp_tag, (const char*) argv[j], sizeof(temp_tag));
-    //printf("File %s, line %d\n", __FILE__, __LINE__);
       rtrim(temp_tag);
-    //printf("File %s, line %d\n", __FILE__, __LINE__);
-    printf("Tag = %s\n", temp_tag);
+    logfile->vprint("Tag = %s\n", temp_tag);
       db_point = db->get_db_point(temp_tag);
-    //printf("File %s, line %d\n", __FILE__, __LINE__);
       if ((db_point == NULL) || (db_point->pv_type() != ANALOG_VALUE))
       {
         p->analog_points[j-(FL_MIN_ARGS - 1)] = NULL;
-        printf("Bad analog point: %s\n", temp_tag);
+        logfile->vprint("Bad analog point: %s\n", temp_tag);
       }
       else
       {
-    //printf("File %s, line %d\n", __FILE__, __LINE__);
         p->analog_points[j-(FL_MIN_ARGS - 1)] = (analog_point_t *) db_point;
-    //printf("File %s, line %d\n", __FILE__, __LINE__);
       }
-      printf("analog point %d: %s\n", j-(FL_MIN_ARGS - 1), temp_tag);
+      logfile->vprint("analog point %d: %s\n", j-(FL_MIN_ARGS - 1), temp_tag);
     }
     p->last_log_time = time(NULL);
     p->n_hour_samples = 0;

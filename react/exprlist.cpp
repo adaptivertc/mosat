@@ -298,6 +298,30 @@ static expr_list_t next_token(char *line)
 	{
 	  list.token = ABS_OP;
 	}
+	else if (0 == strcasecmp(temp, "FALSE"))
+	{
+          printf("LOGICAL_VAL: false\n");
+          list.token = LOGICAL_VAL;
+          list.data.boolean = false;
+	}
+	else if (0 == strcasecmp(temp, "F"))
+	{
+          printf("LOGICAL_VAL: false\n");
+          list.token = LOGICAL_VAL;
+          list.data.boolean = false;
+	}
+	else if (0 == strcasecmp(temp, "TRUE"))
+	{
+          printf("LOGICAL_VAL: true\n");
+          list.token = LOGICAL_VAL;
+          list.data.boolean = true;
+	}
+	else if (0 == strcasecmp(temp, "T"))
+	{
+          printf("LOGICAL_VAL: true\n");
+          list.token = LOGICAL_VAL;
+          list.data.boolean = true;
+	}
 	else
 	{
 	  strcpy(list.data.tag, temp);

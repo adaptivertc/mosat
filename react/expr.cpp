@@ -222,8 +222,14 @@ int expr_tree_t::make_post_fix(expr_op_t *op)
       *******/
       break;
     case NUMBER:
+      printf("FLOAT_VAL: %lf\n", data.number);
       op[n].token_type = FLOAT_VAL;
       op[n].val.float_val = data.number;
+      break;
+    case LOGICAL_VAL:
+      printf("LOGICAL_VAL: %s\n", data.boolean ? "true" : "false");
+      op[n].token_type = LOGICAL_VAL;
+      op[n].val.logical_val = data.boolean ? DISCRETE_HI : DISCRETE_LO;
       break;
     default:
       break;

@@ -92,6 +92,7 @@ union expr_data_t
 {
   char tag[20];
   double number;
+  bool boolean;
 };
 
 

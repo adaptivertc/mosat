@@ -28,6 +28,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "db.h"
 #include "iodriver.h"
 #include "reactshmio.h"
+#include "ap_config.h"
+#include "logfile.h"
+
+logfile_t *logfile;
 
 bool signal_recieved = false;
 //react_base_t *db = NULL;
@@ -47,6 +51,8 @@ class dummy_db_t : public react_drv_base_t
 public:
   double get_time(void);
 };
+
+ap_config_t ap_config;
 
 /*****************************************************************/
 
@@ -145,6 +151,8 @@ void exit_clean_up(void)
 int main(int argc, char *argv[])
 {
   dummy_db_t dummy_db;
+
+  logfile = new logfile_t(false, true);
 
   //printf("%s:%d\n", __FILE__, __LINE__);
   if (SIG_ERR == signal(SIGHUP, react_signal_handler))

@@ -32,11 +32,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 db_point_factory_t *load_db_point(const char *sofile)
 {
-  printf("Loading db point factory from: %s\n", sofile);
+  logfile->vprint("Loading db point factory from: %s\n", sofile);
   void *handle = dlopen (sofile, RTLD_LAZY | RTLD_GLOBAL);
   if (!handle)
   {
-    fprintf (stderr, "dlopen: %s\n", dlerror());
+    logfile->vprint("dlopen: %s\n", dlerror());
     return NULL;
   }
   //db_point_factory_t *(*get_db_factory_t)(react_base_t *r);
@@ -45,7 +45,7 @@ db_point_factory_t *load_db_point(const char *sofile)
   char *error;
   if ((error = dlerror()) != NULL)
   {
-    fprintf (stderr, "dlsym: %s\n", error);
+    logfile->vprint("dlsym: %s\n", error);
     dlclose(handle);
     return NULL;
   }

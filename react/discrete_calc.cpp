@@ -50,7 +50,8 @@ dcalc_point_t **dcalc_point_t::read(int *cnt, const char *home_dir)
   FILE *fp = fopen(path, "r");
   if (fp == NULL)
   {
-    printf("Can't open %s\n", path);
+    logfile->perror(path);
+    logfile->vprint("Can't open %s\n", path);
     return NULL;
   }
   char line[300];
@@ -61,6 +62,9 @@ dcalc_point_t **dcalc_point_t::read(int *cnt, const char *home_dir)
     int argc;
     char *argv[25];
     //Dcalc1|Discrete Calc 1|temp > 50|HI|LO|N|N|
+    ltrim(line);
+    rtrim(line);
+
     safe_strcpy(tmp, (const char*) line, sizeof(tmp));
     argc = get_delim_args(tmp, argv, '|', 25);
     if (argc == 0)
@@ -74,12 +78,12 @@ dcalc_point_t **dcalc_point_t::read(int *cnt, const char *home_dir)
 
     else if (argc != 7)
     {
-      printf("%s: Wrong number of args, line %d\n", path, i+1);
+      logfile->vprint("%s: Wrong number of args, line %d\n", path, i+1);
       continue;
     }
 
     dcalc_point_t *p = new dcalc_point_t;
-    printf("%s", line);
+    logfile->vprint("%s\n", line);
 
     /*****
     Tag
@@ -100,7 +104,7 @@ dcalc_point_t **dcalc_point_t::read(int *cnt, const char *home_dir)
     rtrim(temp);
     p->expr_string = strdup(temp);
     MALLOC_CHECK(p->expr_string);
-    printf("Expression: %s\n", p->expr_string);
+    logfile->vprint("Expression: %s\n", p->expr_string);
 
     safe_strcpy(p->lo_desc, (const char*) argv[3], sizeof(p->lo_desc));
     safe_strcpy(p->hi_desc, (const char*) argv[4], sizeof(p->hi_desc));
@@ -179,7 +183,7 @@ void dcalc_point_t::parse_expr(void)
   expression.expr = make_expr(expr_string);
   if (expression.expr == NULL)
   {
-    printf("Discrete calc %s: Bad Expression: %s\n", tag, expr_string);
+    logfile->vprint("Discrete calc %s: Bad Expression: %s\n", tag, expr_string);
     expression.expr = new expr_op_t[2];
     expression.expr[0].token_type = LOGICAL_VAL;
     expression.expr[0].val.logical_val = 0;

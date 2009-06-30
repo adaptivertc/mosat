@@ -156,7 +156,8 @@ ao_point_t **ao_point_t::read(int *cnt, const char *home_dir)
   FILE *fp = fopen(path, "r");
   if (fp == NULL)
   {
-    printf("Can't open %s", path);
+    logfile->perror(path);
+    logfile->vprint("Can't open %s", path);
     return NULL;
   }
   char line[300];
@@ -166,6 +167,8 @@ ao_point_t **ao_point_t::read(int *cnt, const char *home_dir)
     char tmp[300];
     int argc;
     char *argv[25];
+    ltrim(line);
+    rtrim(line);
     safe_strcpy(tmp, (const char*) line, sizeof(tmp));
     argc = get_delim_args(tmp, argv, '|', 25);
     if (argc == 0)
@@ -188,7 +191,7 @@ ao_point_t **ao_point_t::read(int *cnt, const char *home_dir)
     {
       max_points += 10;
       int new_size = max_points * sizeof(ao_point_t*);
-      printf("Reallocating: new size = %d\n", new_size);
+      logfile->vprint("Reallocating: new size = %d\n", new_size);
       ao_points = (ao_point_t **) realloc(ao_points, new_size);
       MALLOC_CHECK(ao_points);
     }
@@ -217,10 +220,11 @@ ao_point_t **ao_point_t::read(int *cnt, const char *home_dir)
     ao_points[count] = ao_point_t::read_one(argc, argv, errbuf, sizeof(errbuf));
     if (ao_points[count] == NULL)
     {
-      printf("%s:%d\n", path, i+1);
+      logfile->vprint("%s:%d\n", path, i+1);
+      logfile->vprint("%s\n", errbuf);
       continue;
     }
-    printf("%s", line);
+    logfile->vprint("%s\n", line);
     count++;
     /**********/
 

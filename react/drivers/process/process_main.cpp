@@ -16,6 +16,11 @@
 #include "iodriver.h"
 #include "process_drv.h"
 
+#include "logfile.h"
+
+logfile_t *logfile;
+
+
 /**
 struct process_mq_read_t
 {
@@ -127,6 +132,7 @@ int main(int argc, char *argv[])
   /*io_driver = load_iodriver(&dummy_db, 
      "../modbusdrv/libreactmodbusdrv.so", 
      "new_reactmodbus", "librtmodbus.so", NULL); */
+  logfile = new logfile_t(false, true);
   io_driver = load_iodriver(&dummy_db, 
      "../simple_ascii/libsimple_ascii_drv.so", 
      "new_simple_ascii", NULL, "/dev/ttyUSB1");

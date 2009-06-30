@@ -23,7 +23,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <unistd.h>
 
 
+#include "logfile.h"
+
 #include "db.h"
+
+
 
 /*
  * This function dynamically loads an iodriver from a shared object file.
@@ -74,28 +78,28 @@ io_driver_factory_t *load_iodriver_factory(react_drv_base_t *drvdb,
   {
     if (0 != strlen(other_lib))
     {
-    printf("Loading other driver: %s\n", other_lib);
+    logfile->vprint("Loading other driver: %s\n", other_lib);
     void *handlex = dlopen (other_lib, RTLD_LAZY | RTLD_GLOBAL);
     if (!handlex)
     {
-      fprintf (stderr, "%s\n", dlerror());
+      logfile->vprint("%s\n", dlerror());
       exit(1);
     }
     }
   }
-  printf("Loading iodriver from: %s\n", sofile);
+  logfile->vprint("Loading iodriver from: %s\n", sofile);
   void *handle = dlopen (sofile, RTLD_LAZY);
   if (!handle)
   {
-    fprintf (stderr, "%s\n", dlerror());
+    logfile->vprint("%s\n", dlerror());
     exit(1);
   }
-  printf("Class factory function is: %s\n", get_fn_name);
+  logfile->vprint("Class factory function is: %s\n", get_fn_name);
   get_iodriver_factory_t fn = (get_iodriver_factory_t) dlsym(handle, get_fn_name);
   char *error;
   if ((error = dlerror()) != NULL)
   {
-    fprintf (stderr, "%s\n", error);
+    logfile->vprint("%s\n", error);
     exit(1);
   }
 
@@ -114,28 +118,28 @@ io_driver_t *load_iodriver(react_drv_base_t *drvdb,
   {
     if (0 != strlen(other_lib))
     {
-    printf("Loading other driver: %s\n", other_lib);
+    logfile->vprint("Loading other driver: %s\n", other_lib);
     void *handlex = dlopen (other_lib, RTLD_LAZY | RTLD_GLOBAL);
     if (!handlex)
     {
-      fprintf (stderr, "%s\n", dlerror());
+      logfile->vprint("%s\n", dlerror());
       exit(1);
     }
     }
   }
-  printf("Loading iodriver from: %s\n", sofile);
+  logfile->vprint("Loading iodriver from: %s\n", sofile);
   void *handle = dlopen (sofile, RTLD_LAZY);
   if (!handle)
   {
-    fprintf (stderr, "%s\n", dlerror());
+    logfile->vprint("%s\n", dlerror());
     exit(1);
   }
-  printf("Class factory function is: %s\n", get_fn_name);
+  logfile->vprint("Class factory function is: %s\n", get_fn_name);
   get_io_drv_t fn = (get_io_drv_t) dlsym(handle, get_fn_name);
   char *error;
   if ((error = dlerror()) != NULL)
   {
-    fprintf (stderr, "%s\n", error);
+    logfile->vprint("%s\n", error);
     exit(1);
   }
 

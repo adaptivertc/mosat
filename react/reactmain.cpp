@@ -68,7 +68,7 @@ void edit_files(const char *base, int n)
   const char *the_editor = ap_config.get_config("editor");
   if (the_editor == NULL)
   {
-    printf("No editor defined, using gedit\n");
+    logfile->vprint("No editor defined, using gedit\n");
     the_editor = "gedit --new-window";
   }
 
@@ -136,7 +136,6 @@ void print_help()
 
 /*****************************************************************/
 
-
 int main(int argc, char *argv[])
 {
   //printf("%s:%d\n", __FILE__, __LINE__);
@@ -153,6 +152,7 @@ int main(int argc, char *argv[])
   signal(SIGINT, my_sighandler);
   signal(SIGINT, my_sighandler);
   signal(SIGIO , my_sighandler);
+
 
 
   //printf("%s:%d\n", __FILE__, __LINE__);
@@ -217,6 +217,7 @@ int main(int argc, char *argv[])
     }
   }
 
+
   //printf("%s:%d\n", __FILE__, __LINE__);
   char secname[50];
   secname[0] = '\0';
@@ -259,11 +260,16 @@ int main(int argc, char *argv[])
   //printf("%s:%d\n", __FILE__, __LINE__);
   atexit(exit_clean_up);
 
-  logfile = new logfile_t(false, print_to_screen);
+  
   char config_file[100];
   safe_strcpy(config_file, home_dir, sizeof(config_file));
   safe_strcat(config_file, "/dbfiles/config.dat", sizeof(config_file));
   ap_config.read_file(config_file);
+  logfile = new logfile_t(false, print_to_screen);
+  logfile->set_startup_log_on();
+  time_t tnow = time(NULL);
+  logfile->vprint("%s", ctime(&tnow));
+  logfile->vprint("React PID: %d\n", getpid());
 
   double sample_rate = ap_config.get_double("SampleRate", 10.0);
   if (sample_rate <= 0.0) sample_rate =  10.0;
@@ -283,7 +289,7 @@ int main(int argc, char *argv[])
     system("pwd");
     reactdb->read_secuencia(secname, secpath);
     ntests = num_tests(secname);
-    logfile->vprint("Corrida: %s\n", secname);
+    logfile->vprint("Foreground script: %s\n", secname);
   }
 
   reactdb->read_background_sequences(home_dir, secpath);
@@ -297,7 +303,7 @@ int main(int argc, char *argv[])
   edit_files("inicial", ntests);
 
 
-  time_t tnow = time(NULL);
+  tnow = time(NULL);
 
   logfile->vprint("%s", ctime(&tnow));
 
@@ -318,6 +324,7 @@ int main(int argc, char *argv[])
     logfile->vprint("No foreground script executing, use \"kill -1 %d\" or <CTRL-C> to stop\n", getpid());
   }
 
+  logfile->set_startup_log_off();
   system("pwd");
   for (int i=0; !done; i++)
   {

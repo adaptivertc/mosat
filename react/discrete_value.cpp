@@ -79,6 +79,9 @@ discrete_value_point_t **discrete_value_point_t::read(int *cnt, const char *home
   FILE *fp = fopen(path, "r");
   if (fp == NULL)
   {
+    logfile->perror(path);
+    logfile->vprint("Can't open file: %s\n", path);
+
     return NULL;
   }
   char line[300];
@@ -88,6 +91,8 @@ discrete_value_point_t **discrete_value_point_t::read(int *cnt, const char *home
     int argc;
     char *argv[25];
     char tmp[300];
+    rtrim(line);
+    ltrim(line);
     safe_strcpy(tmp, line, sizeof(tmp));
     argc = get_delim_args(tmp, argv, '|', 25);
     if (argc == 0)
@@ -100,10 +105,10 @@ discrete_value_point_t **discrete_value_point_t::read(int *cnt, const char *home
     }
     else if (argc != 5)
     {
-      printf("discrete_value.dat, line %d: Should be 5 args, found %d\n", i+1, argc);
+      logfile->vprint("discrete_value.dat, line %d: Should be 5 args, found %d\n", i+1, argc);
       continue;
     }
-    printf("%s\n", line);
+    logfile->vprint("%s\n", line);
     /*****
     tag
     description
@@ -123,7 +128,7 @@ discrete_value_point_t **discrete_value_point_t::read(int *cnt, const char *home
     discrete_values[count] = discrete_value_point_t::read_one(argc, argv, errbuf, sizeof(errbuf));
     if (discrete_values[count] == NULL)
     {
-      printf("%s:%d %s\n", path, i+1, errbuf);
+      logfile->vprint("%s:%d %s\n", path, i+1, errbuf);
       continue;
     }
     count++;

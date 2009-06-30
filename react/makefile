@@ -27,10 +27,11 @@ DRIVERDIRS = drivers/pci9111 drivers/pci7248 drivers/sim drivers/modbusdrv drive
 CDEBUG =
 
 CFLAGS = -Wall
+#CFLAGS=-Wall -Wstrict-prototypes -O2
 
 LDFLAGS =
 
-CC = g++ 
+CPP = g++  $(CFLAGS)
 
 
 MAKE = make
@@ -38,42 +39,41 @@ MAKE = make
 all: react integrate utest rconsole reactcgi rdrivers rtshmmain ai.so
 
 %.o:	%.cpp $(INCLUDES)
-	$(CC) -c -Wall -o $@ $<
+	$(CPP) -c  -o $@ $<
 
 rdrivers:
 	for i in $(DRIVERDIRS); do cd "$$i"; $(MAKE); cd ../..; done
 
 react:	$(INCLUDES) $(OBJS) dbpoint_util.so
-	$(CC) $(LDFLAGS) -rdynamic -o $@ $(OBJS) $(LIBS)
+	$(CPP) $(LDFLAGS) -rdynamic -o $@ $(OBJS) $(LIBS)
 
-rtshmmain: rtshmmain.o ldiodriver.o reactshmio.o reactshmio.h $(INCLUDES)
-	$(CC) -rdynamic -o rtshmmain rtshmmain.o ldiodriver.o reactshmio.o -ldl $(RTCOMMON)
+rtshmmain: rtshmmain.o ldiodriver.o reactshmio.o logfile.o reactshmio.h $(INCLUDES)
+	$(CPP) -rdynamic -o rtshmmain rtshmmain.o ldiodriver.o reactshmio.o logfile.o -ldl $(RTCOMMON)
 
 $(OBJS):	$(INCLUDES)
 
 secuencia:	secuencia.cpp
-	g++ -o secuencia  secuencia.cpp $(RTCOMMON) 
+	$(CPP) -o secuencia  secuencia.cpp $(RTCOMMON) 
 
 
 test:	pid.cpp 
-	g++ -o test pid.cpp
+	$(CPP) -o test pid.cpp
 
 integrate:	integrate.cpp  
-	g++ -o integrate integrate.cpp $(RTCOMMON)
+	$(CPP) -o integrate integrate.cpp $(RTCOMMON)
 
-CFLAGS=-Wall -Wstrict-prototypes -O2
 
 p9111ai: p9111ai.o conio.o
-	g++ -o p9111ai -L/usr/lib -lpci_dask p9111ai.o conio.o
+	$(CPP) -o p9111ai -L/usr/lib -lpci_dask p9111ai.o conio.o
 
 p9111ai.o: p9111ai.c
-	g++ -c $(CFLAGS) -I../../../include p9111ai.c
+	$(CPP) -c $(CFLAGS) -I../../../include p9111ai.c
 
 dbpoint_util.so: analog.cpp discrete.cpp
-	g++ -fpic -o dbpoint_util.so -shared analog.cpp discrete.cpp 
+	$(CPP) -fpic -o dbpoint_util.so -shared analog.cpp discrete.cpp 
 
 gen:	generate_script.cpp 
-	g++ -o gen -Wall generate_script.cpp $(RTCOMMON)
+	$(CPP) -o gen  generate_script.cpp $(RTCOMMON)
 
 $(GENFILES):	gen db_point.h
 	./gen
@@ -83,57 +83,57 @@ TAGS:   $(SRCS)
 
 
 genc:	gen_script.cpp gen_script.h
-	g++ -c gen_script.cpp 
+	$(CPP) -c gen_script.cpp 
 
 avg:	average.cpp
-	g++ -o avg average.cpp $(RTCOMMON) 
+	$(CPP) -o avg average.cpp $(RTCOMMON) 
 
 gencase:	gen_script.cpp gen_script.h
-	g++ -c gen_case.cpp 
+	$(CPP) -c gen_case.cpp 
 
 utest:	utest.cpp
-	g++ -o utest utest.cpp $(RTCOMMON) 
+	$(CPP) -o utest utest.cpp $(RTCOMMON) 
 	
 ct:	conio.cpp conio.h coniotest.cpp
-	g++ -o ct coniotest.cpp conio.cpp
+	$(CPP) -o ct coniotest.cpp conio.cpp
 
 simtest:	simtest.cpp burnersim.cpp sim.h
-	g++ -o simtest simtest.cpp burnersim.cpp
+	$(CPP) -o simtest simtest.cpp burnersim.cpp
 
 genhtml:	genhtml.cpp
-	g++ -o genhtml genhtml.cpp $(RTCOMMON) 
+	$(CPP) -o genhtml genhtml.cpp $(RTCOMMON) 
 
 rconsole: reactconsole.cpp
-	g++ -o rconsole reactconsole.cpp
+	$(CPP) -o rconsole reactconsole.cpp
 
 rdisplay: rtdisplay.cpp displaydata.cpp
-	g++ -o rdisplay -l ncurses rtdisplay.cpp displaydata.cpp
+	$(CPP) -o rdisplay -l ncurses rtdisplay.cpp displaydata.cpp
 
 cgiTest: cgiTest.c
-	g++ -o  cgiTest cgiTest.c
+	$(CPP) -o  cgiTest cgiTest.c
 
 reactcgi: reactcgi.cpp
-	g++ -o reactcgi reactcgi.cpp 
+	$(CPP) -o reactcgi reactcgi.cpp 
 
 usbtest: usbtest.cpp
-	g++ -Wall -W usbtest.cpp
+	$(CPP)  -W usbtest.cpp
 
 split_fields:	split_fields.cpp
-	g++ -o split_fields split_fields.cpp $(RTCOMMON)
+	$(CPP) -o split_fields split_fields.cpp $(RTCOMMON)
 	cp split_fields /home/carr/bin
 
 gen_images:	gen_images.cpp
-	g++ -o gen_images -lrtcomon gen_images.cpp
+	$(CPP) -o gen_images -lrtcomon gen_images.cpp
 	cp gen_images /home/carr/bin
 
 exprtest:       error.h exp.h error.cpp eval.cpp expr.cpp exprlist.cpp exprtree.cpp point.cpp treetst.cpp
-	g++ -o exprtest error.cpp eval.cpp expr.cpp exprlist.cpp exprtree.cpp point.cpp treetst.cpp
+	$(CPP) -o exprtest error.cpp eval.cpp expr.cpp exprlist.cpp exprtree.cpp point.cpp treetst.cpp
 
 ai.so:	ai.cpp
-	g++ -shared -fpic -o ai.so ai.cpp
+	$(CPP) -shared -fpic -o ai.so ai.cpp
 
 gen_php:	gen_php.cpp
-	g++ -g -Wall -o gen_php gen_php.cpp $(RTCOMMON)
+	$(CPP) -g  -o gen_php gen_php.cpp $(RTCOMMON)
 
 clean:
 	rm -fv *.o *.so react rconsole rdisplay reactcgi gen utest integrate

@@ -72,7 +72,7 @@ static bool day_changed(time_t t1, time_t t2)
   }
   else 
   {
-    printf("********* Day Changed\n");
+    logfile->vprint("********* Day Changed\n");
     return true;
   }
 }
@@ -90,7 +90,7 @@ static FILE *open_day_history_file(const char * pre, const char *post, FILE *fp)
   if (loghome == NULL)
   {
     loghome = "./";
-    printf("Log home not specified, using: %s\n", loghome);
+    logfile->vprint("Log home not specified, using: %s\n", loghome);
   }
   if (pre == NULL)
   {
@@ -110,7 +110,7 @@ static FILE *open_day_history_file(const char * pre, const char *post, FILE *fp)
   fp = fopen(fname, "a");
   if (fp == NULL)
   {
-    printf("**** Error Opening %s\n", fname);
+    logfile->vprint("**** Error Opening %s\n", fname);
   }
   return fp;
 }
@@ -122,7 +122,7 @@ void discrete_logger_t::update(void)
   //fprintf(instantaneous_fp, "data:");
   if (!collecting)
   {
-    fprintf(stdout, " **** NOT collecting\n");
+    logfile->vprint(" **** NOT collecting\n");
     return;
   }
   time_t now = time(NULL);
@@ -250,7 +250,8 @@ discrete_logger_t **discrete_logger_t::read(int *cnt, const char *home_dir)
   FILE *fp = fopen(path, "r");
   if (fp == NULL)
   {
-    printf("Can't open: %s\n", path);
+    logfile->perror(path);
+    logfile->vprint("Can't open: %s\n", path);
     return NULL;
   }
 
@@ -264,6 +265,9 @@ discrete_logger_t **discrete_logger_t::read(int *cnt, const char *home_dir)
     char *argv[25];
     //DI1|Discrete Input 1|0|0|1|HI|LO|N|N|
     safe_strcpy(tmp, (const char*) line, sizeof(tmp));
+    ltrim(line);
+    rtrim(line);
+
     argc = get_delim_args(tmp, argv, '|', 25);
     if (argc == 0)
     {
@@ -275,11 +279,11 @@ discrete_logger_t **discrete_logger_t::read(int *cnt, const char *home_dir)
     }
     else if (argc < 6)
     {
-      printf("%s: Wrong number of args (minimum 5), line %d\n", path, i+1);
+      logfile->vprint("%s: Wrong number of args (minimum 5), line %d\n", path, i+1);
       continue;
     }
 
-    printf("%s", line);
+    logfile->vprint("%s\n", line);
     discrete_logger_t *p = new discrete_logger_t;
 
     safe_strcpy(p->tag, (const char*) argv[0], sizeof(p->tag));
@@ -288,7 +292,7 @@ discrete_logger_t **discrete_logger_t::read(int *cnt, const char *home_dir)
     p->log_hour_totals = (argv[3][0] == '1') || 
                          (argv[3][0] == 'T') || 
                          (argv[3][0] == 't');
-    if (p->log_hour_totals) printf("Logging hour totals\n");
+    if (p->log_hour_totals) logfile->vprint("Logging hour totals\n");
     p->collecting = true;
 
     p->instantaneous_fp = open_day_history_file(p->base_name, ".txt", NULL);
@@ -311,13 +315,13 @@ discrete_logger_t **discrete_logger_t::read(int *cnt, const char *home_dir)
 
     if (p->collecting)
     {
-      printf("collection is on for %s\n", p->tag);
+      logfile->vprint("collection is on for %s\n", p->tag);
     }
 
     int n_extra = argc - 4;
     if ((n_extra % 2) != 0)
     {
-      printf("%s: There must be an even number of extra parameters - each with tag, and log type (rise, fall, or both (RFB))\n", p->tag);
+      logfile->vprint("%s: There must be an even number of extra parameters - each with tag, and log type (rise, fall, or both (RFB))\n", p->tag);
     }
     p->num_points = n_extra / 2; 
     p->discrete_points = new discrete_point_t *[p->num_points + 1];
@@ -339,13 +343,13 @@ discrete_logger_t **discrete_logger_t::read(int *cnt, const char *home_dir)
       if ((db_point == NULL) || (db_point->pv_type() != DISCRETE_VALUE))
       {
         p->discrete_points[nd] = NULL;
-        printf("Bad discrete point: %s\n", temp_tag);
+        logfile->vprint("Bad discrete point: %s\n", temp_tag);
       }
       else
       {
         p->discrete_points[nd] = (discrete_point_t *) db_point;
       }
-      printf("discrete point [%d]: %s, ", nd, temp_tag);
+      logfile->vprint("discrete point [%d]: %s, ", nd, temp_tag);
       p->last_discrete_vals[nd] = false;
       p->last_detect[nd] = now; 
       p->n_day_detects[nd] = 0;
@@ -354,25 +358,25 @@ discrete_logger_t **discrete_logger_t::read(int *cnt, const char *home_dir)
       {
         case 'R':
         case 'r':
-          printf("rising only\n");
+          logfile->vprint("rising only\n");
           p->log_rising[nd] = true;
           p->log_falling[nd] = false;
           break;
         case 'F':
         case 'f':
-          printf("falling only\n");
+          logfile->vprint("falling only\n");
           p->log_rising[nd] = false;
           p->log_falling[nd] = true;
           break;
         case 'B':
         case 'b':
-          printf("both rising and falling\n");
+          logfile->vprint("both rising and falling\n");
           p->log_rising[nd] = true;
           p->log_falling[nd] = true;
           break;
         default:
-          printf("******* Error %s: discrete %d, bad param: '%s' log type must be R, F, or B (rising, falling, or both)\n", p->tag, nd, argv[j+1]); 
-          printf("defaulting to both rising and falling\n");
+          logfile->vprint("******* Error %s: discrete %d, bad param: '%s' log type must be R, F, or B (rising, falling, or both)\n", p->tag, nd, argv[j+1]); 
+          logfile->vprint("defaulting to both rising and falling\n");
           p->log_rising[nd] = true;
           p->log_falling[nd] = true;
           break;

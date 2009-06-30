@@ -56,7 +56,7 @@ static FILE *open_day_history_file(const char *home, const char *post, FILE *fp)
   fp = fopen(fname, "a");
   if (fp == NULL)
   {
-    printf("**** Error Opening %s\n", fname);
+    logfile->vprint("**** Error Opening %s\n", fname);
   }
   return fp;
 }
@@ -175,7 +175,8 @@ level_point_t **level_point_t::read(int *cnt, const char *home_dir)
   FILE *fp = fopen(path, "r");
   if (fp == NULL)
   {
-    printf("Can't open %s\n", path);
+    logfile->perror(path);
+    logfile->vprint("Can't open %s\n", path);
     *cnt = 0;
     return NULL;
   }
@@ -188,6 +189,9 @@ level_point_t **level_point_t::read(int *cnt, const char *home_dir)
     char tmp[300];
     int argc;
     char *argv[25];
+    ltrim(line);
+    rtrim(line);
+
     safe_strcpy(tmp, (const char*)line, sizeof(tmp));
     argc = get_delim_args(tmp, argv, '|', 25);
     if (argc == 0)
@@ -200,10 +204,10 @@ level_point_t **level_point_t::read(int *cnt, const char *home_dir)
     }
     else if (argc != 6)
     {
-      printf("%s: Wrong number of args, line %d\n", path, i+1);
+      logfile->vprint("%s: Wrong number of args, line %d\n", path, i+1);
       continue;
     }
-    printf("%s", line);
+    logfile->vprint("%s\n", line);
     level_point_t *lvl = new level_point_t;
 
     safe_strcpy(lvl->tag, (const char*) argv[0], sizeof(lvl->tag));
@@ -217,7 +221,7 @@ level_point_t **level_point_t::read(int *cnt, const char *home_dir)
     if ((db_point == NULL) || (db_point->point_type() != DISCRETE_INPUT))
     {
       lvl->di_lo = NULL;
-      printf("%s - bad discrete input point: %s\n", lvl->tag, temp_tag);
+      logfile->vprint("%s - bad discrete input point: %s\n", lvl->tag, temp_tag);
     }
     else
     {
@@ -230,7 +234,7 @@ level_point_t **level_point_t::read(int *cnt, const char *home_dir)
     if ((db_point == NULL) || (db_point->point_type() != DISCRETE_INPUT))
     {
       lvl->di_hi = NULL;
-      printf("%s - bad discrete input point: %s\n", lvl->tag, temp_tag);
+      logfile->vprint("%s - bad discrete input point: %s\n", lvl->tag, temp_tag);
     }
     else
     {
@@ -243,7 +247,7 @@ level_point_t **level_point_t::read(int *cnt, const char *home_dir)
     if ((db_point == NULL) || (db_point->point_type() != ANALOG_INPUT))
     {
       lvl->level_point = NULL;
-      printf("%s - bad analog input point: %s\n", lvl->tag, temp_tag);
+      logfile->vprint("%s - bad analog input point: %s\n", lvl->tag, temp_tag);
     }
     else
     {
@@ -263,7 +267,7 @@ level_point_t **level_point_t::read(int *cnt, const char *home_dir)
     const char *html_home = ap_config.get_config("htmlhome");
     if (html_home == NULL)
     {
-      printf("Warning: htmlhome variable not set\n");
+      logfile->vprint("Warning: htmlhome variable not set\n");
       snprintf(plog_home, sizeof(plog_home), "./log/");
     }
     else

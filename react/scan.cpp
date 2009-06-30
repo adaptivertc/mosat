@@ -53,10 +53,10 @@ void scan_point_t::write_to_file(void)
   FILE *fp = fopen(path, "w");
   if (fp == NULL)
   {
-    printf("Can not open output file: %s\n", path);
+    logfile->vprint("Can not open output file: %s\n", path);
     return;
   }
-  printf("Writing: %s . . .\n", path);
+  logfile->vprint("Writing: %s . . .\n", path);
   for (int i=0; i < count; i++)
   {
     fprintf(fp, "%f", data[0][i]);
@@ -93,9 +93,9 @@ void scan_point_t::scan(void)
   }
   for (int i=0; i <= num_points; i++)
   {
-    printf("%lf ", data[i][count]);
+    logfile->vprint("%lf ", data[i][count]);
   }
-  printf("\n");
+  logfile->vprint("\n");
   count++;
 }
 
@@ -118,7 +118,8 @@ scan_point_t **scan_point_t::read(int *cnt, const char *home_dir)
   FILE *fp = fopen(path, "r");
   if (fp == NULL)
   {
-    printf("Can't open: %s\n", path);
+    logfile->perror(path);
+    logfile->vprint("Can't open: %s\n", path);
     return NULL;
   }
   char line[300];
@@ -129,6 +130,9 @@ scan_point_t **scan_point_t::read(int *cnt, const char *home_dir)
     int argc;
     char *argv[25];
     //DI1|Discrete Input 1|0|0|1|HI|LO|N|N|
+    ltrim(line);
+    rtrim(line);
+
     safe_strcpy(tmp, (const char *) line, sizeof(tmp));
     argc = get_delim_args(tmp, argv, '|', 25);
     if (argc == 0)
@@ -141,11 +145,11 @@ scan_point_t **scan_point_t::read(int *cnt, const char *home_dir)
     }
     else if (argc < 5)
     {
-      printf("%s: Wrong number of args, line %d", path, i+1);
+      logfile->vprint("%s: Wrong number of args, line %d", path, i+1);
       continue;
     }
 
-    printf("%s", line);
+    logfile->vprint("%s\n", line);
     scan_point_t *p = new scan_point_t;
 
     /*****
@@ -182,7 +186,7 @@ scan_point_t **scan_point_t::read(int *cnt, const char *home_dir)
       if ((db_point == NULL) || (db_point->pv_type() != ANALOG_VALUE))
       {
         p->analog_points[j-4] = NULL;
-        printf("Bad analog point: %s\n", temp_tag);
+        logfile->vprint("Bad analog point: %s\n", temp_tag);
       }
       else
       {

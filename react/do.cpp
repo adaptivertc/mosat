@@ -79,7 +79,7 @@ void do_point_t::send_it(bool val)
 
 void do_point_t::blink(double val)
 {
-  printf("%s: Turning on blink, %0.1lf\n", tag, val);
+  //printf("%s: Turning on blink, %0.1lf\n", tag, val);
   blink_on = true;
   tdo_on = false;
   blink_time = val;
@@ -132,12 +132,12 @@ void do_point_t::update(void)
       operation_end_time += blink_time;
       if (pv ==  DISCRETE_LO)
       {
-        printf("------------------ %s: BLINK ON\n", tag);
+        //printf("------------------ %s: BLINK ON\n", tag);
         this->send_it(true);
       }
       else
       {
-        printf("-------------------%s: BLINK OFF\n", tag);
+        //printf("-------------------%s: BLINK OFF\n", tag);
         this->send_it(false);
       }
     }
@@ -165,7 +165,8 @@ do_point_t **do_point_t::read(int *cnt, const char *home_dir)
   FILE *fp = fopen(path, "r");
   if (fp == NULL)
   {
-    printf("Can't open file: %s\n", path);
+    logfile->perror(path);
+    logfile->vprint("Can't open file: %s\n", path);
     return NULL;
   }
   char line[300];
@@ -176,6 +177,8 @@ do_point_t **do_point_t::read(int *cnt, const char *home_dir)
     int argc;
     char *argv[25];
     //DO|Discrete Output 1|0|0|1|HI|LO|
+    ltrim(line);
+    rtrim(line);
     safe_strcpy(tmp, (const char*) line, sizeof(tmp));
     argc = get_delim_args(tmp, argv, '|', 25);
     if (argc == 0)
@@ -188,10 +191,10 @@ do_point_t **do_point_t::read(int *cnt, const char *home_dir)
     }
     else if (argc != 7)
     {
-      printf("%s: Wrong number of args, line %d", path, i+1);
+      logfile->vprint("%s: Wrong number of args, line %d", path, i+1);
       continue;
     }
-    printf("%s", line);
+    logfile->vprint("%s\n", line);
     do_point_t *p = new do_point_t;
 
     /*****
