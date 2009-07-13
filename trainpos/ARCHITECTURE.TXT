@@ -1,8 +1,6 @@
 
 This document is to describe the general way that trainpos works and what information comes in and goes out.
 
-You might also want to read the position monitoring white paper: http://docs.google.com/Doc?id=dfqhr2t2_97dbd4wp
-
 First, a little bit about the type of train system we are monitoring and how we measure things. This project is really only for light rail systems where all tracks are one-way during normal service. We assume that trains enter service at some point, travel a length of track (usually one extreme to the other), crossing sensors that send "crossing events" back to central control, and also stopping at stations to pick up and drop off passengers. For our purposes, all of our segments begin at passenger stations, and end at the next. Trains enter service at a passenger station, and then leave service at a passenger station. This is only natural, since you go into service by picking up your first passengers, and you can only pick them up at a passenger station. Before leaving service, you must drop off all passengers that you have.
 
 So to start, I will give a simple text diagram to illustrate this. Here, the '=' will be the symbol for a passenger station, and an 'x' is a crossing sensor or track circuit division. Here we have 7 stations labeled A through G, with each segment having 3 sensors. Please notice that the number of sensors in each segment is variable, and most systems will have a variable number. 

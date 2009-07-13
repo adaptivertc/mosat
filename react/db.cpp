@@ -707,24 +707,26 @@ void react_t::init_driver(void)
     {
       continue;
     }
-    else if ((argc != 3) && (argc != 4))
+    else if ((argc != 7) && (argc != 4))
     {
       logfile->vprint("Line: %s\n", line);
       logfile->vprint("%s: Wrong number of args, line %d, %d\n", path, i+1, argc);
       continue;
     }
-
-    logfile->vprint("%s\n", line);
-
-    const char *option;
-    if (argc == 3)
+    int offset;
+    if (argc == 7)
     {
-      option = NULL;
+      offset = 3;
     }
     else
     {
-      option = argv[3];
+      offset = 0;
     }
+
+    logfile->vprint("%s\n", line);
+    const char *option;
+    option = argv[3+offset];
+
 
      /***
     io_driver_factory_t *iodrvf = load_iodriver_factory(db, argv[0], argv[1], argv[2]);
@@ -738,7 +740,8 @@ void react_t::init_driver(void)
     }
 
 
-    io_driver[num_io_drivers] = load_iodriver(db, argv[0], argv[1], argv[2], option);
+    io_driver[num_io_drivers] = 
+         load_iodriver(db, argv[0+offset], argv[1+offset], argv[2+offset], option);
     if (io_driver[num_io_drivers] == NULL)
     {
       logfile->perror(argv[0]);
@@ -1294,6 +1297,7 @@ void react_t::read_background_sequences(const char *a_home_dir, const char *a_se
   char path[200];
   safe_strcpy(path, home_dir, sizeof(path));
   safe_strcat(path, "/dbfiles/background.dat", sizeof(path));
+  logfile->vprint("-- Reading background scripts: %s\n", path);
   n_background = 0;
   FILE *fp = fopen(path, "r");
   if (fp == NULL)
@@ -1306,11 +1310,48 @@ void react_t::read_background_sequences(const char *a_home_dir, const char *a_se
   {
     ltrim(line);
     rtrim(line);
+
     if ((line[0] == '#') || (line[0] == '\0'))
     {
       continue;
     }
-    background_sequences[n_background] = new secuencia_t(line, a_seq_dir);
+    char tmp[300];
+    int argc;
+    char *argv[25];
+
+    //safe_strcpy(line, "AI1|Analog Input 1|PSI|0|0|1|0|100|0|4095|1|5|10|20|80|90|5|0|0|0|0|");
+    ltrim(line);
+    rtrim(line);
+
+
+    safe_strcpy(tmp, (const char*) line, sizeof(tmp));
+    argc = get_delim_args(tmp, argv, '|', 25);
+    if (argc == 0)
+    {
+      continue;
+    }
+    else if (argv[0][0] == '#')
+    {
+      continue;
+    }
+    else if ((argc != 1) && (argc != 4))
+    {
+      logfile->vprint("Line: %s\n", line);
+      logfile->vprint("%s: Wrong number of args, line %d, %d\n", path, i+1, argc);
+      continue;
+    }
+    int offset;
+    if (argc == 4)
+    {
+      offset = 2;
+    }
+    else
+    {
+      offset = 0;
+    }
+    logfile->vprint("%s\n", line);
+
+    background_sequences[n_background] = new secuencia_t(argv[offset], a_seq_dir);
     n_background++;
   }
 
