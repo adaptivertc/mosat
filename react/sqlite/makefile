@@ -4,7 +4,7 @@ export CPATH=../../include
 RTCOMMON=../../librtcommon/librtcommon.a
 
 
-all: main gen_sqlite react_def.sqlite read_dat insert_scripts read_script
+all: main gen_sqlite react_def.db read_dat insert_scripts read_script
 
 main: main.cpp 
 	g++ -g -Wall -o main -lsqlite3 main.cpp
@@ -18,8 +18,8 @@ outmain.cpp write_one_fns.cpp: gen_sqlite
 read_dat: read_dat.cpp
 	g++ -g -Wall -o read_dat read_dat.cpp $(RTCOMMON) 
 
-react_def.sqlite: gen_react_db
-	rm -f react_def.sqlite
+react_def.db: gen_react_db
+	rm -f react_def.db
 	./gen_react_db
 
 insert_scripts: insert_scripts.cpp
@@ -32,4 +32,4 @@ gen_react_db: write_one_fns.cpp outmain.cpp insert_from_dat.cpp
 	g++ -o gen_react_db -g -Wall write_one_fns.cpp outmain.cpp insert_from_dat.cpp -lsqlite3 $(RTCOMMON)
 
 clean: 
-	rm -fv main gen_sqlite out_di out_ai out_di.cpp out_ai.cpp read_dat react_def.sqlite write_one_fns.cpp outmain.cpp insert_scripts read_script
+	rm -fv main gen_sqlite out_di out_ai out_di.cpp out_ai.cpp read_dat react_def.db write_one_fns.cpp outmain.cpp insert_scripts read_script gen_react_db

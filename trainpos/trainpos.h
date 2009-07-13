@@ -34,6 +34,7 @@ struct train_calcs_t
    time_t section_entry_time; // or time of last station departure;
    bool unexpected; // This train is unexpected.
    bool switched_direction; // This train arrived at the final station and is coming back.
+   bool crossed_last_sensor;
 };
 
 #endif

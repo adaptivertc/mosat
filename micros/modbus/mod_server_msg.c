@@ -543,10 +543,10 @@ int rt_modbus_process_request(uint8_t *buf, int n)
       printf("LOOPBACK:\n"); 
       return rt_modbus_loopback(buf, n);
     case FORCE_MULTIPLE_OUTPUTS:
-      printf("FORCE_MULTIPLE_OUTPUTS:\n"); 
+      printf("^^^^^^^^^^^^^^^^^^ FORCE_MULTIPLE_OUTPUTS:\n"); 
       return rt_modbus_force_multiple_outputs(buf, n);
     case PRESET_MULTIPLE_REGISTERS:
-      printf("PRESET_MULTIPLE_REGISTERS:\n"); 
+      printf("@@@@@@@@@@@@@@@@@@@@ PRESET_MULTIPLE_REGISTERS:\n"); 
       return rt_modbus_preset_multiple_registers(buf, n);
     case REPORT_DEVICE_TYPE:
       printf("REPORT_DEVICE_TYPE:\n"); 

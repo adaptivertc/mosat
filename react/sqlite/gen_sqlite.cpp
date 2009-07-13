@@ -275,7 +275,7 @@ void write_main_start(FILE *fp_out)
   fprintf(fp_out, "  int retval;\n");
   fprintf(fp_out, "  char *errmsg;\n");
   fprintf(fp_out, "\n");
-  fprintf(fp_out, "  retval = sqlite3_open_v2(\"react_def.sqlite\",  &sqdb,\n");
+  fprintf(fp_out, "  retval = sqlite3_open_v2(\"react_def.db\",  &sqdb,\n");
   fprintf(fp_out, "     SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);\n");
   fprintf(fp_out, "  if (retval != SQLITE_OK)\n");
   fprintf(fp_out, "  {\n");

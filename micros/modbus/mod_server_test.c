@@ -23,6 +23,6 @@ uint16_t read_ai(int n) { return ((n % 2) == 0) ? 0xaaaa : 0xbbbb; }
 uint16_t read_register(int n) { return ((n % 2) == 0) ? 0xffff : 0x5555; }
 void write_register(int n, uint16_t val) 
 { 
-  printf("value: %hx, addr: %d\n", val, n); 
+  printf("*************** Write Register value: %hx, addr: %d\n", val, n); 
 }
 

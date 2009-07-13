@@ -35,3 +35,6 @@ clean:
 rtautogen:	rtautogen.cpp
 	g++ -Wall -o rtautogen rtautogen.cpp $(RTCOMMON)
 
+
+n_x: n_section_reader.cpp n_section_reader.h
+	g++ -Wall -o n_x n_section_reader.cpp $(RTCOMMON)

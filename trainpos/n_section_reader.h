@@ -26,25 +26,31 @@ class section_reader_t
 {
 private: 
   int n_sections;
+  int n_global_sensors;
   tsecdata_t sections[TP_MAX_SECTIONS];
   sensor_info_t sensors[TP_MAX_GLOBAL_SENSORS];  
 public:
   int get_n_sections(void);
   int get_n_sensors(int section_number);
-  void read_section_file(void);
   int get_section_time(int section_number);
+
+  void read_section_file(void);
+
   // The following two functions must go away!!
   // The model must allow a variable numer of sensors in
   // each section, including one or zero sensors.
   int get_departure_sensor_loc(int section_number);
   int get_arival_sensor_loc(int section_number);
+
   int get_time_to_start(int section_number);
   int get_sensor_loc(int section_number, int sensor_number);
   const char *get_station_name(int section_number);
   const tsecdata_t *get_section_data(int section_number);
-  // proposed new functions
-  // sensor_info_t get_sensor_info(int global_sensor_number);
-  // int get_n_global_sensors(void);
+  // New functions
+  int get_sensor_loc(int global_sensor_number);
+  int get_dwell_time(int section_number);
+  const sensor_info_t *get_sensor_info(int global_sensor_number);
+  int get_n_global_sensors(void);
 };
 
 extern section_reader_t sections;

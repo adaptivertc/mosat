@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
     return -1;
   }
 
-  retval = sqlite3_open_v2("react_def.sqlite",  &sqdb,
+  retval = sqlite3_open_v2("react_def.db",  &sqdb,
      SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
   if (retval != SQLITE_OK)
   {
