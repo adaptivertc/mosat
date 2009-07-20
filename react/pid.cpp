@@ -395,12 +395,15 @@ pid_point_t **pid_point_t::read(int *cnt, const char *home_dir)
     if (db_point == NULL)
     {
       logfile->vprint("%s - bad TAGNAME: %s\n", pid->tag, temp_tag);
+      pid->ai_point = NULL;
     }
-
-    pid->ai_point = dynamic_cast <ai_point_t *> (db_point);
-    if (pid->ai_point == NULL)
+    else
     {
-      logfile->vprint("%s - bad analog input point: %s\n", pid->tag, temp_tag);
+      pid->ai_point = dynamic_cast <analog_point_t *> (db_point);
+      if (pid->ai_point == NULL)
+      {
+        logfile->vprint("%s - bad analog input point: %s\n", pid->tag, temp_tag);
+      }
     }
 
     /**
@@ -422,12 +425,15 @@ pid_point_t **pid_point_t::read(int *cnt, const char *home_dir)
     if (db_point == NULL)
     {
       logfile->vprint("%s - bad TAGNAME: %s\n", pid->tag, temp_tag);
+      pid->ao_point = NULL;
     }
-
-    pid->ao_point = dynamic_cast <ao_point_t *> (db_point);
-    if (pid->ai_point == NULL)
+    else
     {
-      logfile->vprint("%s - bad analog output point: %s\n", pid->tag, temp_tag);
+      pid->ao_point = dynamic_cast <ao_point_t *> (db_point);
+      if (pid->ai_point == NULL)
+      {
+        logfile->vprint("%s - bad analog output point: %s\n", pid->tag, temp_tag);
+      }
     }
 
     /********

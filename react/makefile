@@ -26,7 +26,7 @@ DRIVERDIRS = drivers/pci9111 drivers/pci7248 drivers/sim drivers/modbusdrv drive
 
 CDEBUG =
 
-CFLAGS = -Wall
+CFLAGS = -Wall -g
 #CFLAGS=-Wall -Wstrict-prototypes -O2
 
 LDFLAGS =
@@ -131,6 +131,9 @@ exprtest:       error.h exp.h error.cpp eval.cpp expr.cpp exprlist.cpp exprtree.
 
 ai.so:	ai.cpp
 	$(CPP) -shared -fpic -o ai.so ai.cpp
+
+script_trigger.so:	script_trigger.cpp
+	$(CPP) -shared -fpic -o script_trigger.so script_trigger.cpp
 
 gen_php:	gen_php.cpp
 	$(CPP) -g  -o gen_php gen_php.cpp $(RTCOMMON)

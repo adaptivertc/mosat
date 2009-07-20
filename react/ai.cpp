@@ -132,7 +132,7 @@ void ai_point_t::set_conversion(void)
 
 /************************************************************************/
 
-ai_point_t *ai_point_t::read_one(int argc, char *argv[], char *err, int esz)
+db_point_t *ai_point_t::read_one(int argc, char *argv[], char *err, int esz)
 {
   if (argc != 21)
   {

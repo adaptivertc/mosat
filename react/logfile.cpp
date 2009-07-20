@@ -398,8 +398,8 @@ void logfile_t::set_startup_log_on(void)
 {
   char path[500];
 
+  startup_print_enabled = false;
   printf("Creating startup logfile . . . \n");
-  startup_print_enabled = true;
   const char *logdir = ap_config.get_config("loghome");
   if (logdir == NULL)
   {
@@ -415,15 +415,19 @@ void logfile_t::set_startup_log_on(void)
     perror(path);
     startup_print_enabled = false;
     printf("****** Startup log not enabled, can not open file\n");
-    exit(0);
     return;
   }
+  startup_print_enabled = true;
 }
 
 /*******************************************************************/
 
 void logfile_t::set_startup_log_off(void)
 {
+  if (!startup_print_enabled)
+  {
+    return;
+  }
   startup_print_enabled = false;
   if (fp_startup != NULL)
   {

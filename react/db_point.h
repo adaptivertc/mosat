@@ -239,7 +239,7 @@ public:
   void set_conversion(double rl, double rh, double eul, double euh);
   void set_conversion(void);
   point_type_t point_type(void) {return ANALOG_INPUT;};
-  static ai_point_t *read_one(int argc, char *argv[], char *err, int esz);
+  static db_point_t *read_one(int argc, char *argv[], char *err, int esz);
   //static ai_point_t **read(int *cnt, const char *home_dir);
 };
 
@@ -560,7 +560,7 @@ protected:
   bool dev_alarm_shutdown;
   bool dev_caution_enable;
   ao_point_t *ao_point;
-  ai_point_t *ai_point;
+  analog_point_t *ai_point;
 
       /* real-time */
   bool control_enabled;
@@ -720,6 +720,7 @@ public:
   static pump_point_t **read(int *cnt, const char * home_dir);
 };
 
+
 class level_point_t : public discrete_point_t
 {
 private:
@@ -820,6 +821,29 @@ public:
   double get_cold_average(void); 
   void get_status(char *status, int len);
   void reset(void);
+};
+
+class script_trigger_t : public discrete_point_t
+{
+  discrete_point_t *trigger_point;
+  double lo_hi_timeout;
+  double hi_lo_timeout;
+  tag_t lo_hi_script_name;
+  tag_t hi_lo_script_name;
+  //secuencia_t *lo_hi_script;
+  //secuencia_t *hi_lo_script;
+  bool running_lo_hi;
+  bool running_hi_lo;
+  bool enabled_lo_hi;
+  bool enabled_hi_lo;
+  bool last_state;
+
+public:
+  static db_point_t *read_one(int argc, char *argv[], char *err, int esz);
+
+  point_type_t point_type(void) {return DISCRETE_INPUT;};
+
+  void update(void);
 };
 
 /* Structure used by Web Points. */
