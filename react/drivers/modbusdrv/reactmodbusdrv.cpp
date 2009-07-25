@@ -272,14 +272,16 @@ reactmodbus_driver_t::reactmodbus_driver_t(react_drv_base_t *react, const char *
   {
     logfile->vprint("Using ip passed to driver: %s\n", option);
     modbus = rt_create_modbus(option);
-    logfile->vprint("modptr = %p\n", modbus);
-    modbus->read_ai(0, 16, tmp_ai_vals);
+    //logfile->vprint("modptr = %p\n", modbus);
+    //modbus->read_ai(0, 16, tmp_ai_vals);
   }
   if (modbus == NULL)
   {
     exit(0);
   }
-  modbus->set_debug_level(3);
+  //modbus->set_debug_level(3);
+  modbus->set_debug_level(0);
+  modbus->set_address(0);
   logfile->vprint("DONE initializing modbus\n");
 
   logfile->vprint("Initializing semaphores\n");
@@ -495,6 +497,7 @@ static int mycounter = 0;
 
 void reactmodbus_driver_t::read_thread(void)
 {
+  usleep(1000);
   while(true)
   {
     while (n_aos_to_send > 0)

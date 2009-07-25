@@ -125,6 +125,7 @@ int mod_tcpip_client_t::wait_message(void)
   if (n1 <= 0)
   {
     react_trace.dperror(6, "recv");
+    react_trace.dprintf(0, "recv returned: %d \n", n1);
     reconnect();
     send_message();
     continue; 

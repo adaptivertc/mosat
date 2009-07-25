@@ -33,7 +33,7 @@ void debug_trace_t::dperror(int the_level, const char *extra)
 {
   char buf[200];
   int save_errno = errno; 
-  snprintf(buf, sizeof(buf), "Unknown Error");
+  //snprintf(buf, sizeof(buf), "Unknown Error");
   //int err = 
   strerror_r(save_errno, buf, sizeof(buf)); 
   //if (err != 0) snprintf(buf, sizeof(buf), "Unknown Error");
