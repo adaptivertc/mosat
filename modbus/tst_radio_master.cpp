@@ -79,6 +79,8 @@ int main(int argc, char *argv[])
          break;
        }
      }
+
+     /****
      unsigned short analog_values[8];
      char *p = read_data;
      for (j=0; j < 8; j++)
@@ -91,6 +93,7 @@ int main(int argc, char *argv[])
      {
        printf("val[%d] = %hu\n", j, analog_values[j]);
      }
+     ***/
 
    }   
    /*** Write ***/
