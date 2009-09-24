@@ -135,7 +135,7 @@ int main(int argc, char *argv[])
   logfile = new logfile_t(false, true);
   io_driver = load_iodriver(&dummy_db, 
      "../simple_ascii/libsimple_ascii_drv.so", 
-     "new_simple_ascii", NULL, "/dev/ttyUSB1");
+     "new_simple_ascii", NULL, "/dev/ttyUSB0");
 //./drivers/simple_ascii/libsimple_ascii_drv.so|new_simple_ascii||/dev/ttyUSB0|
 
   int err;

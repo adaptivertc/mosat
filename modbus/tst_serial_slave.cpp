@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
    rt_verbose = 1;
    /* open device */
    printf("Opening device . . . \n");
-   device = rt_open_serial(dev_name,9600,0.0);
+   device = rt_open_serial(dev_name,57600,0.0);
    printf("Device opened: %d \n", device);
    if (device == -1)
    {

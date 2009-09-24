@@ -141,7 +141,7 @@ double process_driver_t::get_ai(int channel)
   if ((channel >= 0) && (channel < 64))
   {
     read_val = (double) ai_vals[channel];
-    printf("AI %d, read %lf\n", channel, read_val);
+    //printf("AI %d, read %lf\n", channel, read_val);
     return read_val;
   }
   else
@@ -158,7 +158,7 @@ bool process_driver_t::get_di(int channel)
   if ((channel >= 0) && (channel < 64))
   {
     read_val = di_vals[channel];
-    printf("DI %d, read %s\n", channel, read_val ? "T" : "F");
+    //printf("DI %d, read %s\n", channel, read_val ? "T" : "F");
     return read_val;
   }
   else

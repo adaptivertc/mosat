@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
    //device = rt_open_serial("/dev/ttyUSB0",9600, 2.0);
    //device = rt_open_serial("/dev/ttyUSB0",38400, 2.0);
    //device = rt_open_serial("/dev/ttyUSB0",57600, 2.0);
-   device = rt_open_serial(dev_name,9600, 2.0);
+   device = rt_open_serial(dev_name,57600, 2.0);
 
    printf("Device opened: %d \n", device);
 
@@ -54,6 +54,7 @@ int main(int argc, char *argv[])
      fgets(buf, sizeof(buf), stdin);
      printf("Will send '%s' to slave %d\n", buf, slave_id);
      printf("Writing . . .\n ");
+
      write(device,buf,strlen(buf)-1); // Write everything but the character return.
      printf("Write done - %d chars\n", strlen(buf)-1);
      char read_data[100];

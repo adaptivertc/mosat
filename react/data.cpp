@@ -120,7 +120,7 @@ data_point_t **data_point_t::read(int *cnt, const char *home_dir)
   MALLOC_CHECK(data_points);
 
   *cnt = 0;
-  int count = 0;
+  int pcount = 0;
 
   char path[200];
   safe_strcpy(path, home_dir, sizeof(path));
@@ -179,55 +179,71 @@ data_point_t **data_point_t::read(int *cnt, const char *home_dir)
     p->max_time = atol(argv[3]);
     p->max_samples = int(p->max_time * db->get_sample_rate());
     logfile->vprint("MaxSamples = %d MaxTime = %d\n", p->max_samples, p->max_time);
+    printf("File: %s, Line %d\n", __FILE__, __LINE__);
     p->num_points = argc - 4;
+    printf("File: %s, Line %d\n", __FILE__, __LINE__);
 
+    printf("File: %s, Line %d\n", __FILE__, __LINE__);
     p->analog_points = new analog_point_t *[p->num_points + 1];
     //(analog_point_t **) malloc(p->num_points * sizeof(analog_point_t*));
+    printf("File: %s, Line %d\n", __FILE__, __LINE__);
     p->data = new double *[p->num_points + 1];
+    printf("File: %s, Line %d\n", __FILE__, __LINE__);
     //(analog_point_t **) malloc(p->num_points * sizeof(analog_point_t*));
     //MALLOC_CHECK(p->data);
 
     for (int j=4; j < argc; j++)
     {
+    printf("File: %s, Line %d\n", __FILE__, __LINE__);
       char temp_tag[50];
       db_point_t *db_point;
+    printf("File: %s, Line %d\n", __FILE__, __LINE__);
       safe_strcpy(temp_tag, (const char*) argv[j], sizeof(temp_tag));
       rtrim(temp_tag);
+    printf("File: %s, Line %d\n", __FILE__, __LINE__);
       db_point = db->get_db_point(temp_tag);
+    printf("File: %s, Line %d\n", __FILE__, __LINE__);
       if ((db_point == NULL) || (db_point->pv_type() != ANALOG_VALUE))
       {
+    printf("File: %s, Line %d\n", __FILE__, __LINE__);
         p->analog_points[j-4] = NULL;
         logfile->vprint("Bad analog point: %s\n", temp_tag);
       }
       else
       {
+    printf("File: %s, Line %d\n", __FILE__, __LINE__);
         p->analog_points[j-4] = (analog_point_t *) db_point;
       }
       logfile->vprint("allocating space for  %d samples\n", p->max_samples);
+    printf("File: %s, Line %d\n", __FILE__, __LINE__);
       p->data[j-4] = new double[p->max_samples + 1];
+    printf("File: %s, Line %d\n", __FILE__, __LINE__);
       MALLOC_CHECK(p->data[j-4]);
+    printf("File: %s, Line %d\n", __FILE__, __LINE__);
     }
 
 
+    printf("File: %s, Line %d\n", __FILE__, __LINE__);
     p->collecting = false;
     p->count = 0;
-    data_points[count] = p;
-    count++;
-    if (count > max_points)
+    data_points[pcount] = p;
+    pcount++;
+    if (pcount > max_points)
     {
       max_points += 10;
       data_points = (data_point_t **) realloc(data_points,
 		  max_points * sizeof(data_point_t*));
       MALLOC_CHECK(data_points);
     }
+    printf("File: %s, Line %d\n", __FILE__, __LINE__);
   }
 
-  if (count == 0)
+  if (pcount == 0)
   {
     free(data_points);
     return NULL;
   }
-  *cnt = count;
+  *cnt = pcount;
   return data_points;
 
 }

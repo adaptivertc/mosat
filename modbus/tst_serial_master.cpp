@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
    //device = rt_open_serial("/dev/ttyUSB0",9600, 2.0);
    //device = rt_open_serial("/dev/ttyUSB0",38400, 2.0);
    //device = rt_open_serial("/dev/ttyUSB0",57600, 2.0);
-   device = rt_open_serial(dev_name,9600, 2.0);
+   device = rt_open_serial(dev_name,57600, 2.0);
 
    printf("Device opened: %d \n", device);
 

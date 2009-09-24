@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
    rt_verbose = 1;
    /* open device */
    printf("Opening device . . . \n");
-   device = rt_open_serial(dev_name,9600,0.0);
+   device = rt_open_serial(dev_name,57600,0.0);
    printf("Device opened: %d \n", device);
    if (device == -1)
    {
@@ -53,10 +53,12 @@ int main(int argc, char *argv[])
    char write_data[100];
    int total_read = 0;
    int count = 0;
+   printf("Using device: %s, Id: %d\n", dev_name, my_id);
    while (1)
    {
      printf("Reading . . . \n");
      int n =  rt_read_serial(device,read_data,sizeof(read_data) - 1);
+     printf("Read returned!!\n");
      count++;
      if (n > 0)
      { 
