@@ -26,6 +26,11 @@ onboard:	onboard.o spd_display.o spd_comm.o spd_select.o spd_algo_DC.o spd_algo_
 	g++ -g -o onboard -lncurses onboard.o spd_display.o spd_comm.o spd_select.o sim_reader.o alg_compare.o \
 			spd_algo_DC.o spd_algo_RD.o  spd_algo_VV.o profile_reader.o  -lrt $(RTMODBUS) $(RTCOMMON)
 
+sim_CBTC:	sim_CBTC.o spd_display.o spd_comm.o spd_select.o spd_algo_DC.o spd_algo_RD.o spd_algo_VV.o \
+		profile_reader.o  sim_reader.o alg_compare.o $(INCLUDES)
+	g++ -g -o sim_CBTC -lncurses sim_CBTC.o spd_display.o spd_comm.o spd_select.o sim_reader.o alg_compare.o \
+			spd_algo_DC.o spd_algo_RD.o  spd_algo_VV.o profile_reader.o  -lrt $(RTMODBUS) $(RTCOMMON)
+
 onboard_4x40:	onboard.o spd_display_4x40.o spd_comm.o spd_select.o spd_algo_DC.o spd_algo_RD.o spd_algo_VV.o \
 		profile_reader.o  sim_reader.o alg_compare.o $(INCLUDES)
 	g++ -g -o onboard_4x40 -lncurses onboard.o spd_display_4x40.o spd_comm.o spd_select.o sim_reader.o alg_compare.o \

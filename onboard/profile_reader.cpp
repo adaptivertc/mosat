@@ -97,6 +97,7 @@ int profile_reader_t::read_profiles(void)  //sdef_t the_profile[], int max)
     printf("%s: %s\n", argv[0], argv[1]);
     safe_strcpy(section_profile[i].st1, argv[0], sizeof(section_profile[i].st1));
     section_profile[i].distance = atof(argv[1]);
+    section_profile[i].total_distance = atof(argv[1]);
     argv = df.next(&argc, &line_num);
     //printf("argc = %d, %s, %d\n", argc, __FILE__, __LINE__);
     if (argc < 3)

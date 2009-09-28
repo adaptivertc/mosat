@@ -24,6 +24,7 @@ public:
   sim_reader_t(void);
   int get_n_sections(void) {return n_sections;};
   double get_total_dist(int section);
+  double get_total_time(int section) {return double(sim_data[section].n);};
   void set_line(int aLine) {the_line = aLine;};
   void get_sim_speed_dist(int section, int t, double *dist, double *speed, spd_discrete_t *des);
   void read_sim_data(void);

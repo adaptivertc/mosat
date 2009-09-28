@@ -1,4 +1,6 @@
 
+#ifndef __spd_algo_INC__
+#define __spd_algo_INC__
 
 const double SPD_STATE_DEADBAND = 0.5;
 const int SPD_MAX_WARN_TIME = 20;
@@ -49,5 +51,5 @@ public:
 
 void alg_compare(speed_results_t *results, int n);
 
-
+#endif
 

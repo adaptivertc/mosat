@@ -6,6 +6,33 @@
 
 #include "rt_serial.h" 
 
+char *put_header(char *buf, char *mac_address, char n_retries, char msg_len)
+{
+  char byte;
+
+  byte = 0x81;
+  memcpy(buf, &byte, 1);
+  buf += 1;
+
+  byte = msg_len;
+  memcpy(buf, &byte, 1);
+  buf += 1;
+
+  byte = 0x00; // Aerocomm Use, set to 0
+  memcpy(buf, &byte, 1);
+  buf += 1;
+
+  byte = n_retries;
+  memcpy(buf, &byte, 1);
+  buf += 1;
+
+  memcpy(buf, mac_address, 3);
+  buf += 3;
+
+  return buf; // return a point to where the rest of the message goes.
+  
+}
+
 int main(int argc, char *argv[])
 {
    const char *dev_name;

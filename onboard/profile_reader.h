@@ -1,5 +1,7 @@
 
 
+#include "spd_algo.h"
+
 struct sdef_t
 {
   int n;
