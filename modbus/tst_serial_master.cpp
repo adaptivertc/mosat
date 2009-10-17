@@ -11,12 +11,14 @@ int main(int argc, char *argv[])
    const char *dev_name;
    int device;
    int j;
+
    /**
    Mbm_trame trame;
    int result;
    int data_in[256];
    int data_out[256];
    ***/
+
    if (argc > 1)
    {
      dev_name = argv[1];
@@ -49,8 +51,11 @@ int main(int argc, char *argv[])
      printf("Enter string: ");
      fgets(buf, sizeof(buf), stdin);
      printf("Writing . . .\n ");
-     write(device,buf,strlen(buf)-1); // Write everything but the character return.
-     printf("Write done - %d chars\n", strlen(buf)-1);
+     buf[strlen(buf)-1] = 0x0D;
+     int nw = write(device,buf,strlen(buf)); // Write everything but the character return.
+     printf("Write done - %d chars\n", nw);
+     for (int i=0; i < nw; i++) printf("%02X ", int(buf[i]));
+     printf("\n");
      char read_data[100];
      int total_read = 0;
      while (1)
@@ -72,6 +77,7 @@ int main(int argc, char *argv[])
      }
      unsigned short analog_values[8];
      char *p = read_data;
+     /***
      for (j=0; j < 8; j++)
      {
        analog_values[j] = atol(p);
@@ -82,6 +88,7 @@ int main(int argc, char *argv[])
      {
        printf("val[%d] = %hu\n", j, analog_values[j]);
      }
+     ****/
 
    }   
    /*** Write ***/
