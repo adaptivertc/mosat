@@ -16,6 +16,8 @@ int main(int argc, char *argv[])
 {
   const char *serial_dev;
   int serial_fd;
+  long baud_rate;
+  uint8_t unit_id;
   uint8_t buf[512];
   uint8_t ascii[1025];
 
@@ -28,8 +30,21 @@ int main(int argc, char *argv[])
     serial_dev = "/dev/ttyUSB0";
   }
 
+  baud_rate = 9600;
+  if (argc > 2)
+  {
+    baud_rate = atol(argv[2]);
+  } 
 
-  serial_fd = rt_open_serial(serial_dev, 9600, 0);
+  unit_id = 1; 
+  if (argc > 3)
+  {
+    unit_id = (uint8_t) atol(argv[3]);
+  } 
+
+
+
+  serial_fd = rt_open_serial(serial_dev, baud_rate, 0);
   if (serial_fd == -1)
   {
     perror(serial_dev);
@@ -82,6 +97,18 @@ int main(int argc, char *argv[])
 
     binary_to_hexascii(ascii, buf, total_size);
     printf("Message: %s\n", ascii);
+
+    printf("Unit id in message is: %d, my unit id is: %d\n", 
+             (int) buf[0], (int) unit_id);
+    if (unit_id != buf[0])
+    {
+      printf("The message is NOT for me, ignoring\n");
+      continue;
+    }
+    else
+    {
+      printf("The message is MINE, processing . . . \n");
+    }
 
     int reply_size = rt_modbus_process_request(buf, total_size);
 
