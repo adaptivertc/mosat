@@ -17,12 +17,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ***********************************************************************/
 
-#include <list>
-#include <string>
-#include <stdarg.h>
+#include "ri_tplib.h"
+
+using namespace std;
 
 /**************************************************************************************************/
-/* Macros to create the HTML report I use for debugging purposes                                  */
+/* Macros to create the HTML report                                                               */
 /**************************************************************************************************/
 
 #define HTML_F_FIXED_SECTION \
@@ -30,7 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   <HTML>\n\
   <HEAD>\n\
     <META HTTP-EQUIV=\"refresh\" CONTENT=\"1\">\n\
-    <meta http-equiv=\"pragma\" content=\"no-cache>\"\n\
+    <META HTTP-EQUIV=\"pragma\" CONTENT=\"no-cache\">\n\
     <META HTTP-EQUIV=\"CONTENT-TYPE\" CONTENT=\"text/html; charset=utf-8\">\n\
     <TITLE></TITLE>\n\
     <STYLE TYPE=\"text/css\">\n\
@@ -47,29 +47,45 @@ with this program; if not, write to the Free Software Foundation, Inc.,
       <COL WIDTH=85*>\n\
       <COL WIDTH=85*>\n\
       <COL WIDTH=85*>\n\
+      <COL WIDTH=85*>\n\
+      <COL WIDTH=85*>\n\
       <TR VALIGN=TOP>\n\
-        <TH WIDTH=33%% BGCOLOR=\"#000080\">\n\
+        <TH WIDTH=20%% BGCOLOR=\"#000080\">\n\
           <P><FONT COLOR=\"#ffffff\"><SPAN STYLE=\"background: #000080\">N&uacute;mero\n\
           Secuencial</SPAN></FONT></P>\n\
         </TH>\n\
-        <TH WIDTH=33%% BGCOLOR=\"#000080\">\n\
+        <TH WIDTH=20%% BGCOLOR=\"#000080\">\n\
           <P><FONT COLOR=\"#ffffff\"><SPAN STYLE=\"background: #000080\">Tiempo\n\
           de entrada en servicio</SPAN></FONT></P>\n\
         </TH>\n\
-        <TH WIDTH=33%% BGCOLOR=\"#000080\">\n\
+        <TH WIDTH=20%% BGCOLOR=\"#000080\">\n\
           <P><FONT COLOR=\"#ffffff\"><SPAN STYLE=\"background: #000080\">Segmento\n\
           actual</SPAN></FONT></P>\n\
+        </TH>\n\
+        <TH WIDTH=20%% BGCOLOR=\"#000080\">\n\
+          <P><FONT COLOR=\"#ffffff\"><SPAN STYLE=\"background: #000080\">Porcentaje\n\
+          de avance</SPAN></FONT></P>\n\
+        </TH>\n\
+        <TH WIDTH=20%% BGCOLOR=\"#000080\">\n\
+          <P><FONT COLOR=\"#ffffff\"><SPAN STYLE=\"background: #000080\">Retrazo\n\
+          </SPAN></FONT></P>\n\
         </TH>\n\
       </TR>\n"
 #define HTML_TABLE_ROW \
   "      <TR VALIGN=TOP>\n\
-        <TD WIDTH=33%%>\n\
+        <TD WIDTH=20%%>\n\
           <P ALIGN=CENTER>%d</P>\n\
         </TD>\n\
-        <TD WIDTH=33%%>\n\
+        <TD WIDTH=20%%>\n\
           <P ALIGN=CENTER>%s</P>\n\
         </TD>\n\
-        <TD WIDTH=33%%>\n\
+        <TD WIDTH=20%%>\n\
+          <P ALIGN=CENTER>%d</P>\n\
+        </TD>\n\
+        <TD WIDTH=20%%>\n\
+          <P ALIGN=CENTER>%d</P>\n\
+        </TD>\n\
+        <TD WIDTH=20%%>\n\
           <P ALIGN=CENTER>%d</P>\n\
         </TD>\n\
       </TR>\n"
@@ -83,70 +99,22 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /*                                                                                                */
 /**************************************************************************************************/
 
-struct ri_train_data_t
-{
-  unsigned m_uiStlNum;                                                                                // m_uiStlNum = "Secuential number assigned to this train"
-  unsigned m_uiCurSec;                                                                                // m_uiCurSec = "Section where a this train currently is"
-  time_t m_tEntryTime;                                                                                // m_tEntryTime = "Time this train entered service"
-};
-
-/**************************************************************************************************/
-/*                                                                                                */
-/**************************************************************************************************/
-
-class ri_log_t
-{
-  private:
-  FILE *m_fpLog;
-  public:
-  ri_log_t();
-  ~ri_log_t();
-  bool open_log(const char *szLogPath, const char *szMode = "w");
-  bool log(const char *szData, ...);
-  void flush_log();
-  void close_log();
-};
-
-/**************************************************************************************************/
-/*                                                                                                */
-/**************************************************************************************************/
-
 class ri_evalg_t : public event_alg_t
 {
   private:
-  unsigned m_uiStlNum;                                                                                // m_uiStlNum = "Secuential number", a consecutive value assigned to every train entering service.
-  unsigned m_uiNumOfSec;                                                                              // m_uiNumOfSec = "Number of sections on the circuit"
-  ri_log_t m_lgTrainsOp;                                                                              // m_lgTrainsOp = "Log of train's operation"
-  ri_log_t m_lgTabHTML;                                                                               // m_lgTabHTML = "HTML document with trains' tabular information"
-  std::list<ri_train_data_t> m_lsTrains;                                                              // m_lsTrains = "List of trains on operation"
+  unsigned m_secNum;                                                                               // m_secNum = "Secuential number", a consecutive value assigned to every train entering service.
+  ri_fileWriter m_Logger;
+  ri_fileWriter m_tabInfo;
+  LinkedList<ri_timeTableRow> m_timeTable;
+  LinkedList<ri_rwSection> m_listOfSections;
+  void tab_info_html(ri_str &htmlInfo);                                                       // stlSzHtmlInfo = "String with tabular info of the trains, formated as html"
+  void graph_info_txt(ri_str &txtInfo);                                                       // stlSzTxtInfo = "String with graphic info of the trains, formated as text"
+  void updateTabInfo();                                                                               // Creates or updates the tabular information (ri_tabinfo.htm) of the trains in operation.
   public:
   ri_evalg_t();
-  void init(void);
+  ~ri_evalg_t();
+  void init(const char* config_file);
   void update(time_t time);
   void process_event(crossing_event_t ev);
-  void tab_info_html(std::string &stlSzHtmlInfo);                                                     // stlSzHtmlInfo = "STL string with tabular info of the trains, formated as html"
-  void graph_info_txt(std::string &stlSzTxtInfo);                                                     // stlSzTxtInfo = "STL string with graphic info of the trains, formated as text"
 };
 
-/**************************************************************************************************/
-/*                                                                                                */
-/**************************************************************************************************/
-
-struct ri_time_table_item
-{
-  std::string m_stlSzTrainID;                                                                           // stlSzTrainID = "ID of a train that is entering service"
-  tm m_tmEnterTime;                                                                                     // tmEnterTime = "Time the train is entering service"
-};
-
-/**************************************************************************************************/
-/*                                                                                                */
-/**************************************************************************************************/
-
-class ri_time_table_t
-{
-  private:
-  std::list<ri_time_table_item> m_lsTimeTbl;
-  public:
-  bool load_table(const char *szTimeTblPath);
-  void clear_table();
-};
