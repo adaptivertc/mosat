@@ -1,6 +1,6 @@
 /************************************************************************
 This is software to monitor and/or control trains.
-Copyright (C) 2005,2006 Do/nald Wayne Carr
+Copyright (C) 2005,2006 Donald Wayne Carr
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -30,203 +30,169 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "ri_evalg.h"
 #include "rtcommon.h"
 #include "arg.h"
-
-/**************************************************************************************************/
-/* Implementation of ri_log_t                                                                     */
-/**************************************************************************************************/
-
-ri_log_t::ri_log_t():m_fpLog(NULL)
-{}
-
-ri_log_t::~ri_log_t()
-{
-  close_log();
-}
-
-bool ri_log_t::open_log(const char* szLogPath, const char* szMode)
-{
-  bool bOpS = false;                                                                                  // <-- bOpS = "Operation succeeded"
-  m_fpLog = fopen(szLogPath, szMode);
-  if (NULL != m_fpLog)
-    bOpS = true;
-  else
-    perror(szLogPath);
-  return bOpS;
-}
-
-bool ri_log_t::log(const char* szData, ...)
-{
-  bool bOpS = false;                                                                                  // <-- bOpS = "Operation succeeded"
-  if (NULL != m_fpLog)
-  {
-    va_list vaLOfArgs;                                                                                // <-- vaLOfArgs = "Variable list of arguments".
-    va_start(vaLOfArgs, szData);
-    if (vfprintf(m_fpLog, szData, vaLOfArgs) >= 0)
-      bOpS = true;
-    va_end(vaLOfArgs);
-  }
-  return bOpS;
-}
-
-void ri_log_t::flush_log()
-{
-  if (NULL != m_fpLog)
-    fflush(m_fpLog);
-}
-
-void ri_log_t::close_log()
-{
-  if (NULL != m_fpLog)
-  {
-    fclose(m_fpLog);
-    m_fpLog = NULL;
-  }
-}
+#include <iostream>
 
 /**************************************************************************************************/
 /* Implementation of ri_evalg_t                                                                   */
 /**************************************************************************************************/
 
-ri_evalg_t::ri_evalg_t():m_uiStlNum(0), m_uiNumOfSec(0)
-{}
-
-void ri_evalg_t::init(void)
+ri_evalg_t::ri_evalg_t(): m_secNum(0)
 {
-  if (!m_lgTrainsOp.open_log("ri_log.txt"))
-    exit(0);
-  m_uiNumOfSec = sections.get_n_sections();
-  m_lgTrainsOp.log("Number of sections: %d\n", m_uiNumOfSec);
+  m_Logger.open("ri_log.txt");
+  m_Logger << "BEGINNING OF LOG.\n";
 }
 
-void ri_evalg_t::update(time_t ts)
+ri_evalg_t::~ri_evalg_t()
 {
-  // Do something!
+  m_Logger << "END OF LOG. ";
+  m_Logger.close();
+}
+
+void ri_evalg_t::init(const char* config_file)
+{
+  m_Logger << INDENT << "Entering ri_evalg_t::init...\n";
+  m_Logger.increaseIndent();
+  ri_cfReader cfReader(m_Logger);
+  TPRC_ENUM rCode = cfReader.readTPConfig(config_file);
+  if (TPRC_OS == rCode)
+  {
+    rCode = cfReader.readTimeTable(m_timeTable);
+    if (TPRC_OS == rCode)
+    {
+      rCode = cfReader.readSections(m_listOfSections);
+      if (TPRC_OS == rCode)
+        rCode = cfReader.readDisplay();
+    }
+  }
+  m_Logger.decreaseIndent();
+  m_Logger << INDENT << "Exiting ri_evalg_t::init.\n";
+}
+
+void ri_evalg_t::update(time_t ts)                                                                    // <-- This method is used to update de position of the trains with estimated position since it's called even when an event has not happend.
+{
+
+  for (LinkedList<ri_rwSection>::Iterator secIterator = m_listOfSections.NewIterator();
+    !secIterator.EndReached(); secIterator++)
+    if (secIterator->isBusy())
+      secIterator->updatePos();
+  //updateTabInfo();
 }
 
 void ri_evalg_t::process_event(crossing_event_t ev)
 {
-  struct tm ts;
-  char buf[30];
-  localtime_r(&ev.time_stamp, &ts);
-  strftime(buf, sizeof(buf), "%T, %F", &ts);
-  std::string stlSzTxtInfo, stlSzHtmlInfo;
-  m_lgTabHTML.open_log("ri_log.html");
-//  m_lgTrainsOp.log("Event: Time: %s, Section: %d, Type: %s\n", buf, ev.section, ev.departure?"Departure":"Arrival");
-  if(ev.departure && 0 == ev.section)                                                                 // <-- If true, a train has just entered service, so it must me added to the list of trains on
-  {                                                                                                   //     service.
-    ri_train_data_t tmp_train;
-    tmp_train.m_uiStlNum = m_uiStlNum++;
-    tmp_train.m_tEntryTime = ev.time_stamp;
-    tmp_train.m_uiCurSec = 0;
-    m_lsTrains.push_front(tmp_train);
-    graph_info_txt(stlSzTxtInfo);
-    m_lgTrainsOp.log(stlSzTxtInfo.data());
-  }
-  else if (!ev.departure)                                                                             // <-- If true an arrival has just occurred.
+  m_Logger << INDENT << "Entering ri_evalg_t::process_event...\n";
+  m_Logger.increaseIndent();
+  ri_trainData trainData;
+  ri_rwSection& curSection = m_listOfSections.Retrieve(ev.section);
+  //tm ts;
+  //char buf[30];
+  //localtime_r(&ev.time_stamp, &ts);
+  //strftime(buf, sizeof(buf), "%T, %F", &ts);
+  //ri_str sTxtInfo, sHtmlInfo;
+  //printf("Evento en section: %s, sensor: %d\n", (const char*)m_listOfSections.Retrieve(ev.section).sectionName(), ev.departure ? 0 : 1);
+  if (ev.departure)
   {
-    if(ev.section == m_uiNumOfSec)                                                                    // <-- If true, a train has traversed the entire circuit and is getting out of service so I pop it
-      m_lsTrains.pop_back();                                                                          //     from the list.
-    std::list<ri_train_data_t>::iterator i = m_lsTrains.begin();
-    while(m_lsTrains.end() != i && ev.section - 1 != i->m_uiCurSec)
-      ++i;
-    i->m_uiCurSec = ev.section;
-    graph_info_txt(stlSzTxtInfo);
-    m_lgTrainsOp.log(stlSzTxtInfo.data());
+    if (0 == ev.section)
+    {
+      curSection.procTES(m_secNum, time(NULL)/*ev.time_stamp*/);
+      m_secNum++;
+    }
+    else
+      curSection.procTCS(0);
   }
-  m_lgTrainsOp.flush_log();
-  tab_info_html(stlSzHtmlInfo);
-  m_lgTabHTML.log(stlSzHtmlInfo.data());
-  m_lgTabHTML.close_log();
+  else
+    curSection.procSCE(m_listOfSections.Retrieve(ev.section-1));
+//   if(ev.departure && 0 == ev.section)                                                                 // <-- If true, a train has just entered service, so it must me added to the list of trains on
+//   {                                                                                                   //     service.
+//     ri_train_data_t tmp_train;
+//     tmp_train.m_secNum = m_secNum++;
+//     tmp_train.m_tEntryTime = ev.time_stamp;
+//     tmp_train.m_uiCurSec = 0;
+//     m_lsTrains.push_front(tmp_train);
+//    }
+//   else if (!ev.departure)                                                                             // <-- If true an arrival has just occurred.
+//   {
+//     if(ev.section == m_listOfSections.Size())                                                                    // <-- If true, a train has traversed the entire circuit and is getting out of service so I pop it
+//       m_lsTrains.pop_back();                                                                          //     from the list.
+//     std::list<ri_train_data_t>::iterator i = m_lsTrains.begin();
+//     while(m_lsTrains.end() != i && ev.section - 1 != i->m_uiCurSec)
+//       ++i;
+//     i->m_uiCurSec = ev.section;
+//  }
+  for (LinkedList<ri_rwSection>::Iterator ss = m_listOfSections.NewIterator(); !ss.EndReached(); ss++)
+    if (ss->isBusy())
+      m_Logger << INDENT << "Section: " << ss->name() << "Train secnum:" << trainData.m_secNum << " Train position: " << trainData.m_cPos << "\n";
+  updateTabInfo();
+  m_Logger.flush();
+  m_Logger.decreaseIndent();
+  m_Logger << INDENT << "Exiting ri_evalg_t::process_event.\n";
 }
 
-void ri_evalg_t::tab_info_html(std::string &stlSzHtmlInfo)                                            // <-- stlSzHtmlInfo = "Stl string containing train's tabular information formated as HTML"
+void ri_evalg_t::tab_info_html(ri_str& sHtmlInfo)                                            // <-- sHtmlInfo = "Stl string containing train's tabular information formated as HTML"
 {
-  stlSzHtmlInfo = HTML_F_FIXED_SECTION;
-  char szTableRow[SIZE_HTML_TABLE_ROW + 30];                                                          // <-- TODO: I need to change this hardcoded 30 for an appropriate macro
-  std::list<ri_train_data_t>::iterator i;
-  for (i = m_lsTrains.begin(); i != m_lsTrains.end(); ++i)                                            // <-- My loop starts right here
-  {
-    struct tm ts;
-    char buf[30];
-    localtime_r(&i->m_tEntryTime, &ts);
-    strftime(buf, sizeof(buf), "%T, %F", &ts);
-    sprintf(szTableRow, HTML_TABLE_ROW, i->m_uiStlNum, buf, i->m_uiCurSec);
-    stlSzHtmlInfo += szTableRow;
-  }                                                                                                   // <-- My loop ends right here
-  stlSzHtmlInfo += HTML_S_FIXED_SECTION;
+//   sHtmlInfo = HTML_F_FIXED_SECTION;
+//   char szTableRow[SIZE_HTML_TABLE_ROW + 30];                                                          // <-- TODO: I need to change this hardcoded 30 for an appropriate macro
+//   std::list<ri_train_data_t>::iterator i;
+//   for (i = m_lsTrains.begin(); i != m_lsTrains.end(); ++i)                                            // <-- My loop starts right here
+//   {
+//     struct tm ts;
+//     char buf[30];
+//     localtime_r(&i->m_tEntryTime, &ts);
+//     strftime(buf, sizeof(buf), "%T, %F", &ts);
+//     sprintf(szTableRow, HTML_TABLE_ROW, i->m_secNum, buf, i->m_uiCurSec);
+//     sHtmlInfo += szTableRow;
+//   }                                                                                                   // <-- My loop ends right here
+//   sHtmlInfo += HTML_S_FIXED_SECTION;
 }
 
-void ri_evalg_t::graph_info_txt(std::string &stlSzTxtInfo)
+void ri_evalg_t::graph_info_txt(ri_str& sTxtInfo)
 {
-  unsigned uiNextPOS = 0, uiPrevTS = 0;                                                               // <-- uiNextPOS = "Next possible occupied section". uiPrevTS = "Section the previous train occupies".
+/*  unsigned uiNextPOS = 0, uiPrevTS = 0;                                                               // <-- uiNextPOS = "Next possible occupied section". uiPrevTS = "Section the previous train occupies".
   char szStlNum[10];                                                                                  // <-- TODO: I need to change this hardcoded 10 for an appropriate macro
-  stlSzTxtInfo = "|[";
+  sTxtInfo = "|[";
   std::list<ri_train_data_t>::iterator i = m_lsTrains.begin();
   for (i = m_lsTrains.begin(); i != m_lsTrains.end(); ++i)
   {
     for (unsigned uiNES = i->m_uiCurSec; uiNES > uiNextPOS; --uiNES)                                  // <-- uiNES = "Number of empty sections"
-      stlSzTxtInfo += "-][";
+      sTxtInfo += "-][";
     if (i != m_lsTrains.begin() && i->m_uiCurSec == uiPrevTS)                                         // <-- This normally shouldn't happen because it means there is more than one train occuping the
-      sprintf(szStlNum, "\b\b,%d][", i->m_uiStlNum);                                                  //     same section and, even though that's a possible condition, it's considered dangerous.
+      sprintf(szStlNum, "\b\b,%d][", i->m_secNum);                                                  //     same section and, even though that's a possible condition, it's considered dangerous.
     else
     {
-      sprintf(szStlNum, "%d][", i->m_uiStlNum);
+      sprintf(szStlNum, "%d][", i->m_secNum);
       uiNextPOS = i->m_uiCurSec + 1;
     }
-    stlSzTxtInfo += szStlNum;
+    sTxtInfo += szStlNum;
     uiPrevTS = i->m_uiCurSec;
   }
-  for (unsigned uiRES = uiNextPOS; uiRES < m_uiNumOfSec; ++uiRES)                                     // <-- uiRES = "Number of remaining empty sections ahead of the last occupied section".
-    stlSzTxtInfo += "-][";
-  stlSzTxtInfo += "\b|\n";
+  for (unsigned uiRES = uiNextPOS; uiRES < m_listOfSections.Size(); ++uiRES)                                     // <-- uiRES = "Number of remaining empty sections ahead of the last occupied section".
+    sTxtInfo += "-][";
+  sTxtInfo += "\b|\n";*/
 }
 
-/**************************************************************************************************/
-/* Implementation of ri_time_table_t                                                              */
-/**************************************************************************************************/
-
-// ri_time_table_t::ri_time_table_t():m_fpTimeTbl(NULL)
-// {}
-
-// ri_time_table_t::~ri_time_table_t()
-// {
-//   clear_table();
-// }
-
-void ri_time_table_t::clear_table()
+void ri_evalg_t::updateTabInfo()
 {
-  m_lsTimeTbl.clear();
-}
-
-bool ri_time_table_t::load_table(const char *szTimeTblPath)
-{
-   bool bOpS = false;
-//   FILE *fpTimeTbl = fopen(szTimeTblPath, "r");
-//   if (NULL != fpTimeTbl)
-//   {
-//     char szData[2] = {0,0};
-//     std::string stlSzTrainID, stlEnterTime;
-//     szData[0] = (char)getc(fpTimeTbl);
-//     bool bIDRS = false, bETRS = false;                                                                // <-- bIDRS = "ID retrieved successfully". bETRS = "Enter time retrieved successfully".
-//     while (szData[0] != EOF)
-//     {
-//       while ('\t' != szData[0] && EOF != szData[0]);
-//       {
-//         stlSzTrainID += szData;
-//         szData[0] = (char)getc(fpTimeTbl);
-//         bIDRS = true;
-//       }
-//       szData[0] = (char)getc(fpTimeTbl);
-//       while ('\n' != szData[0] && EOF != szData[0]);
-//       {
-//         stlEnterTime += szData;
-//         szData[0] = (char)getc(fpTimeTbl);
-//       }
-//       szData[0] = (char)getc(fpTimeTbl);
-//     }
-//     fclose(fpTimeTbl);
-//   }
-//   else
-//     perror(szTimeTblPath);
-  return bOpS;
+  TPRC_ENUM rCode;
+  //m_Logger << INDENT << "Entering ri_evalg_t::updateTabInfo...\n";
+  m_Logger.increaseIndent();
+  //m_Logger << INDENT << "Opening ri_tabinfo.htm...\n";
+  rCode = m_tabInfo.open("ri_tabinfo.htm");
+  if (TPRC_OS != rCode)
+    m_Logger << INDENT << "Oops!. " << getTPRCDesc(rCode);
+  else
+  {
+    //m_Logger << INDENT << "Updating ri_tabinfo.htm...\n";
+    m_tabInfo << HTML_F_FIXED_SECTION;
+  //   m_tpTabIngo << "      <TR VALIGN=TOP>\n        <TD WIDTH=33%%>\n";
+  //   m_tpTabIngo << "          <P ALIGN=CENTER>" << %d << "</P>\n        </TD>\n";
+  //   m_tpTabIngo << "        <TD WIDTH=33%%>\n          <P ALIGN=CENTER>" << %s << "</P>\n";
+  //   m_tpTabIngo << "        </TD>\n        <TD WIDTH=33%%>\n          <P ALIGN=CENTER>" << %d;
+  //   m_tpTabIngo << "</P>\n        </TD>\n      </TR>\n";
+    m_tabInfo << HTML_S_FIXED_SECTION;
+    //m_Logger << INDENT << "ri_tabinfo.htm updated.\n";
+    //m_Logger << INDENT << "Closing ri_tabinfo.htm.\n";
+    m_tabInfo.close();
+  }
+  m_Logger.decreaseIndent();
+  //m_Logger << INDENT << "Exiting ri_evalg_t::updateTabInfo.\n";
 }
