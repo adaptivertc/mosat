@@ -129,7 +129,7 @@ int main(int argc, char *argv[])
   gp_alg.init();
 
   ri_evalg_t ri_alg;
-  ri_alg.init();
+  ri_alg.init(config_file);
 
   ag_evalg_t ag_alg;
   ag_alg.init();
