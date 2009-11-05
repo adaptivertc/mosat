@@ -29,7 +29,7 @@ using namespace std;
   "  <!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\">\n\
   <HTML>\n\
   <HEAD>\n\
-    <META HTTP-EQUIV=\"refresh\" CONTENT=\"1\">\n\
+    <META HTTP-EQUIV=\"refresh\" CONTENT=\"0.5\">\n\
     <META HTTP-EQUIV=\"pragma\" CONTENT=\"no-cache\">\n\
     <META HTTP-EQUIV=\"CONTENT-TYPE\" CONTENT=\"text/html; charset=utf-8\">\n\
     <TITLE></TITLE>\n\
@@ -63,33 +63,14 @@ using namespace std;
           actual</SPAN></FONT></P>\n\
         </TH>\n\
         <TH WIDTH=20%% BGCOLOR=\"#000080\">\n\
-          <P><FONT COLOR=\"#ffffff\"><SPAN STYLE=\"background: #000080\">Porcentaje\n\
-          de avance</SPAN></FONT></P>\n\
+          <P><FONT COLOR=\"#ffffff\"><SPAN STYLE=\"background: #000080\">Posición\n\
+          </SPAN></FONT></P>\n\
         </TH>\n\
         <TH WIDTH=20%% BGCOLOR=\"#000080\">\n\
           <P><FONT COLOR=\"#ffffff\"><SPAN STYLE=\"background: #000080\">Retrazo\n\
           </SPAN></FONT></P>\n\
         </TH>\n\
       </TR>\n"
-#define HTML_TABLE_ROW \
-  "      <TR VALIGN=TOP>\n\
-        <TD WIDTH=20%%>\n\
-          <P ALIGN=CENTER>%d</P>\n\
-        </TD>\n\
-        <TD WIDTH=20%%>\n\
-          <P ALIGN=CENTER>%s</P>\n\
-        </TD>\n\
-        <TD WIDTH=20%%>\n\
-          <P ALIGN=CENTER>%d</P>\n\
-        </TD>\n\
-        <TD WIDTH=20%%>\n\
-          <P ALIGN=CENTER>%d</P>\n\
-        </TD>\n\
-        <TD WIDTH=20%%>\n\
-          <P ALIGN=CENTER>%d</P>\n\
-        </TD>\n\
-      </TR>\n"
-#define SIZE_HTML_TABLE_ROW sizeof(HTML_TABLE_ROW)
 #define HTML_S_FIXED_SECTION \
   "    </TABLE>\n\
   </BODY>\n\
@@ -107,8 +88,6 @@ class ri_evalg_t : public event_alg_t
   ri_fileWriter m_tabInfo;
   LinkedList<ri_timeTableRow> m_timeTable;
   LinkedList<ri_rwSection> m_listOfSections;
-  void tab_info_html(ri_str &htmlInfo);                                                       // stlSzHtmlInfo = "String with tabular info of the trains, formated as html"
-  void graph_info_txt(ri_str &txtInfo);                                                       // stlSzTxtInfo = "String with graphic info of the trains, formated as text"
   void updateTabInfo();                                                                               // Creates or updates the tabular information (ri_tabinfo.htm) of the trains in operation.
   public:
   ri_evalg_t();

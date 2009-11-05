@@ -49,8 +49,8 @@ namespace igrl
       bool EndReached() const { return NULL == m_pCurrentNode; }                                      // <-- Tells if the iterator has reached the end of the list.
       bool operator==(const Iterator& rOp) const { return m_pCurrentNode == rOp.m_pCurrentNode; }     // <-- Equality operator
       bool operator!=(const Iterator& rOp) const { return !operator==(rOp); }                         // <-- Inequality operator
-      LData& operator*() { return m_pCurrentNode->m_nData; }                                    // <-- Emulates the dereference operator, as if the iterator were a pointer to an LData variable
-      LData* operator->() { return &m_pCurrentNode->m_nData; }                                  // <-- When LData is a class, this operator allows to access the members as if the iterator were
+      LData& operator*() { return m_pCurrentNode->m_nData; }                                          // <-- Emulates the dereference operator, as if the iterator were a pointer to an LData variable
+      LData* operator->() { return &m_pCurrentNode->m_nData; }                                        // <-- When LData is a class, this operator allows to access the members as if the iterator were
       Iterator& operator+=(unsigned long rOp) { while (0 < rOp--) operator++(); }                     // <-- Moves the iterator forward rOp positions.
       void operator++(int) { operator++(); }                                                          // <-- (Postfix version of ++).
       void operator++() { if (NULL == m_pCurrentNode) throw ADTE_EOL_REACHED;                         // <-- (Prefix version of ++) Moves the iterator forward one position.

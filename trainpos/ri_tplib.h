@@ -132,6 +132,7 @@ class ri_fileWriter
   const ri_fileWriter& operator<<(char rOp) const;
   const ri_fileWriter& operator<<(const char* szROp) const;
   const ri_fileWriter& operator<<(const ri_str& rOp) const;
+  const ri_fileWriter& operator<<(const time_t rOp) const;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -156,7 +157,8 @@ struct ri_trainData
   float m_mPos;
   int m_delay;
   time_t m_dtest;
-  time_t m_lsct;
+  time_t m_est;
+  time_t m_dt;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -202,10 +204,11 @@ class ri_rwSection
   const ri_str& name() const { return m_name; };
   bool isBusy() const { return m_isBusy; };
   LinkedList<ri_sensor>& sensors() { return m_sensors; };
-  void updatePos();
-  void procTCS(unsigned sensor);
-  void procSCE(ri_rwSection& prevSection);
-  void procTES(unsigned secNum, time_t dtest);
+  void updatePos(time_t ct);
+  void procTCS(unsigned sensor, time_t ct);
+  void procTAS(ri_rwSection& prevSection, time_t at);
+  void procTES(unsigned secNum, time_t dtest, time_t ct);
+  void procTLS();
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
