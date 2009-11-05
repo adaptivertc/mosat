@@ -444,6 +444,15 @@ const ri_fileWriter& ri_fileWriter::operator<<(const ri_str& rOp) const
   return *this;
 }
 
+const ri_fileWriter& ri_fileWriter::operator<<(const time_t rOp) const
+{
+  tm ts;
+  char szTime[9];
+  localtime_r(&rOp, &ts);
+  strftime(szTime, sizeof(szTime), "%T", &ts);
+  fprintf(m_pFile, "%s", szTime);
+  return *this;
+}
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // ri_timeTableRow class implementation                                                           //
 //                                                                                                //
@@ -732,6 +741,7 @@ TPRC_ENUM ri_cfReader::readSections(LinkedList<ri_rwSection>& listOfSections)
         break;
       }
       listOfSections.Insert(ri_rwSection(szStationName, sensors, timeToTravel, 0));
+      m_Logger << INDENT << szStationName << "\n";
       szCurLine =  strtok_r(NULL, "\n", &szNextLine);
       sensors.Clear();
       lineNum++;
@@ -739,8 +749,6 @@ TPRC_ENUM ri_cfReader::readSections(LinkedList<ri_rwSection>& listOfSections)
   }
   if (TPRC_OS == rCode)
     m_Logger << INDENT << "Sections file successfully read.\n";
-/*  for (LinkedList<ri_rwSection>::Iterator ss = listOfSections.NewIterator(); !ss.EndReached(); ++ss)                                   // <-- Absolutelly self-explanatory.
-    m_Logger << INDENT << ss->sectionName() << ", TTT: " << ss->m_timeToTravel << "TTS-0=" << ss->m_sensors.Retrieve(0).relTTS()<< "TTS-1=" << ss->m_sensors.Retrieve(1).relTTS()<<"\n";*/
   m_Logger.decreaseIndent();
   m_Logger << INDENT << "Exiting ri_cfReader::readSections...\n";
   return rCode;
@@ -808,60 +816,63 @@ ri_rwSection::ri_rwSection(const ri_str& name, const LinkedList<ri_sensor>& sens
 {
 }
 
-void ri_rwSection::procSCE(ri_rwSection& prevSection)
+void ri_rwSection::procTAS(ri_rwSection& prevSection, time_t at)
 {
   m_isBusy = true;
-  prevSection.procTCS(prevSection.sensors().Size()-1);
+  prevSection.procTCS(prevSection.sensors().Size()-1, at);
   m_trainData.m_secNum = prevSection.trainData().m_secNum;
-  m_trainData.m_lsct = prevSection.trainData().m_lsct;
   m_trainData.m_dtest = prevSection.trainData().m_dtest;
+  m_trainData.m_est = prevSection.trainData().m_est;
   m_trainData.m_cPos = 0;
   m_trainData.m_mPos = m_sensors.Retrieve(0).m_relTTS * m_dps;
   m_trainData.m_delay = prevSection.trainData().m_delay;
-  printf("Train arrival. Station %s. Sec. Num: %d. Due to cross this sensor at: %d. Delay: %d\n", (const char*)m_name, m_trainData.m_secNum, prevSection.sensors().Retrieve(prevSection.sensors().Size()-1).m_absTTS, m_trainData.m_delay);
 }
 
-void ri_rwSection::procTES(unsigned secNum, time_t dtest)
+void ri_rwSection::procTES(unsigned secNum, time_t dtest, time_t ct)
 {
   m_isBusy = true;
   m_trainData.m_secNum = secNum;
   m_trainData.m_dtest = dtest;
+  m_trainData.m_est = ct;
+  m_trainData.m_dt = ct;
   m_sensors.Retrieve(0).changeState(CROSSED);
   m_trainData.m_cPos = m_sensors.Retrieve(0).m_relTTS * m_dps;
   m_trainData.m_mPos = m_sensors.Retrieve(1).m_relTTS * m_dps;
-  m_trainData.m_delay = difftime(time(NULL), dtest) - m_sensors.Retrieve(0).m_absTTS;
-  printf("Train entering service. Absolute TTS: %d. Relative TTS: %d. Sec. Num: %d. Position: %f. Delay: %d\n", m_sensors.Retrieve(0).m_absTTS, m_sensors.Retrieve(0).m_relTTS, m_trainData.m_secNum, m_trainData.m_cPos, m_trainData.m_delay);
+  m_trainData.m_delay = difftime(ct, dtest) - m_sensors.Retrieve(0).m_absTTS;
 }
 
-void ri_rwSection::procTCS(unsigned sensor)
+void ri_rwSection::procTLS()
+{
+  for (LinkedList<ri_sensor>::Iterator ss = m_sensors.NewIterator(); !ss.EndReached(); ss++)
+    ss->changeState(NOT_CROSSED);
+  m_isBusy = false;
+}
+
+void ri_rwSection::procTCS(unsigned sensor, time_t ct)
 {
   if (sensor < m_sensors.Size()-1)
   {
     m_sensors.Retrieve(sensor).changeState(CROSSED);
     m_trainData.m_cPos = m_sensors.Retrieve(sensor).m_relTTS * m_dps;
     m_trainData.m_mPos = m_sensors.Retrieve(sensor + 1).m_relTTS * m_dps;
+    if (0 == sensor)
+      m_trainData.m_dt = ct;
   }
   else if (sensor == m_sensors.Size()-1)
   {
     m_isBusy = false;
     for (LinkedList<ri_sensor>::Iterator ss = m_sensors.NewIterator(); !ss.EndReached(); ss++)
       ss->changeState(NOT_CROSSED);
-    m_trainData.m_lsct = time(NULL);
     m_trainData.m_cPos = 100;
   }
-  //printf("Train id: %d. Delay: %d. Position: %f\n", m_id, m_trainData.m_delay, m_trainData.m_position, m_trainData.m_delay);
 }
 
-void ri_rwSection::updatePos()
+void ri_rwSection::updatePos(time_t ct)
 {
-  unsigned cPos = difftime(time(NULL), m_trainData.m_lsct) * m_dps;
+  float cPos = (difftime(ct, m_trainData.m_dt) + m_sensors.Retrieve(0).m_relTTS) * m_dps;
   if (m_isBusy)
-  {
     if (cPos < m_trainData.m_mPos)
       m_trainData.m_cPos = cPos;
     else
       m_trainData.m_cPos = m_trainData.m_mPos;
-  }
-  printf("m_trainData.m_cPos: %f, m_dps: %f\n", m_trainData.m_cPos, m_dps);
-  //printf("Train id: %d. Delay: %d. Position: %f\n", m_trainData.m_secNum, m_trainData.m_delay, m_trainData.m_cPos);
 }

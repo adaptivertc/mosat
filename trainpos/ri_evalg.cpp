@@ -70,104 +70,43 @@ void ri_evalg_t::init(const char* config_file)
 
 void ri_evalg_t::update(time_t ts)                                                                    // <-- This method is used to update de position of the trains with estimated position since it's called even when an event has not happend.
 {
-
-  for (LinkedList<ri_rwSection>::Iterator secIterator = m_listOfSections.NewIterator();
-    !secIterator.EndReached(); secIterator++)
-    if (secIterator->isBusy())
-      secIterator->updatePos();
-  //updateTabInfo();
+  m_Logger << INDENT << "Entering ri_evalg::update(...)...\n";
+ m_Logger.increaseIndent();
+  for (LinkedList<ri_rwSection>::Iterator ss = m_listOfSections.NewIterator(); !ss.EndReached(); ss++)
+    if (ss->isBusy())
+    {
+      ss->updatePos(ts);
+      m_Logger << "Sección: " << ss->name() << ", Posición: " << ss->trainData().m_cPos << "\n";
+    }
+  updateTabInfo();
+ m_Logger.decreaseIndent();
+  m_Logger << INDENT << "Exiting ri_evalg::update(...)...\n";
 }
 
 void ri_evalg_t::process_event(crossing_event_t ev)
 {
   m_Logger << INDENT << "Entering ri_evalg_t::process_event...\n";
-  m_Logger.increaseIndent();
-  ri_trainData trainData;
-  ri_rwSection& curSection = m_listOfSections.Retrieve(ev.section);
-  //tm ts;
-  //char buf[30];
-  //localtime_r(&ev.time_stamp, &ts);
-  //strftime(buf, sizeof(buf), "%T, %F", &ts);
-  //ri_str sTxtInfo, sHtmlInfo;
-  //printf("Evento en section: %s, sensor: %d\n", (const char*)m_listOfSections.Retrieve(ev.section).sectionName(), ev.departure ? 0 : 1);
-  if (ev.departure)
-  {
-    if (0 == ev.section)
-    {
-      curSection.procTES(m_secNum, time(NULL)/*ev.time_stamp*/);
-      m_secNum++;
-    }
-    else
-      curSection.procTCS(0);
-  }
+ m_Logger.increaseIndent();
+  if (m_listOfSections.Size() == ev.section)
+    m_listOfSections.Retrieve(ev.section - 1).procTLS();
   else
-    curSection.procSCE(m_listOfSections.Retrieve(ev.section-1));
-//   if(ev.departure && 0 == ev.section)                                                                 // <-- If true, a train has just entered service, so it must me added to the list of trains on
-//   {                                                                                                   //     service.
-//     ri_train_data_t tmp_train;
-//     tmp_train.m_secNum = m_secNum++;
-//     tmp_train.m_tEntryTime = ev.time_stamp;
-//     tmp_train.m_uiCurSec = 0;
-//     m_lsTrains.push_front(tmp_train);
-//    }
-//   else if (!ev.departure)                                                                             // <-- If true an arrival has just occurred.
-//   {
-//     if(ev.section == m_listOfSections.Size())                                                                    // <-- If true, a train has traversed the entire circuit and is getting out of service so I pop it
-//       m_lsTrains.pop_back();                                                                          //     from the list.
-//     std::list<ri_train_data_t>::iterator i = m_lsTrains.begin();
-//     while(m_lsTrains.end() != i && ev.section - 1 != i->m_uiCurSec)
-//       ++i;
-//     i->m_uiCurSec = ev.section;
-//  }
-  for (LinkedList<ri_rwSection>::Iterator ss = m_listOfSections.NewIterator(); !ss.EndReached(); ss++)
-    if (ss->isBusy())
-      m_Logger << INDENT << "Section: " << ss->name() << "Train secnum:" << trainData.m_secNum << " Train position: " << trainData.m_cPos << "\n";
+  {
+    ri_rwSection& curSection = m_listOfSections.Retrieve(ev.section);
+    if (ev.departure)
+      if (0 == ev.section)
+      {
+        curSection.procTES(m_secNum, m_timeTable.Retrieve(m_secNum).dtest(), ev.time_stamp);
+        m_secNum++;
+      }
+      else
+        curSection.procTCS(0, ev.time_stamp);
+    else
+      curSection.procTAS(m_listOfSections.Retrieve(ev.section-1), ev.time_stamp);
+  }
   updateTabInfo();
   m_Logger.flush();
-  m_Logger.decreaseIndent();
+ m_Logger.decreaseIndent();
   m_Logger << INDENT << "Exiting ri_evalg_t::process_event.\n";
-}
-
-void ri_evalg_t::tab_info_html(ri_str& sHtmlInfo)                                            // <-- sHtmlInfo = "Stl string containing train's tabular information formated as HTML"
-{
-//   sHtmlInfo = HTML_F_FIXED_SECTION;
-//   char szTableRow[SIZE_HTML_TABLE_ROW + 30];                                                          // <-- TODO: I need to change this hardcoded 30 for an appropriate macro
-//   std::list<ri_train_data_t>::iterator i;
-//   for (i = m_lsTrains.begin(); i != m_lsTrains.end(); ++i)                                            // <-- My loop starts right here
-//   {
-//     struct tm ts;
-//     char buf[30];
-//     localtime_r(&i->m_tEntryTime, &ts);
-//     strftime(buf, sizeof(buf), "%T, %F", &ts);
-//     sprintf(szTableRow, HTML_TABLE_ROW, i->m_secNum, buf, i->m_uiCurSec);
-//     sHtmlInfo += szTableRow;
-//   }                                                                                                   // <-- My loop ends right here
-//   sHtmlInfo += HTML_S_FIXED_SECTION;
-}
-
-void ri_evalg_t::graph_info_txt(ri_str& sTxtInfo)
-{
-/*  unsigned uiNextPOS = 0, uiPrevTS = 0;                                                               // <-- uiNextPOS = "Next possible occupied section". uiPrevTS = "Section the previous train occupies".
-  char szStlNum[10];                                                                                  // <-- TODO: I need to change this hardcoded 10 for an appropriate macro
-  sTxtInfo = "|[";
-  std::list<ri_train_data_t>::iterator i = m_lsTrains.begin();
-  for (i = m_lsTrains.begin(); i != m_lsTrains.end(); ++i)
-  {
-    for (unsigned uiNES = i->m_uiCurSec; uiNES > uiNextPOS; --uiNES)                                  // <-- uiNES = "Number of empty sections"
-      sTxtInfo += "-][";
-    if (i != m_lsTrains.begin() && i->m_uiCurSec == uiPrevTS)                                         // <-- This normally shouldn't happen because it means there is more than one train occuping the
-      sprintf(szStlNum, "\b\b,%d][", i->m_secNum);                                                  //     same section and, even though that's a possible condition, it's considered dangerous.
-    else
-    {
-      sprintf(szStlNum, "%d][", i->m_secNum);
-      uiNextPOS = i->m_uiCurSec + 1;
-    }
-    sTxtInfo += szStlNum;
-    uiPrevTS = i->m_uiCurSec;
-  }
-  for (unsigned uiRES = uiNextPOS; uiRES < m_listOfSections.Size(); ++uiRES)                                     // <-- uiRES = "Number of remaining empty sections ahead of the last occupied section".
-    sTxtInfo += "-][";
-  sTxtInfo += "\b|\n";*/
 }
 
 void ri_evalg_t::updateTabInfo()
@@ -183,11 +122,35 @@ void ri_evalg_t::updateTabInfo()
   {
     //m_Logger << INDENT << "Updating ri_tabinfo.htm...\n";
     m_tabInfo << HTML_F_FIXED_SECTION;
-  //   m_tpTabIngo << "      <TR VALIGN=TOP>\n        <TD WIDTH=33%%>\n";
-  //   m_tpTabIngo << "          <P ALIGN=CENTER>" << %d << "</P>\n        </TD>\n";
-  //   m_tpTabIngo << "        <TD WIDTH=33%%>\n          <P ALIGN=CENTER>" << %s << "</P>\n";
-  //   m_tpTabIngo << "        </TD>\n        <TD WIDTH=33%%>\n          <P ALIGN=CENTER>" << %d;
-  //   m_tpTabIngo << "</P>\n        </TD>\n      </TR>\n";
+    LinkedList<ri_rwSection>::Iterator i1 = m_listOfSections.NewIterator();
+    //LinkedList<ri_rwSection>::Iterator i2 = m_listOfSections.NewIterator();
+    for (; !i1.EndReached(); i1++)
+    {
+/*      if (!i2.EndReached())
+        i2++;
+      else
+        i2 = m_listOfSections.NewIterator();*/
+      if (i1->isBusy())
+      {
+        m_tabInfo << "        <TR VALIGN=TOP>\n";
+        for (unsigned ss = 0; ss < 5; ++ss)
+        {
+          m_tabInfo << "          <TD WIDTH=33%%>\n";
+          if (0 == ss)
+            m_tabInfo << "            <P ALIGN=CENTER>" << i1->trainData().m_secNum << "</P>\n";
+          else if (1 == ss)
+            m_tabInfo << "            <P ALIGN=CENTER>" << i1->trainData().m_est << "</P>\n";
+          else if (2 == ss)
+            m_tabInfo << "            <P ALIGN=CENTER>" << i1->name() /*<< " - " << i2->name()*/ << "</P>\n";
+          else if (3 == ss)
+            m_tabInfo << "            <P ALIGN=CENTER>" << int(i1->trainData().m_cPos) << "%</P>\n";
+          else if (4 == ss)
+            m_tabInfo << "            <P ALIGN=CENTER>" << i1->trainData().m_delay << "</P>\n";
+          m_tabInfo << "          </TD>\n";
+        }
+        m_tabInfo << INDENT << "        </TR>\n";
+      }
+    }
     m_tabInfo << HTML_S_FIXED_SECTION;
     //m_Logger << INDENT << "ri_tabinfo.htm updated.\n";
     //m_Logger << INDENT << "Closing ri_tabinfo.htm.\n";
