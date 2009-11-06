@@ -70,23 +70,20 @@ void ri_evalg_t::init(const char* config_file)
 
 void ri_evalg_t::update(time_t ts)                                                                    // <-- This method is used to update de position of the trains with estimated position since it's called even when an event has not happend.
 {
-  m_Logger << INDENT << "Entering ri_evalg::update(...)...\n";
- m_Logger.increaseIndent();
+/*  m_Logger << INDENT << "Entering ri_evalg::update(...)...\n";
+  m_Logger.increaseIndent();*/
   for (LinkedList<ri_rwSection>::Iterator ss = m_listOfSections.NewIterator(); !ss.EndReached(); ss++)
     if (ss->isBusy())
-    {
       ss->updatePos(ts);
-      m_Logger << "Sección: " << ss->name() << ", Posición: " << ss->trainData().m_cPos << "\n";
-    }
   updateTabInfo();
- m_Logger.decreaseIndent();
-  m_Logger << INDENT << "Exiting ri_evalg::update(...)...\n";
+/*  m_Logger.decreaseIndent();
+  m_Logger << INDENT << "Exiting ri_evalg::update(...)...\n";*/
 }
 
 void ri_evalg_t::process_event(crossing_event_t ev)
 {
-  m_Logger << INDENT << "Entering ri_evalg_t::process_event...\n";
- m_Logger.increaseIndent();
+/*  m_Logger << INDENT << "Entering ri_evalg_t::process_event...\n";
+  m_Logger.increaseIndent();*/
   if (m_listOfSections.Size() == ev.section)
     m_listOfSections.Retrieve(ev.section - 1).procTLS();
   else
@@ -105,8 +102,8 @@ void ri_evalg_t::process_event(crossing_event_t ev)
   }
   updateTabInfo();
   m_Logger.flush();
- m_Logger.decreaseIndent();
-  m_Logger << INDENT << "Exiting ri_evalg_t::process_event.\n";
+/*  m_Logger.decreaseIndent();
+  m_Logger << INDENT << "Exiting ri_evalg_t::process_event.\n";*/
 }
 
 void ri_evalg_t::updateTabInfo()
@@ -123,28 +120,28 @@ void ri_evalg_t::updateTabInfo()
     //m_Logger << INDENT << "Updating ri_tabinfo.htm...\n";
     m_tabInfo << HTML_F_FIXED_SECTION;
     LinkedList<ri_rwSection>::Iterator i1 = m_listOfSections.NewIterator();
-    //LinkedList<ri_rwSection>::Iterator i2 = m_listOfSections.NewIterator();
-    for (; !i1.EndReached(); i1++)
+    LinkedList<ri_rwSection>::Iterator i2 = m_listOfSections.NewIterator();
+    for (++i2; !i1.EndReached(); ++i1,++i2)
     {
-/*      if (!i2.EndReached())
-        i2++;
-      else
-        i2 = m_listOfSections.NewIterator();*/
+        if (i2.EndReached())
+        i2 = m_listOfSections.NewIterator();
       if (i1->isBusy())
       {
         m_tabInfo << "        <TR VALIGN=TOP>\n";
-        for (unsigned ss = 0; ss < 5; ++ss)
+        for (unsigned ss = 0; ss < 6; ++ss)
         {
-          m_tabInfo << "          <TD WIDTH=33%%>\n";
+          m_tabInfo << "          <TD WIDTH=16%%>\n";
           if (0 == ss)
-            m_tabInfo << "            <P ALIGN=CENTER>" << i1->trainData().m_secNum << "</P>\n";
+            m_tabInfo << "            <P ALIGN=CENTER>" << m_timeTable.Retrieve(i1->trainData().m_secNum).m_trainId << "</P>\n";
           else if (1 == ss)
-            m_tabInfo << "            <P ALIGN=CENTER>" << i1->trainData().m_est << "</P>\n";
+            m_tabInfo << "            <P ALIGN=CENTER>" << i1->trainData().m_secNum << "</P>\n";
           else if (2 == ss)
-            m_tabInfo << "            <P ALIGN=CENTER>" << i1->name() /*<< " - " << i2->name()*/ << "</P>\n";
+            m_tabInfo << "            <P ALIGN=CENTER>" << i1->trainData().m_est << "</P>\n";
           else if (3 == ss)
-            m_tabInfo << "            <P ALIGN=CENTER>" << int(i1->trainData().m_cPos) << "%</P>\n";
+            m_tabInfo << "            <P ALIGN=CENTER>" << i1->name() << " - " << i2->name() << "</P>\n";
           else if (4 == ss)
+            m_tabInfo << "            <P ALIGN=CENTER>" << int(i1->trainData().m_cPos) << "%</P>\n";
+          else if (5 == ss)
             m_tabInfo << "            <P ALIGN=CENTER>" << i1->trainData().m_delay << "</P>\n";
           m_tabInfo << "          </TD>\n";
         }

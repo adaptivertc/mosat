@@ -51,22 +51,26 @@ using namespace std;
       <COL WIDTH=85*>\n\
       <TR VALIGN=TOP>\n\
         <TH WIDTH=20%% BGCOLOR=\"#000080\">\n\
-          <P><FONT COLOR=\"#ffffff\"><SPAN STYLE=\"background: #000080\">N&uacute;mero\n\
+          <P><FONT COLOR=\"#ffffff\"><SPAN STYLE=\"background: #000080\">Tren\n\
+          </SPAN></FONT></P>\n\
+        </TH>\n\
+        <TH WIDTH=10%% BGCOLOR=\"#000080\">\n\
+          <P><FONT COLOR=\"#ffffff\"><SPAN STYLE=\"background: #000080\">Número\n\
           Secuencial</SPAN></FONT></P>\n\
         </TH>\n\
         <TH WIDTH=20%% BGCOLOR=\"#000080\">\n\
-          <P><FONT COLOR=\"#ffffff\"><SPAN STYLE=\"background: #000080\">Tiempo\n\
+          <P><FONT COLOR=\"#ffffff\"><SPAN STYLE=\"background: #000080\">Hora\n\
           de entrada en servicio</SPAN></FONT></P>\n\
         </TH>\n\
-        <TH WIDTH=20%% BGCOLOR=\"#000080\">\n\
-          <P><FONT COLOR=\"#ffffff\"><SPAN STYLE=\"background: #000080\">Segmento\n\
+        <TH WIDTH=30%% BGCOLOR=\"#000080\">\n\
+          <P><FONT COLOR=\"#ffffff\"><SPAN STYLE=\"background: #000080\">Sección\n\
           actual</SPAN></FONT></P>\n\
         </TH>\n\
-        <TH WIDTH=20%% BGCOLOR=\"#000080\">\n\
+        <TH WIDTH=10%% BGCOLOR=\"#000080\">\n\
           <P><FONT COLOR=\"#ffffff\"><SPAN STYLE=\"background: #000080\">Posición\n\
           </SPAN></FONT></P>\n\
         </TH>\n\
-        <TH WIDTH=20%% BGCOLOR=\"#000080\">\n\
+        <TH WIDTH=10%% BGCOLOR=\"#000080\">\n\
           <P><FONT COLOR=\"#ffffff\"><SPAN STYLE=\"background: #000080\">Retrazo\n\
           </SPAN></FONT></P>\n\
         </TH>\n\
