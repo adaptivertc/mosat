@@ -50,12 +50,15 @@ int main(int argc, char *argv[])
     perror(serial_dev);
     exit(0);
   }
-
+int message=1;
+int replysend=0º;
   while (true)
   {
-    printf("Waiting for next message . . . \n");
-    int n = rt_read_serial(serial_fd, buf, 2); 
 
+    printf("Waiting for next message . . . \n");
+    printf("message number %d \n",message);
+    int n = rt_read_serial(serial_fd, buf, 2); 
+    message=message+1;
     printf("First read: %d bytes\n", n);
 
     if (n != 2)
@@ -116,7 +119,8 @@ int main(int argc, char *argv[])
 
     binary_to_hexascii(ascii, buf, reply_size);
     printf("Reply: %s\n", ascii);
-
+    printf("Reply send: %d\n",replysend);
+    replysend=replysend+1;
     write(serial_fd, buf, reply_size);
   }
 }
