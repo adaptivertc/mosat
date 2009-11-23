@@ -130,12 +130,19 @@ else
 
 // Standard Input/Output functions
 #include <stdio.h>
+#include "rt_modbus_crc.h"
+#include "mod_server_msg.h"
+
+#define TIME_OUT 9000
 
 // Declare your global variables here
 
 void main(void)
 {
 // Declare your local variables here
+uint8_t unit_id;
+uint8_t buf[128];
+unsigned int timer;
 
 // Input/Output Ports initialization
 // Port A initialization
@@ -238,6 +245,12 @@ SFIOR=0x00;
 while (1)
       {
       // Place your code here
-
+         if(rx_counter > 0)
+         while(1)
+         {
+                timer++;
+                if(rx_counter == 0)
+                        break;
+         }
       };
 }
