@@ -2,10 +2,11 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdint.h>
 
 #include "rt_modbus_opcodes.h"
 #include "rt_modbus_crc.h"
-#include "mod_local_implementation.h"
+#include "mod_atmega_implementation.h"
 
 /**********************************************************************/
 
@@ -17,7 +18,8 @@ int rt_modbus_read_output_table(uint8_t *buf, int n)
   uint8_t *p;
   int byte_count;
   uint8_t val;
-  int byte, bit;
+  int byte;
+  int bito;
   uint8_t mask;
 
   //trace.print_buf(0, "Read Output Table:\n", buf, 8);
@@ -52,16 +54,17 @@ int rt_modbus_read_output_table(uint8_t *buf, int n)
   {
     *(p++) = 0x00;
   }
-
+  
   for (i=0; i < num_points; i++)
   {
     // val = read_do(i + start_point); 
-    val = (i % 2) != 0;
-    if (val)
+    //val = (i % 2) != 0;
+    //if (val)
+    if ((i % 2) != 0)
     {
       byte = i / 8;
-      bit = i % 8;
-      mask = 1 << bit;
+      bito = i % 8;
+      mask = 1 << bito;
       buf[byte + 3] |= mask;
     }
   }
@@ -83,7 +86,7 @@ int rt_modbus_read_input_table(uint8_t *buf, int n)
   uint8_t *p;
   int i;
   uint8_t val;
-  int byte, bit;
+  int byte, bito;
   uint8_t mask;
 
   //trace.print_buf(0, "Read Input Table:\n", buf, 8);
@@ -123,8 +126,8 @@ int rt_modbus_read_input_table(uint8_t *buf, int n)
     if (val)
     {
       byte = i / 8;
-      bit = i % 8;
-      mask = 1 << bit;
+      bito = i % 8;
+      mask = 1 << bito;
       buf[byte + 3] |= mask;
     }
   }
@@ -318,7 +321,7 @@ int rt_modbus_force_multiple_outputs(uint8_t *buf, int sz)
   int data_bytes;
   int size;
   int i;
-  int byte, bit;
+  int byte, bito;
   uint8_t mask;
   int sz_check;
   uint8_t val;
@@ -353,8 +356,8 @@ int rt_modbus_force_multiple_outputs(uint8_t *buf, int sz)
   for (i=0; i < num_points; i++)
   {
     byte = i / 8;
-    bit = i % 8;
-    mask = 1 << bit;
+    bito = i % 8;
+    mask = 1 << bito;
     val = (buf[byte + 7] & mask) != 0;
     //printf("byte: %d (buf[%d]), bit %d: %c, addr: %d\n",byte, byte + 7, bit, val?'T':'F', ((int) start_point) + i);
     send_do(start_point + i, val);

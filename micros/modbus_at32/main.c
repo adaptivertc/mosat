@@ -137,12 +137,19 @@ else
 
 // Declare your global variables here
 
+void flush_usart()
+{
+	while(rx_counter > 0)
+		getchar();
+}
+
 void main(void)
 {
 // Declare your local variables here
 uint8_t unit_id;
 uint8_t buf[128];
 unsigned int timer;
+int min_size;
 
 // Input/Output Ports initialization
 // Port A initialization
@@ -242,15 +249,26 @@ SFIOR=0x00;
 // Global enable interrupts
 #asm("sei")
 
+unit_id = 1;
+
 while (1)
       {
       // Place your code here
          if(rx_counter > 0)
-         while(1)
          {
-                timer++;
-                if(rx_counter == 0)
-                        break;
+         	timer = 0;
+         	while(rx_counter < 2)
+         	{
+                	timer++;
+                	if(timer == TIME_OUT)
+                        	break;
+         	}
+         	if(timer == TIME_OUT)
+         		flush_usart();
+         	else
+         	{
+         		min_size = rt_modbus_min_bytes(buf);
+         	}
          }
       };
 }
