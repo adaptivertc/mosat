@@ -1,7 +1,7 @@
 [Project]
 Toolset=AVR
 FormatVersion=2
-Files=3
+Files=4
 OpenedFiles=8
 Top0=199
 Left0=434
@@ -14,8 +14,8 @@ Top1=164
 Left1=434
 Height1=339
 Width1=497
-Row1=255
-Collumn1=0
+Row1=283
+Collumn1=11
 Active1=0
 State1=0
 CleanUp=2
@@ -103,6 +103,7 @@ PageIndex8=8
 F1=main.c
 F2=rt_modbus_crc.c
 F3=mod_server_msg.c
+F4=mod_atmega_implementation.c
 [Compiler]
 Chip=ATmega32
 CPUClock=8000000
@@ -166,7 +167,7 @@ WarningCantAllocVarToReg=1
 WarningDataStackUsage=1
 WarningHardwareStackLow=1
 DebugBootLoader=0
-Build=39
+Build=41
 UseEEPROMLocation0=1
 RebuildAll=1
 LinkageInformationPresent=1

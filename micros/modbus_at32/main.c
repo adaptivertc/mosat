@@ -150,6 +150,8 @@ uint8_t unit_id;
 uint8_t buf[128];
 unsigned int timer;
 int min_size;
+int n;
+int buf_index;
 
 // Input/Output Ports initialization
 // Port A initialization
@@ -250,6 +252,7 @@ SFIOR=0x00;
 #asm("sei")
 
 unit_id = 1;
+buf_index = 0;
 
 while (1)
       {
@@ -264,10 +267,22 @@ while (1)
                         	break;
          	}
          	if(timer == TIME_OUT)
+         	{
          		flush_usart();
+         		buf_index = 0;
+         	}
          	else
          	{
+         	
          		min_size = rt_modbus_min_bytes(buf);
+         		
+         		buf[buf_index++] = getchar();
+         		buf[buf_index++] = getchar();
+         		
+         		timer = 0;
+         		
+         		
+         		
          	}
          }
       };
