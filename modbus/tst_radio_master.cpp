@@ -10,6 +10,11 @@ char *put_header(char *buf, char *mac_address, char n_retries, char msg_len)
 {
   char byte;
 
+  printf("dest mac = %02x %02x %02x\n", 
+        mac_address[0], mac_address[1], mac_address[2]); 
+  printf("n retries = %d\n", n_retries);
+  printf("msg length = %d\n", msg_len);
+
   byte = 0x81;
   memcpy(buf, &byte, 1);
   buf += 1;
@@ -33,25 +38,44 @@ char *put_header(char *buf, char *mac_address, char n_retries, char msg_len)
   
 }
 
+char mac_1[] = {0x00, 0x01, 0x02};
+char mac_2[] = {0x45, 0x46, 0x47};
+
+void send_msg(int fd, int n, char *msg)
+{
+  char buf[300];
+  char *p;
+
+  printf("Sending single message: %s\n", msg);
+
+  char *the_mac = (n==0) ? mac_1 : mac_2;
+
+  p = put_header(buf, the_mac, 5, strlen(msg));
+  memcpy(p, msg, strlen(msg));
+  write(fd, buf, 13 + strlen(msg));
+}
+
 int main(int argc, char *argv[])
 {
-   const char *dev_name;
-   int device;
-   int j;
-   /**
-   Mbm_trame trame;
-   int result;
-   int data_in[256];
-   int data_out[256];
-   ***/
-   if (argc > 1)
-   {
-     dev_name = argv[1];
-   }
-   else
-   {
-     dev_name = "/dev/ttyUSB0";
-   }
+  printf("------------------ line %d, msg = %s\n", __LINE__, argv[3]);
+  const char *dev_name;
+  int device;
+  int j;
+  /**
+  Mbm_trame trame;
+  int result;
+  int data_in[256];
+  int data_out[256];
+  ***/
+  if (argc > 1)
+  {
+    dev_name = argv[1];
+  }
+  else
+  {
+    dev_name = "/dev/ttyUSB0";
+  }
+
 
    rt_verbose = 1;
    /* open device */
@@ -63,6 +87,13 @@ int main(int argc, char *argv[])
 
    printf("Device opened: %d \n", device);
 
+  if (argc > 3)
+  {
+    printf("msg = %s\n", argv[3]);
+    
+    send_msg(device, argv[2][0] - '0', argv[3]);
+    exit(0);
+  }
    /* print debugging informations */
 
 

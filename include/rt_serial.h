@@ -9,4 +9,6 @@ void rt_close_serial(int device); /* close device and restore old parmeters */
 
 int rt_read_serial(int fd, void *data, int sz); // special routine to wait for all data 
 
+int rt_set_timeout(int fd, float timeout); // set the timeout
+
 #endif

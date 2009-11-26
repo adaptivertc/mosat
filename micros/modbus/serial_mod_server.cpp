@@ -57,14 +57,29 @@ int replysend=0;
 
     printf("Waiting for next message . . . \n");
     printf("message number %d \n",message);
-    int n = rt_read_serial(serial_fd, buf, 2); 
-    message=message+1;
-    printf("First read: %d bytes\n", n);
 
-    if (n != 2)
+    rt_set_timeout(serial_fd, 0.0);  // for the first byte, wait forever!!
+
+    int n = rt_read_serial(serial_fd, buf, 1); 
+
+    if (n != 1)
     {
       perror("rt_read_serial");
-      return 0; 
+      continue;
+    }
+
+    rt_set_timeout(serial_fd, 2.0); // after the first byte, wait a maximum of 2 seconts. 
+
+    int n = rt_read_serial(serial_fd, buf+1, 1); 
+
+    message=message+1;
+
+    printf("First read: %d bytes\n", n);
+
+    if (n != 1)
+    {
+      perror("rt_read_serial");
+      continue;
     }
 
     int min_size =  rt_modbus_min_bytes(buf);
@@ -82,7 +97,7 @@ int replysend=0;
     if (n != (min_size - 2))
     {
       perror("rt_read_serial");
-      return 0; 
+      continue;
     }
 
     int total_size = rt_modbus_total_bytes(buf, min_size);
@@ -103,7 +118,7 @@ int replysend=0;
       if (n != (total_size - min_size))
       {
         perror("rt_read_serial");
-        return 0; 
+        continue;
       }
     }
     else

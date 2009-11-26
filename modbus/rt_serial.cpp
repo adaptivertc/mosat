@@ -9,9 +9,7 @@
 #include <termios.h>
 #include <math.h>
 
-#include <sys/signal.h>
 #include <sys/types.h>
-
 
 #include "rt_serial.h"
 
@@ -21,10 +19,6 @@ static struct timeval serial_tv = {5,0};
 
 struct termios saved_tty_parameters; /* saved serial port setting */
 int rt_verbose;
-
-void signal_handler_IO(int sig)
-{
-}
 
 int rt_read_serial(int fd, void *data, int sz)
 {
@@ -60,6 +54,39 @@ void rt_close_serial(int device)
 
 /*****************************************************************/
 
+int rt_set_timeout(int fd, float timeout) 
+{
+  struct termios rt_tio; 
+
+  if (tcgetattr (fd,&rt_tio) < 0)
+  {
+    perror("Can't get terminal parameters ");
+    return -1 ;
+  }
+
+  if (timeout == 0)
+  {
+    rt_tio.c_cc[VMIN]=1;
+    rt_tio.c_cc[VTIME]=0;
+    serial_no_timeout = true;
+  }
+  else
+  {
+    rt_tio.c_cc[VMIN]=1;
+    rt_tio.c_cc[VTIME]=0;
+    rt_tio.c_cc[VMIN]=0;
+    rt_tio.c_cc[VTIME]= (int)(timeout * 10.0);
+    serial_tv.tv_sec = int(timeout);
+    serial_tv.tv_usec = int((timeout - trunc(timeout)) * 1000000.0);
+  }
+
+  if (tcsetattr(fd,TCSANOW,&rt_tio) < 0)
+  {
+    perror("Can't set terminal parameters ");
+    return -1 ;
+  }
+}
+
 int rt_open_serial(const char *port, int baud_rate, float timeout) 
 {
   /* The following 3 could be parameters. */
@@ -70,8 +97,6 @@ int rt_open_serial(const char *port, int baud_rate, float timeout)
 
   int fd;
   struct termios rt_tio; 
-
-  signal(SIGIO, signal_handler_IO);
 
   /* open the serial port */
   fd = open(port,O_RDWR | O_NOCTTY | O_NONBLOCK | O_NDELAY) ;
@@ -198,6 +223,7 @@ int rt_open_serial(const char *port, int baud_rate, float timeout)
   rt_tio.c_cflag = rt_tio.c_cflag | CLOCAL | CREAD;
   rt_tio.c_oflag = 0;
   rt_tio.c_lflag = 0; /*ICANON;*/
+
   if (timeout == 0)
   {
     rt_tio.c_cc[VMIN]=1;
