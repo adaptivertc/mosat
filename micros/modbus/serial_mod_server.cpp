@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
     exit(0);
   }
 int message=1;
-int replysend=0º;
+int replysend=0;
   while (true)
   {
 
@@ -69,6 +69,12 @@ int replysend=0º;
 
     int min_size =  rt_modbus_min_bytes(buf);
 
+    if (min_size < 0)
+    {
+      printf("Unknow opcode . . . . \n");
+      continue;
+    }
+
     n = rt_read_serial(serial_fd, buf + 2, min_size - 2); 
 
     printf("Second read: %d bytes, expecting %d\n", n, min_size - 2);
@@ -80,6 +86,13 @@ int replysend=0º;
     }
 
     int total_size = rt_modbus_total_bytes(buf, min_size);
+
+    if (total_size < 0)
+    {
+      printf("Error in message . . . . \n");
+      continue;
+    }
+
 
     if (total_size > min_size)
     {
