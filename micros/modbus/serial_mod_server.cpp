@@ -70,7 +70,7 @@ int replysend=0;
 
     rt_set_timeout(serial_fd, 2.0); // after the first byte, wait a maximum of 2 seconts. 
 
-    int n = rt_read_serial(serial_fd, buf+1, 1); 
+    n = rt_read_serial(serial_fd, buf+1, 1); 
 
     message=message+1;
 
