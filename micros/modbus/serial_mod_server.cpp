@@ -87,6 +87,8 @@ int replysend=0;
     if (min_size < 0)
     {
       printf("Unknow opcode . . . . \n");
+      usleep(250000);
+      rt_flush_serial(serial_fd);
       continue;
     }
 
@@ -105,6 +107,8 @@ int replysend=0;
     if (total_size < 0)
     {
       printf("Error in message . . . . \n");
+      usleep(250000);
+      rt_flush_serial(serial_fd);
       continue;
     }
 
