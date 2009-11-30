@@ -841,7 +841,7 @@ class script_trigger_t : public discrete_point_t
 public:
   static db_point_t *read_one(int argc, char *argv[], char *err, int esz);
 
-  point_type_t point_type(void) {return DISCRETE_INPUT;};
+  point_type_t point_type(void) {return SCRIPT_TRIGGER;};
 
   void update(void);
 };

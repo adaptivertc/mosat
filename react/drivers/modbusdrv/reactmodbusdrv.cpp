@@ -281,7 +281,7 @@ reactmodbus_driver_t::reactmodbus_driver_t(react_drv_base_t *react, const char *
   }
   //modbus->set_debug_level(3);
   modbus->set_debug_level(0);
-  modbus->set_address(0);
+  //modbus->set_address(0);
   logfile->vprint("DONE initializing modbus\n");
 
   logfile->vprint("Initializing semaphores\n");
@@ -542,6 +542,7 @@ void reactmodbus_driver_t::read_thread(void)
       // is held that could hold up the main thread!!!
       // Also, ONLY do modbus trainsmits from a background thread.
       // You must NEVER block react.
+      modbus->set_address(1);
       if (alt_ao_opcode)
       {
         // SOME do NOT support send single DO!!
@@ -551,6 +552,7 @@ void reactmodbus_driver_t::read_thread(void)
       {
         modbus->send_do(ch, val);
       }
+      modbus->set_address(2);
     }
 
     printf("read thread reading modbus values . . .\n");

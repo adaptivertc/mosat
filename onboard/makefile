@@ -18,7 +18,7 @@ RTMODBUS=../modbus/librtmodbus.a
 %.o:    %.c $(INCLUDES)
 	$(CC) -c -o $@ -Wall $<
 
-all: onboard onboard_2x24 onboard_4x40 drive odo_mode_4x40 odo_mode
+all: onboard onboard_2x24 onboard_4x40 drive odo_mode_4x40 odo_mode sim_CBTC CBTC_zone
 
 
 onboard:	onboard.o spd_display.o spd_comm.o spd_select.o spd_algo_DC.o spd_algo_RD.o spd_algo_VV.o \
@@ -86,6 +86,8 @@ clean:
 	rm -fv $(DIR)onboard_4x40
 	rm -fv $(DIR)odo_mode_4x40
 	rm -fv $(DIR)odo_mode
+	rm -fv sim_CBTC
+	rm -fv CBTC_zone
 
 armall:
 	make -f makefile.arm

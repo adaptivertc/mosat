@@ -56,10 +56,6 @@ DEALINGS IN THE SOFTWARE.
 
 //static int n_sections;
 
-static int the_line = 1;
-
-static bool all_profiles = false;
-
 ap_config_t ap_config;
 
 /*******************************************************************/

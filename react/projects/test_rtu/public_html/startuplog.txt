@@ -1,5 +1,5 @@
-Thu Jul 23 11:30:11 2009
-React PID: 25607
+Sat Jul 25 09:18:36 2009
+React PID: 3384
 Loading db point factory from: /usr/local/lib/ai.so
 Reading AI ........
 LEVEL|NIVEL|cm|0|0|0|500.0|0.0|0|32767|1|-125.0|0|0|0|0|0|0|0|0|0|
@@ -78,5 +78,5 @@ DONE Initializing semaphores
 Done with modbus.dat
 Creating thread
 DONE Creating thread
-Thu Jul 23 11:30:12 2009
-No foreground script executing, use "kill -1 25607" or <CTRL-C> to stop
+Sat Jul 25 09:18:36 2009
+No foreground script executing, use "kill -1 3384" or <CTRL-C> to stop

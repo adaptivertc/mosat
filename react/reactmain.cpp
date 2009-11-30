@@ -271,8 +271,13 @@ int main(int argc, char *argv[])
   logfile->vprint("%s", ctime(&tnow));
   logfile->vprint("React PID: %d\n", getpid());
 
-  double sample_rate = ap_config.get_double("SampleRate", 10.0);
-  if (sample_rate <= 0.0) sample_rate =  10.0;
+  double sample_rate = ap_config.get_double("SampleRate", 1.0);
+  if (sample_rate < 0.01)  
+  {
+    logfile->vprint("SampleRate out of range: %lf\n", sample_rate);
+    sample_rate =  0.1;
+  }
+  logfile->vprint("SampleRate set to: %lf\n", sample_rate);
   long usecs_per_sample =  (long) (1000000.0 / sample_rate);
   reactdb = new react_t;
   db = reactdb;

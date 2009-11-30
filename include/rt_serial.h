@@ -11,4 +11,6 @@ int rt_read_serial(int fd, void *data, int sz); // special routine to wait for a
 
 int rt_set_timeout(int fd, float timeout); // set the timeout
 
+int rt_flush_serial(int fd); // flush the serial port
+
 #endif

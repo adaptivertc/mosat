@@ -87,6 +87,15 @@ int rt_set_timeout(int fd, float timeout)
   }
 }
 
+/*****************************************************************/
+
+int rt_flush_serial(int fd) 
+{
+  tcflush(fd,TCIOFLUSH);
+}
+
+/*****************************************************************/
+
 int rt_open_serial(const char *port, int baud_rate, float timeout) 
 {
   /* The following 3 could be parameters. */

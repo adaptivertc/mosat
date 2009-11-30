@@ -186,14 +186,14 @@ int main(int argc, char *argv[])
       last_time = qevent.data.time_stamp;
       dc_alg.update(qevent.data.time_stamp);
       gp_alg.update(qevent.data.time_stamp);
-      ri_alg.update(qevent.data.time_stamp);
+      //ri_alg.update(qevent.data.time_stamp);
       ag_alg.update(qevent.data.time_stamp);
     }
     else
     {
       dc_alg.process_event(qevent.data);
       gp_alg.process_event(qevent.data);
-      ri_alg.process_event(qevent.data);
+      //ri_alg.process_event(qevent.data);
       ag_alg.process_event(qevent.data);
     }
   }
