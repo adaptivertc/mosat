@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdint.h>
+#include <signal.h>
+
 
 #include "rt_serial.h"
 #include "rt_modbus_crc.h"
@@ -11,6 +13,12 @@ extern "C"
 {
 #include "mod_server_msg.h"
 }
+
+void my_sighandler(int signum)
+{
+  printf("Got a signal: %d\n", signum);
+}
+
 
 int main(int argc, char *argv[])
 {
@@ -42,6 +50,7 @@ int main(int argc, char *argv[])
     unit_id = (uint8_t) atol(argv[3]);
   } 
 
+  signal(SIGIO , my_sighandler);
 
 
   serial_fd = rt_open_serial(serial_dev, baud_rate, 0);
