@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
     exit(0);
   }
 
-  fprintf(fp, "Logging serial port and protocol errors . . ");
+  fprintf(fp, "Logging serial port and protocol errors . . \n-----------\n");
   fflush(fp);
 
 
@@ -69,8 +69,8 @@ int main(int argc, char *argv[])
     perror(serial_dev);
     exit(0);
   }
-int message=1;
-int replysend=0;
+  int message = 0;
+  int replysend = 0;
   while (true)
   {
 
@@ -93,10 +93,12 @@ int replysend=0;
 
     n = rt_read_serial(serial_fd, buf+1, 1); 
 
-    message=message+1;
+    message = message + 1;
+
     if (0 == (message % 200))
     {
       fprintf(fp, "msg: %d, rep: %d\n", message, replysend);
+      fflush(fp);
     }
 
     printf("First read: %d bytes\n", n);
