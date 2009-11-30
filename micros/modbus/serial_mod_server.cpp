@@ -52,6 +52,16 @@ int main(int argc, char *argv[])
 
   signal(SIGIO , my_sighandler);
 
+  FILE *fp = fopen("serial_error_log.txt", "w");
+  if (NULL == fp)
+  {
+    perror("Opening serial_error_log.txt");
+    exit(0);
+  }
+
+  fprintf(fp, "Logging serial port and protocol errors . . ");
+  fflush(fp);
+
 
   serial_fd = rt_open_serial(serial_dev, baud_rate, 0);
   if (serial_fd == -1)
@@ -73,6 +83,8 @@ int replysend=0;
 
     if (n != 1)
     {
+      fprintf(fp, "#### At msg %d, rep %d, can not read first char\n", message, replysend);
+      fflush(fp);
       perror("rt_read_serial");
       continue;
     }
@@ -82,11 +94,17 @@ int replysend=0;
     n = rt_read_serial(serial_fd, buf+1, 1); 
 
     message=message+1;
+    if (0 == (message % 200))
+    {
+      fprintf(fp, "msg: %d, rep: %d\n", message, replysend);
+    }
 
     printf("First read: %d bytes\n", n);
 
     if (n != 1)
     {
+      fprintf(fp, "#### At msg %d, rep %d, can not read second char or timeout\n", message, replysend);
+      fflush(fp);
       perror("rt_read_serial");
       continue;
     }
@@ -95,6 +113,8 @@ int replysend=0;
 
     if (min_size < 0)
     {
+      fprintf(fp, "#### At msg %d, rep %d, unknown opcode, wait 1/4 then flush\n", message, replysend);
+      fflush(fp);
       printf("Unknow opcode . . . . \n");
       usleep(250000);
       rt_flush_serial(serial_fd);
@@ -107,6 +127,8 @@ int replysend=0;
 
     if (n != (min_size - 2))
     {
+      fprintf(fp, "#### At msg %d, rep %d, error in second read\n", message, replysend);
+      fflush(fp);
       perror("rt_read_serial");
       continue;
     }
@@ -115,6 +137,8 @@ int replysend=0;
 
     if (total_size < 0)
     {
+      fprintf(fp, "#### At msg %d, rep %d, unknown opcode, or bad message, wait 1/4 then flush\n", message, replysend);
+      fflush(fp);
       printf("Error in message . . . . \n");
       usleep(250000);
       rt_flush_serial(serial_fd);
@@ -130,6 +154,8 @@ int replysend=0;
    
       if (n != (total_size - min_size))
       {
+        fprintf(fp, "#### At msg %d, rep %d, error in third read\n", message, replysend);
+        fflush(fp);
         perror("rt_read_serial");
         continue;
       }
