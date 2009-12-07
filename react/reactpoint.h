@@ -62,6 +62,7 @@ enum point_type_t
   SCAN_POINT,
   SYSTEM_POINT,
   WEB_POINT,
+  WEB_LOGGER,
   INT_POINT,
   PUMP_POINT,
   AC_POINT,

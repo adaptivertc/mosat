@@ -497,10 +497,29 @@ public:
 /*#SCRIPT_FUNCTION#*/
   void stop(void);
   void write_to_file(void);
-  point_type_t point_type(void) {return DATA_POINT;};
+  point_type_t point_type(void) {return FILE_LOGGER;};
   static file_logger_t **read(int *cnt, const char * home_dir);
   void delete_old_files(time_t now);
 };
+
+class web_logger_t : public discrete_point_t
+{
+public:
+  char *url;
+  char *key;
+  int num_analog;
+  int num_discrete;
+  analog_point_t **analog_points;
+  discrete_point_t **discrete_points;
+  char **analog_web_tags;
+  char **discrete_web_tags;
+  int sample_interval;
+  void update(void);
+  point_type_t point_type(void) {return WEB_LOGGER;};
+  static web_logger_t **read(int *cnt, const char * home_dir);
+  void delete_old_files(time_t now);
+};
+
 
 
 class discrete_logger_t : public discrete_point_t

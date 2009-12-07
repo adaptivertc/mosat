@@ -216,6 +216,10 @@ void react_t::print_all_points(void)
   {
     logfile->vprint("FileLogger: %s\n", file_logger_points[i]->tag);
   }
+  for (int i=0; i < num_web_logger; i++)
+  {
+    logfile->vprint("FileLogger: %s\n", web_logger_points[i]->tag);
+  }
   for (int i=0; i < num_discrete_logger; i++)
   {
     logfile->vprint("DiscreteLogger: %s\n", discrete_logger_points[i]->tag);
@@ -372,6 +376,11 @@ void react_t::read_inputs(void)
   for (int i=0; i < num_file_logger; i++)
   {
     file_logger_points[i]->update();
+  }
+
+  for (int i=0; i < num_web_logger; i++)
+  {
+    web_logger_points[i]->update();
   }
 
   for (int i=0; i < num_discrete_logger; i++)
@@ -634,6 +643,8 @@ react_t::react_t()
   data_points = NULL;
   num_file_logger = 0;
   file_logger_points = NULL;
+  num_web_logger = 0;
+  web_logger_points = NULL;
   num_discrete_logger = 0;
   discrete_logger_points = NULL;
   num_scan = 0;
@@ -934,6 +945,9 @@ void react_t::read_all_points(const char *a_home_dir)
 
   logfile->vprint("Reading file logger ........\n");
   file_logger_points = file_logger_t::read(&num_file_logger, a_home_dir);
+
+  logfile->vprint("Reading web logger ........\n");
+  web_logger_points = web_logger_t::read(&num_web_logger, a_home_dir);
 
   logfile->vprint("Reading discrete logger ........\n");
   discrete_logger_points = discrete_logger_t::read(&num_discrete_logger, a_home_dir);
@@ -1699,6 +1713,14 @@ db_point_t *react_t::get_db_point(char *tag)
     if (0 == strcasecmp(file_logger_points[i]->tag, tag))
     {
       return file_logger_points[i];
+    }
+  }
+
+  for (i=0; i < num_web_logger; i++)
+  {
+    if (0 == strcasecmp(web_logger_points[i]->tag, tag))
+    {
+      return web_logger_points[i];
     }
   }
 

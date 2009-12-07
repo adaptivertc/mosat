@@ -52,7 +52,7 @@ void logfile_t::close(void)
 
 void logfile_t::perror(const char *txt)
 {
-  char myline[120];
+  char myline[300];
   myline[0] = '\0';
   const char *sx = strerror_r(errno, myline, sizeof(myline));
   //this->vprint("errno: %d, strerror return: %s\n", errno, sx);
@@ -86,7 +86,7 @@ void logfile_t::print(const char *txt)
 
 void logfile_t::vprint(const char *fmt, ...)
 {
-  char myline[120];
+  char myline[300];
   va_list arg_ptr;
   va_start(arg_ptr, fmt);
   vsnprintf(myline, sizeof(myline), fmt, arg_ptr);
