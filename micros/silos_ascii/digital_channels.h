@@ -32,3 +32,4 @@
 #define FAN_FOUR_STATUS_O 54
 #define FAN_FIVE_STATUS_O 55
 #define FAN_SIX_STATUS_O 56
+
