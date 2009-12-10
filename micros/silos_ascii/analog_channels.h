@@ -1,6 +1,6 @@
-#define TEMPERATURE 0
-#define HUMIDITY_ONE 1
+#define HUMIDITY_ONE 0
 #define HUMIDITY_TWO 2
+#define TEMPERATURE 3
 
 
 /*Virtuales*/

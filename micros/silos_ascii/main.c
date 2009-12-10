@@ -265,9 +265,9 @@ return adc_data;
 #include "analog_channels.h"
 
 #define FAN_PULSE 2            //seconds
-#define TIME_BTW_FANS 898      //seconds
-#define MIN_TIME_ON 5          //minutes
-#define  SERIAL_TIMEOUT 9000   //count
+#define TIME_BTW_FANS 5      //seconds
+#define MIN_TIME_ON 1          //minutes
+#define SERIAL_TIMEOUT 60000   //count
 
 eeprom int garbage;
 eeprom unsigned char virtual_do[16];
@@ -292,29 +292,38 @@ unsigned int calculated_temperature_general_e;
 unsigned int calculated_humidity_general_e;
 unsigned int calculated_humidity_honey_w;
 
-unsigned char set_bit(unsigned char bit_index, unsigned char value)
-{
-        unsigned char temp;
-        
-        if(value == 1)
-        {
-                temp = value | (1 << bit_index);
-        }
-        else
-        {
-        }       temp = value & ~(1 << bit_index);
-        return temp;
-}
 
 unsigned char read_bit(unsigned char bit_index, unsigned char value)
 {
 unsigned char temp;
+unsigned char mask;
 
-temp = value & (1 << bit_index);
+mask = 1 << bit_index;
+
+temp = value & mask;
         if(temp == 0)
                 return 0;
         else
                 return 1;
+}
+
+unsigned char set_bit(unsigned char bit_index, unsigned char port, unsigned char value)
+{
+        unsigned char temp;
+        unsigned char mask;
+        
+        mask = 1 << bit_index;
+        
+        if(value == 1)
+        {
+                temp = port | (mask);
+        }
+        else
+        {
+                mask = ~mask;
+                temp = port & mask;
+        }       
+        return temp;
 }
 
 void a_rtc_set_time(unsigned short int value)
@@ -325,6 +334,9 @@ void a_rtc_set_time(unsigned short int value)
         h = value / 60;
         
         rtc_set_time(0, h, m, 0, 0);
+        //printf("la hora: %u\n\r",h);
+        //printf("Los minutos: %u\n\r",m);
+         
 }
 
 unsigned short int a_rtc_get_time()
@@ -340,76 +352,100 @@ void write_do(unsigned short int channel, unsigned short int value)
 {
         if(channel == 0)
                 if(value == 0)
+                        PORTL = set_bit(7,PORTL,0);
+                else
+                        PORTL = set_bit(7,PORTL,1);
+        else
+        if(channel == 1)
+                if(value == 0)
+                        PORTL = set_bit(6,PORTL,0);
+                else
+                        PORTL = set_bit(6,PORTL,1);
+        else
+        if(channel == 2)
+                if(value == 0)
+                        PORTL = set_bit(5,PORTL,0);
+                else
+                        PORTL = set_bit(5,PORTL,1);
+        else
+        if(channel == 3)
+                if(value == 0)
+                        PORTL = set_bit(4,PORTL,0);
+                else
+                        PORTL = set_bit(4,PORTL,1);
+        else
+        if(channel == 4)
+                if(value == 0)
+                        PORTL = set_bit(3,PORTL,0);
+                else
+                        PORTL = set_bit(3,PORTL,1);
+        else
+        if(channel == 5)
+                if(value == 0)
+                        PORTL = set_bit(2,PORTL,0);
+                else
+                        PORTL = set_bit(2,PORTL,1);
+        else
+        if(channel == 6)
+                if(value == 0)
+                        PORTL = set_bit(1,PORTL,0);
+                else
+                        PORTL = set_bit(1,PORTL,1);
+        else
+        if(channel == 7)
+                if(value == 0)
+                        PORTL = set_bit(0,PORTL,0);
+                else
+                        PORTL = set_bit(0,PORTL,1);
+        else
+        if(channel == 8)
+                if(value == 0)
                         PORTC.0 = 0;
                 else
                         PORTC.0 = 1;
         else
-        if(channel == 1)
+        if(channel == 9)
                 if(value == 0)
                         PORTC.1 = 0;
                 else
                         PORTC.1 = 1;
         else
-        if(channel == 2)
+        if(channel == 10)
                 if(value == 0)
                         PORTC.2 = 0;
                 else
                         PORTC.2 = 1;
         else
-        if(channel == 3)
+        if(channel == 11)
                 if(value == 0)
                         PORTC.3 = 0;
                 else
                         PORTC.3 = 1;
         else
-        if(channel == 4)
+        if(channel == 12)
                 if(value == 0)
                         PORTC.4 = 0;
                 else
                         PORTC.4 = 1;
         else
-        if(channel == 5)
+        if(channel == 13)
                 if(value == 0)
                         PORTC.5 = 0;
                 else
                         PORTC.5 = 1;
         else
-        if(channel == 6)
+        if(channel == 14)
                 if(value == 0)
                         PORTC.6 = 0;
                 else
                         PORTC.6 = 1;
         else
-        if(channel == 7)
+        if(channel == 15)
                 if(value == 0)
                         PORTC.7 = 0;
                 else
                         PORTC.7 = 1;
-        else
-        if(channel == 8)
-                PORTL = set_bit(PORTL,0);
-        else
-        if(channel == 9)
-                PORTL = set_bit(PORTL,1);
-        else
-        if(channel == 10)
-                PORTL = set_bit(PORTL,2);
-        else
-        if(channel == 11)
-                PORTL = set_bit(PORTL,3);
-        else
-        if(channel == 12)
-                PORTL = set_bit(PORTL,4);
-        else
-        if(channel == 13)
-                PORTL = set_bit(PORTL,5);
-        else
-        if(channel == 14)
-                PORTL = set_bit(PORTL,6);
-        else
-        if(channel == 15)
-                PORTL = set_bit(PORTL,7);
-        else
+        else 
         if(channel == 50)
                 if(value == 0)
                         virtual_do[0] = 0;
@@ -506,8 +542,311 @@ void write_do(unsigned short int channel, unsigned short int value)
                 else
                         virtual_do[15] = 1;
 }
+        
+
+/*void write_do(unsigned short int channel, unsigned short int value)
+{
+
+        //printf("se llamo write_do con canal: %u y valor: %u\n\r",channel,value);
+        if(channel == 0)
+                if(value == 0)
+                        PORTC.0 = 0;
+                else
+                        PORTC.0 = 1;
+        else
+        if(channel == 1)
+                if(value == 0)
+                        PORTC.1 = 0;
+                else
+                        PORTC.1 = 1;
+        else
+        if(channel == 2)
+                if(value == 0)
+                        PORTC.2 = 0;
+                else
+                        PORTC.2 = 1;
+        else
+        if(channel == 3)
+                if(value == 0)
+                        PORTC.3 = 0;
+                else
+                        PORTC.3 = 1;
+        else
+        if(channel == 4)
+                if(value == 0)
+                        PORTC.4 = 0;
+                else
+                        PORTC.4 = 1;
+        else
+        if(channel == 5)
+                if(value == 0)
+                        PORTC.5 = 0;
+                else
+                        PORTC.5 = 1;
+        else
+        if(channel == 6)
+                if(value == 0)
+                        PORTC.6 = 0;
+                else
+                        PORTC.6 = 1;
+        else
+        if(channel == 7)
+                if(value == 0)
+                        PORTC.7 = 0;
+                else
+                        PORTC.7 = 1;
+        else
+        if(channel == 8)
+                if(value == 0)
+                        PORTL = set_bit(0,PORTL,0);
+                else
+                        PORTL = set_bit(0,PORTL,1);
+        else
+        if(channel == 8)
+                if(value == 0)
+                        PORTL = set_bit(0,PORTL,0);
+                else
+                        PORTL = set_bit(0,PORTL,1);
+        else
+        if(channel == 9)
+                if(value == 0)
+                        PORTL = set_bit(1,PORTL,0);
+                else
+                        PORTL = set_bit(1,PORTL,1);
+        else
+        if(channel == 10)
+                if(value == 0)
+                        PORTL = set_bit(2,PORTL,0);
+                else
+                        PORTL = set_bit(2,PORTL,1);
+        else
+        if(channel == 11)
+                if(value == 0)
+                        PORTL = set_bit(3,PORTL,0);
+                else
+                        PORTL = set_bit(3,PORTL,1);
+        else
+        if(channel == 12)
+                if(value == 0)
+                        PORTL = set_bit(4,PORTL,0);
+                else
+                        PORTL = set_bit(4,PORTL,1);
+        else
+        if(channel == 13)
+                if(value == 0)
+                        PORTL = set_bit(5,PORTL,0);
+                else
+                        PORTL = set_bit(5,PORTL,1);
+        else
+        if(channel == 14)
+                if(value == 0)
+                        PORTL = set_bit(6,PORTL,0);
+                else
+                        PORTL = set_bit(6,PORTL,1);
+        else
+        if(channel == 15)
+                if(value == 0)
+                        PORTL = set_bit(7,PORTL,0);
+                else
+                        PORTL = set_bit(7,PORTL,1);
+        else
+        if(channel == 50)
+                if(value == 0)
+                        virtual_do[0] = 0;
+                else
+                        virtual_do[0] = 1;
+        else
+        if(channel == 51)
+                if(value == 0)
+                        virtual_do[1] = 0;
+                else
+                        virtual_do[1] = 1;
+        else
+        if(channel == 52)
+                if(value == 0)
+                        virtual_do[2] = 0;
+                else
+                        virtual_do[2] = 1;
+        else
+        if(channel == 53)
+                if(value == 0)
+                        virtual_do[3] = 0;
+                else
+                        virtual_do[3] = 1;
+        else
+        if(channel == 54)
+                if(value == 0)
+                        virtual_do[4] = 0;
+                else
+                        virtual_do[4] = 1;
+        else
+        if(channel == 55)
+                if(value == 0)
+                        virtual_do[5] = 0;
+                else
+                        virtual_do[5] = 1;
+        else
+        if(channel == 56)
+                if(value == 0)
+                        virtual_do[6] = 0;
+                else
+                        virtual_do[6] = 1;
+        else
+        if(channel == 57)
+                if(value == 0)
+                        virtual_do[7] = 0;
+                else
+                        virtual_do[7] = 1;
+        else
+        if(channel == 58)
+                if(value == 0)
+                        virtual_do[8] = 0;
+                else
+                        virtual_do[8] = 1;
+        else
+        if(channel == 59)
+                if(value == 0)
+                        virtual_do[9] = 0;
+                else
+                        virtual_do[9] = 1;
+        else
+        if(channel == 60)
+                if(value == 0)
+                        virtual_do[10] = 0;
+                else
+                        virtual_do[10] = 1;
+        else
+        if(channel == 61)
+                if(value == 0)
+                        virtual_do[11] = 0;
+                else
+                        virtual_do[11] = 1;
+        else
+        if(channel == 62)
+                if(value == 0)
+                        virtual_do[12] = 0;
+                else
+                        virtual_do[12] = 1;
+        else
+        if(channel == 63)
+                if(value == 0)
+                        virtual_do[13] = 0;
+                else
+                        virtual_do[13] = 1;
+        else
+        if(channel == 64)
+                if(value == 0)
+                        virtual_do[14] = 0;
+                else
+                        virtual_do[14] = 1;
+        else
+        if(channel == 65)
+                if(value == 0)
+                        virtual_do[15] = 0;
+                else
+                        virtual_do[15] = 1;
+}*/
 
 unsigned char read_do(unsigned short int channel)
+{
+        if(channel == 0)
+                return read_bit(7,PORTL);
+        else
+        if(channel == 1)
+                return read_bit(6,PORTL);
+        else
+        if(channel == 2)
+                return read_bit(5,PORTL);
+        else
+        if(channel == 3)
+                return read_bit(4,PORTL);
+        else
+        if(channel == 4)
+                return read_bit(3,PORTL);
+        else
+        if(channel == 5)
+                return read_bit(2,PORTL);
+        else
+        if(channel == 6)
+                return read_bit(1,PORTL);
+        else
+        if(channel == 7)
+                return read_bit(0,PORTL);
+        else
+        if(channel == 8)
+                return PORTC.0;
+        else
+        if(channel == 9)
+                return PORTC.1;
+        else
+        if(channel == 10)
+                return PORTC.2;
+        else
+        if(channel == 11)
+                return PORTC.3;
+        else
+        if(channel == 12)
+                return PORTC.4;
+        else
+        if(channel == 13)
+                return PORTC.5;
+        else
+        if(channel == 14)
+                return PORTC.6;
+        else
+        if(channel == 15)
+                return PORTC.7;
+        else
+        if(channel == 50)
+                return virtual_do[0];
+        else
+        if(channel == 51)
+                return virtual_do[1];
+        else
+        if(channel == 52)
+                return virtual_do[2];
+        else
+        if(channel == 53)
+                return virtual_do[3];
+        else
+        if(channel == 54)
+                return virtual_do[4];
+        else
+        if(channel == 55)
+                return virtual_do[5];
+        else
+        if(channel == 56)
+                return virtual_do[6];
+        else
+        if(channel == 57)
+                return virtual_do[7];
+        else
+        if(channel == 58)
+                return virtual_do[8];
+        else
+        if(channel == 59)
+                return virtual_do[9];
+        else
+        if(channel == 60)
+                return virtual_do[10];
+        else
+        if(channel == 61)
+                return virtual_do[11];
+        else
+        if(channel == 62)
+                return virtual_do[12];
+        else
+        if(channel == 63)
+                return virtual_do[13];
+        else
+        if(channel == 64)
+                return virtual_do[14];
+        else
+        if(channel == 65)
+                return virtual_do[15];
+}
+
+/*unsigned char read_do(unsigned short int channel)
 {
         if(channel == 0)
                 return PORTC.0;
@@ -604,61 +943,86 @@ unsigned char read_do(unsigned short int channel)
         else
         if(channel == 65)
                 return virtual_do[15];
-}
+}*/
 
 unsigned char read_di(unsigned short int channel)
 {
         if(channel == 0)
-                return ~PORTA.0;
+                return ~PINA.0;
         else
         if(channel == 1)
-                return ~PORTA.1;
+                return ~PINA.1;
         else
         if(channel == 2)
-                return ~PORTA.2;
+                return ~PINA.2;
         else
         if(channel == 3)
-                return ~PORTA.3;
+                return ~PINA.3;
         else
         if(channel == 4)
-                return ~PORTA.4;
+                return ~PINA.4;
         else
         if(channel == 5)
-                return ~PORTA.5;
+                return ~PINA.5;
         else
         if(channel == 6)
-                return ~PORTA.6;
+                return ~PINA.6;
         else
         if(channel == 7)
-                return ~PORTA.7;
+                return ~PINA.7;
         else
         if(channel == 8)
-                return ~read_bit(0,PORTJ);
+                if(read_bit(0,PINJ) == 1)
+                        return 0;
+                else
+                        return 1;
         else
         if(channel == 9)
-                return ~read_bit(1,PORTJ);
+                if(read_bit(1,PINJ) == 1)
+                        return 0;
+                else
+                        return 1;
         else
         if(channel == 10)
-                return ~read_bit(2,PORTJ);
+                if(read_bit(2,PINJ) == 1)
+                        return 0;
+                else
+                        return 1;
         else
         if(channel == 11)
-                return ~read_bit(3,PORTJ);
+                if(read_bit(3,PINJ) == 1)
+                        return 0;
+                else
+                        return 1;
         else
         if(channel == 12)
-                return ~read_bit(4,PORTJ);
+                if(read_bit(4,PINJ) == 1)
+                        return 0;
+                else
+                        return 1;
         else
         if(channel == 13)
-                return ~read_bit(5,PORTJ);
+                if(read_bit(5,PINJ) == 1)
+                        return 0;
+                else
+                        return 1;
         else
         if(channel == 14)
-                return ~read_bit(6,PORTJ);
+                if(read_bit(6,PINJ) == 1)
+                        return 0;
+                else
+                        return 1;
         else
         if(channel == 15)
-                return ~read_bit(7,PORTJ);
+                if(read_bit(7,PINJ) == 1)
+                        return 0;
+                else
+                        return 1;
 }
 
 void write_ao(unsigned short int channel, unsigned short int value)
 {
+        //printf("se llamo write_ao\n\r");
         
         if(value > 0 && value <= 65535)
                 if(channel == 16)
@@ -818,7 +1182,7 @@ unsigned short int read_ao(unsigned short int channel)
 void calculate_humidity()
 {
         raw_humidity_honey_w = read_ao(HUMIDITY_ONE);
-        raw_humidity_general_e = read_ao(HUMIDITY_TWO);
+        raw_humidity_general_e = read_ao(HUMIDITY_ONE);
         
         calculated_humidity_general_e = (((raw_humidity_general_e - 102)*2000)/814)-500;
         
@@ -830,8 +1194,8 @@ void calculate_humidity()
 unsigned short int get_humidity()
 {       
         calculate_humidity();
-        
-        return (calculated_humidity_general_e + calculated_humidity_honey_w)/2;
+        return read_ao(HUMIDITY_ONE);        
+        //return (calculated_humidity_general_e + calculated_humidity_honey_w)/2;
 }
 
 void calculate_temperature()
@@ -844,11 +1208,19 @@ void calculate_temperature()
 void turn_on_fans()
 {
         turn_off_state = 0;
+        write_do(FAN_ONE_OFF,0);
+        write_do(FAN_TWO_OFF,0);
+        write_do(FAN_THREE_OFF,0);
+        write_do(FAN_FOUR_OFF,0);
+        write_do(FAN_FIVE_OFF,0);
+        write_do(FAN_SIX_OFF,0);
+        
+        //printf("Turn on state: %u\n\r",turn_on_state);
         
         switch(turn_on_state)
         {
                 case 0:{ 
-                                write_do(FAN_ONE_ON,1);
+                                write_do(FAN_ONE_ON,1);                                
                                 rtc_get_time(0,&rtc_h, &rtc_m, &rtc_s, &rtc_hs);
                                 turn_on_state++;
                                 past_hs = rtc_hs;
@@ -872,6 +1244,7 @@ void turn_on_fans()
                                         if(seconds >= FAN_PULSE)
                                         {
                                                 write_do(FAN_ONE_ON,0);
+                                                write_do(FAN_ONE_STATUS_O,1);
                                                 turn_on_state++;
                                         }
                         };break;
@@ -889,9 +1262,11 @@ void turn_on_fans()
                                         
                                         past_hs = rtc_hs;
                                         
+                                        //printf("Seconds: %u\n\r",seconds);
+                                        
                                         if(seconds >= TIME_BTW_FANS)
                                         {
-                                                write_do(FAN_TWO_ON,1);
+                                                write_do(FAN_TWO_ON,1);                                                
                                                 seconds = 0;
                                                 turn_on_state++;
                                         }
@@ -913,6 +1288,7 @@ void turn_on_fans()
                                         if(seconds >= FAN_PULSE)
                                         {
                                                 write_do(FAN_TWO_ON,0);
+                                                write_do(FAN_TWO_STATUS_O,1);
                                                 turn_on_state++;
                                         }
                         };break;
@@ -932,7 +1308,7 @@ void turn_on_fans()
                                         
                                         if(seconds >= TIME_BTW_FANS)
                                         {
-                                                write_do(FAN_THREE_ON,1);
+                                                write_do(FAN_THREE_ON,1);                                                
                                                 seconds = 0;
                                                 turn_on_state++;
                                         }
@@ -954,6 +1330,7 @@ void turn_on_fans()
                                         if(seconds >= FAN_PULSE)
                                         {
                                                 write_do(FAN_THREE_ON,0);
+                                                write_do(FAN_THREE_STATUS_O,1);
                                                 turn_on_state++;
                                         }
                         };break;
@@ -973,7 +1350,7 @@ void turn_on_fans()
                                         
                                         if(seconds >= TIME_BTW_FANS)
                                         {
-                                                write_do(FAN_FOUR_ON,1);
+                                                write_do(FAN_FOUR_ON,1);                                                
                                                 seconds = 0;
                                                 turn_on_state++;
                                         }
@@ -995,6 +1372,7 @@ void turn_on_fans()
                                         if(seconds >= FAN_PULSE)
                                         {
                                                 write_do(FAN_FOUR_ON,0);
+                                                write_do(FAN_FOUR_STATUS_O,1);
                                                 turn_on_state++;
                                         }
                         };break;
@@ -1014,7 +1392,7 @@ void turn_on_fans()
                                         
                                         if(seconds >= TIME_BTW_FANS)
                                         {
-                                                write_do(FAN_FIVE_ON,1);
+                                                write_do(FAN_FIVE_ON,1);                                                
                                                 seconds = 0;
                                                 turn_on_state++;
                                         }
@@ -1036,6 +1414,7 @@ void turn_on_fans()
                                         if(seconds >= FAN_PULSE)
                                         {
                                                 write_do(FAN_FIVE_ON,0);
+                                                write_do(FAN_FIVE_STATUS_O,1);
                                                 turn_on_state++;
                                         }
                         };break;
@@ -1077,6 +1456,7 @@ void turn_on_fans()
                                         if(seconds >= FAN_PULSE)
                                         {
                                                 write_do(FAN_SIX_ON,0);
+                                                write_do(FAN_SIX_STATUS_O,1);
                                                 turn_on_state++;
                                                 ventilating = 1;
                                         }
@@ -1088,6 +1468,13 @@ void turn_on_fans()
 void turn_off_fans()
 {
         turn_on_state = 0;
+        write_do(FAN_ONE_ON,0);
+        write_do(FAN_TWO_ON,0);
+        write_do(FAN_THREE_ON,0);
+        write_do(FAN_FOUR_ON,0);
+        write_do(FAN_FIVE_ON,0);
+        write_do(FAN_SIX_ON,0);
+        //printf("Turn_off_state: %u\n\r",turn_off_state);
         
         switch(turn_off_state)
         {
@@ -1116,6 +1503,7 @@ void turn_off_fans()
                                         if(seconds >= FAN_PULSE)
                                         {
                                                 write_do(FAN_ONE_OFF,0);
+                                                write_do(FAN_ONE_STATUS_O,0);
                                                 turn_off_state++;
                                         }
                         };break;
@@ -1157,6 +1545,7 @@ void turn_off_fans()
                                         if(seconds >= FAN_PULSE)
                                         {
                                                 write_do(FAN_TWO_OFF,0);
+                                                write_do(FAN_TWO_STATUS_O,0);
                                                 turn_off_state++;
                                         }
                         };break;
@@ -1198,6 +1587,7 @@ void turn_off_fans()
                                         if(seconds >= FAN_PULSE)
                                         {
                                                 write_do(FAN_THREE_OFF,0);
+                                                write_do(FAN_THREE_STATUS_O,0);
                                                 turn_off_state++;
                                         }
                         };break;
@@ -1239,6 +1629,7 @@ void turn_off_fans()
                                         if(seconds >= FAN_PULSE)
                                         {
                                                 write_do(FAN_FOUR_OFF,0);
+                                                write_do(FAN_FOUR_STATUS_O,0);
                                                 turn_off_state++;
                                         }
                         };break;
@@ -1280,6 +1671,7 @@ void turn_off_fans()
                                         if(seconds >= FAN_PULSE)
                                         {
                                                 write_do(FAN_FIVE_OFF,0);
+                                                write_do(FAN_FIVE_STATUS_O,0);
                                                 turn_off_state++;
                                         }
                         };break;
@@ -1321,6 +1713,7 @@ void turn_off_fans()
                                         if(seconds >= FAN_PULSE)
                                         {
                                                 write_do(FAN_SIX_OFF,0);
+                                                write_do(FAN_SIX_STATUS_O,0);
                                                 turn_off_state++;
                                                 ventilating = 0;
                                         }
@@ -1331,6 +1724,8 @@ void turn_off_fans()
 void read_info()
 {
         printf("#11\n\r");
+        calculate_humidity();
+        
         printf("#%05u\n\r",raw_humidity_general_e);
         printf("#%05u\n\r",calculated_humidity_general_e);
         printf("#%05u\n\r",raw_humidity_honey_w);
@@ -1344,9 +1739,18 @@ void read_info()
         printf("#%05u\n\r",read_ao(HUMIDITY_ONE_LIMIT_H));
         printf("#%05u\n\r",read_ao(99));
         printf("#%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u\n\r",read_di(0),read_di(1),read_di(2),read_di(3),read_di(4),read_di(5),read_di(6),read_di(7),read_di(8),read_di(9),read_di(10),read_di(11),read_di(12),read_di(13),read_di(14),read_di(15));
-        printf("#%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u\n\r",read_do(0),read_do(1),read_do(2),read_do(3),read_do(4),read_do(5),read_do(6),read_do(7),read_do(8),read_do(9),read_do(10),read_do(11),read_do(12),read_do(13),read_do(14),read_do(15),read_do(50),read_do(51),read_do(52),read_do(53),read_do(54));
+        printf("#%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u\n\r",read_do(0),read_do(1),read_do(2),read_do(3),read_do(4),read_do(5),read_do(6),read_do(7),read_do(8),read_do(9),read_do(10),read_do(11),read_do(12),read_do(13),read_do(14),read_do(15),read_do(50),read_do(51),read_do(52),read_do(53),read_do(54),read_do(55),read_do(56));
         
         
+}
+
+muestra_hora()
+{
+        unsigned char h,m,s,hs;
+        
+        rtc_get_time(0,&h,&m,&s,&hs);
+        
+        printf("%u:%u:%u\n\r",h,m,s);
 }
 
 void main(void)
@@ -1363,6 +1767,7 @@ unsigned int serial_timer;
 char letra;
 char channel [5];
 char value [8];
+unsigned short int actual_humidity;
 
 
 // Crystal Oscillator division factor: 1
@@ -1705,11 +2110,16 @@ while (1)
                 
                 if(letra == '$')
                 {
+                        printf("Recibi Dolar\n\r");
                         serial_timer = 0;
                         
                         while(rx_counter0 == 0 && serial_timer < SERIAL_TIMEOUT)
+                        {
                                 serial_timer++;
+                                //printf("%u\n\r",serial_timer);
+                        }
                         
+                        //printf("Despues de contar\n\r");
                         if(serial_timer == SERIAL_TIMEOUT && rx_counter0 == 0)
                                 letra = '#';
                         else
@@ -1718,6 +2128,7 @@ while (1)
                                 
                                 if(letra == 'w' || letra == 'W')
                                 {
+                                        //printf("Recibi W\n\r");
                                         serial_timer = 0;
                                         
                                         while(rx_counter0 < 2 && serial_timer < SERIAL_TIMEOUT)
@@ -1731,17 +2142,22 @@ while (1)
                                                 
                                                 if(letra == 'a' || letra == 'A')
                                                 {
+                                                        //printf("Recibi A\n\r");
                                                         letra = getchar();
                                                         
                                                         if(letra == 'o' || letra == 'O')
                                                         {
+                                                                //printf("Recibi O\n\r");
                                                                 serial_timer = 0;
                                                                 
                                                                 while(rx_counter0 < 7 && serial_timer < SERIAL_TIMEOUT)
                                                                         serial_timer++;
                                                                 
                                                                 if(serial_timer == SERIAL_TIMEOUT && rx_counter0 < 7)
+                                                                {
                                                                         letra = '#';
+                                                                        //printf("Se dio un timeout de 7\n\r");
+                                                                }
                                                                 else
                                                                 {
                                                                         channel[0] = getchar();
@@ -1764,10 +2180,12 @@ while (1)
                                                 else
                                                 if(letra == 'd' || letra == 'D')
                                                 {
+                                                        //printf("Recibi D\n\r");
                                                         letra = getchar();
                                                         
                                                         if(letra == 'o' || letra == 'O')
                                                         {
+                                                                //printf("Recibi O\n\r");
                                                                 serial_timer = 0;
                                                                 
                                                                 while(rx_counter0 < 3 && serial_timer < SERIAL_TIMEOUT)
@@ -1797,11 +2215,18 @@ while (1)
                                 else
                                 if(letra == 'r' || letra == 'R')
                                 {
+                                        //printf("Recibi R\n\r");
                                         read_info();
                                         letra = '#';
                                 }
-                                else
+                                if(letra == 'p' || letra == 'P')
+                                {
+                                        //printf("Recibi P\n\r");
+                                        muestra_hora();
                                         letra = '#';
+                                }
+                                else
+                                        letra = '#';                                
                         }
                 }
         }
@@ -1828,19 +2253,24 @@ while (1)
         
         if(read_di(SWITCH_AUTO) == 0)
         {
-                if(read_do(SWITCH_ON) == 1)
+                //printf("switch puesto en manual\n\r");
+                
+                if(read_di(SWITCH_ON) == 1)
                 {
+                        //printf("Switch en on activado\n\r");
                         turn_on_fans();
                 }
                 else
                 {
+                        //printf("Switch en off activado\n\r");
                         turn_off_fans();
                 }
                 on_duty = 0;
                 on_timer = 0;
         }
         else
-        {
+        {    
+                //printf("Switch en auto\n\r");
                 if(read_do(CANCEL_AUT) == 1)
                 {
                         turn_off_fans();
@@ -1849,54 +2279,97 @@ while (1)
                 }
                 else
                 {
-                        if(get_humidity() >= read_ao(HUMIDITY_ONE_LIMIT_L) && get_humidity() <= read_ao(HUMIDITY_ONE_LIMIT_H))
+                        actual_humidity = get_humidity();
+                        
+                        rtc_get_time(0,&rtc_h, &rtc_m, &rtc_s, &rtc_hs);
+                
+                        if(actual_humidity >= read_ao(HUMIDITY_ONE_LIMIT_L) && actual_humidity <= read_ao(HUMIDITY_ONE_LIMIT_H))
                         {
+                                //printf("En rango de humedad\n\r");
                                 if(read_ao(TIME_SPAN_ONE) > 0)
                                 {
-                                        rtc_get_time(0,&rtc_h, &rtc_m, &rtc_s, &rtc_hs);
                                         
-                                        if((((rtc_h*60)+rtc_m) >= read_ao(HOUR_ONE)) && ((rtc_h*60)+rtc_m) <= (read_ao(HOUR_ONE) + read_ao(TIME_SPAN_ONE)))
-                                        {
-                                               turn_on_fans();
-                                               if(on_duty == 0 && on_timer != MIN_TIME_ON)
-                                               {
-                                                       on_duty = 1;
-                                                       on_timer = 0;
-                                                       last_minute = rtc_m;
-                                               }
-                                               else
-                                               {
-                                                       if(last_minute != rtc_m)
+                                        //printf("%u\n\r",(unsigned short int)rtc_h*60);
+                                        //if((((rtc_h*60)+rtc_m) >= read_ao(HOUR_ONE)) && ((rtc_h*60)+rtc_m) <= (read_ao(HOUR_ONE) + read_ao(TIME_SPAN_ONE)))
+                                        if(((unsigned short int)rtc_h*60) + (unsigned short int)rtc_m >= read_ao(HOUR_ONE))
+                                        { 
+                                                 //printf("Mas alto que tiempo inicial\n\r");
+                                                if((unsigned short int)rtc_h*60 + (unsigned short int)rtc_m <= read_ao(HOUR_ONE) + read_ao(TIME_SPAN_ONE))
+                                                {
+                                                       printf("En rango de tiempo\n\r");
+                                                       turn_on_fans();
+                                                       if(on_duty == 0 && on_timer != MIN_TIME_ON)
                                                        {
-                                                               on_timer++;
+                                                               on_duty = 1;
+                                                               on_timer = 0;
                                                                last_minute = rtc_m;
                                                        }
-                                                       if(on_timer == MIN_TIME_ON)
-                                                          on_duty = 0;
-                                               }
+                                                       else
+                                                       {
+                                                               if(last_minute != rtc_m && on_timer != MIN_TIME_ON)
+                                                               {
+                                                                       on_timer++;
+                                                                       last_minute = rtc_m;
+                                                               }
+                                                               if(on_timer == MIN_TIME_ON)
+                                                               {
+                                                                  on_duty = 0;
+                                                                  
+                                                               }
+                                                       }
+                                                }
+                                                else
+                                                {
+                                                         turn_off_fans();
+                                                         on_duty = 0;
+                                                         on_timer = 0;
+                                                }
                                         }
                                         else
                                         {
-                                               if(on_duty)
-                                               {
-                                                          if(on_timer != MIN_TIME_ON)
-                                                          {
-                                                                  if(last_minute != rtc_m)
-                                                                  {
-                                                                          on_timer++;
-                                                                          last_minute = rtc_m;
-                                                                  }
-                                                          }
-                                                          else
-                                                                  on_duty = 0;
-                                               }
-                                               else
-                                                  turn_off_fans();
+                                                turn_off_fans();
+                                                on_duty = 0;
+                                                                  on_timer = 0;
                                         }
-                                        
                                 }
                                 else
+                                {
                                         turn_off_fans();
+                                        on_duty = 0;
+                                                                  on_timer = 0;
+                                }
+                        }
+                        else
+                        {           
+                                  printf("Valor de on duty:%u\n\r",on_duty);
+                                if(on_duty)
+                                {
+                                          
+                                        turn_on_fans();
+                                        
+                                        printf("lkasklaska\n\r");
+                                        
+                                        if(on_timer != MIN_TIME_ON)
+                                        {
+                                                if(last_minute != rtc_m)
+                                                {
+                                                        on_timer++;
+                                                        last_minute = rtc_m;
+                                                }
+                                        }
+                                        else
+                                        {
+                                                  printf("Se acabo el ciclo\n\r");
+                                                on_duty = 0;
+                                                                  on_timer = 0;
+                                        }
+                                }
+                                else
+                                {
+                                          turn_off_fans();
+                                          on_timer = 0;
+                                          
+                                }
                         }
                 }
         }
