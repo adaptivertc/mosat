@@ -1182,11 +1182,11 @@ unsigned short int read_ao(unsigned short int channel)
 void calculate_humidity()
 {
         raw_humidity_honey_w = read_ao(HUMIDITY_ONE);
-        raw_humidity_general_e = read_ao(HUMIDITY_ONE);
+        raw_humidity_general_e = read_ao(HUMIDITY_TWO);
         
         calculated_humidity_general_e = (((raw_humidity_general_e - 102)*2000)/814)-500;
         
-        calculated_humidity_honey_w = raw_humidity_honey_w;
+        calculated_humidity_honey_w = ((((float)raw_humidity_honey_w*(float)5)/(float)1023) - (float).958) / (float).0307;
         
         //restar 102, multiplicar por 2000, dividir entre 814 y restar  500
 }
@@ -2378,3 +2378,4 @@ while (1)
        
       };
 }
+

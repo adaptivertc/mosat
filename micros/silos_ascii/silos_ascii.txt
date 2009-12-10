@@ -1,0 +1,7 @@
+sensores
+
+cable verde es el honeywell a pf1
+
+cable azul es el general, temperatura pf2
+
+cable blanco humedad general pf3
