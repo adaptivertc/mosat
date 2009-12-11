@@ -1183,8 +1183,10 @@ void calculate_humidity()
 {
         raw_humidity_honey_w = read_ao(HUMIDITY_ONE);
         raw_humidity_general_e = read_ao(HUMIDITY_TWO);
+         
+        calculated_humidity_general_e = (((((float)raw_humidity_general_e*(float)5)/(float)1023) - (float)0.5)/(float)4) * (float)100;
         
-        calculated_humidity_general_e = (((raw_humidity_general_e - 102)*2000)/814)-500;
+        //calculated_humidity_general_e = (((raw_humidity_general_e - 102)*2000)/814)-500;
         
         calculated_humidity_honey_w = ((((float)raw_humidity_honey_w*(float)5)/(float)1023) - (float).958) / (float).0307;
         
@@ -1202,7 +1204,9 @@ void calculate_temperature()
 {
         raw_temperature_general_e = read_ao(TEMPERATURE);
         
-        calculated_temperature_general_e = raw_temperature_general_e;
+        calculated_temperature_general_e = ((((float)raw_temperature_general_e*(float)5)/(float)1023 - (float)0.5)/(float)4) * (float)200 - (float)50;
+        
+        //calculated_temperature_general_e = raw_temperature_general_e;
 }
 
 void turn_on_fans()
@@ -2110,7 +2114,7 @@ while (1)
                 
                 if(letra == '$')
                 {
-                        printf("Recibi Dolar\n\r");
+                        //printf("Recibi Dolar\n\r");
                         serial_timer = 0;
                         
                         while(rx_counter0 == 0 && serial_timer < SERIAL_TIMEOUT)
@@ -2296,7 +2300,7 @@ while (1)
                                                  //printf("Mas alto que tiempo inicial\n\r");
                                                 if((unsigned short int)rtc_h*60 + (unsigned short int)rtc_m <= read_ao(HOUR_ONE) + read_ao(TIME_SPAN_ONE))
                                                 {
-                                                       printf("En rango de tiempo\n\r");
+                                                       //printf("En rango de tiempo\n\r");
                                                        turn_on_fans();
                                                        if(on_duty == 0 && on_timer != MIN_TIME_ON)
                                                        {
@@ -2341,13 +2345,13 @@ while (1)
                         }
                         else
                         {           
-                                  printf("Valor de on duty:%u\n\r",on_duty);
+                                  //printf("Valor de on duty:%u\n\r",on_duty);
                                 if(on_duty)
                                 {
                                           
                                         turn_on_fans();
                                         
-                                        printf("lkasklaska\n\r");
+                                        //printf("lkasklaska\n\r");
                                         
                                         if(on_timer != MIN_TIME_ON)
                                         {
@@ -2359,7 +2363,7 @@ while (1)
                                         }
                                         else
                                         {
-                                                  printf("Se acabo el ciclo\n\r");
+                                                  //printf("Se acabo el ciclo\n\r");
                                                 on_duty = 0;
                                                                   on_timer = 0;
                                         }
