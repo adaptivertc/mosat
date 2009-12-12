@@ -20,5 +20,7 @@
 #define HUMIDITY_TWO_LIMIT_L 27
 #define HUMIDITY_THREE_LIMIT_H 28
 #define HUMIDITY_THREE_LIMIT_L 29
-#define HUMIDITY_FOUR_LIMIT_H 30
-#define HUMIDITY_FOUR_LIMIT_L 31
+#define TIME_BTW_FANS 30      //seconds
+#define MIN_TIME_ON 31          //minutes
+//#define HUMIDITY_FOUR_LIMIT_H 30
+//#define HUMIDITY_FOUR_LIMIT_L 31

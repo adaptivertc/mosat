@@ -264,9 +264,8 @@ return adc_data;
 #include "digital_channels.h"
 #include "analog_channels.h"
 
-#define FAN_PULSE 2            //seconds
-#define TIME_BTW_FANS 5      //seconds
-#define MIN_TIME_ON 1          //minutes
+#define FAN_PULSE 3            //seconds
+
 #define SERIAL_TIMEOUT 60000   //count
 
 eeprom int garbage;
@@ -1196,8 +1195,8 @@ void calculate_humidity()
 unsigned short int get_humidity()
 {       
         calculate_humidity();
-        return read_ao(HUMIDITY_ONE);        
-        //return (calculated_humidity_general_e + calculated_humidity_honey_w)/2;
+        //return read_ao(HUMIDITY_ONE);        
+        return (calculated_humidity_general_e + calculated_humidity_honey_w)/2;
 }
 
 void calculate_temperature()
@@ -1268,7 +1267,7 @@ void turn_on_fans()
                                         
                                         //printf("Seconds: %u\n\r",seconds);
                                         
-                                        if(seconds >= TIME_BTW_FANS)
+                                        if(seconds >= read_ao(TIME_BTW_FANS))
                                         {
                                                 write_do(FAN_TWO_ON,1);                                                
                                                 seconds = 0;
@@ -1310,7 +1309,7 @@ void turn_on_fans()
                                         
                                         past_hs = rtc_hs;
                                         
-                                        if(seconds >= TIME_BTW_FANS)
+                                        if(seconds >= read_ao(TIME_BTW_FANS))
                                         {
                                                 write_do(FAN_THREE_ON,1);                                                
                                                 seconds = 0;
@@ -1352,7 +1351,7 @@ void turn_on_fans()
                                         
                                         past_hs = rtc_hs;
                                         
-                                        if(seconds >= TIME_BTW_FANS)
+                                        if(seconds >= read_ao(TIME_BTW_FANS))
                                         {
                                                 write_do(FAN_FOUR_ON,1);                                                
                                                 seconds = 0;
@@ -1394,7 +1393,7 @@ void turn_on_fans()
                                         
                                         past_hs = rtc_hs;
                                         
-                                        if(seconds >= TIME_BTW_FANS)
+                                        if(seconds >= read_ao(TIME_BTW_FANS))
                                         {
                                                 write_do(FAN_FIVE_ON,1);                                                
                                                 seconds = 0;
@@ -1436,7 +1435,7 @@ void turn_on_fans()
                                         
                                         past_hs = rtc_hs;
                                         
-                                        if(seconds >= TIME_BTW_FANS)
+                                        if(seconds >= read_ao(TIME_BTW_FANS))
                                         {
                                                 write_do(FAN_SIX_ON,1);
                                                 seconds = 0;
@@ -1525,7 +1524,7 @@ void turn_off_fans()
                                         
                                         past_hs = rtc_hs;
                                         
-                                        if(seconds >= TIME_BTW_FANS)
+                                        if(seconds >= read_ao(TIME_BTW_FANS))
                                         {
                                                 write_do(FAN_TWO_OFF,1);
                                                 seconds = 0;
@@ -1567,7 +1566,7 @@ void turn_off_fans()
                                         
                                         past_hs = rtc_hs;
                                         
-                                        if(seconds >= TIME_BTW_FANS)
+                                        if(seconds >= read_ao(TIME_BTW_FANS))
                                         {
                                                 write_do(FAN_THREE_OFF,1);
                                                 seconds = 0;
@@ -1609,7 +1608,7 @@ void turn_off_fans()
                                         
                                         past_hs = rtc_hs;
                                         
-                                        if(seconds >= TIME_BTW_FANS)
+                                        if(seconds >= read_ao(TIME_BTW_FANS))
                                         {
                                                 write_do(FAN_FOUR_OFF,1);
                                                 seconds = 0;
@@ -1651,7 +1650,7 @@ void turn_off_fans()
                                         
                                         past_hs = rtc_hs;
                                         
-                                        if(seconds >= TIME_BTW_FANS)
+                                        if(seconds >= read_ao(TIME_BTW_FANS))
                                         {
                                                 write_do(FAN_FIVE_OFF,1);
                                                 seconds = 0;
@@ -1693,7 +1692,7 @@ void turn_off_fans()
                                         
                                         past_hs = rtc_hs;
                                         
-                                        if(seconds >= TIME_BTW_FANS)
+                                        if(seconds >= read_ao(TIME_BTW_FANS))
                                         {
                                                 write_do(FAN_SIX_OFF,1);
                                                 seconds = 0;
@@ -1727,7 +1726,7 @@ void turn_off_fans()
 
 void read_info()
 {
-        printf("#11\n\r");
+        printf("#13\n\r");
         calculate_humidity();
         
         printf("#%05u\n\r",raw_humidity_general_e);
@@ -1741,6 +1740,8 @@ void read_info()
         printf("#%05u\n\r",read_ao(TIME_SPAN_ONE));
         printf("#%05u\n\r",read_ao(HUMIDITY_ONE_LIMIT_L));
         printf("#%05u\n\r",read_ao(HUMIDITY_ONE_LIMIT_H));
+        printf("#%05u\n\r",read_ao(TIME_BTW_FANS));
+        printf("#%05u\n\r",read_ao(MIN_TIME_ON));
         printf("#%05u\n\r",read_ao(99));
         printf("#%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u\n\r",read_di(0),read_di(1),read_di(2),read_di(3),read_di(4),read_di(5),read_di(6),read_di(7),read_di(8),read_di(9),read_di(10),read_di(11),read_di(12),read_di(13),read_di(14),read_di(15));
         printf("#%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u\n\r",read_do(0),read_do(1),read_do(2),read_do(3),read_do(4),read_do(5),read_do(6),read_do(7),read_do(8),read_do(9),read_do(10),read_do(11),read_do(12),read_do(13),read_do(14),read_do(15),read_do(50),read_do(51),read_do(52),read_do(53),read_do(54),read_do(55),read_do(56));
@@ -2302,7 +2303,7 @@ while (1)
                                                 {
                                                        //printf("En rango de tiempo\n\r");
                                                        turn_on_fans();
-                                                       if(on_duty == 0 && on_timer != MIN_TIME_ON)
+                                                       if(on_duty == 0 && on_timer != read_ao(MIN_TIME_ON))
                                                        {
                                                                on_duty = 1;
                                                                on_timer = 0;
@@ -2310,12 +2311,12 @@ while (1)
                                                        }
                                                        else
                                                        {
-                                                               if(last_minute != rtc_m && on_timer != MIN_TIME_ON)
+                                                               if(last_minute != rtc_m && on_timer != read_ao(MIN_TIME_ON))
                                                                {
                                                                        on_timer++;
                                                                        last_minute = rtc_m;
                                                                }
-                                                               if(on_timer == MIN_TIME_ON)
+                                                               if(on_timer == read_ao(MIN_TIME_ON))
                                                                {
                                                                   on_duty = 0;
                                                                   
@@ -2353,7 +2354,7 @@ while (1)
                                         
                                         //printf("lkasklaska\n\r");
                                         
-                                        if(on_timer != MIN_TIME_ON)
+                                        if(on_timer != read_ao(MIN_TIME_ON))
                                         {
                                                 if(last_minute != rtc_m)
                                                 {
