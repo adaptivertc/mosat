@@ -33,6 +33,8 @@ private:
   double last_good[2];
   double ai_vals[32];
   double tmp_ai_vals[32];
+  double ao_vals[32];
+  double tmp_ao_vals[32];
   bool di_vals[32];
   bool tmp_di_vals[32];
   bool do_vals[32];
@@ -64,5 +66,8 @@ int read_simple_ascii(int fd,
            char *error, int size);
 
 int send_simple_ascii(int fd, int channel, bool val, 
+           char *error, int size);
+
+int ao_send_simple_ascii(int fd, int channel, int val,
            char *error, int size);
 

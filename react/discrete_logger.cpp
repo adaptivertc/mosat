@@ -262,13 +262,14 @@ discrete_logger_t **discrete_logger_t::read(int *cnt, const char *home_dir)
   {
     char tmp[300];
     int argc;
-    char *argv[25];
+    char *argv[50];
     //DI1|Discrete Input 1|0|0|1|HI|LO|N|N|
-    safe_strcpy(tmp, (const char*) line, sizeof(tmp));
     ltrim(line);
     rtrim(line);
+    safe_strcpy(tmp, (const char*) line, sizeof(tmp));
+    logfile->vprint("Line: %s\n", line);
 
-    argc = get_delim_args(tmp, argv, '|', 25);
+    argc = get_delim_args(tmp, argv, '|', 50);
     if (argc == 0)
     {
       continue;
@@ -282,6 +283,9 @@ discrete_logger_t **discrete_logger_t::read(int *cnt, const char *home_dir)
       logfile->vprint("%s: Wrong number of args (minimum 5), line %d\n", path, i+1);
       continue;
     }
+    for (int i=0; i < argc; i++) logfile->vprint("argv[%d]: %s\n", i, argv[i]);
+    logfile->vprint("\n");
+
 
     logfile->vprint("%s\n", line);
     discrete_logger_t *p = new discrete_logger_t;
@@ -322,6 +326,7 @@ discrete_logger_t **discrete_logger_t::read(int *cnt, const char *home_dir)
     if ((n_extra % 2) != 0)
     {
       logfile->vprint("%s: There must be an even number of extra parameters - each with tag, and log type (rise, fall, or both (RFB))\n", p->tag);
+      logfile->vprint("    There were %d parameters, and %d extra parameters\n", argc, n_extra);
     }
     p->num_points = n_extra / 2; 
     p->discrete_points = new discrete_point_t *[p->num_points + 1];

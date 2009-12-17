@@ -30,7 +30,7 @@ Member functions for the real time database.
 #include <string.h>
 #include <malloc.h>
 #include <stdlib.h>
-
+ 
 #include "db_point.h"
 #include "db.h"
 #include "rtcommon.h"
@@ -39,6 +39,7 @@ Member functions for the real time database.
 #include "conio.h"
 #include "timeaccum.h"
 #include "arg.h"
+#include "ap_config.h"
 //#include "myconio.h"
 
 #ifdef __REACT_MSG__
@@ -93,17 +94,24 @@ void react_t::send_ao(int drv, int crd, int channel, double val)
 
 void react_t::exit_clean_up(void)
 {
-  if (num_do > 0) logfile->vprint("Turning off %d discrete outputs:\n", num_do);
-  for (int i=0; i < num_do; i++)
+  if (ap_config.get_bool("zero_outputs_on_exit", true))
   {
-    logfile->vprint("\t%s\n", do_points[i]->tag);
-    do_points[i]->send(false);
+    if (num_do > 0) logfile->vprint("Turning off %d discrete outputs:\n", num_do);
+    for (int i=0; i < num_do; i++)
+    {
+      logfile->vprint("\t%s\n", do_points[i]->tag);
+      do_points[i]->send(false);
+    }
+    if (num_ao > 0) logfile->vprint("Zeroing %d analog outputs:\n", num_ao);
+    for (int i=0; i < num_ao; i++)
+    {
+      logfile->vprint("\t%s\n", ao_points[i]->tag);
+      ao_points[i]->send(0.0);
+    }
   }
-  if (num_ao > 0) logfile->vprint("Zeroing %d analog outputs:\n", num_ao);
-  for (int i=0; i < num_ao; i++)
+  else
   {
-    logfile->vprint("\t%s\n", ao_points[i]->tag);
-    ao_points[i]->send(0.0);
+    logfile->vprint("Zero outputs on exit is DISABLED\n", num_do);
   }
 
   for (int i=0; i < num_scan; i++)

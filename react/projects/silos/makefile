@@ -1,6 +1,6 @@
 
 
-all: temp weblogger divide
+all: temp weblogger divide webbackground
 
 temp: temp.cpp  
 	g++ -Wall -o temp temp.cpp  
@@ -9,8 +9,12 @@ temp: temp.cpp
 weblogger: weblogger.cpp
 	g++ -Wall -o weblogger weblogger.cpp
 
-clean:
-	rm -vf temp weblogger divide
+webbackground: webbackground.cpp
+	g++ -Wall -o webbackground webbackground.cpp
 
 divide: divide.cpp
 	g++ -Wall -g -o divide divide.cpp
+
+clean:
+	rm -vf temp weblogger divide webbackground
+

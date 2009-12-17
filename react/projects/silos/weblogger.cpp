@@ -1,5 +1,4 @@
 
-
 #include <stdio.h>
 #include <time.h>
 #include <stdint.h>
@@ -8,8 +7,95 @@
 
 #define interval_mins (15) // 15 minutes.
 
-float temps[96];
-float hums[99];
+float temps[100];
+float hums[100];
+
+/****************************************************************************************/
+
+int write_float_to_web(const char *url, const char *tag, float value, time_t the_time, const char *key)
+{
+  char cmd[500];
+  snprintf(cmd, sizeof(cmd), 
+     "curl -d \"tagname=%s&value=%0.1f&time=%ld&api_key=%s\" %sfloat_add",
+       tag, value,the_time, key, url);
+  printf("%s\n", cmd);
+  printf("result is: ");
+  fflush(stdout);
+  int retval = system(cmd);
+  printf("\nsystem returned: %d\n", retval);
+  printf("\n");
+  return retval;
+}
+
+
+/****************************************************************************************/
+
+int write_bool_to_web(const char *url, const char *tag, bool value, time_t the_time, const char *key)
+{
+  char cmd[500];
+  snprintf(cmd, sizeof(cmd), 
+     "curl -d \"tagname=%s&value=%c&time=%ld&api_key=%s\" %sfloat_add",
+       tag, value ? '1' : '0', the_time, key, url);
+  printf("%s\n", cmd);
+  printf("result is: ");
+  fflush(stdout);
+  int retval = system(cmd);
+  printf("\nsystem returned: %d\n", retval);
+  printf("\n");
+  return retval;
+}
+
+/****************************************************************************************/
+
+
+FILE *log_fp = NULL;
+FILE *last_fp = NULL;
+
+/****************************************************************************************/
+
+void open_log(void)
+{
+  log_fp = fopen("web_write_log.txt", "a+");
+  if (log_fp == NULL) perror("web_write_log.txt");
+}
+
+/****************************************************************************************/
+
+void save_log_time(time_t the_time)
+{
+  last_fp = fopen("web_last_write.txt", "w");
+  if (last_fp == NULL) {perror("web_last_write.txt"); return;}
+  fprintf(last_fp, "%ld", the_time);
+  fclose(last_fp);
+}
+
+/****************************************************************************************/
+
+int flush_web_log(void)
+{
+  if (log_fp == NULL) return -1;
+  return fflush(log_fp);
+}
+
+/****************************************************************************************/
+
+int write_float_to_log(const char *tag, float value, time_t the_time, const char *key)
+{
+  if (log_fp == NULL) return -1;
+  fprintf(log_fp, "%s,float,%0.1f,%ld,%s\n", tag, value, the_time, key); 
+  return 0;
+}
+
+/****************************************************************************************/
+
+int write_bool_to_log(const char *tag, bool value, time_t the_time, const char *key)
+{
+  if (log_fp == NULL) return -1;
+  fprintf(log_fp, "%s,bool,%c,%ld,%s\n", tag, value ? '1' : '0', the_time, key); 
+  return 0;
+}
+
+/****************************************************************************************/
 
 int main(int argc, char *argv[])
 {
@@ -17,7 +103,10 @@ int main(int argc, char *argv[])
   struct tm nowtm;
   struct tm nexttm;
 
+  open_log();
+
   FILE *fp1= fopen("out_temp_hum_sim.txt", "r");
+
   for (int i=0; i < 96; i++)
   {
     int n;
@@ -26,7 +115,6 @@ int main(int argc, char *argv[])
     sscanf(line, "%d\t%f\t%f", &n, &temps[i], &hums[i]);
     printf("------- %d\t%0.1f\t%0.1f\n", n, temps[i], hums[i]);
   }
-
 
   now = time(NULL);
 
@@ -60,6 +148,11 @@ int main(int argc, char *argv[])
   bool fans_on = ((hums[sim_idx] > 72) && (hums[sim_idx] < 78));
   printf("To start, fans are %s\n", fans_on ? "ON" : "OFF");
 
+  const char *url = "http://adaptivertc.pablasso.com/api/";
+  const char *key = "examplesilokey";
+  int rv1;
+  int rv2;
+
   while (true)
   {
     now = time(NULL);
@@ -67,9 +160,17 @@ int main(int argc, char *argv[])
     {
       localtime_r(&now, &nowtm); 
       printf("logged at %s, idx = %d, temp = %0.1f, hum = %0.1f\n", 
-       asctime(&nowtm), sim_idx, temps[sim_idx], hums[sim_idx]); 
+             asctime(&nowtm), sim_idx, temps[sim_idx], hums[sim_idx]); 
+
+      write_float_to_log("temp_amb", temps[sim_idx], now, key);
+      write_float_to_log("hum_rel", hums[sim_idx], now, key);
+      flush_web_log();
+
+      rv1 = write_float_to_web(url, "temp_amb", temps[sim_idx], now, key);
+      rv2 = write_float_to_web(url, "hum_rel", hums[sim_idx], now, key);
+
+        /*******
       char cmd[500];
-      //temp_amb|hum_rel
       snprintf(cmd, sizeof(cmd), 
          "curl -d \"tagname=temp_amb&value=%0.1f&time=%ld&api_key=examplesilokey\" http://adaptivertc.pablasso.com/api/float_add",
             temps[sim_idx], now);
@@ -86,12 +187,19 @@ int main(int argc, char *argv[])
       fflush(stdout);
       system(cmd);
       printf("\n");
+       ********/
+
       bool fans_test = ((hums[sim_idx] > 72.0) && (hums[sim_idx] < 78.0));
       printf("Fans are now %s\n", fans_test ? "ON" : "OFF");
       if (fans_test != fans_on) // The state of the fans changed
       {
         printf("------------ Fans just turned %s!! ---------------\n", fans_test ?"ON":"OFF");
         fans_on = fans_test; 
+
+        write_bool_to_log("ventilador", fans_on, now, key);
+        rv1 = write_bool_to_web(url, "ventilador", fans_on, now, key);
+        flush_web_log();
+        /*********
         snprintf(cmd, sizeof(cmd), 
          "curl -d \"tagname=ventilador&value=%c&time=%ld&api_key=examplesilokey\" http://adaptivertc.pablasso.com/api/bool_add",
             fans_on ? '1':'0', now);
@@ -100,7 +208,9 @@ int main(int argc, char *argv[])
         fflush(stdout);
         int rv = system(cmd);
         printf("\nReturned: %d\n", rv);
+        *********/
         printf("-------------------------------------------\n");
+        
       }
 
       next_time += interval_mins * 60;

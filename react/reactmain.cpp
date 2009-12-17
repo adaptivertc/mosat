@@ -86,8 +86,8 @@ void edit_files(const char *base, int n)
 /*****************************************************************/
 void my_sighandler(int signum)
 {
-  printf("Got a signal: %d\n", signum);
   if (signum == SIGIO) return; 
+  printf("Got a signal: %d\n", signum);
   exit(0);
 }
 /*****************************************************************/

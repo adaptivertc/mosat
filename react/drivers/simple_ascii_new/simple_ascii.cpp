@@ -133,6 +133,10 @@ void simple_ascii_driver_t::send_ao(int ch, double val)
 {
   if ((ch >= 0) && (ch < 32))
   {
+    char error[50];
+    ao_vals[ch] = val;
+    ao_send_simple_ascii(serial_fd, ch, int(val),
+           error, sizeof(error));
   }
 }
 
@@ -146,6 +150,9 @@ void simple_ascii_driver_t::close(void)
 
 void simple_ascii_driver_t::resend_dos(void)
 {
+  // This was for the case of REACT controlling, if the micro was 
+  // shut off, when turned back on, the outputs were restored. 
+  /***
   for (int i=0; i < 12; i++)
   {
     if (tmp_do_vals[i] != do_vals[i])
@@ -153,13 +160,14 @@ void simple_ascii_driver_t::resend_dos(void)
       this->send_do(i, do_vals[i]);
     }
   }
+  **/
 }
 
 /***********************************************************************/
 
 void simple_ascii_driver_t::send_do(int ch, bool val)
 {
-  if ((ch >= 0) && (ch < 12))
+  if ((ch >= 0) && (ch < 32))
   {
     char error[50];
     do_vals[ch] = val;
@@ -193,6 +201,12 @@ bool simple_ascii_driver_t::get_di(int channel)
   if ((channel >= 0) && (channel < 32))
   {
     read_val = di_vals[channel];
+    //printf("DI %d, read %s\n", channel, read_val ? "T" : "F");
+    return read_val;
+  }
+  else if ((channel >= 32) && (channel < 64))
+  {
+    read_val = tmp_do_vals[channel-32];
     //printf("DI %d, read %s\n", channel, read_val ? "T" : "F");
     return read_val;
   }
