@@ -88,6 +88,7 @@ void my_sighandler(int signum)
 {
   if (signum == SIGIO) return; 
   printf("Got a signal: %d\n", signum);
+  if (SIGIO == signum) return;
   exit(0);
 }
 /*****************************************************************/
