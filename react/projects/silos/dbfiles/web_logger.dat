@@ -1,4 +1,5 @@
-weblogger1|Log to pablasso.com|15|http://adaptivertc.pablasso.com/api/|key|temp_amb|temp_amb|float|hum_rel|hum_rel|float|S100_FAN1|ventilador|bool|
+weblogger1|Log to pablasso.com|15|http://adaptivertc.pablasso.com/api/|key|temp_amb|temp_amb|float|hum_rel|hum_rel|float|S100_FAN1|ventilador|bool|S100_FANS_ON_OFF|MAN_ON_OFF|bool|S100_FANS_AUTO|MAN_AUTO|bool|
+
 # Tag
 # Description
 # Interval (minutes)

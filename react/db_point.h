@@ -513,6 +513,9 @@ public:
   discrete_point_t **discrete_points;
   char **analog_web_tags;
   char **discrete_web_tags;
+  bool *discrete_last_vals;
+  time_t next_time;
+  time_t next_secs;
   int sample_interval;
   void update(void);
   point_type_t point_type(void) {return WEB_LOGGER;};

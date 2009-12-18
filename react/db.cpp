@@ -111,7 +111,7 @@ void react_t::exit_clean_up(void)
   }
   else
   {
-    logfile->vprint("Zero outputs on exit is DISABLED\n", num_do);
+    logfile->vprint("Zero outputs on exit is DISABLED\n");
   }
 
   for (int i=0; i < num_scan; i++)

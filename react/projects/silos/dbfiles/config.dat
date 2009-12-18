@@ -3,3 +3,4 @@ HtmlHome|./html/
 TemplateHome|./template/
 SampleRate|0.2|
 SMS_ENABLED|0|
+zero_outputs_on_exit|F|

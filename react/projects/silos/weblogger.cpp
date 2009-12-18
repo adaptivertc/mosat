@@ -5,93 +5,57 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-#define interval_mins (15) // 15 minutes.
+#include <fcntl.h> 
+#include <sys/stat.h>
+#include <mqueue.h>
+
+#include "../../silodata.h"
+
+#define interval_mins (1) // 15 minutes.
+
 
 float temps[100];
 float hums[100];
+mqd_t mq_fd;
 
 /****************************************************************************************/
 
-int write_float_to_web(const char *url, const char *tag, float value, time_t the_time, const char *key)
+int write_float_to_mq(const char *tag, float value, time_t the_time, const char *key)
 {
-  char cmd[500];
-  snprintf(cmd, sizeof(cmd), 
-     "curl -d \"tagname=%s&value=%0.1f&time=%ld&api_key=%s\" %sfloat_add",
-       tag, value,the_time, key, url);
-  printf("%s\n", cmd);
-  printf("result is: ");
-  fflush(stdout);
-  int retval = system(cmd);
-  printf("\nsystem returned: %d\n", retval);
-  printf("\n");
-  return retval;
-}
+  silodata_t sdata;
+  snprintf(sdata.tag, sizeof(sdata.tag), "%s", tag);
+  snprintf(sdata.type, sizeof(sdata.type), "float");
+  snprintf(sdata.key, sizeof(sdata.key), "%s", key);
+  snprintf(sdata.value, sizeof(sdata.value), "%0.1f", value);
+  sdata.the_time = the_time;
 
-
-/****************************************************************************************/
-
-int write_bool_to_web(const char *url, const char *tag, bool value, time_t the_time, const char *key)
-{
-  char cmd[500];
-  snprintf(cmd, sizeof(cmd), 
-     "curl -d \"tagname=%s&value=%c&time=%ld&api_key=%s\" %sfloat_add",
-       tag, value ? '1' : '0', the_time, key, url);
-  printf("%s\n", cmd);
-  printf("result is: ");
-  fflush(stdout);
-  int retval = system(cmd);
-  printf("\nsystem returned: %d\n", retval);
-  printf("\n");
-  return retval;
-}
-
-/****************************************************************************************/
-
-
-FILE *log_fp = NULL;
-FILE *last_fp = NULL;
-
-/****************************************************************************************/
-
-void open_log(void)
-{
-  log_fp = fopen("web_write_log.txt", "a+");
-  if (log_fp == NULL) perror("web_write_log.txt");
-}
-
-/****************************************************************************************/
-
-void save_log_time(time_t the_time)
-{
-  last_fp = fopen("web_last_write.txt", "w");
-  if (last_fp == NULL) {perror("web_last_write.txt"); return;}
-  fprintf(last_fp, "%ld", the_time);
-  fclose(last_fp);
-}
-
-/****************************************************************************************/
-
-int flush_web_log(void)
-{
-  if (log_fp == NULL) return -1;
-  return fflush(log_fp);
-}
-
-/****************************************************************************************/
-
-int write_float_to_log(const char *tag, float value, time_t the_time, const char *key)
-{
-  if (log_fp == NULL) return -1;
-  fprintf(log_fp, "%s,float,%0.1f,%ld,%s\n", tag, value, the_time, key); 
+  int rval = mq_send(mq_fd, (char *) &sdata, sizeof(sdata), 0);
+  if (rval == -1)
+  {
+    perror("mq_send");
+  }
+  printf("Send Float Success\n");
   return 0;
+
 }
 
 /****************************************************************************************/
 
-int write_bool_to_log(const char *tag, bool value, time_t the_time, const char *key)
+int write_bool_to_mq(const char *tag, bool value, time_t the_time, const char *key)
 {
-  if (log_fp == NULL) return -1;
-  fprintf(log_fp, "%s,bool,%c,%ld,%s\n", tag, value ? '1' : '0', the_time, key); 
+  silodata_t sdata;
+  snprintf(sdata.tag, sizeof(sdata.tag), "%s", tag);
+  snprintf(sdata.type, sizeof(sdata.type), "bool");
+  snprintf(sdata.key, sizeof(sdata.key), "%s", key);
+  snprintf(sdata.value, sizeof(sdata.value), "%c", value ? '1' : '0');
+  sdata.the_time = the_time;
+
+  int rval = mq_send(mq_fd, (char *) &sdata, sizeof(sdata), 0);
+  if (rval == -1)
+  {
+    perror("mq_send");
+  }
+  printf("Send Bool Success\n");
   return 0;
 }
 
@@ -103,7 +67,12 @@ int main(int argc, char *argv[])
   struct tm nowtm;
   struct tm nexttm;
 
-  open_log();
+  mq_fd = mq_open("/adaptivertc.react.weblog1", O_RDWR | O_CREAT, 0755, NULL);
+  if (mq_fd == ((mqd_t) -1))
+  {
+    perror("mq_open");
+  }
+
 
   FILE *fp1= fopen("out_temp_hum_sim.txt", "r");
 
@@ -148,10 +117,7 @@ int main(int argc, char *argv[])
   bool fans_on = ((hums[sim_idx] > 72) && (hums[sim_idx] < 78));
   printf("To start, fans are %s\n", fans_on ? "ON" : "OFF");
 
-  const char *url = "http://adaptivertc.pablasso.com/api/";
   const char *key = "examplesilokey";
-  int rv1;
-  int rv2;
 
   while (true)
   {
@@ -162,32 +128,8 @@ int main(int argc, char *argv[])
       printf("logged at %s, idx = %d, temp = %0.1f, hum = %0.1f\n", 
              asctime(&nowtm), sim_idx, temps[sim_idx], hums[sim_idx]); 
 
-      write_float_to_log("temp_amb", temps[sim_idx], now, key);
-      write_float_to_log("hum_rel", hums[sim_idx], now, key);
-      flush_web_log();
-
-      rv1 = write_float_to_web(url, "temp_amb", temps[sim_idx], now, key);
-      rv2 = write_float_to_web(url, "hum_rel", hums[sim_idx], now, key);
-
-        /*******
-      char cmd[500];
-      snprintf(cmd, sizeof(cmd), 
-         "curl -d \"tagname=temp_amb&value=%0.1f&time=%ld&api_key=examplesilokey\" http://adaptivertc.pablasso.com/api/float_add",
-            temps[sim_idx], now);
-      printf("%s\n", cmd);
-      printf("result is: ");
-      fflush(stdout);
-      system(cmd);
-      printf("\n");
-      snprintf(cmd, sizeof(cmd), 
-         "curl -d \"tagname=hum_rel&value=%0.1f&time=%ld&api_key=examplesilokey\" http://adaptivertc.pablasso.com/api/float_add",
-            hums[sim_idx], now);
-      printf("%s\n", cmd);
-      printf("result is: ");
-      fflush(stdout);
-      system(cmd);
-      printf("\n");
-       ********/
+      write_float_to_mq("temp_amb", temps[sim_idx], now, key);
+      write_float_to_mq("hum_rel", hums[sim_idx], now, key);
 
       bool fans_test = ((hums[sim_idx] > 72.0) && (hums[sim_idx] < 78.0));
       printf("Fans are now %s\n", fans_test ? "ON" : "OFF");
@@ -196,19 +138,8 @@ int main(int argc, char *argv[])
         printf("------------ Fans just turned %s!! ---------------\n", fans_test ?"ON":"OFF");
         fans_on = fans_test; 
 
-        write_bool_to_log("ventilador", fans_on, now, key);
-        rv1 = write_bool_to_web(url, "ventilador", fans_on, now, key);
-        flush_web_log();
-        /*********
-        snprintf(cmd, sizeof(cmd), 
-         "curl -d \"tagname=ventilador&value=%c&time=%ld&api_key=examplesilokey\" http://adaptivertc.pablasso.com/api/bool_add",
-            fans_on ? '1':'0', now);
-        printf("%s\n", cmd);
-        printf("result is: ");
-        fflush(stdout);
-        int rv = system(cmd);
-        printf("\nReturned: %d\n", rv);
-        *********/
+        write_bool_to_mq("ventilador", fans_on, now, key);
+
         printf("-------------------------------------------\n");
         
       }

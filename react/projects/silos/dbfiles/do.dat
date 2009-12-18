@@ -1,4 +1,5 @@
 DISABLE_FANS|Disable Fans|0|0|0|ENABLED|DISABLED|
+Blinker|blinker|0|0|15|ON|OFF|
 #    Tag
 #    Description
 #    Driver Number

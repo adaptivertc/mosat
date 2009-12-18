@@ -1,5 +1,5 @@
-Sun Dec  6 20:14:01 2009
-React PID: 14080
+Fri Dec 18 15:27:44 2009
+React PID: 16439
 SampleRate set to: 0.200000
 Loading db point factory from: /usr/local/lib/ai.so
 Reading AI ........
@@ -14,17 +14,18 @@ HUM_HI_OUT|Rel. Humidity High Out|degC|0|0|0|0|10|0|10|1|0|500|
 MIN_START_OUT|Start Time in Minutes from midnight|MIN|0|0|0|0|10|0|10|1|0|500|
 MIN_TOTAL_OUT|Total Time in Minutes|MIN|0|0|0|0|10|0|10|1|0|500|
 Reading di ........
-MAN_FANS_DISABLED|Fan Disabled|0|0|1|ENABLED|DISABLED|N|N|
-MAN_FANS_AUTO|Fan Disabled|0|0|2|ENABLED|DISABLED|N|N|
-S100_FAN1|Silo 100 Fan 1|0|0|3|OFF|ON|N|N|
-S100_FAN2|Silo 100 Fan 2|0|0|4|OFF|ON|N|N|
-S200_FAN1|Silo 200 Fan 1|0|0|5|OFF|ON|N|N|
-S200_FAN2|Silo 200 Fan 2|0|0|6|OFF|ON|N|N|
-S300_FAN1|Silo 300 Fan 1|0|0|7|OFF|ON|N|N|
-S300_FAN2|Silo 300 Fan 2|0|0|8|OFF|ON|N|N|
-FANS_DISABLED|Fand Disabled|0|0|9|ENABLED|DISABLED|N|N|
+S100_FANS_ON_OFF|Fan on/off|0|0|2|ENABLED|DISABLED|N|N|
+S100_FANS_AUTO|Fan Disabled|0|0|3|ENABLED|DISABLED|N|N|
+S100_FAN1|Silo 100 Fan 1|0|0|4|OFF|ON|N|N|
+S100_FAN2|Silo 100 Fan 2|0|0|5|OFF|ON|N|N|
+S200_FAN1|Silo 200 Fan 1|0|0|6|OFF|ON|N|N|
+S200_FAN2|Silo 200 Fan 2|0|0|7|OFF|ON|N|N|
+S300_FAN1|Silo 300 Fan 1|0|0|8|OFF|ON|N|N|
+S300_FAN2|Silo 300 Fan 2|0|0|9|OFF|ON|N|N|
+FANS_DISABLED|Fan Disabled|0|0|10|ENABLED|DISABLED|N|N|
 Reading do ........
 DISABLE_FANS|Disable Fans|0|0|0|ENABLED|DISABLED|
+Blinker|blinker|0|0|15|ON|OFF|
 Reading pci ........
 Reading calc ........
 HUM_REL|Avg. Rel. Humidity|pct|(HUM_REL_1 + HUM_REL_2) / 2.0|1|10|20|80|90|5|0|0|0|0|
@@ -46,9 +47,9 @@ Reading level ........
 Reading data ........
 Reading file logger ........
 Reading web logger ........
-weblogger1|Log to pablasso.com|15|http://adaptivertc.pablasso.com/api/|key|temp_amb|temp_amb|float|hum_rel|hum_rel|float|S100_FAN1|ventilador|bool|
+weblogger1|Log to pablasso.com|15|http://adaptivertc.pablasso.com/api/|key|temp_amb|temp_amb|float|hum_rel|hum_rel|float|S100_FAN1|ventilador|bool|S100_FANS_ON_OFF|MAN_ON_OFF|bool|S100_FANS_AUTO|MAN_AUTO|bool|
 2 analog points
-1 discrete points
+3 discrete points
 Tag = temp_amb
 analog point 0: temp_amb
 Web Tag: temp_amb
@@ -58,13 +59,32 @@ Web Tag: hum_rel
 Tag = S100_FAN1
 discrete point 0: S100_FAN1
 Web Tag: ventilador
+Tag = S100_FANS_ON_OFF
+discrete point 1: S100_FANS_ON_OFF
+Web Tag: MAN_ON_OFF
+Tag = S100_FANS_AUTO
+discrete point 2: S100_FANS_AUTO
+Web Tag: MAN_AUTO
 Reading discrete logger ........
+Line: #switch_log|Log de Switches|switch_log|0|switch_1|B|switch_2|B|switch_3|B|switch_4|B|
+Line: #    Tag
+Line: #    Description
+Line: #    Base File Name (actual name is base + YYYYMMDD) (can include path)
+Line: #    Log Hour Totals? T/F
+Line: #    Tag 1
+Line: #    Obj 1 Log Rising, Falling, Both (L, R, or B)
+Line: #    Tag 2
+Line: #    Obj 2 Log Rising, Falling, Both (L, R, or B)
+Line: #    . . . .
+Line: #    Tag N
+Line: #    Obj N Log Rising, Falling, Both (L, R, or B)
 Reading scan ........
 Reading web points ........
 Parsing 1 Analog Expressions ......
 HUM_REL Parsing "(HUM_REL_1 + HUM_REL_2) / 2.0"
 Parsing 0 Discrete Expressions ......
 -- Reading background scripts: .//dbfiles/background.dat
+bg1.txt
 Loading iodrivers from: .//dbfiles/drivers.dat
 /usr/local/lib/libsimple_ascii_drv.so|new_simple_ascii|/usr/local/lib/librtmodbus.so|/dev/ttyT8S2|
 Loading other driver: /usr/local/lib/librtmodbus.so
