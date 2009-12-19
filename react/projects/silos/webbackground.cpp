@@ -115,6 +115,7 @@ int write_bool_to_web(const char *url, const char *tag,
 
 int write_float_to_log(const char *tag, float value, time_t the_time, const char *key)
 {
+  printf("-------------- Writing %s float to log\n", tag);
   if (log_fp == NULL) 
   {
     printf("******* log file fp is NULL\n");
@@ -127,6 +128,7 @@ int write_float_to_log(const char *tag, float value, time_t the_time, const char
 
 int write_bool_to_log(const char *tag, bool value, time_t the_time, const char *key)
 {
+  printf("-------------- Writing %s bool to log\n", tag);
   if (log_fp == NULL) 
   {
     return -1;
