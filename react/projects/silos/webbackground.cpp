@@ -100,7 +100,7 @@ int write_bool_to_web(const char *url, const char *tag,
 {
   char cmd[500];
   snprintf(cmd, sizeof(cmd), 
-     "curl -d \"tagname=%s&value=%c&time=%ld&api_key=%s\" %sfloat_add",
+     "curl -d \"tagname=%s&value=%c&time=%ld&api_key=%s\" %sbool_add",
        tag, value ? '1' : '0', the_time, key, url);
   printf("%s\n", cmd);
   printf("result is: ");
