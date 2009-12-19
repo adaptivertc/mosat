@@ -115,7 +115,11 @@ int write_bool_to_web(const char *url, const char *tag,
 
 int write_float_to_log(const char *tag, float value, time_t the_time, const char *key)
 {
-  if (log_fp == NULL) return -1;
+  if (log_fp == NULL) 
+  {
+    printf("******* log file fp is NULL\n");
+    return -1;
+  }
   return fprintf(log_fp, "%s,float,%0.1f,%ld,%s\n", tag, value, the_time, key);
 }
 
@@ -123,7 +127,11 @@ int write_float_to_log(const char *tag, float value, time_t the_time, const char
 
 int write_bool_to_log(const char *tag, bool value, time_t the_time, const char *key)
 {
-  if (log_fp == NULL) return -1;
+  if (log_fp == NULL) 
+  {
+    return -1;
+    printf("******* log file fp is NULL\n");
+  }
   return fprintf(log_fp, "%s,bool,%c,%ld,%s\n", 
         tag, value ? '1' : '0', the_time, key); 
 
@@ -244,7 +252,10 @@ void open_log_append(void)
 void open_log_read(void)
 {
   log_fp = fopen("web_write_log.txt", "r");
-  if (log_fp == NULL) perror("web_write_log.txt");
+  if (log_fp == NULL) 
+  {
+    perror("web_write_log.txt");
+  }
 }
 
 int flush_web_log(void)
@@ -315,6 +326,7 @@ int main(int argc, char *argv[])
     if (day_changed(last_time, sdata.the_time))
     {
       open_log_append();
+      last_time = sdata.the_time;
     }
     
 

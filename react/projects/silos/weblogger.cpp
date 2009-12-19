@@ -18,7 +18,7 @@ float temps[100];
 float hums[100];
 mqd_t mq_fd;
 
-/****************************************************************************************/
+/*************************************************************************/
 
 int write_float_to_mq(const char *tag, float value, time_t the_time, const char *key)
 {
@@ -39,7 +39,7 @@ int write_float_to_mq(const char *tag, float value, time_t the_time, const char 
 
 }
 
-/****************************************************************************************/
+/*************************************************************************/
 
 int write_bool_to_mq(const char *tag, bool value, time_t the_time, const char *key)
 {
@@ -59,7 +59,7 @@ int write_bool_to_mq(const char *tag, bool value, time_t the_time, const char *k
   return 0;
 }
 
-/****************************************************************************************/
+/*************************************************************************/
 
 int main(int argc, char *argv[])
 {
