@@ -48,11 +48,9 @@ Member functions for web logger.
 
 #define WL_MIN_ARGS (8)
 
-mqd_t mq_fd;
-
 /*************************************************************************/
 
-static int write_float_to_mq(const char *tag, float value, 
+static int write_float_to_mq(long mq_fd, const char *tag, float value, 
              time_t the_time, const char *key)
 {
   silodata_t sdata;
@@ -65,7 +63,7 @@ static int write_float_to_mq(const char *tag, float value,
   int rval = mq_send(mq_fd, (char *) &sdata, sizeof(sdata), 0);
   if (rval == -1)
   {
-    perror("mq_send");
+    perror("************************************ mq_send");
   }
   printf("Send Float Success\n");
   return 0;
@@ -73,7 +71,7 @@ static int write_float_to_mq(const char *tag, float value,
 
 /*************************************************************************/
 
-int write_bool_to_mq(const char *tag, bool value, 
+int write_bool_to_mq(long mq_fd, const char *tag, bool value, 
      time_t the_time, const char *key)
 {
   silodata_t sdata;
@@ -86,7 +84,7 @@ int write_bool_to_mq(const char *tag, bool value,
   int rval = mq_send(mq_fd, (char *) &sdata, sizeof(sdata), 0);
   if (rval == -1)
   {
-    perror("mq_send");
+    perror("************************************ mq_send");
   }
   printf("Send Bool Success\n");
   return 0;
@@ -101,6 +99,8 @@ void web_logger_t::update(void)
   time_t now = time(NULL);
   const char *wtag;
   // floats get written at regular intervals
+  printf("Update %s, time = %ld, next = %ld\n", tag, now, next_time);
+  logfile->vprint("web tags: %p\n", discrete_web_tags);
   if (now >= next_time)
   {
     for (int i=0; i < num_analog; i++)
@@ -108,7 +108,7 @@ void web_logger_t::update(void)
       if (analog_points[i] == NULL) continue;
       wtag = analog_web_tags[i]; 
       float val = analog_points[i]->get_pv();
-      write_float_to_mq(wtag, val, next_time, key);
+      write_float_to_mq(mq_fd, wtag, val, next_time, key);
     }
     next_time += next_secs; 
   }
@@ -116,14 +116,22 @@ void web_logger_t::update(void)
   // discretes get written when they change 
   for (int i=0; i < num_discrete; i++)
   {
-    if (discrete_points[i] == NULL) continue;
+    printf("discrete point %d\n", i);
+    if (discrete_points[i] == NULL) 
+    {
+      printf("*** bad discrete point\n");
+      continue;
+    }
     bool val = discrete_points[i]->get_pv();
+    bool last_val = this->discrete_last_vals[i];
+    printf("%d: val now: %c, last: %c\n", i, val ? 'T' : 'F',
+           true ? 'T' : 'F');
     wtag = discrete_web_tags[i]; 
-    if (val != discrete_last_vals[i])
+    if (val != this->discrete_last_vals[i])
     {
       // Ok, this discrete point changed
-     write_bool_to_mq(wtag, val, now, key);
-     discrete_last_vals[i] = val;
+     write_bool_to_mq(mq_fd, wtag, val, now, key);
+     this->discrete_last_vals[i] = val;
     }
   }
 
@@ -225,6 +233,7 @@ web_logger_t **web_logger_t::read(int *cnt, const char *home_dir)
     p->discrete_points = new discrete_point_t *[p->num_discrete + 1];
     p->analog_web_tags = new char *[p->num_analog + 1];
     p->discrete_web_tags = new char *[p->num_discrete + 1];
+    logfile->vprint("web tags: %p\n", p->discrete_web_tags);
     p->discrete_last_vals = new bool [p->num_discrete + 1];
 
     p->num_analog = 0;
@@ -259,7 +268,7 @@ web_logger_t **web_logger_t::read(int *cnt, const char *home_dir)
       else if (0 == strcasecmp(argv[start+2], "bool"))
       {
         p->discrete_web_tags[p->num_discrete] = strdup(argv[start+1]);
-        p->discrete_last_vals = false;
+        p->discrete_last_vals[p->num_discrete] = false;
         db_point = db->get_db_point(temp_tag);
         if ((db_point == NULL) || (db_point->pv_type() != DISCRETE_VALUE))
         {
@@ -268,7 +277,7 @@ web_logger_t **web_logger_t::read(int *cnt, const char *home_dir)
         }
         else
 	{
-          p->analog_points[p->num_analog] = (analog_point_t *) db_point;
+          p->discrete_points[p->num_discrete] = (discrete_point_t *) db_point;
           logfile->vprint("discrete point %d: %s\n", p->num_discrete, temp_tag);
         }
         logfile->vprint("Web Tag: %s\n", p->discrete_web_tags[p->num_discrete]);
@@ -277,8 +286,9 @@ web_logger_t **web_logger_t::read(int *cnt, const char *home_dir)
       else
       {
       }
-      mq_fd = mq_open("/home.carr.mq1", O_RDWR | O_CREAT, 0755, NULL);
-      if (mq_fd == ((mqd_t) -1))
+      p->mq_fd = mq_open("/adaptivertc.react.weblog1", 
+                   O_RDWR | O_CREAT, 0755, NULL);
+      if (p->mq_fd == ((mqd_t) -1))
       {
         perror("mq_open");
         logfile->vprint("Can not open queue\n");
@@ -299,7 +309,7 @@ web_logger_t **web_logger_t::read(int *cnt, const char *home_dir)
 
     struct tm nowtm;
     time_t now = time(NULL);
-    int next_secs = 0;
+    p->next_secs = 0;
   
     localtime_r(&now, &nowtm);
     printf("%s%ld secs since the Epoch\n", asctime(&nowtm), now);
@@ -310,14 +320,14 @@ web_logger_t **web_logger_t::read(int *cnt, const char *home_dir)
        ((i * p->sample_interval * 60) < (secs_after_hour)) && (i < 500); i++)
     {
       printf("%d: %d\n", i, i * p->sample_interval * 60);
-      next_secs = (i + 1) * p->sample_interval * 60;
-      printf("next: %d\n", next_secs);
+      p->next_secs = (i + 1) * p->sample_interval * 60;
+      printf("next: %ld\n", p->next_secs);
     }
     nowtm.tm_min = 0;
     nowtm.tm_sec = 0;
-    time_t next_time =  mktime(&nowtm);
-    next_time += next_secs;
-    localtime_r(&next_time, &nowtm);
+    p->next_time =  mktime(&nowtm);
+    p->next_time += p->next_secs;
+    localtime_r(&p->next_time, &nowtm);
 
   }
 

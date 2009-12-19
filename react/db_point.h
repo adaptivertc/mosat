@@ -517,6 +517,7 @@ public:
   time_t next_time;
   time_t next_secs;
   int sample_interval;
+  long mq_fd;
   void update(void);
   point_type_t point_type(void) {return WEB_LOGGER;};
   static web_logger_t **read(int *cnt, const char * home_dir);
