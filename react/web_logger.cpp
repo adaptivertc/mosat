@@ -123,9 +123,8 @@ void web_logger_t::update(void)
       continue;
     }
     bool val = discrete_points[i]->get_pv();
-    bool last_val = this->discrete_last_vals[i];
     printf("%d: val now: %c, last: %c\n", i, val ? 'T' : 'F',
-           true ? 'T' : 'F');
+          this->discrete_last_vals[i] ? 'T' : 'F');
     wtag = discrete_web_tags[i]; 
     if (val != this->discrete_last_vals[i])
     {
