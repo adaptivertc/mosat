@@ -1,6 +1,6 @@
 
 
-all: temp weblogger divide webbackground
+all: temp weblogger divide webbackground gen_graph
 
 temp: temp.cpp  
 	g++ -Wall -o temp temp.cpp  
@@ -15,6 +15,9 @@ webbackground: webbackground.cpp
 divide: divide.cpp
 	g++ -Wall -g -o divide divide.cpp
 
+gen_graph: gen_graph.cpp
+	g++ -Wall -o gen_graph gen_graph.cpp
+
 clean:
-	rm -vf temp weblogger divide webbackground
+	rm -vf temp weblogger divide webbackground gen_graph
 

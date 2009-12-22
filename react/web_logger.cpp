@@ -31,6 +31,7 @@ Member functions for web logger.
 #include <stdlib.h>
 #include <malloc.h>
 #include <string.h>
+#include <errno.h>
 
 #include <fcntl.h> 
 #include <sys/stat.h>
@@ -48,6 +49,8 @@ Member functions for web logger.
 
 #define WL_MIN_ARGS (8)
 
+FILE *fpl = NULL;
+
 /*************************************************************************/
 
 static int write_float_to_mq(long mq_fd, const char *tag, float value, 
@@ -63,6 +66,14 @@ static int write_float_to_mq(long mq_fd, const char *tag, float value,
   int rval = mq_send(mq_fd, (char *) &sdata, sizeof(sdata), 0);
   if (rval == -1)
   {
+    char myline[300];
+    myline[0] = '\0';
+    const char *sx = strerror_r(errno, myline, sizeof(myline));
+    if (fpl != NULL)
+    {
+      fprintf(fpl, "mq_send: %s\n", sx);
+      fflush(fpl);
+    }
     perror("************************************ mq_send");
   }
   printf("Send Float Success\n");
@@ -99,8 +110,15 @@ void web_logger_t::update(void)
   time_t now = time(NULL);
   const char *wtag;
   // floats get written at regular intervals
-  printf("Update %s, time = %ld, next = %ld\n", tag, now, next_time);
+  /***
+  printf("Update %s, time = %ld, next = %ld, interval %d\n", tag, now, next_time, sample_interval);
+  if (fpl != NULL)
+  {
+    fprintf(fpl, "Update %s, time = %ld, next = %ld, interval %d\n", tag, now, next_time, sample_interval);
+    fflush(fpl);
+  }
   logfile->vprint("web tags: %p\n", discrete_web_tags);
+  ***/
   if (now >= next_time)
   {
     for (int i=0; i < num_analog; i++)
@@ -109,8 +127,15 @@ void web_logger_t::update(void)
       wtag = analog_web_tags[i]; 
       float val = analog_points[i]->get_pv();
       write_float_to_mq(mq_fd, wtag, val, next_time, key);
+      /****
+      if (fpl != NULL)
+      {
+         fprintf(fpl, "float,%s,%0.1lf\n", wtag, val);
+         fflush(fpl);
+      }
+      *******/
     }
-    next_time += next_secs; 
+    next_time += sample_interval; 
   }
 
   // discretes get written when they change 
@@ -148,6 +173,8 @@ web_logger_t **web_logger_t::read(int *cnt, const char *home_dir)
   *cnt = 0;
   int count = 0;
 
+  fpl = fopen("/tmp/web_logger.txt", "a+");
+
   char path[200];
   safe_strcpy(path, home_dir, sizeof(path));
   safe_strcat(path, "/dbfiles/web_logger.dat", sizeof(path));
@@ -164,12 +191,12 @@ web_logger_t **web_logger_t::read(int *cnt, const char *home_dir)
   {
     char tmp[300];
     int argc;
-    char *argv[25];
+    char *argv[50];
     ltrim(line);
     rtrim(line);
 
     safe_strcpy(tmp, (const char*) line, sizeof(tmp));
-    argc = get_delim_args(tmp, argv, '|', 25);
+    argc = get_delim_args(tmp, argv, '|', 50);
     if (argc == 0)
     {
       continue;
@@ -197,7 +224,7 @@ web_logger_t **web_logger_t::read(int *cnt, const char *home_dir)
 
     safe_strcpy(p->tag, (const char*) argv[0], sizeof(p->tag));
     safe_strcpy(p->description, (const char*) argv[1], sizeof(p->description));
-    p->sample_interval = atol(argv[2]);
+    p->sample_interval = atol(argv[2]) * 60;
     p->url = strdup(argv[3]);
     p->key = strdup(argv[4]);
 
@@ -314,12 +341,12 @@ web_logger_t **web_logger_t::read(int *cnt, const char *home_dir)
     printf("%s%ld secs since the Epoch\n", asctime(&nowtm), now);
     int secs_after_hour = nowtm.tm_sec + (nowtm.tm_min * 60);
     printf("Secs after hour: %d\n", secs_after_hour);
-
+     
     for (int i=0; 
-       ((i * p->sample_interval * 60) < (secs_after_hour)) && (i < 500); i++)
+       ((i * p->sample_interval) < (secs_after_hour)) && (i < 500); i++)
     {
-      printf("%d: %d\n", i, i * p->sample_interval * 60);
-      p->next_secs = (i + 1) * p->sample_interval * 60;
+      printf("%d: %d\n", i, i * p->sample_interval);
+      p->next_secs = (i + 1) * p->sample_interval;
       printf("next: %ld\n", p->next_secs);
     }
     nowtm.tm_min = 0;

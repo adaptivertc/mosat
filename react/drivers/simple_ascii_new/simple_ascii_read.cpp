@@ -139,7 +139,7 @@ int ao_send_simple_ascii(int fd, int channel, int val,
   char buf[20];
   if (val < 0) val = 0;
   if (val > 65535) val = 65535;
-  snprintf(buf, sizeof(buf), "$WDO%02d%05d\n\r", channel, val);
+  snprintf(buf, sizeof(buf), "$WAO%02d%05d\n\r", channel, val);
   // $WAO0165535
   int ret_val = write(fd, buf, 11);
   printf("%d bytes written: %s", ret_val, buf);

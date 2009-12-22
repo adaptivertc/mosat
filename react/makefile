@@ -26,7 +26,7 @@ DRIVERDIRS = drivers/pci9111 drivers/pci7248 drivers/sim drivers/modbusdrv drive
 
 CDEBUG =
 
-CFLAGS = -Wall -g
+CFLAGS = -Wall
 #CFLAGS=-Wall -Wstrict-prototypes -O2
 
 LDFLAGS =

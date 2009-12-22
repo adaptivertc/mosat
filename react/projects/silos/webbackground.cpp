@@ -336,6 +336,7 @@ int main(int argc, char *argv[])
     {
       write_float_to_log(sdata.tag, 
            atof(sdata.value), sdata.the_time, sdata.key);
+      flush_web_log();
       rv = write_float_to_web(url, sdata.tag, 
           atof(sdata.value), sdata.the_time, sdata.key);
       if (rv != 0)
@@ -348,6 +349,7 @@ int main(int argc, char *argv[])
     {
       write_bool_to_log(sdata.tag, 
           sdata.value[0] != 0, sdata.the_time, sdata.key);
+      flush_web_log();
       rv = write_bool_to_web(url, sdata.tag, 
           sdata.value[0] != '0', sdata.the_time, sdata.key);
       if (rv != 0)
