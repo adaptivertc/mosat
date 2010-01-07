@@ -2,7 +2,8 @@
 #web2|Schematic Web Page|1.0|schematic.html|sout.html|
 #web1|Pump Web Page|1.0|pump_temp.html|pump_diagram.html|
 #web2|AC Web Page|1.0|ac_temp.html|ac_diagram.html|
-siloweb|Tina Web Page|1.0|test_template.html|silo.html|
+siloweb|Silo Web Page|1.0|test_template.html|silo.html|
+silotxt|Txt Web Page|1.0|test_template.txt|silo.txt|
 #Tag
 #Description
 #update interval

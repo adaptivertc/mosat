@@ -1,5 +1,5 @@
-Thu Dec 17 09:14:03 2009
-React PID: 2013
+Thu Dec 24 20:26:48 2009
+React PID: 5251
 SampleRate set to: 1.000000
 Loading db point factory from: ../../ai.so
 Reading AI ........
@@ -115,6 +115,7 @@ Reading web logger ........
 weblogger1|Log to pablasso.com|15|http://adaptivertc.pablasso.com/api/|key|temp_amb|temp_amb|float|hum_rel|hum_rel|float|S100_FAN1|ventilador|bool|
 2 analog points
 1 discrete points
+web tags: 0x82e92b0
 Tag = temp_amb
 Bad analog point: temp_amb
 Web Tag: temp_amb
@@ -210,7 +211,32 @@ Line: #    . . . .
 Line: #    Tag N
 Reading scan ........
 Reading web points ........
-siloweb|Tina Web Page|1.0|test_template.html|silo.html|
+siloweb|Silo Web Page|1.0|test_template.html|silo.html|
+RAW_TEMP)
+Args for AI = 1
+VTEMP)
+Args for AI = 1
+TEMP)
+Args for AI = 1
+RAW_HUM_1)
+Args for AI = 1
+VHUM_1)
+Args for AI = 1
+HUM_1)
+Args for AI = 1
+RAW_HUM_2)
+Args for AI = 1
+VHUM_2)
+Args for AI = 1
+HUM_2)
+Args for AI = 1
+Minutes)
+Args for AI = 1
+HUM_LO)
+Args for AI = 1
+HUM_HI)
+Args for AI = 1
+silotxt|Txt Web Page|1.0|test_template.txt|silo.txt|
 RAW_TEMP)
 Args for AI = 1
 VTEMP)
@@ -243,8 +269,8 @@ Parsing 1 Discrete Expressions ......
 -- Reading background scripts: .//dbfiles/background.dat
 bgx.txt
 Loading iodrivers from: .//dbfiles/drivers.dat
-../../drivers/simple_ascii_new/libsimple_ascii_drv.so|new_simple_ascii||/dev/ttyUSB0|
-Loading iodriver from: ../../drivers/simple_ascii_new/libsimple_ascii_drv.so
-Class factory function is: new_simple_ascii
-Thu Dec 17 09:14:04 2009
-No foreground script executing, use "kill -1 2013" or <CTRL-C> to stop
+../../drivers/sim_pump_low/libsimpumpdrv.so|new_simpumpdrv|||
+Loading iodriver from: ../../drivers/sim_pump_low/libsimpumpdrv.so
+Class factory function is: new_simpumpdrv
+Thu Dec 24 20:26:48 2009
+No foreground script executing, use "kill -1 5251" or <CTRL-C> to stop

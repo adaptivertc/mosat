@@ -15,12 +15,7 @@
 
 FILE *log_fp = NULL;
 FILE *last_fp = NULL;
-
-const char *log_dir = "/var/flash";
-const char *url = "http://adaptivertc.pablasso.com/api/";
-const char *qname = "/adaptivertc.react.weblog1";
-
-#define interval_mins (1) // 15 minutes.
+FILE *dfp = NULL;
 
 /*************************************************************************/
 
@@ -61,6 +56,7 @@ void spd_create_image(const char *base_name, const char *gtitle, bool window)
   fprintf(fp, "set timefmt \"%%Y/%%m/%%d-%%H:%%M:%%S\"\n");
   fprintf(fp, "plot \"%s.txt\" using 1:2 with lines lw 2 title \"temperatura\"", base_name);
   fprintf(fp, ", \"%s.txt\" using 1:3 with lines lw 2 title \"humedad\"", base_name);
+  //fprintf(fp, ", \"%s.txt\" using 1:4 with lines lw 2 title \"ventilador\"", base_name);
   //fprintf(fp, ", \"%s.txt\" using 1:3 with lines lw 2 title \"low\"", base_name);
   //fprintf(fp, ", \"%s.txt\" using 1:5 with lines lw 2 title \"high\"", base_name);
   //fprintf(fp, ", \"%s.txt\" using 1:6 with lines lw 2 title \"vhigh\"", base_name);
@@ -77,7 +73,7 @@ void spd_create_image(const char *base_name, const char *gtitle, bool window)
     snprintf(command, sizeof(command), "gnuplot %s > %s.png", fname, base_name);
   }
 
-  printf("Cmd: %s", command);
+  printf("Cmd: %s\n", command);
 
   system(command);
 
@@ -152,6 +148,24 @@ int main(int argc, char *argv[])
   {
     input_file = argv[1];
   }
+ else
+  {
+    printf("\nUsage: gen_graph input_file_name [start_date_time]\n\n");
+    printf("start_date_time in YYYY/MM/DD-HH:MM:SS\n\n");
+    printf("This program will create an output file for gnuplot of the form\n\n");
+    printf("Each line in the input file must be of the form:\n");
+    printf("tag:value,unix_time_stamp\n\n");
+    printf("Two example lines:\n\n");
+    printf("temp_amb:10,1261821000\n");
+    printf("hum_rel:72.5,1261821000\n\n");
+    printf("Each line of the output file will be of the form:\n\n");
+    printf("YYYY/MM/DD-HH:MM:SS<tab>temp_value<tab>humidity_value\n\n");
+    printf("temp_amb and hum_rel lines in the input are matched, and if time stamps are equal,\n"); 
+    printf("     used to create an output line\n\n");
+    printf("If no start_date_time is given, the whole file is output.\n");
+    printf("After the file is created, gnuplot is called to create BOTH a png file and interactive screen output\n");
+    exit(1);
+  }
 
   log_fp = fopen(input_file, "r");
   if (log_fp == NULL) 
@@ -167,22 +181,66 @@ int main(int argc, char *argv[])
     exit(1);
   }
 
+  FILE *dfp = fopen("poncitlan_d.txt", "r");
+  if (dfp == NULL) 
+  {
+    perror("poncitlan_d.txt");
+    exit(1);
+  }
+
   char line[300];
   char tag[50];
   char value1[50];
   char value2[50];
+  char valued[50];
   time_t the_time1;
   time_t the_time2;
+  time_t start_time;
+  time_t d_time;
   time_t last_time = 0;
   int rv;
   int line_num = 0;
   int n_errors = 0;
   int last_gap =0;
   struct tm mytm;
+  bool fan_on, next_fan_on;
+  float fan_val;
   
 
 //temp_amb:26,1261249200
 //hum_rel:24,1261249200
+
+  if (argc > 2)
+  {
+    strptime(argv[2], "%Y/%m/%d-%H:%M:%S", &mytm);
+    start_time = mktime(&mytm);
+  
+    for (int i=0; NULL !=  fgets(line, sizeof(line), log_fp); i++)
+    {
+      read_dat_line(line, tag, sizeof(tag), value1, sizeof(value1), &the_time1);
+      if ((0 == strcmp(tag, "temp_amb")) && the_time1 >= start_time) 
+      {
+        fgets(line, sizeof(line), log_fp);
+        break;
+      }
+     
+    }
+  }
+
+  fan_on = false;
+  next_fan_on = false;
+  fan_val = 50.0;
+  while (NULL !=  fgets(line, sizeof(line), dfp))
+  {
+    read_dat_line(line, tag, sizeof(tag), valued, sizeof(valued), &d_time);
+    printf("--- tag: %s, value:%s, %ld\n", tag, valued, d_time);
+    if (0 == strcmp(tag, "ventilador")) 
+    {
+      next_fan_on = valued[0] != '0';
+      printf("next_fan_on = %s\n", next_fan_on ? "true" : "false");
+      break;
+    }
+  }
 
   for (int i=0; NULL !=  fgets(line, sizeof(line), log_fp); i++)
   {
@@ -198,6 +256,7 @@ int main(int argc, char *argv[])
     {
       printf("Line %d: @@@@@@@@@@@@@@@@@@@@@@ NOT temp_amb: %s\n", line_num, tag);
       n_errors++;
+      continue;
     }
     if (NULL !=  fgets(line, sizeof(line), log_fp))
     {
@@ -208,12 +267,14 @@ int main(int argc, char *argv[])
       {
         printf("Line %d: &&&&&&&&&&&&&&&&&&&& NOT hum_rel: %s\n", line_num, tag);
         n_errors++;
+        continue;
       }
     }
     if (the_time1 != the_time2) 
     {
       printf("Line %d: ^^^^^^^^^^^^^^^^^^^ Bad times\n", line_num);
       n_errors++;
+      continue;
     }
     if ((last_time != 0) && ((the_time1 - last_time) > 1000))
     {
@@ -222,6 +283,23 @@ int main(int argc, char *argv[])
     }
     last_time = the_time1;
 
+    if (the_time1 > d_time)
+    {
+      fan_on = next_fan_on;
+      fan_val = fan_on ? 55.0 : 50.0;
+      printf("fan_val now is: %0.1f, fan is %s, next_fan_on\n", fan_val, fan_on ? "on" : "off");
+      while (NULL !=  fgets(line, sizeof(line), dfp))
+      {
+        read_dat_line(line, tag, sizeof(tag), valued, sizeof(valued), &d_time);
+        printf("--- tag: %s, value:%s, %ld\n", tag, valued, d_time);
+        if (0 == strcmp(tag, "ventilador")) 
+        {
+          printf("next_fan_on = %s\n", next_fan_on ? "true" : "false");
+          next_fan_on = valued[0] != '0';
+          break;
+        }
+      }
+    }
     //struct tm *localtime_r(const time_t *timep, struct tm *result);
     char time_str[100];
 
@@ -231,9 +309,16 @@ int main(int argc, char *argv[])
     printf("Time: %s\n", time_str);
 
 
-    fprintf(out_fp, "%s\t%s\t%s\n", time_str, value1, value2);
 
-    
+    if (argc > 2)
+    {
+      if (the_time1 >= (start_time + (60*60*24)))
+      {
+        break;
+      }
+    } 
+
+    fprintf(out_fp, "%s\t%s\t%s\t%0.1f\n", time_str, value1, value2, fan_val);
 
   }
   fclose(out_fp);
