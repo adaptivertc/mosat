@@ -1727,7 +1727,7 @@ void turn_off_fans()
 void read_info()
 {
         printf("#13\n\r");
-        calculate_humidity();
+        //calculate_humidity();
         
         printf("#%05u\n\r",raw_humidity_general_e);
         printf("#%05u\n\r",calculated_humidity_general_e);
@@ -2256,6 +2256,8 @@ while (1)
         *************************************************************************************************************************************
         *************************************************************************************************************************************/
         
+        actual_humidity = get_humidity();
+        
         if(read_di(SWITCH_AUTO) == 0)
         {
                 //printf("switch puesto en manual\n\r");
@@ -2284,7 +2286,7 @@ while (1)
                 }
                 else
                 {
-                        actual_humidity = get_humidity();
+                        
                         
                         rtc_get_time(0,&rtc_h, &rtc_m, &rtc_s, &rtc_hs);
                 
@@ -2318,6 +2320,7 @@ while (1)
                                                                }
                                                                if(on_timer == read_ao(MIN_TIME_ON))
                                                                {
+
                                                                   on_duty = 0;
                                                                   
                                                                }
