@@ -3,6 +3,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <signal.h>
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -18,6 +19,11 @@
 #define tp_serial (1)
 #define tp_tcpip (2)
 
+void my_sighandler(int signum)
+{
+  printf("Got signal\n");
+}
+
 // ssh dcarr@coyote2.dyndns.org:52483
 int main(int argc, char *argv[])
 {
@@ -28,6 +34,8 @@ int main(int argc, char *argv[])
   int connection_type;
  
   int unit_id;
+
+  signal(SIGIO , my_sighandler);
 
   if (argc == 5)
   {
