@@ -133,7 +133,7 @@ else
 #include "rt_modbus_crc.h"
 #include "mod_server_msg.h"
 
-#define TIME_OUT 9000
+#define TIME_OUT 30000
 
 // Declare your global variables here
 
@@ -150,8 +150,11 @@ uint8_t unit_id;
 uint8_t buf[128];
 unsigned int timer;
 int min_size;
+int total_size;
 int n;
+int i;
 int buf_index;
+int reply_size;
 
 // Input/Output Ports initialization
 // Port A initialization
@@ -257,32 +260,87 @@ buf_index = 0;
 while (1)
       {
       // Place your code here
-         if(rx_counter > 0)
+      if(rx_counter > 0)
          {
          	timer = 0;
+         	buf_index = 0;
+         	
          	while(rx_counter < 2)
          	{
                 	timer++;
                 	if(timer == TIME_OUT)
                         	break;
          	}
-         	if(timer == TIME_OUT)
+         	if(timer == TIME_OUT && rx_counter < 2)
          	{
          		flush_usart();
          		buf_index = 0;
          	}
          	else
          	{
-         	
-         		min_size = rt_modbus_min_bytes(buf);
+         	        
+         	        buf[buf_index++] = getchar();
+         	        buf[buf_index++] = getchar();
+         		//buf[buf_index++] = getchar();
          		
-         		buf[buf_index++] = getchar();
-         		buf[buf_index++] = getchar();
+         		min_size = rt_modbus_min_bytes(buf);
          		
          		timer = 0;
          		
+         		while(rx_counter < min_size - 2)
+         		{
+         		        timer++;
+         		        if(timer == TIME_OUT)
+         		                break;
+         		}
          		
-         		
+         		if(timer == TIME_OUT && rx_counter < min_size - 2)
+         		{
+         		        flush_usart();
+         		        buf_index = 0;
+         		}
+         		else
+         		{
+         		        for(i = 0; i < min_size - 2; i++)
+         		                buf[buf_index++] = getchar();
+         		        
+         		        total_size = rt_modbus_total_bytes(buf, min_size);
+         		        
+         		        if(total_size > min_size)
+         		        {
+         		                timer = 0;
+         		                
+         		                while(rx_counter < total_size - min_size)
+         		                {
+         		                        timer++;
+         		                        if(timer == TIME_OUT)
+         		                                break;
+         		                }
+         		                
+         		                if(timer == TIME_OUT && rx_counter < total_size - min_size)
+         		                {
+         		                  flush_usart();
+         		                  buf_index = 0;
+         		                }
+         		                else
+         		                {
+         		                          for(i = 0; i < total_size - min_size; i++)
+         		                                  buf[buf_index++] = getchar();
+         		                }
+         		        }
+         		        
+         		        if (unit_id != buf[0])
+                                        continue;
+         		        reply_size = rt_modbus_process_request(buf, total_size);
+         		        
+         		        add_CRC(buf, reply_size, 0xffff);
+         		        
+         		        PORTD.6 = 1;
+         		        
+         		        for(i = 0; i < reply_size; i++)
+         		                putchar(buf[i]);
+         		                //printf("%c",buf[i]);
+         		}
          	}
          }
       };
