@@ -6,7 +6,7 @@ RTCOMMON=../../librtcommon/librtcommon.a
 
 CC = g++ -Wall
 
-ALL= remote_record ntt runit ppc_record rtsync auto_report frames
+ALL= remote_record ntt runit ppc_record rtsync auto_report frames cambiahora
 
 all:	$(ALL)
 
@@ -46,3 +46,8 @@ auto_report:	auto_report.cpp
 
 frames:	frames.cpp
 	g++ -Wall -o frames frames.cpp $(RTCOMMON)
+
+mbiahora:	cambiahora.cpp
+	g++ -Wall -o cambiahora cambiahora.cpp $(RTCOMMON)
+
+
