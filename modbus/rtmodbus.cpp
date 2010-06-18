@@ -26,28 +26,16 @@ rtmodbus_t *rt_create_modbus_serial(const char *device_name, int baudrate, float
 }
 
 
-rtmodbus_t *rt_create_modbus_tcpip(const char *device)
+rtmodbus_t *rt_create_modbus_tcpip(const char *device, int port, int timeout, int unit_id)
 {
   // For right now, it only works with TCP/IP, but we need
   // to make it work with serial devices as well.
   printf("Creating a modbus connection: %s\n", device);
   char dstr[100];
   safe_strcpy(dstr, device, sizeof(dstr));
-  char *p = dstr;
-  const char *dest_port = "502";
+
   char *dest_ip = dstr;
-  while (*p != '\0')
-  {
-    if (*p == ':')
-    {
-       *p = '\0';
-       p++;
-       dest_port = p; 
-       break;
-    }
-    p++;
-  }
-  printf("ip = %s, port =%s\n", dest_ip, dest_port);
+  printf("ip = %s, port =%d\n", dest_ip, port);
 
   int sockfd;
   struct sockaddr_in dest_addr;   /* will hold the destination addr */
@@ -60,7 +48,7 @@ rtmodbus_t *rt_create_modbus_tcpip(const char *device)
   }
 
   struct timeval tv;
-  tv.tv_sec = 2;
+  tv.tv_sec = timeout;
   tv.tv_usec = 0;
   int err;
 
@@ -77,13 +65,13 @@ rtmodbus_t *rt_create_modbus_tcpip(const char *device)
   }
 
   dest_addr.sin_family = AF_INET;        /* host byte order */
-  short temp = (short) atol(dest_port); 
+  short temp = (short) port; 
   dest_addr.sin_port = htons(temp); /* short, network byte order */
   dest_addr.sin_addr.s_addr = inet_addr(dest_ip);
   printf("Using %s\n", dest_ip);
   memset(&(dest_addr.sin_zero), 8, 0);       /* zero the rest of the struct */
 
-  printf("Connecting on %s\n", dest_port);
+  printf("Connecting on %d\n", port);
   int n = connect(sockfd, (struct sockaddr *)&dest_addr,
                   sizeof(struct sockaddr));
   if (n < 0)
@@ -94,58 +82,92 @@ rtmodbus_t *rt_create_modbus_tcpip(const char *device)
 
   mod_tcpip_client_t *mtp = new mod_tcpip_client_t(sockfd, &dest_addr);
   MODSerial *modc = new MODSerial(mtp);
+  modc->set_address(unit_id);
   return modc;
 }
 
 
 rtmodbus_t *rt_create_modbus(const char *device)
 {
-  int baudrate;
-  float timeout;
-  int unit_id;
+  int baudrate = 9600;
+  int port = 502;
+  float timeout = 1;
+  int unit_id = 0;
   char sdev[80];
+  int mod_type;
+  int debug_level = 0;
+
   if (0 == strncmp("/dev/", device, 5))
   {
-    const char *p = device;
-    int i;
-    for (i=0; (*p != ':') && (*p != '\0'); i++, p++)
-    {
-      sdev[i] = device[i]; 
-    }
-    sdev[i] = '\0';
-    if (*p == '\0')
-    {
-      react_trace.dprintf(6, "Bad format for modbus string: %s\n", device);
-      exit(0); 
-    }
-    p++;
-    baudrate = atoi(p);
-    for ( ; (*p != ':') && (*p != '\0'); p++)
-    {
-    }
-    if (*p == '\0')
-    {
-      react_trace.dprintf(6, "Bad format for modbus string: %s\n", device);
-      exit(0); 
-    }
-    p++;
-    timeout = atof(p);
-    for ( ; (*p != ':') && (*p != '\0'); p++)
-    {
-    }
-    if (*p == '\0')
-    {
-      unit_id = 0;
-    }
-    else
-    {
-      p++;
-      unit_id = atoi(p);
-    }
-    return rt_create_modbus_serial(sdev, baudrate, timeout, unit_id);
+    mod_type = RT_MODBUS_SERIAL;
   }
   else
   {
-    return rt_create_modbus_tcpip(device);
+    mod_type = RT_MODBUS_TCPIP;
   }
+
+  const char *p = device;
+  int i;
+  for (i=0; (*p != ':') && (*p != '\0'); i++, p++)
+  {
+    sdev[i] = device[i]; 
+  }
+  sdev[i] = '\0';
+  printf("sdev = %s\n", sdev);
+  if (*p != '\0')
+  {
+    p++;
+    if (mod_type == RT_MODBUS_SERIAL)
+    {
+      baudrate = atoi(p);
+      printf("baudrate = %d\n", baudrate);
+    }
+    else
+    {
+      port = atoi(p);
+      printf("port = %d\n", port);
+    }
+  }
+
+  for ( ; (*p != ':') && (*p != '\0'); p++)
+  {
+  }
+  if (*p != '\0')
+  {
+    p++;
+    timeout = atof(p);
+    printf("timeout = %f\n", timeout);
+  }
+
+  for ( ; (*p != ':') && (*p != '\0'); p++)
+  {
+  }
+  if (*p != '\0')
+  {
+    p++;
+    unit_id = atoi(p);
+    printf("unit id = %d\n", unit_id);
+  }
+
+  for ( ; (*p != ':') && (*p != '\0'); p++)
+  {
+  }
+  if (*p != '\0')
+  {
+    p++;
+    debug_level = atoi(p);
+    printf("debug level = %d\n", debug_level);
+  }
+
+  rtmodbus_t *modb;
+  if (0 == strncmp("/dev/", device, 5))
+  {
+    modb = rt_create_modbus_serial(sdev, baudrate, timeout, unit_id);
+  }
+  else
+  {
+    modb = rt_create_modbus_tcpip(sdev, port, timeout, unit_id);
+  }
+  modb->set_debug_level(debug_level);
+  return modb;
 }

@@ -115,8 +115,8 @@ int rt_open_serial(const char *port, int baud_rate, float timeout)
     char buf[60];
     snprintf(buf, sizeof(buf), "Opening %s", port);
     perror(buf) ;
-    exit(-1) ;
-    //return -1 ;
+    //exit(-1) ;
+    return fd;
   }
   if (0 == isatty(fd))
   {
@@ -132,8 +132,8 @@ int rt_open_serial(const char *port, int baud_rate, float timeout)
   if (tcgetattr (fd,&saved_tty_parameters) < 0)
   {
     perror("Can't get terminal parameters ");
-    exit(-1) ;
-    //return -1 ;
+    //exit(-1) ;
+    return -1 ;
   }
   /* set the fields */
   bzero(&rt_tio,sizeof(&rt_tio));
@@ -255,16 +255,16 @@ int rt_open_serial(const char *port, int baud_rate, float timeout)
   if (-1 == fcntl(fd, F_SETFL, FASYNC))
   {
     perror("fcntl");
-    exit(-1) ;
-    //return -1 ;
+    //exit(-1) ;
+    return -1 ;
   }
 
   /* write the settings for the serial port */
   if (tcsetattr(fd,TCSANOW,&rt_tio) <0)
   {
     perror("Can't set terminal parameters ");
-    exit(-1) ;
-    //return -1 ;
+    //exit(-1) ;
+    return -1 ;
   }
   
   /* flush the serial port */

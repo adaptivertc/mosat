@@ -22,7 +22,7 @@ INCLUDES = hp2mod.h hprtu.h modio.h modsim.h mtype.h trace.h evlog.h
 %.o:	%.cpp $(INCLUDES)
 	$(CPP) -c -o $@ -Wall $<
 
-all:	 $(DIR)librtmodbus.so $(DIR)librtmodbus.a $(DIR)myconnect
+all:	 $(DIR)librtmodbus.so $(DIR)librtmodbus.a $(DIR)myconnect $(DIR)find_serial_ports
 
 $(DIR)%.o:    %.c $(INCLUDES)
 	$(CC) -c -o $@ $<
@@ -38,6 +38,9 @@ $(DIR)myconnect.o: myconnect.cpp $(INCLUDES)
 
 $(DIR)myconnect: $(DIR)myconnect.o
 	$(CPP) -o $(DIR)myconnect $(DIR)myconnect.o  $(RTMODBUS) $(RTCOMMON) 
+
+$(DIR)find_serial_ports:  find_serial_ports.cpp $(INCLUDES)
+	$(CPP) -o $(DIR)find_serial_ports find_serial_ports.cpp -lrt $(RTMODBUS) 
 
 #librtmodbus.a: trace.o modsim.o trace.h swap.o modtcpip_client.o\
 #                modtcpip.o hexascii.o rtmodbus.o modio.o \

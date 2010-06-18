@@ -40,8 +40,12 @@ tst_serial_slave: tst_serial_slave.cpp $(INCLUDES)
 tst_radio_slave: tst_radio_slave.cpp $(INCLUDES)
 	g++ -o tst_radio_slave tst_radio_slave.cpp -lrt ./librtmodbus.a
 
+
 tst_serial_master:  tst_serial_master.cpp $(INCLUDES)
 	g++ -o tst_serial_master tst_serial_master.cpp -lrt ./librtmodbus.a
+
+find_serial_ports:  find_serial_ports.cpp $(INCLUDES)
+	g++ -o find_serial_ports find_serial_ports.cpp -lrt ./librtmodbus.a
 
 tst_radio_master:  tst_radio_master.cpp $(INCLUDES)
 	g++ -o tst_radio_master tst_radio_master.cpp -lrt ./librtmodbus.a
