@@ -7,8 +7,23 @@
 int main(int argc, char *argv[])
 {
   FILE *fp1= fopen("xx.txt", "r");
+  if (fp1 == NULL)
+  {
+    printf("can't open 'xx.txt'\n");
+    exit(1);
+  }
   FILE *fp2 = fopen("out_xx.txt", "w");
+  if (fp2 == NULL)
+  {
+    printf("can't open 'out_xx.txt'\n");
+    exit(1);
+  }
   FILE *fp3 = fopen("fxx.txt", "r");
+  if (fp3 == NULL)
+  {
+    printf("can't open 'fxx.txt'\n");
+    exit(1);
+  }
 
   char line[300];
   float tmp1, hum1, fan_val;

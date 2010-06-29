@@ -1,16 +1,19 @@
 
+export CPATH=../../../include
 
-all: temp weblogger divide webbackground gen_graph dump_dat
+RTCOMMON=../../../librtcommon/librtcommon.a
+
+all: temp weblogger divide webbackground gen_graph dump_dat read_sim_file gen_react
 
 temp: temp.cpp  
 	g++ -Wall -o temp temp.cpp  
-	../../pl out_temp_hum_sim.txt 
+#	../../pl out_temp_hum_sim.txt 
 
 weblogger: weblogger.cpp
 	g++ -Wall -lrt -o weblogger weblogger.cpp
 
 webbackground: webbackground.cpp
-	g++ -Wall -lrt -o webbackground webbackground.cpp
+	g++ -Wall -lrt -o webbackground webbackground.cpp $(RTCOMMON)
 
 divide: divide.cpp
 	g++ -Wall -g -o divide divide.cpp
@@ -21,6 +24,12 @@ gen_graph: gen_graph.cpp
 dump_dat: dump_dat.cpp
 	g++ -Wall -o dump_dat dump_dat.cpp
 
+read_sim_file: read_sim_file.cpp
+	g++ -Wall -o read_sim_file read_sim_file.cpp
+
+gen_react: gen_react.cpp
+	g++ -Wall -o gen_react gen_react.cpp
+
 clean:
-	rm -vf temp weblogger divide webbackground gen_graph
+	rm -vf temp weblogger divide webbackground gen_graph read_sim_file gen_react
 

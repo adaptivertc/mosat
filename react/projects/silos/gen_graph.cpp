@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <math.h>
 
 #include <fcntl.h>
 #include <sys/stat.h>
@@ -56,7 +57,7 @@ void spd_create_image(const char *base_name, const char *gtitle, bool window)
   fprintf(fp, "set timefmt \"%%Y/%%m/%%d-%%H:%%M:%%S\"\n");
   fprintf(fp, "plot \"%s.txt\" using 1:2 with lines lw 2 title \"temperatura\"", base_name);
   fprintf(fp, ", \"%s.txt\" using 1:3 with lines lw 2 title \"humedad\"", base_name);
-  //fprintf(fp, ", \"%s.txt\" using 1:4 with lines lw 2 title \"ventilador\"", base_name);
+  fprintf(fp, ", \"%s.txt\" using 1:4 with lines lw 2 title \"ventilador\"", base_name);
   //fprintf(fp, ", \"%s.txt\" using 1:3 with lines lw 2 title \"low\"", base_name);
   //fprintf(fp, ", \"%s.txt\" using 1:5 with lines lw 2 title \"high\"", base_name);
   //fprintf(fp, ", \"%s.txt\" using 1:6 with lines lw 2 title \"vhigh\"", base_name);
@@ -198,7 +199,6 @@ int main(int argc, char *argv[])
   time_t start_time;
   time_t d_time;
   time_t last_time = 0;
-  int rv;
   int line_num = 0;
   int n_errors = 0;
   int last_gap =0;
@@ -230,6 +230,9 @@ int main(int argc, char *argv[])
   fan_on = false;
   next_fan_on = false;
   fan_val = 50.0;
+  float tnow = 0, hnow = 0, tlast = 0, hlast = 0;
+  int hcount = 0;
+  int tcount = 0;
   while (NULL !=  fgets(line, sizeof(line), dfp))
   {
     read_dat_line(line, tag, sizeof(tag), valued, sizeof(valued), &d_time);
@@ -258,6 +261,7 @@ int main(int argc, char *argv[])
       n_errors++;
       continue;
     }
+    tnow = atof(value1);
     if (NULL !=  fgets(line, sizeof(line), log_fp))
     {
       line_num++;
@@ -269,6 +273,7 @@ int main(int argc, char *argv[])
         n_errors++;
         continue;
       }
+      hnow = atof(value2);
     }
     if (the_time1 != the_time2) 
     {
@@ -318,7 +323,31 @@ int main(int argc, char *argv[])
       }
     } 
 
-    fprintf(out_fp, "%s\t%s\t%s\t%0.1f\n", time_str, value1, value2, fan_val);
+    hcount++;
+    if (hcount > 1)
+    {
+      if (fabs(hnow - hlast) > 2) 
+      {
+        hnow = hlast;
+        hcount = 0;
+      }
+    }
+
+    tcount++;
+    if (tcount > 1)
+    {
+      if (fabs(tnow - tlast) > 1) 
+      {
+        tnow = tlast;
+        tcount = 0;
+      }
+    }
+
+    fan_val = ((hnow > 70) && (hnow < 78)) ? 55.0 : 50.0;
+
+    fprintf(out_fp, "%s\t%0.1f\t%0.1f\t%0.1f\n", time_str, tnow, hnow, fan_val);
+    tlast = tnow;
+    hlast = hnow;
 
   }
   fclose(out_fp);

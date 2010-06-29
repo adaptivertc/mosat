@@ -11,7 +11,16 @@
 #include <sys/stat.h>
 #include <mqueue.h>
 
+#include "rtcommon.h"
+
 #include "../../silodata.h"
+
+/**************************************************************************
+
+This program works with REACT and waits for messages of single values or
+arrays of values to wite to the silo website.
+
+**************************************************************************/
 
 FILE *log_fp = NULL;
 FILE *last_fp = NULL;
@@ -19,6 +28,7 @@ FILE *last_fp = NULL;
 const char *log_dir = "/var/flash";
 const char *url = "http://adaptivertc.pablasso.com/api/";
 const char *qname = "/adaptivertc.react.weblog1";
+const char *the_key = "examplesilokey";
 
 #define interval_mins (1) // 15 minutes.
 
@@ -73,6 +83,65 @@ void make_day_file_name(time_t the_time,
   snprintf(fname, size_fname, "%s/%s%s%s", loghome, pre, buf1, post);
 }
    
+/*************************************************************************/
+
+int write_temp_col_to_web(const char *url, int column, 
+                  float *values, int n_values, time_t the_time, const char *key)
+{
+  //curl -s -S -d \"column=2&total=5&time=12345&api_key=examplesilokey&temperatures=1,2,3,4,5\" http://adaptivertc.pablasso.com/api/temperature_add
+
+//--silent --show-error --data
+
+  char cmd[1000];
+  char temps[500];
+  char tval[8];
+
+  if (n_values < 1) return 0;
+
+  snprintf(temps, sizeof(temps), "%0.1lf", values[0]);
+  for (int i=1; i < n_values; i++)
+  {
+    snprintf(tval, sizeof(tval), ",%0.1lf", values[i]);
+    safe_strcat(temps, tval, sizeof(temps));
+  }
+
+
+/**
+  snprintf(cmd, sizeof(cmd), 
+       "wget --quiet --output-document=- --post-data='column=%d&total=%d&time=%ld&api_key=%s&temperatures=%s' %stemperature_add",  
+       column, n_values,the_time, key, temps, url);
+***/
+  
+  snprintf(cmd, sizeof(cmd), 
+     "curl --silent --show-error --data \"column=%d&total=%d&time=%ld&api_key=%s&temperatures=%s\" %stemperature_add",  
+       column, n_values,the_time, key, temps, url);
+
+  printf("%s\n", cmd);
+
+  printf("result is: ");
+  fflush(stdout);
+  int retval = system(cmd);
+  printf("\nsystem returned: %d\n", retval);
+  printf("\n");
+  return retval;
+  //return 0;
+}
+
+/*************************************************************************/
+
+int read_float_tags_from_web(const char *url, const char *tag, 
+                  float value, time_t the_time, const char *key)
+{
+  return 0;
+}
+
+/*************************************************************************/
+
+int read_bool_tags_from_web(const char *url, const char *tag, 
+              bool value, time_t the_time, const char *key)
+{
+  return 0;
+}
 
 /*************************************************************************/
 
@@ -266,10 +335,63 @@ int flush_web_log(void)
   return fflush(log_fp);
 }
 
+/*************************************************************************/
+
+void write_tag_to_web_and_log(silodata_t sdata)
+{
+
+    printf("Time: %ld\n", sdata.the_time);
+    printf("Key: %s\n", sdata.key);
+
+    printf("Tag: %s\n", sdata.td.tag);
+    printf("Type: %s\n", sdata.td.type);
+    printf("Value: %s\n", sdata.td.value);
+
+
+    int rv;
+
+    if (0 == strncasecmp("float", sdata.td.type, 5))
+    {
+      write_float_to_log(sdata.td.tag, 
+           atof(sdata.td.value), sdata.the_time, sdata.key);
+      flush_web_log();
+      rv = write_float_to_web(url, sdata.td.tag, 
+          atof(sdata.td.value), sdata.the_time, sdata.key);
+      if (rv != 0)
+      {
+         perror("write_float_to_web\n");
+         printf("Return Value: %d\n", rv);
+      }
+    }
+    else if (0 == strncasecmp("bool", sdata.td.type, 4))
+    {
+      write_bool_to_log(sdata.td.tag, 
+          sdata.td.value[0] != 0, sdata.the_time, sdata.key);
+      flush_web_log();
+      rv = write_bool_to_web(url, sdata.td.tag, 
+          sdata.td.value[0] != '0', sdata.the_time, sdata.key);
+      if (rv != 0)
+      {
+         perror("write_bool_to_web\n");
+         printf("Return Value: %d\n", rv);
+      }
+    }
+    else
+    {
+      printf("****** Bad type in message: %s\n", sdata.td.type);
+    }
+}
 
 /*************************************************************************/
 
 int main(int argc, char *argv[])
+{
+  float tvals[] = {22.4, 23.4, 24.2, 34.2, 33.5};
+
+  write_temp_col_to_web(url, 5, tvals, sizeof(tvals)/sizeof(tvals[0]), time(NULL), the_key);
+}
+
+int xxmain(int argc, char *argv[])
 {
   time_t now;
 
@@ -302,7 +424,6 @@ int main(int argc, char *argv[])
 
   now = time(NULL);
 
-  int rv;
 
   time_t last_time = now;
 
@@ -319,51 +440,25 @@ int main(int argc, char *argv[])
       perror("mq_recieve");
     }
     memcpy(&sdata, msgbuf, sizeof(sdata));
-    printf("Tag: %s\n", sdata.tag);
-    printf("Type: %s\n", sdata.type);
-    printf("Key: %s\n", sdata.key);
-    printf("Value: %s\n", sdata.value);
-    printf("Time: %ld\n", sdata.the_time);
 
     if (day_changed(last_time, sdata.the_time))
     {
       open_log_append();
       last_time = sdata.the_time;
     }
-    
 
-    if (0 == strncasecmp("float", sdata.type, 5))
+    if (sdata.ctype != SILO_DATA_TAG)
     {
-      write_float_to_log(sdata.tag, 
-           atof(sdata.value), sdata.the_time, sdata.key);
-      flush_web_log();
-      rv = write_float_to_web(url, sdata.tag, 
-          atof(sdata.value), sdata.the_time, sdata.key);
-      if (rv != 0)
-      {
-         perror("write_float_to_web\n");
-         printf("Return Value: %d\n", rv);
-      }
+      write_tag_to_web_and_log(sdata);
     }
-    else if (0 == strncasecmp("bool", sdata.type, 4))
+    else if (sdata.ctype != SILO_DATA_COLUMN)
     {
-      write_bool_to_log(sdata.tag, 
-          sdata.value[0] != 0, sdata.the_time, sdata.key);
-      flush_web_log();
-      rv = write_bool_to_web(url, sdata.tag, 
-          sdata.value[0] != '0', sdata.the_time, sdata.key);
-      if (rv != 0)
-      {
-         perror("write_bool_to_web\n");
-         printf("Return Value: %d\n", rv);
-      }
     }
     else
     {
-      printf("****** Bad type in message: %s\n", sdata.type);
     }
-
   }
+
 
   /*******
   char line[300];

@@ -23,10 +23,10 @@ mqd_t mq_fd;
 int write_float_to_mq(const char *tag, float value, time_t the_time, const char *key)
 {
   silodata_t sdata;
-  snprintf(sdata.tag, sizeof(sdata.tag), "%s", tag);
-  snprintf(sdata.type, sizeof(sdata.type), "float");
+  snprintf(sdata.td.tag, sizeof(sdata.td.tag), "%s", tag);
+  snprintf(sdata.td.type, sizeof(sdata.td.type), "float");
   snprintf(sdata.key, sizeof(sdata.key), "%s", key);
-  snprintf(sdata.value, sizeof(sdata.value), "%0.1f", value);
+  snprintf(sdata.td.value, sizeof(sdata.td.value), "%0.1f", value);
   sdata.the_time = the_time;
 
   int rval = mq_send(mq_fd, (char *) &sdata, sizeof(sdata), 0);
@@ -44,10 +44,10 @@ int write_float_to_mq(const char *tag, float value, time_t the_time, const char 
 int write_bool_to_mq(const char *tag, bool value, time_t the_time, const char *key)
 {
   silodata_t sdata;
-  snprintf(sdata.tag, sizeof(sdata.tag), "%s", tag);
-  snprintf(sdata.type, sizeof(sdata.type), "bool");
+  snprintf(sdata.td.tag, sizeof(sdata.td.tag), "%s", tag);
+  snprintf(sdata.td.type, sizeof(sdata.td.type), "bool");
   snprintf(sdata.key, sizeof(sdata.key), "%s", key);
-  snprintf(sdata.value, sizeof(sdata.value), "%c", value ? '1' : '0');
+  snprintf(sdata.td.value, sizeof(sdata.td.value), "%c", value ? '1' : '0');
   sdata.the_time = the_time;
 
   int rval = mq_send(mq_fd, (char *) &sdata, sizeof(sdata), 0);
