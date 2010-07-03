@@ -26,6 +26,8 @@ int main(int argc, char *argv[])
   int serial_fd;
   long baud_rate;
   uint8_t unit_id;
+  int n_unit_ids;
+  uint8_t unit_ids[20];
   uint8_t buf[512];
   uint8_t ascii[1025];
 
@@ -44,10 +46,17 @@ int main(int argc, char *argv[])
     baud_rate = atol(argv[2]);
   } 
 
-  unit_id = 1; 
+  n_unit_ids = 1;
+  unit_ids[0] = 1; 
   if (argc > 3)
   {
-    unit_id = (uint8_t) atol(argv[3]);
+    n_unit_ids = 0;
+    for (int i=3; i < argc; i++) 
+    {
+      n_unit_ids++;
+      unit_ids[i-3] = (uint8_t) atol(argv[i]);
+      printf("Accepting unit id: %d\n", unit_ids[i-3]);
+    }
   } 
 
   signal(SIGIO , my_sighandler);
@@ -170,9 +179,17 @@ int main(int argc, char *argv[])
     binary_to_hexascii(ascii, buf, total_size);
     printf("Message: %s\n", ascii);
 
-    printf("Unit id in message is: %d, my unit id is: %d\n", 
-             (int) buf[0], (int) unit_id);
-    if (unit_id != buf[0])
+    printf("Unit id in message is: %d, my unit ids are:", 
+             (int) buf[0]);
+    bool unit_id_found = false;
+    for (int i=0; i < n_unit_ids; i++) 
+    {
+      printf(" %d", unit_ids[i]);
+      if (buf[0] == unit_ids[i]) unit_id_found = true;
+    }
+    printf("\n");
+
+    if (not unit_id_found)
     {
       printf("The message is NOT for me, ignoring\n");
       continue;
