@@ -145,7 +145,7 @@ extern "C" io_driver_t *new_reactmodbus(react_drv_base_t *r, const char *option)
 
 /***********************************************************************/
 
-void reactmodbus_driver_t::add_io(const char *io_type, int opcode, int n_io, int modbus_offset, int channel_offset)
+void reactmodbus_driver_t::add_io(int a_modbus_id, const char *io_type, int opcode, int n_io, int modbus_offset, int channel_offset)
 {
   if (0 == strcasecmp("DO", io_type))
   {
@@ -167,22 +167,33 @@ void reactmodbus_driver_t::add_io(const char *io_type, int opcode, int n_io, int
     return;
   }
 
-  if ((channel_offset + n_io) > 64)
+  if ((channel_offset + n_io) > REACT_MAX_MOD_AI)
   {
-    logfile->vprint("******* can not map past 64 for %s definitions, chan offset: %d, n: %d, total: %d\n", 
-           io_type, channel_offset, n_io, channel_offset + n_io);
+    logfile->vprint("******* can not map past %de for %s definitions, chan offset: %d, n: %d, total: %d\n", 
+           REACT_MAX_MOD_AI, io_type, channel_offset, n_io, channel_offset + n_io);
     return;
   }
+
 
   if (0 == strcasecmp("DI", io_type))
   {
     mod_io[n_mod_io].type = REACT_MOD_DI; 
     logfile->vprint("Type DI, ");
   }
+  if (0 == strcasecmp("DO", io_type))
+  {
+    mod_io[n_mod_io].type = REACT_MOD_DO; 
+    logfile->vprint("Type DO, ");
+  }
   else if (0 == strcasecmp("AI", io_type))
   {
     mod_io[n_mod_io].type = REACT_MOD_AI; 
-    logfile->vprint("Type DI, ");
+    logfile->vprint("Type AI, ");
+  }
+  else if (0 == strcasecmp("AO", io_type))
+  {
+    mod_io[n_mod_io].type = REACT_MOD_AO; 
+    logfile->vprint("Type AO, ");
   }
   else
   {
@@ -190,6 +201,8 @@ void reactmodbus_driver_t::add_io(const char *io_type, int opcode, int n_io, int
     return;
   }
   
+  if  
+  mod_io[n_mod_io].modbus_id = a_modbus_id; 
   mod_io[n_mod_io].opcode = opcode; 
   mod_io[n_mod_io].n = n_io; 
   mod_io[n_mod_io].modbus_offset = modbus_offset; 
@@ -257,7 +270,7 @@ reactmodbus_driver_t::reactmodbus_driver_t(react_drv_base_t *react, const char *
   n_aos_to_send = 0;
   alt_do_opcode = false;
   alt_ao_opcode = false;
-  logfile->vprint("initializing modbus\n");
+  logfile->vprint("---- initializing modbus %s ---------------------------\n", option);
   //modbus = rt_create_modbus("127.0.0.1:502");
   //modbus = rt_create_modbus("192.168.1.104:502");
   if (option == NULL)
@@ -280,9 +293,12 @@ reactmodbus_driver_t::reactmodbus_driver_t(react_drv_base_t *react, const char *
     exit(0);
   }
   //modbus->set_debug_level(3);
-  modbus->set_debug_level(0);
+  //modbus->set_debug_level(0);
   //modbus->set_address(0);
   logfile->vprint("DONE initializing modbus\n");
+
+  default_modbus_id = modbus->get_address();
+  logfile->vprint("Default modbus address is: %d\n", default_modbus_id);
 
   logfile->vprint("Initializing semaphores\n");
   if (0 != sem_init(&read_mutex_sem, 0, 1))
@@ -304,20 +320,36 @@ reactmodbus_driver_t::reactmodbus_driver_t(react_drv_base_t *react, const char *
   int argc;
   int line_num;
   
-  // <DI or AI>|<opcode>|<>|<modbus offset|<channel offset>|
+  // <DI or AI>|<opcode>|<number of io>|<modbus offset|<channel offset>|
+
+/****** Example file contents
+1|DI|1|16|0|0|
+1|AI|3|16|0|0
+2|DI|2|16|0|16|
+2|AI|4|16|0|16|
+3|DI|3|16|0|32|
+3|AI|3|16|0|32|
+# modbus id
+# io type (DI or AI>)
+# opcode 1=DO, 2=DI, 3=Register, 4=AI
+# number of io points
+# modbus offset
+# channel offset
+********/
+
  
   argv = df->first("./dbfiles/modbus.dat", &argc, &line_num);
 
   n_mod_io = 0;
   while (argv != NULL)
   {
-    if (argc != 5)
+    if (argc != 6)
     {
       logfile->vprint("**** modbus.dat: wrong number of args: %d, on line %d\n", argc, line_num);
       argv = df->next(&argc, &line_num);
       continue;
     }
-    for (int i=0; i < 5; i++)
+    for (int i=0; i < 6; i++)
     {
       logfile->vprint("'%s', ", argv[i]);
     } 
@@ -325,7 +357,7 @@ reactmodbus_driver_t::reactmodbus_driver_t(react_drv_base_t *react, const char *
 
     logfile->vprint("Adding I/O\n");
 
-    this->add_io(argv[0], atoi(argv[1]), atoi(argv[2]), atoi(argv[3]), atoi(argv[4]));
+    this->add_io(atoi(argv[0]), argv[1], atoi(argv[2]), atoi(argv[3]), atoi(argv[4]), atoi(argv[5]));
 
     argv = df->next(&argc, &line_num);
   }
@@ -348,6 +380,7 @@ reactmodbus_driver_t::reactmodbus_driver_t(react_drv_base_t *react, const char *
   }
   logfile->vprint("DONE Creating thread\n");
 
+  logfile->vprint("---- DONE initializing modbus ---------------------------\n");
 }
 
 /***********************************************************************/
@@ -451,6 +484,7 @@ void reactmodbus_driver_t::read_mod_io(void)
 {
   for (int i=0; i < n_mod_io; i++)
   {
+    modbus->set_address(mod_io[i].modbus_id);
     switch (mod_io[i].type)
     {
       case REACT_MOD_DI:
@@ -493,6 +527,60 @@ void reactmodbus_driver_t::read_mod_io(void)
 
 /***********************************************************************/
 
+void reactmodbus_driver_t::map_do(int ch, int *modbus_ch, int *modbus_id, int *opcode)
+{
+  for (int i=0; i < n_do_map; i++)
+  {
+    int min = do_map[i].channel_offset;
+    int max = do_map[i].channel_offset + do_map[i].n - 1;
+    if ((ch >= min) && (ch <= max))
+    {
+      *modbus_ch = do_map[i].modbus_offset + (ch - do_map[i].channel_offset);
+      *modbus_id = do_map[i].modbus_id;
+      *opcode = do_map[i].opcode;
+      return;
+    }
+  }
+  *modbus_ch = -1;
+  *modbus_id = -1;
+  *opcode = -1;
+}
+
+/***********************************************************************/
+
+void reactmodbus_driver_t::map_ao(int ch, int *modbus_ch, int *modbus_id, int *opcode)
+{
+/**
+struct mod_io_def_t
+{
+  int modbus_id; // With a radio, or RS485, you can have multiple modbus ids for a single serial port 
+  int type;
+  int opcode;
+  int n;
+  int modbus_offset;
+  int channel_offset;
+};
+**/
+
+  for (int i=0; i < n_ao_map; i++)
+  {
+    int min = ao_map[i].channel_offset;
+    int max = ao_map[i].channel_offset + ao_map[i].n - 1;    
+    if ((ch >= min) && (ch <= max))
+    {
+      *modbus_ch = ao_map[i].modbus_offset + (ch - ao_map[i].channel_offset);
+      *modbus_id = ao_map[i].modbus_id;
+      *opcode = ao_map[i].opcode;
+      return;
+    }
+  }
+  *modbus_ch = -1;
+  *modbus_id = -1;
+  *opcode = -1;
+}
+
+/***********************************************************************/
+
 static int mycounter = 0;
 
 void reactmodbus_driver_t::read_thread(void)
@@ -511,19 +599,47 @@ void reactmodbus_driver_t::read_thread(void)
       val = ao_vals_to_send[n_aos_to_send].val;
       sem_post(&output_mutex_sem);
 
-      // Be extremely careful, NEVER do a modbus transmit when a semaphore
-      // is held that could hold up the main thread!!!
-      // Also, ONLY do modbus trainsmits from a background thread.
-      // You must NEVER block react.
-      if (alt_ao_opcode)
+      if (n_ao_map > 0)
       {
-        // SOME do NOT support write single register!!
-        modbus->write_multiple_regs(ch, 1, &val);
-
+        int modbus_opcode, modbus_id, modbus_ch;
+        this->map_ao(ch, &modbus_ch, &modbus_id, &modbus_opcode);
+        if (modbus_ch == -1)
+        {
+          printf("No mapping for channel\n");
+          continue;
+        }
+        modbus->set_address(modbus_id);
+        switch (modbus_opcode)
+        {
+          case 6: // Use the send single register opcode. 
+            modbus->write_reg(modbus_ch, val);
+            break;
+          case 9: // Use the send multipl register opcode. 
+            modbus->write_multiple_regs(modbus_ch, 1, &val);
+            break;
+          default:
+            printf("Bad AO opcode: %d, should be 6 or 9\n", modbus_opcode);
+            break;
+        }
       }
       else
       {
-        modbus->write_reg(ch, val);
+
+        // Be extremely careful, NEVER do a modbus transmit when a semaphore
+        // is held that could hold up the main thread!!!
+        // Also, ONLY do modbus trainsmits from a background thread.
+        // You must NEVER block react.
+        modbus->set_address(default_modbus_id);
+        if (alt_ao_opcode)
+        {
+          // SOME do NOT support write single register!!
+          modbus->write_multiple_regs(ch, 1, &val);
+
+        }
+        else
+        {
+          modbus->write_reg(ch, val);
+        }
       }
     }
 
@@ -538,26 +654,55 @@ void reactmodbus_driver_t::read_thread(void)
       val = do_vals_to_send[n_dos_to_send].val;
       sem_post(&output_mutex_sem);
 
-      // Be extremely careful, NEVER do a modbus transmit when a semaphore
-      // is held that could hold up the main thread!!!
-      // Also, ONLY do modbus trainsmits from a background thread.
-      // You must NEVER block react.
-      //modbus->set_address(1);
-      if (alt_ao_opcode)
+      if (n_do_map > 0)
       {
-        // SOME do NOT support send single DO!!
-        modbus->send_multiple_dos(ch, 1, &val);
+        int modbus_opcode, modbus_id, modbus_ch;
+        this->map_do(ch, &modbus_ch, &modbus_id, &modbus_opcode);
+        if (modbus_ch == -1)
+        {
+          printf("No mapping for channel\n");
+          continue;
+        }
+        modbus->set_address(modbus_id);
+        switch (modbus_opcode)
+        {
+          case 5: // Use the send single DO. 
+            modbus->send_do(modbus_ch, val);
+            break;
+          case 8: // Use the send multipl register opcode. 
+            modbus->send_multiple_dos(modbus_ch, 1, &val);
+            break;
+          default:
+            printf("Bad DO opcode: %d, should be 5 or 8\n", modbus_opcode);
+            break;
+        }
       }
       else
       {
-        modbus->send_do(ch, val);
+
+        // Be extremely careful, NEVER do a modbus transmit when a semaphore
+        // is held that could hold up the main thread!!!
+        // Also, ONLY do modbus trainsmits from a background thread.
+        // You must NEVER block react.
+        //modbus->set_address(1);
+        modbus->set_address(default_modbus_id);
+        if (alt_do_opcode)
+        {
+          // SOME do NOT support send single DO!!
+          modbus->send_multiple_dos(ch, 1, &val);
+        }
+        else
+        {
+          modbus->send_do(ch, val);
+        }
+        //modbus->set_address(2);
       }
-      //modbus->set_address(2);
     }
 
-    printf("read thread reading modbus values . . .\n");
+    //printf("read thread reading modbus values . . .\n");
     if (n_mod_io == 0)
     {
+      modbus->set_address(default_modbus_id);
       printf("read thread before read_ai . . .\n");
       printf("modptr = %p\n", modbus);
       modbus->read_ai(0, 16, tmp_ai_vals);
@@ -569,7 +714,7 @@ void reactmodbus_driver_t::read_thread(void)
     {
       read_mod_io();
     }
-    printf("read thread DONE reading modbus values . . .\n");
+    //printf("read thread DONE reading modbus values . . .\n");
 
     xx_printf("read thread copying values . . .\n");
     sem_wait(&read_mutex_sem);

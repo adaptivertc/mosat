@@ -13,7 +13,7 @@ struct fan_t
 
 struct silo_t
 {
-  const char *silo_id;
+  const char *id;
   bool is_bodega;
   int n_fans;
   fan_t *fans;
@@ -21,8 +21,8 @@ struct silo_t
 
 struct site_t
 {
-  const char *silo_name;
-  const char *silo_abr;
+  const char *name;
+  const char *abr;
   int n_silos;
   int modbus_id;
   int temp_amb_ch;
@@ -44,17 +44,54 @@ silo_t silos[] =
 }; 
 
 site_t sites[] = 
-{{"Correrepe", "COR", 3, 1, 0, 1, silos}, {"Cooperativo", "COR", 3, 1, 0, 1} };
+{{"Correrepe", "COR", 3, 1, 0, 1, silos}, {"Cooperativo", "COR", 3, 1, 0, 1, silos} };
 
 int main(int argc, char *argv[])
 {
 
+//#    Tag (string max 25)
+//#    Description (string max 50)
+//#    Driver Number (char max 25)
+//#    Card (char max 25)
+//#    Channel (char max 25)
+//#    Low Description (string max 12)
+//#    High Description (string max 12)
+//#    Alarm State (drop down {high, low, none})
+//#    Shutdown State  (drop down {high, low, none})
+
+    
+  printf("%s:%d\n", __FILE__, __LINE__);    
+    
   for (int i=0; i < int(sizeof(sites)/sizeof(sites[0])); i++)
   {
+    printf("  site[%d]: name: %s, abr: %s, n_silos: %d\n", 
+                   i, sites[i].name, sites[i].abr, sites[i]. n_silos); 
+    printf("  %s:%d, i = %d\n", __FILE__, __LINE__, i);    
     for (int j=0; j < sites[i].n_silos; j++)
     {
+      printf("    %s:%d, i = %d, j = %d\n", __FILE__, __LINE__, i, j);    
       for (int k=0; k < sites[i].silos[j].n_fans; k++)
       {
+        printf("      %s:%d, i = %d, j = %d, k = %d\n", __FILE__, __LINE__, i, j, k);    
+        printf("        %s_%s_fan_%d_on_do\n",
+          sites[i].abr, 
+          sites[i].silos[j].id, 
+          k);
+        printf("        %s_%s_fan_%d_off_do\n",
+          sites[i].abr, 
+          sites[i].silos[j].id, 
+          k);
+        printf("        %s_%s_fan_%d_is_on_di\n",
+          sites[i].abr, 
+          sites[i].silos[j].id, 
+          k);
+          //sites[i].silos[j].fans[k].
+          //sites[i].silos[j].fans[k].
+          //sites[i].silos[j].fans[k].
+        printf("        %s_%s_fan_%d_cancel_di\n",
+          sites[i].abr, 
+          sites[i].silos[j].id, 
+          k);
       }
     }
   }

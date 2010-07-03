@@ -351,6 +351,7 @@ step_stop_acq_t::step_stop_acq_t(int argc, char *argv[], char *error, int esize)
   else
   {
     safe_strcpy(file_name, (const char*) argv[2], sizeof(file_name));
+    snprintf(text, sizeof(text),"sys.stopdaq()");
     //printf("Stop Acq, %s\n", collect_file_name);
   }
 }
@@ -471,11 +472,13 @@ step_print_t::step_print_t(int argc, char *argv[], char *error, int esize)
   if (argc != 3)
   {
     msg[0] = '\0';
+    text[0] = '\0';
     logfile->vprint("Wrong number of args for 'print': %d\n", argc);
   }
   else
   {
     safe_strcpy(msg, (const char*) argv[2], sizeof(msg));
+    snprintf(text,sizeof(text), "sys.print(%s)", msg);
     strip_quotes(msg);
     //printf("Print: %s\n", msg);
   }
@@ -507,6 +510,7 @@ bool step_print_t::check(void)
 step_run_t::step_run_t(secuencia_t *s, int argc, char *argv[])
 {
   secuencia = s;
+  snprintf(text, sizeof(text), "run.%s()", s->name); 
   if (argc > 2)
   {
     pargc = argc - 2;

@@ -46,8 +46,8 @@ class secuencia_step_t
 {
 private:
 protected:
-  char text[50];
 public:
+  char text[50];
   virtual void reset(void) = 0;
   virtual bool check(void) = 0;
   virtual int execute(double time) = 0;
@@ -301,8 +301,6 @@ struct secuencia_param_loc_t
 class secuencia_t
 {
 private:
-  int step_number;
-  int num_steps;
   double current_time;
   static const int max_steps = 200;
   secuencia_step_t *steps[max_steps];
@@ -316,6 +314,8 @@ public:
   secuencia_step_t *new_script_type(char *str,
               char *error, int esize, bool script_mode);
   char *name;
+  int step_number;
+  int num_steps;
   bool run(double tiempo);
   void advance(void);
   void set_params(int argc, char *argv[]);
@@ -324,6 +324,7 @@ public:
   secuencia_t(const char *fname, const char *home_dir);
   void skip_to_mark(void);
   void skip_to_endif(void);
+  const char *step_text(void){printf("debug: %d, %s\n", step_number, steps[step_number]->text); return steps[step_number]->text;};
 };
 
 

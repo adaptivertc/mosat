@@ -1,7 +1,7 @@
-#./drivers/modbusdrv/libreactmodbusdrv.so|new_reactmodbus||/dev/ttyUSB0:57600:2:2|
+./drivers/modbusdrv/libreactmodbusdrv.so|new_reactmodbus||/dev/ttyUSB0:57600:1:1|
 #./drivers/simple_ascii_new/libsimple_ascii_drv.so|new_simple_ascii||/dev/ttyUSB0|
 #./drivers/simple_ascii/libsimple_ascii_drv.so|new_simple_ascii||/dev/ttyUSB1|
-./drivers/sim_ac/libsimacdrv.so|new_sim_ac_drv|||
+#./drivers/sim_ac/libsimacdrv.so|new_sim_ac_drv|||
 #./drivers/sim_pump_low/libsimpumpdrv.so|new_simpumpdrv|||
 #1;2R
 #./drivers/modbusdrv/libreactmodbusdrv.so|new_reactmodbus|librtmodbus.so|/dev/ttyUSB0|
@@ -12,6 +12,7 @@
 #./drivers/modbusdrv/libreactmodbusdrv.so|new_reactmodbus||
 #./drivers/shmdrv/libreactshmdrv.so|new_reactshm||
 #./drivers/sim/libsimdriver.so|new_simdriver||
+#!!!!!!./drivers/sim_file/libsimfiledriver.so|new_simfiledriver||projects/silos/poncitlan_out2.txt|
 #sim1|A Sim Driver|T|./drivers/sim/libsimdriver.so|new_simdriver|||
 #./drivers/sim_pump/libsimpumpdrv.so|new_simpumpdrv||
 #./drivers/pci9111/libpci9111.so|new_pci9111|libpci_dask.so|

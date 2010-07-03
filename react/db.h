@@ -57,7 +57,7 @@ public:
   virtual const char *get_home_dir(void) = 0;
   virtual void send_do(int drv, int crd, int chnl, bool val) = 0;
   virtual void send_ao(int drv, int crd, int chnl, double val) = 0;
-  virtual db_point_t *get_db_point(char *tag) = 0;
+  virtual db_point_t *get_db_point(const char *tag) = 0;
   //rt_bool_ref_t *get_bool_ref(char *tag);
   //rt_double_ref_t *get_double_ref(char *tag);
   virtual bool global_alarm_disabled(void) = 0;
@@ -163,7 +163,7 @@ public:
   double get_sample_rate(void) {return sample_rate;};
   double get_time(void) {return current_time;};
   void set_shutdown(void);
-  db_point_t *get_db_point(char *tag);
+  db_point_t *get_db_point(const char *tag);
   void clear_kb_buf(void);
   void exit_clean_up(void);
   bool kbhit(void);
@@ -183,6 +183,8 @@ public:
   rt_double_ref_t *get_double_ref(const char *expr, char *err, int sz) {snprintf(err, sz, "Not implemented"); return NULL;};
   rt_bool_ref_t *get_bool_ref(const char *expr, char *err, int sz) {snprintf(err, sz, "Not implemented"); return NULL;};
   rt_long_ref_t *get_long_ref(const char *expr, char *err, int sz) {snprintf(err, sz, "Not implemented"); return NULL;};
+  void check_write_tag_queue(void);
+  void open_write_tag_queue(void);
 };
 
 extern react_base_t *db;

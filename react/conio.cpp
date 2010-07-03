@@ -144,6 +144,7 @@ void conioinit(void)
 
 void coniorestore(void)
 {
+  printf("conio_restore called . . \n");
   if (!flag)
   {
     printf("Restoring conio to original state . . \n");

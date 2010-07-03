@@ -19,10 +19,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define REACT_MOD_DI (1)
 #define REACT_MOD_AI (2)
-#define REACT_MAX_MOD_IO (5)
+#define REACT_MOD_AO (3)
+#define REACT_MOD_DO (4)
+#define REACT_MAX_MOD_IO (32)
+#define REACT_MAX_MOD_DO_MAP (16)
+#define REACT_MAX_MOD_AO_MAP (16)
+#define REACT_MAX_MOD_AI (128)
+#define REACT_MAX_MOD_DI (128)
 
 struct mod_io_def_t
 {
+  int modbus_id; // With a radio, or RS485, you can have multiple modbus ids for a single serial port 
   int type;
   int opcode;
   int n;
@@ -51,16 +58,17 @@ private:
   bool wake_him_up;
   int x[20];
   rtmodbus_t *modbus;
-  unsigned short ai_vals[64];
-  bool di_vals[64];
-  unsigned short tmp_ai_vals[64];
-  bool tmp_di_vals[64];
+  unsigned short ai_vals[REACT_MAX_MOD_AI];
+  bool di_vals[REACT_MAX_MOD_DI];
+  unsigned short tmp_ai_vals[REACT_MAX_MOD_AI];
+  bool tmp_di_vals[REACT_MAX_MOD_DI];
   do_send_t do_vals_to_send[64];  
   ao_send_t ao_vals_to_send[64];  
   int n_dos_to_send;
   int n_aos_to_send;
   bool alt_do_opcode;
   bool alt_ao_opcode;
+  uint8 default_modbus_id;
   int di_offset;
   int do_offset;
   int ai_offset;
@@ -70,7 +78,11 @@ private:
   sem_t read_wait_sem; 
   int n_mod_io; 
   mod_io_def_t mod_io[REACT_MAX_MOD_IO];
-  void add_io(const char *io_type, int opcode, int n_io, 
+  int n_ao_map;
+  mod_io_def_t ao_map[REACT_MAX_MOD_AO_MAP];
+  int n_do_map;
+  mod_io_def_t do_map[REACT_MAX_MOD_AO_MAP];
+  void add_io(int modbus_id, const char *io_type, int opcode, int n_io, 
                int modbus_offset, int channel_offset);
   void read_mod_io(void);
 public:
@@ -83,6 +95,8 @@ public:
   long get_count(int channel);
   void send_do(int channel, bool val);
   void send_ao(int channel, double val);
+  void map_ao(int ch, int *modbus_ch, int *modbus_id, int *opcode);
+  void map_do(int ch, int *modbus_ch, int *modbus_id, int *opcode);
   void close(void);
 };
 

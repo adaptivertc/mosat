@@ -27,6 +27,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "ap_config.h"
 
+char path_to_dir[500];
+char output_file[500];
+char peak_file[500];
+char png_file[500];
 
 /****************************************************************/
 
@@ -249,12 +253,16 @@ void logfile_t::next_test(void)
 void logfile_t::close_test(void)
 {
   this->create_graph();
-  if (file_print_enabled)
+  file_print_enabled = false;
+  if (fp != NULL)
   {
-    file_print_enabled = false;
     fclose(fp);
-    fp = NULL;
   }
+  fp = NULL;
+  path_to_dir[0] = '\0';
+  output_file[0] = '\0';
+  peak_file[0] = '\0';
+  png_file[0] = '\0';
 }
 
 /****************************************************************/
@@ -266,8 +274,13 @@ logfile_t::logfile_t(void)
   fp_startup = NULL;
   file_print_enabled = false;
   startup_print_enabled = false;
+
+  path_to_dir[0] = '\0';
+  output_file[0] = '\0';
+  peak_file[0] = '\0';
+  png_file[0] = '\0';
   
-  this->do_init(true, true);
+  this->do_init(false, true);
 }
 
 /****************************************************************/
@@ -454,10 +467,6 @@ int main(int argc, char *argv[])
 
 *************************************************************************/
 
-char path_to_dir[500];
-char output_file[500];
-char peak_file[500];
-char png_file[500];
 
 /*************************************************************************/
 
@@ -495,18 +504,20 @@ static void my_create_image(const char *data, const char *png, bool window)
   if (window)
   {
     snprintf(command, sizeof(command), "gnuplot -persist %s", fname);
+    //system(command);
   }
   else
   {
     snprintf(command, sizeof(command), "gnuplot %s > %s", fname, png);
+    system(command);
   }
-  system(command);
 }
 
 /*************************************************************************/
 
 void logfile_t::create_graph(void) //char *data_file, char *img_prefix)
 {
+  if (path_to_dir[0] == '\0') return;
   char data_file[500];
   snprintf(data_file, sizeof(data_file), "%s/opa.txt", path_to_dir);
   ltrim(data_file);

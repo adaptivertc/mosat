@@ -25,7 +25,6 @@ Member functions for the real time database.
 
 *************************************************************************/
 
-
 #include <stdio.h>
 #include <string.h>
 #include <malloc.h>
@@ -41,6 +40,11 @@ Member functions for the real time database.
 #include "arg.h"
 #include "ap_config.h"
 //#include "myconio.h"
+#include "react_tag_rw.h"
+
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <mqueue.h>
 
 #ifdef __REACT_MSG__
 #include <sys/ipc.h>
@@ -1281,6 +1285,61 @@ void react_t::delete_msg_queue(void)
 
 /**********************************************************************/
 
+static const char * qname = "/adaptivertc.react.write_tag"; 
+static mqd_t mq_fd = (mqd_t) -1;
+
+void react_t::open_write_tag_queue(void)
+{
+  mq_fd = mq_open(qname, O_RDWR | O_CREAT, 0755, NULL);
+  if (mq_fd == ((mqd_t) -1))
+  {
+    perror("mq_open");
+  }
+
+}
+
+/**********************************************************************/
+
+void react_t::check_write_tag_queue(void)
+{
+  if (mq_fd == ((mqd_t) -1)) return;
+  
+  tag_rw_data_t rwd;
+
+  unsigned prio;
+  char msgbuf[8192];
+  struct timespec ts;
+
+  ts.tv_sec = 0;
+  ts.tv_nsec = 0;
+
+  //int rval = mq_receive(mq_fd, msgbuf, sizeof(msgbuf), &prio);
+  //if (rval == -1)
+  //{
+  //  perror("mq_recieve");
+  //}
+
+  int retv = mq_timedreceive(mq_fd, msgbuf, sizeof(msgbuf), &prio, &ts);
+
+  if (retv != sizeof(rwd)) return;
+
+  memcpy(&rwd, msgbuf, sizeof(rwd));
+
+  const char *tag = rwd.tag;
+  db_point_t *dbp;
+  analog_value_point_t *aval;
+  dbp = this->get_db_point(tag);
+  if (dbp == NULL) return;
+  aval = dynamic_cast <analog_value_point_t *> (dbp);
+  if (aval != NULL)
+  {
+    aval->set(atof(rwd.value));
+  }
+}
+
+/**********************************************************************/
+
+
 static secuencia_t *background_sequences[20];
 static int n_background;
 
@@ -1293,6 +1352,8 @@ void react_t::new_secuencia(secuencia_t *s)
   current_secuencia++;
   secuencia_stack[current_secuencia] = s;
   secuencia = s;
+  logfile->vprint("new sequence: %s\n", secuencia->name);
+  logfile->vprint("step = %s\n", secuencia->step_text());
 }
 
 /**********************************************************************/
@@ -1407,7 +1468,11 @@ bool react_t::execute_secuencia(void)
       logfile->vprint("return from sequence: %s\n", secuencia->name);
       current_secuencia--;
       secuencia = secuencia_stack[current_secuencia];
+      logfile->vprint("Resuming sequence: %s, line %d of %d\n", secuencia->name, secuencia->step_number, secuencia->num_steps);
+      logfile->vprint("step = %s\n", secuencia->step_text());
       secuencia->advance();
+      logfile->vprint("After advance: %s, line %d of %d\n", secuencia->name, secuencia->step_number, secuencia->num_steps);
+      logfile->vprint("step = %s\n", secuencia->step_text());
       done = false;
     }
   }
@@ -1416,38 +1481,40 @@ bool react_t::execute_secuencia(void)
   ta4.start();
   if (keyboard_is_on)
   {
-  while (kb_hit())
-  {
-    char c = mygetch();
-    if (c == 'q')
+    while (kb_hit())
     {
-      if (!waiting)
+      printf("Starting key loop\n"); 
+      char c = mygetch();
+      if (c == 'q')
       {
-        waiting = true;
-        quit_time = current_time + 10.0;
-        printf("\nTo quit hit q again within 10 seconds . . .\n\n");
+        if (!waiting)
+        {
+          waiting = true;
+          quit_time = current_time + 10.0;
+          printf("\nTo quit hit q again within 10 seconds . . .\n\n");
+        }
+        else
+        {
+          logfile->vprint("User Terminated Program\n");
+           done =  true;
+        }
+      }
+      else if (c == '\t')
+      {
+        secuencia->skip_to_mark();
+      }
+      else if (c == 0x03)
+      {
+        printf("<CTRL-C> recieved\n");
+        done = true;
       }
       else
       {
-        logfile->vprint("User Terminated Program\n");
-	done =  true;
+        last_key = c;
+        have_key = true;
       }
+      printf("End of key loop\n"); 
     }
-    else if (c == '\t')
-    {
-      secuencia->skip_to_mark();
-    }
-    else if (c == 0x03)
-    {
-      printf("<CTRL-C> recieved\n");
-      done = true;
-    }
-    else
-    {
-      last_key = c;
-      have_key = true;
-    }
-  }
   }
   ta4.stop();
 
@@ -1569,7 +1636,7 @@ void db_point_t::disable_display(void)
 
 /*************************************************************************/
 
-db_point_t *react_t::get_db_point(char *tag)
+db_point_t *react_t::get_db_point(const char *tag)
 {
   /* This returns a pointer to a database point given the tag. */
 
