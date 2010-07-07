@@ -46,16 +46,16 @@ int debug_trace_t::dprintf(int level, const char *fmt, ... )
 {
   va_list arg_ptr;
   unsigned long size;
-  char buf[200];
+  char buf[400];
 
   va_start(arg_ptr, fmt);
 
-  size = vsnprintf(buf, sizeof(buf), fmt, arg_ptr);
+  size = vsnprintf(buf, sizeof(buf-1), fmt, arg_ptr);
 
   if (size >= sizeof(buf))
   {
-    printf("Fatal Error, buffer too big for debug trace\n");
-    exit(0);
+    printf("Error, buffer too big for debug trace\n");
+    return size;
   }
 
   if (level < current_level)

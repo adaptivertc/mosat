@@ -21,11 +21,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define REACT_MOD_AI (2)
 #define REACT_MOD_AO (3)
 #define REACT_MOD_DO (4)
+
 #define REACT_MAX_MOD_IO (32)
-#define REACT_MAX_MOD_DO_MAP (16)
-#define REACT_MAX_MOD_AO_MAP (16)
+#define REACT_MAX_MOD_DO_MAP (32)
+#define REACT_MAX_MOD_AO_MAP (32)
 #define REACT_MAX_MOD_AI (128)
 #define REACT_MAX_MOD_DI (128)
+#define REACT_MAX_MOD_DO (64)
+#define REACT_MAX_MOD_AO (64)
 
 struct mod_io_def_t
 {

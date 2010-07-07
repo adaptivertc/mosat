@@ -92,6 +92,7 @@ public:
   int send_multiple_dos(uint16 num, int n, uint8 *vals);
   void set_address(uint8 an_addr) 
         {printf("setting address to %u\n", an_addr); address = an_addr;};
+  uint8 get_address(void) {return address;};
   void set_timeout(double a_timeout) {timeout = a_timeout;};
   void set_debug_level(int a_debug_level);
   int send(uint8 *buf, int size);

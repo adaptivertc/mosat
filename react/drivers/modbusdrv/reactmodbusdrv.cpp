@@ -119,6 +119,8 @@ Contains code for react modbus driver.
      in a known state.
 
 ****/
+
+static FILE *dfp = NULL;
 /***********************************************************************/
 
 int xx_printf(const char *format, ...)
@@ -140,6 +142,7 @@ static void *rtmodbus_start_read_thread(void *driver_ptr)
 extern "C" io_driver_t *new_reactmodbus(react_drv_base_t *r, const char *option)
 {
   logfile->vprint("Creating new reactmodbus iodriver\n");
+   dfp = fopen("log/outlog.txt", "w");
   return new reactmodbus_driver_t(r, option);
 }
 
@@ -147,14 +150,14 @@ extern "C" io_driver_t *new_reactmodbus(react_drv_base_t *r, const char *option)
 
 void reactmodbus_driver_t::add_io(int a_modbus_id, const char *io_type, int opcode, int n_io, int modbus_offset, int channel_offset)
 {
-  if (0 == strcasecmp("DO", io_type))
+  if ((0 == strcasecmp("DO", io_type)) && (a_modbus_id == -1))
   {
     // This needs more thought, but, for now, for now, just switch opcode.
     logfile->vprint("Will use alternate opcode for DO");
     alt_do_opcode = true;
     return;
   }
-  if (0 == strcasecmp("AO", io_type))
+  if ((0 == strcasecmp("AO", io_type)) && (a_modbus_id == -1))
   {
     logfile->vprint("Will use alternate opcode for AO");
     alt_ao_opcode = true;
@@ -174,25 +177,26 @@ void reactmodbus_driver_t::add_io(int a_modbus_id, const char *io_type, int opco
     return;
   }
 
+  mod_io_def_t tmp_mod_io;
 
   if (0 == strcasecmp("DI", io_type))
   {
-    mod_io[n_mod_io].type = REACT_MOD_DI; 
+    tmp_mod_io.type = REACT_MOD_DI; 
     logfile->vprint("Type DI, ");
   }
-  if (0 == strcasecmp("DO", io_type))
+  else if (0 == strcasecmp("DO", io_type))
   {
-    mod_io[n_mod_io].type = REACT_MOD_DO; 
+    tmp_mod_io.type = REACT_MOD_DO; 
     logfile->vprint("Type DO, ");
   }
   else if (0 == strcasecmp("AI", io_type))
   {
-    mod_io[n_mod_io].type = REACT_MOD_AI; 
+    tmp_mod_io.type = REACT_MOD_AI; 
     logfile->vprint("Type AI, ");
   }
   else if (0 == strcasecmp("AO", io_type))
   {
-    mod_io[n_mod_io].type = REACT_MOD_AO; 
+    tmp_mod_io.type = REACT_MOD_AO; 
     logfile->vprint("Type AO, ");
   }
   else
@@ -201,17 +205,17 @@ void reactmodbus_driver_t::add_io(int a_modbus_id, const char *io_type, int opco
     return;
   }
   
-  if  
-  mod_io[n_mod_io].modbus_id = a_modbus_id; 
-  mod_io[n_mod_io].opcode = opcode; 
-  mod_io[n_mod_io].n = n_io; 
-  mod_io[n_mod_io].modbus_offset = modbus_offset; 
-  mod_io[n_mod_io].channel_offset = channel_offset; 
-  logfile->vprint("opcode: %d, n: %d, mod offset: %d, ch offset: %d\n", opcode, n_io, modbus_offset, channel_offset);
-  switch (mod_io[n_mod_io].type)
+  tmp_mod_io.modbus_id = a_modbus_id; 
+  tmp_mod_io.opcode = opcode; 
+  tmp_mod_io.n = n_io; 
+  tmp_mod_io.modbus_offset = modbus_offset; 
+  tmp_mod_io.channel_offset = channel_offset; 
+  logfile->vprint("unit id: %d, opcode: %d, n: %d, mod off: %d, ch off: %d\n", 
+    a_modbus_id, opcode, n_io, modbus_offset, channel_offset);
+  switch (tmp_mod_io.type)
   {
     case REACT_MOD_DI:
-      switch (mod_io[n_mod_io].opcode)
+      switch (tmp_mod_io.opcode)
       {
         case 1:
           logfile->vprint("Will read DIs using read_do()\n");
@@ -223,12 +227,14 @@ void reactmodbus_driver_t::add_io(int a_modbus_id, const char *io_type, int opco
           logfile->vprint("Will read DIs using read_di_register()\n");
           break;
         default:
-          logfile->vprint("Invalid opcode for DI: %d\n", mod_io[n_mod_io].opcode);
+          logfile->vprint("Invalid opcode for DI: %d\n", tmp_mod_io.opcode);
           break;
       }
+      mod_io[n_mod_io] = tmp_mod_io;
+      n_mod_io++;
       break;
     case REACT_MOD_AI:
-      switch (mod_io[n_mod_io].opcode)
+      switch (tmp_mod_io.opcode)
       {
         case 3:
           logfile->vprint("Will read AIs using read_reg()\n");
@@ -237,15 +243,26 @@ void reactmodbus_driver_t::add_io(int a_modbus_id, const char *io_type, int opco
           logfile->vprint("Will read AIs using read_ai()\n");
           break;
         default:
-          logfile->vprint("Invalid opcode for AI: %d\n", mod_io[n_mod_io].opcode);
+          logfile->vprint("Invalid opcode for AI: %d\n", tmp_mod_io.opcode);
           break;
       }
+      mod_io[n_mod_io] = tmp_mod_io;
+      n_mod_io++;
+      break;
+    case REACT_MOD_AO:
+      logfile->vprint("Will send AOs using write_reg()\n");
+      ao_map[n_ao_map] = tmp_mod_io;
+      n_ao_map++;
+      break;
+    case REACT_MOD_DO:
+      logfile->vprint("Will send DOs using send_do()\n");
+      do_map[n_do_map] = tmp_mod_io;
+      n_do_map++;
       break;
     default:
-      logfile->vprint("Invalid type: %d\n", mod_io[n_mod_io].type);
+      logfile->vprint("Invalid type: %d\n", tmp_mod_io.type);
       break;
   }
-  n_mod_io++;
 
 }
 
@@ -387,12 +404,12 @@ reactmodbus_driver_t::reactmodbus_driver_t(react_drv_base_t *react, const char *
 
 void reactmodbus_driver_t::send_ao(int ch, double val)
 {
-  if ((ch >= 0) && (ch < 32))
+  if ((ch >= 0) && (ch < REACT_MAX_MOD_AO))
   {
     //shm->do_val[ch] = val;
     //modbus->send_do(ch, val);
 
-    if (n_dos_to_send >= 64) return;
+    if (n_aos_to_send >= 64) return;
 
     sem_wait(&output_mutex_sem);
     ao_vals_to_send[n_aos_to_send].ch = ch;
@@ -413,7 +430,7 @@ void reactmodbus_driver_t::close(void)
 
 void reactmodbus_driver_t::send_do(int ch, bool val)
 {
-  if ((ch >= 0) && (ch < 32))
+  if ((ch >= 0) && (ch < REACT_MAX_MOD_DO))
   {
     //shm->do_val[ch] = val;
     //modbus->send_do(ch, val);
@@ -538,9 +555,14 @@ void reactmodbus_driver_t::map_do(int ch, int *modbus_ch, int *modbus_id, int *o
       *modbus_ch = do_map[i].modbus_offset + (ch - do_map[i].channel_offset);
       *modbus_id = do_map[i].modbus_id;
       *opcode = do_map[i].opcode;
+      fprintf(dfp, "map DO ch %d to unitid %d, opcode %d, mod ch %d\n", 
+         ch, *modbus_id, *opcode, *modbus_ch); 
+      fflush(dfp);
       return;
     }
   }
+  fprintf(dfp, "***** NO map for DO Channel: %d, in %d maps\n", ch, n_do_map);
+  fflush(dfp);
   *modbus_ch = -1;
   *modbus_id = -1;
   *opcode = -1;
@@ -571,9 +593,14 @@ struct mod_io_def_t
       *modbus_ch = ao_map[i].modbus_offset + (ch - ao_map[i].channel_offset);
       *modbus_id = ao_map[i].modbus_id;
       *opcode = ao_map[i].opcode;
+      fprintf(dfp, "map AO ch %d to unitid %d, opcode %d, mod ch %d\n", 
+         ch, *modbus_id, *opcode, *modbus_ch); 
+      fflush(dfp);
       return;
     }
   }
+  fprintf(dfp, "***** NO map for AO Channel: %d, in %d maps\n", ch, n_ao_map);
+  fflush(dfp);
   *modbus_ch = -1;
   *modbus_id = -1;
   *opcode = -1;
@@ -588,6 +615,8 @@ void reactmodbus_driver_t::read_thread(void)
   usleep(1000);
   while(true)
   {
+    fprintf(dfp, "----- Sending %d AOs ---------\n", n_aos_to_send);
+    fflush(dfp);
     while (n_aos_to_send > 0)
     {
       int ch;
@@ -612,6 +641,8 @@ void reactmodbus_driver_t::read_thread(void)
         switch (modbus_opcode)
         {
           case 6: // Use the send single register opcode. 
+           fprintf(dfp, "sending AO to %d, ch %d\n", modbus_id, modbus_ch);
+           fflush(dfp);
             modbus->write_reg(modbus_ch, val);
             break;
           case 9: // Use the send multipl register opcode. 
@@ -643,6 +674,8 @@ void reactmodbus_driver_t::read_thread(void)
       }
     }
 
+    fprintf(dfp, "----- Sending %d DOs ---------\n", n_dos_to_send);
+    fflush(dfp);
     while (n_dos_to_send > 0)
     {
       unsigned short ch;
@@ -667,6 +700,8 @@ void reactmodbus_driver_t::read_thread(void)
         switch (modbus_opcode)
         {
           case 5: // Use the send single DO. 
+           fprintf(dfp, "sending DO to %d, ch %d\n", modbus_id, modbus_ch);
+            fflush(dfp);
             modbus->send_do(modbus_ch, val);
             break;
           case 8: // Use the send multipl register opcode. 

@@ -1,6 +1,4 @@
-To make al of the projects, just run "make" from this directory, 
-and it 
-will visit all of the directories in the correct order and make each one of them. You might have to install things such as ncurses. Here is a list of things you might need to install, with the commands for Ubuntu/Debian:
+To make al of the projects, just run "make" from this directory, and it will visit all of the directories in the correct order and make each one of them. You might have to install things such as ncurses. Here is a list of things you might need to install, with the commands for Ubuntu/Debian:
 
 apt-get install manpages-dev
 apt-get install gcc

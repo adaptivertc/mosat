@@ -1,8 +1,9 @@
-PUMP1_DO|Bomba 1|0|0|0|Off|On|
-PUMP2_DO|Bomba 2|0|0|2|Off|On|
-PUMP3_DO|Bomba 3|0|0|4|Off|On|
-VPUMP1_DO|VBomba 1|0|0|6|Off|On|
-VPUMP2_DO|VBomba 2|0|0|8|Off|On|
+DO_0|Bomba 1|0|0|0|Off|On|
+DO_8|Bomba 2|0|0|8|Off|On|
+DO_16|Bomba 3|0|0|16|Off|On|
+DO_24|Bomba 3|0|0|24|Off|On|
+DO_32|VBomba 1|0|0|32|Off|On|
+DO|VBomba 2|0|0|8|Off|On|
 XPUMP1_DO|Bomba 1|0|0|1|Off|On|
 XPUMP2_DO|Bomba 2|0|0|3|Off|On|
 XPUMP3_DO|Bomba 3|0|0|5|Off|On|

@@ -672,7 +672,7 @@ void web_point_t::update_file_and_write(void)
     else
     {
       char abuf[15];
-      snprintf(abuf, sizeof(abuf), "%0.2lf", current_aval);
+      snprintf(abuf, sizeof(abuf), "%0.1lf", current_aval);
       subst_string(ar->str, abuf, ar->size);
     }
     

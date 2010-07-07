@@ -112,7 +112,7 @@ bool secuencia_t::run(double t)
     }
     if (steps[step_number] == NULL)
     {
-      printf("NULL pointer\n");
+      logfile->vprint("NULL pointer\n");
       n = 1;
     }
     else if (steps[step_number]->check())
@@ -182,6 +182,7 @@ secuencia_step_t *secuencia_t::new_script_type(char *str,
   int argc;
   char line[500];
   safe_strcpy(line, (const char*) str, sizeof(line));
+  logfile->vprint("%s\n", line);
   if (!parse_function_call(str, &argc, argv, 25, error, esize))
   {
     return NULL;
@@ -191,12 +192,12 @@ secuencia_step_t *secuencia_t::new_script_type(char *str,
   bool have_error = false;
   if (stp == NULL)
   {
-    printf("Error creating instruction: %s\n", error);
+    logfile->vprint("Error creating instruction: %s\n", error);
     have_error = true;
   }
   else if (!stp->check())
   {
-    printf("Error creating instruction: %s\n", error);
+    logfile->vprint("Error creating instruction: %s\n", error);
     have_error = true;
   }
   if (!have_error && script_mode)
@@ -236,7 +237,7 @@ secuencia_t::secuencia_t(const char *fname, const char *home_dir)
   fp = fopen(path, "r");
   if (fp == NULL)
   {
-    printf("Can not open file: %s\n", path);
+    logfile->vprint("Can not open file: %s\n", path);
     exit(0);
   }
   step_number = 0;
@@ -251,7 +252,7 @@ secuencia_t::secuencia_t(const char *fname, const char *home_dir)
   descriptions = new char *[max_steps];
 
   /**/
-  printf("----- reading %s -----\n", path);
+  logfile->vprint("----- reading %s -----\n", path);
   while (NULL != fgets(line, sizeof(line) - 1, fp))
   {
     line[sizeof(line)-1] = '\0';
@@ -261,7 +262,7 @@ secuencia_t::secuencia_t(const char *fname, const char *home_dir)
       continue;
     }
     safe_strcpy(tmp, (const char*) line, sizeof(tmp));
-    printf("%s", line);
+    logfile->vprint("%s", line);
     secuencia_step_t *stp;
     error[0] = '\0';
     stp = new_script_type(line, error, sizeof(error), true);
@@ -273,17 +274,17 @@ secuencia_t::secuencia_t(const char *fname, const char *home_dir)
     }
     else
     {
-      printf("***** %s\n", error);
+      logfile->vprint("***** %s\n", error);
     }
 
     if (num_steps >= max_steps)
     {
-       printf("Too many steps: %d\n", num_steps);
+       logfile->vprint("Too many steps: %d\n", num_steps);
        //printf("%s %d\n", __FILE__, __LINE__);
        exit(0);
     }
   }
-  printf("----- done reading %s -----\n", path);
+  logfile->vprint("----- done reading %s -----\n", path);
 
 }
 

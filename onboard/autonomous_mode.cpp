@@ -19,6 +19,7 @@
 #include "ap_config.h"
 
 //#define MAX_MAINTENANCE_SPEED (35.0)
+// Esta en M1-038
 
 static double max_maintenance_speed = 30.0;
 static int auto_timeout_time = 40;

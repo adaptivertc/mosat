@@ -22,7 +22,6 @@ int main(int argc, char *argv[])
    char msg[100];
    int device[50];
    int baudrate;
-   int i, j;
 
    signal(SIGIO , my_sighandler);
 
@@ -41,7 +40,7 @@ int main(int argc, char *argv[])
    {
      snprintf(dev_name, sizeof(dev_name), "/dev/%s", argv[i]);
      printf("Opening device (%s). . . \n", dev_name);
-     device[i] = rt_open_serial(dev_name, baudrate, 2.0);
+     device[i] = rt_open_serial(dev_name, baudrate, 0.5);
      if (device[i] < 0)
      {
        printf("device could not be opened: %s\n", dev_name);
@@ -59,20 +58,48 @@ int main(int argc, char *argv[])
        if (device[i] < 0) continue;
      
        snprintf(dev_name, sizeof(dev_name), "/dev/%s", argv[i]);
-       printf("Writing 'this is %s' to %s\n\r", dev_name, dev_name);
        snprintf(msg, sizeof(msg), "this is %s\n\r", dev_name);
+       //snprintf(msg, sizeof(msg), "$R3");
+       printf("Writing to %s: %s", dev_name, msg);
+       //printf("%s:%d\n", __FILE__, __LINE__);
        int bytes = write(device[i],msg,strlen(msg)); 
-       if (bytes != strlen(msg))
+       //printf("%s:%d\n", __FILE__, __LINE__);
+       if (bytes != int(strlen(msg)))
        {
          printf("Can not write to device, return value = %d\n", bytes);
        }
+       //printf("%s:%d\n", __FILE__, __LINE__);
      }
      printf("\n");
+
+     for (int i=2; i < argc; i++)
+     {
+       //printf("%s:%d\n", __FILE__, __LINE__);
+       char buf[500]; 
+       if (device[i] < 0) continue;
+       //printf("%s:%d\n", __FILE__, __LINE__);
+       printf("Waiting for msg from %s: ", argv[i]); 
+       //printf("%s:%d\n", __FILE__, __LINE__);
+       int bytes = read(device[i],buf,sizeof(buf)); 
+       //printf("%s:%d\n", __FILE__, __LINE__);
+       if (bytes > 0)
+       {
+         buf[bytes] = '\0';
+         printf("%s\n", buf);
+       }
+       else
+       {
+         printf("Timeout\n");
+       }
+       //printf("%s:%d\n", __FILE__, __LINE__);
+       
+     }
     struct timespec remain;
     struct timespec request;
     request.tv_nsec = 0; 
     request.tv_sec = 2; 
     //printf("waiting (%ld, %ld)\n", request.tv_sec, request.tv_nsec);
+
     int retval = nanosleep(&request, &remain);
     while (retval == -1)
     {

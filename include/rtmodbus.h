@@ -9,6 +9,9 @@
   any of the other modbus header files
 ***********/
 
+#define RT_MODBUS_SERIAL (0)
+#define RT_MODBUS_TCPIP (1)
+
 class rtmodbus_t 
 {
 public:
@@ -24,6 +27,7 @@ public:
   virtual int send_multiple_dos(unsigned short num, int n, unsigned char *vals) = 0;
 
   virtual void set_address(unsigned char an_addr) = 0; 
+  virtual unsigned char get_address(void) = 0; 
   virtual void set_timeout(double a_timeout) = 0;
   virtual void set_debug_level(int a_debug_level) = 0;
   virtual ~rtmodbus_t(void) {};
