@@ -252,12 +252,13 @@ else
 
 
 // Declare your global variables here 
+eeprom int garbage;
+
 uint16_t cantidad_columnas;
 eeprom uint16_t cantidad_sensores[COL_SIZE];
 uint16_t cantidad_sensores_detectados[COL_SIZE];
 uint16_t temperatures[COL_NUM][COL_SIZE];
 
-eeprom int garbage;
 int unit_id;
 int last_number_showed;
 
@@ -565,13 +566,15 @@ ADCSRB=0x00;
 //ds1820_devices=w1_search(0xf0,ds1820_rom_codes);
 
 // Global enable interrupts
-#asm("sei")
+#asm("sei")                                                
+
   
 
 unit_id = 4;
 cantidad_columnas = 16;
-/*cantidad_sensores[0] = 16;
-cantidad_sensores[1] = 16;
+if(cantidad_sensores[0] == 0)
+        cantidad_sensores[0] = 1;
+/*cantidad_sensores[1] = 16;
 cantidad_sensores[2] = 16;
 cantidad_sensores[3] = 16;
 cantidad_sensores[4] = 16;
@@ -600,9 +603,11 @@ i = 0;
 
 //for(i = 0; i < 16; i++)
 //{
-        chose_channel(1);
+        //chose_channel(1);
         
-        detect_dallas(cantidad_sensores[i-1]);
+        //ds18b20_init(0,1,0,DS18B20_10BIT_RES);
+        
+        //detect_dallas(cantidad_sensores[i-1]);
 //}
 
 
@@ -662,7 +667,7 @@ while (1)
          		
          		timer = 0;
          		
-         		while(rx_counter0 < min_size - 2)
+         		while(timer == TIME_OUT && rx_counter0 < min_size - 2)
          		{
          		        timer++;
          		        if(timer == TIME_OUT)
@@ -690,7 +695,7 @@ while (1)
          		                
          		                //led_char('t');
          		                
-         		                while(rx_counter0 < total_size - min_size)
+         		                while(timer == TIME_OUT && rx_counter0 < total_size - min_size)
          		                {
          		                        timer++;
          		                        if(timer == TIME_OUT)
