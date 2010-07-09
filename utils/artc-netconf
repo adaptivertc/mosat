@@ -1,0 +1,3 @@
+#!/bin/sh
+awk -f changeInterface.awk interfaces device=eth0 $@
+#awk -f changeInterface.awk /etc/network/interfaces device=eth0 $@
