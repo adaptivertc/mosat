@@ -1,12 +1,15 @@
-function writeStatic(addr, nw, nm, gw) {
+function writeStatic(addr, nm, nw, bc, gw) {
     if (length(addr))
         print "    address ", addr
+
+    if (length(nm))
+        print "    netmask ", nm
 
     if (length(nw))
         print "    network ", nw
 
-    if (length(nm))
-        print "    netmask ", nm
+    if (length(bc))
+        print "    broadcast ", bc
 
     if (length(gw))
         print "    gateway ", gw
@@ -15,12 +18,13 @@ function writeStatic(addr, nw, nm, gw) {
 function usage() {
         print "awk -f changeInterfaces.awk <interfaces file> device=<eth device> \n" \
             "       [address=<ip addr>] [gateway=<ip addr>] [netmask=<ip addr>]\n" \
-            "       [network=<ip addr>] [mode=dhcp|static] [arg=debug]"
+            "       [network=<ip addr>] [broadcast=<ip addr>] [mode=dhcp|static]\n"  \
+            "       [arg=debug]"
 }
 
 BEGIN { start = 0;
 
-    if (ARGC < 3 || ARGC > 9) {
+    if (ARGC < 3 || ARGC > 10) {
         usage();
         exit 1;
     }
@@ -35,6 +39,8 @@ BEGIN { start = 0;
             network = pair[2];
         else if (pair[1] == "netmask")
             netmask = pair[2];
+        else if (pair[1] == "broadcast")
+            broadcast = pair[2];
         else if (pair[1] == "device")
             device = pair[2];
         else if (pair[1] == "arg" && pair[2] == "debug")
@@ -50,7 +56,7 @@ BEGIN { start = 0;
     }
 
     # Sort out the logic of argument
-    if (dhcp && (length(network) || length(gateway) || length(address) || length(netmask))) {
+    if (dhcp && (length(network) || length(gateway) || length(address) || length(broadcast) || length(netmask))) {
         print "Both DHCP and static properties are defined";
         usage();
         exit 1;
@@ -73,8 +79,9 @@ BEGIN { start = 0;
             if (match($0, / dhcp/)) {
                 definedDhcp=1;
                 # Change to static if defined properties
-                if (length(address) || length (gateway) ||
-                    length(netmask) || length (network) || static) {
+                if (length(address) || length (gateway) || 
+                    length(netmask) || length (network) || 
+                    length(broadcast) || static) {
                     print "iface", device, "inet static";
                     next;
                 }
@@ -123,6 +130,9 @@ BEGIN { start = 0;
             else if ($1 == "gateway" && length(gateway))
                 print "    gateway ", gateway;
 
+            else if ($1 == "broadcast" && length(broadcast))
+                print "    broadcast ", broadcast;
+
             else if ($1 == "network" && length(network))
                 print "    network ", network;
 
@@ -134,7 +144,7 @@ BEGIN { start = 0;
 
     # If already defined dhcp, then dump the network properties
     if (definedDhcp) {
-        writeStatic(address, network, netmask, gateway);
+        writeStatic(address, netmask, network, broadcast, gateway);
         definedDhcp = 0;
         next;
     }
@@ -146,6 +156,6 @@ END {
     # This bit is useful at the condition when the last line is
     # iface dhcp
     if (definedDhcp)
-        writeStatic(address, network, netmask, gateway);
+        writeStatic(address, netmask, network,  broadcast, gateway);
 }
 
