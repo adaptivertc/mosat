@@ -662,7 +662,7 @@ while (1)
          		
          		timer = 0;
          		
-         		while(timer == TIME_OUT && rx_counter0 < min_size - 2)
+         		while(rx_counter0 < min_size - 2)
          		{
          		        timer++;
          		        if(timer == TIME_OUT)
@@ -690,7 +690,7 @@ while (1)
          		                
          		                //led_char('t');
          		                
-         		                while(timer == TIME_OUT && rx_counter0 < total_size - min_size)
+         		                while(rx_counter0 < total_size - min_size)
          		                {
          		                        timer++;
          		                        if(timer == TIME_OUT)
