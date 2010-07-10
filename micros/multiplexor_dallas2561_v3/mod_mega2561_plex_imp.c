@@ -109,7 +109,7 @@ uint16_t read_ai(int n)
         
         return 9999;
 }
-uint16_t read_register(int n) { return ((n % 2) == 0) ? 0xffff : 0x5555; }
+uint16_t read_register(int n) { return read_ai(n); }
 void write_register(int n, uint16_t val) 
 { 
         if(n >= 0 && n <=15 && val >=0 && val <= 65535)

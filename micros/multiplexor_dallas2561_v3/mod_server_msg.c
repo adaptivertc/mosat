@@ -174,14 +174,15 @@ int rt_modbus_read_registers(uint8_t *buf, int n)
   p = buf + 3;
   for (i=0; i < num_points; i++)
   {
-    if ((start_point + i) % 2)
+    /*if ((start_point + i) % 2)
     {
       tmp = 0xAAAA;
     }
     else
     {
       tmp = 0x5555;
-    }
+    }*/
+    tmp = read_register(start_point+i);
     swap16(&tmp);
     memcpy(p, &tmp, 2);
     p += 2;
