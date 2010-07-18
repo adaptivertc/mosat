@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # This script will detect the last JFS or EXT3 partition of an SD card image
 # provided by Technologic Systems and expand it to the end of the disk.
 # It depends on tools such as sfdisk, which is part of core utilities
@@ -22,6 +22,9 @@
 #
 # This script was tested by writing a factory 512MB SD image for the TS-7350
 # to both a 2GB and 16GB SD card in both JFS and EXT3 filesystem formats.
+
+#Uncomment to DEBUG
+#set -x 
 
 # CHECK FOR ROOT ACCESS
 if [ `id -u` -ne 0 ]; then
@@ -61,7 +64,7 @@ if [ -e $1 ]; then
 		echo "Please unmount it and re-run $0."
 		exit 1
 	fi
-
+	mkdir /mnt/tmp
 	mount ${DISK}$NUMBER /mnt/tmp 2> /dev/null
 	TYPE=`df -T /mnt/tmp | tail -n 1 | awk '{print $2}'`
 	umount ${DISK}$NUMBER 2> /dev/null
@@ -116,7 +119,7 @@ EOF
 #  Expand filesystem to end of partition
 #########################################
 expand_fs(){
-	if [ $TYPE = "jfs" ]; then
+	if [ $TYPE == "jfs" ]; then
 		# CHECK DEPENDENCIES
 		which jfs_mkfs >/dev/null 2>&1 </dev/null
 		jfsutils=$?
@@ -139,7 +142,7 @@ expand_fs(){
 		echo "done"
 		goodbye
 
-	elif [ $TYPE = "ext3" ]; then
+	elif [ $TYPE == "ext3" ]; then
 		echo -n "Resizing EXT3 disk ${DISK}$NUMBER to fill new size of the partition... "
 	        (
 	                e2fsck -f ${DISK}$NUMBER
@@ -148,7 +151,7 @@ expand_fs(){
 	        echo "done"
 		goodbye
 
-	elif [ $TYPE = "none" ]; then
+	elif [ $TYPE == "none" ]; then
 		echo "Valid partition not found!"
 		echo "Exiting"
 		exit 1
