@@ -1,0 +1,2 @@
+wget --output-document=columns.txt http://adaptivertc.no-ip.org/root/log/U1_S1_C120100830.txt
+./a.out columns
