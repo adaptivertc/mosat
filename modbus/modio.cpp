@@ -333,6 +333,17 @@ int MODSerial::read_ai(uint16 start_address, int n_to_read, uint16 *vals)
   //uint8 msg[8];
   uint8 msg[6];
   uint8 reply[512];
+  for (int i=0; i < n_to_read; i++)
+  {
+    vals[i] = 0;
+  }
+
+  for (int i=0; i < (sizeof(reply) / sizeof(reply[0])); i++)
+  {
+    reply[i] = 0;
+  }
+
+  msg[0] = address;
   msg[0] = address;
   msg[1] = READ_ANALOG_INPUTS;
   react_trace.dprintf(0, "Opcode = %d, ", (int) msg[1]);
@@ -352,12 +363,14 @@ int MODSerial::read_ai(uint16 start_address, int n_to_read, uint16 *vals)
   //int receive_size = 5 + (n_to_read * 2);
   int receive_size = 3 + (n_to_read * 2);
 
+  printf("================================================ READ AI ======================\n");
   n = receive(reply, sizeof(reply));
   if (n != receive_size)
   {
     react_trace.dprintf(6, "**** Incorrect reply size for read analog input\n");
     return -1;
   }
+  printf("================================================ READ AI, n = %d ======================\n", n);
 
   for (int i=0; i < n_to_read; i++)
   {
@@ -792,7 +805,8 @@ int MODSerial::receive(uint8 *buf, int size)
   *******/
 
   //RXFlush();
-  return count;
+  //return count;
+  return n+3;
 }
 
 /***********************************************************************/

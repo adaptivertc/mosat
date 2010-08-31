@@ -34,6 +34,7 @@ Header file for procedures in common.lib.
 #define __RTCOMMON_INC__
 
 //#include <io.h>
+#include <time.h>
 
 #define FAILED (-1)
 #define SUCCESS (0)
@@ -73,6 +74,16 @@ typedef unsigned long uint32;
 typedef long int32;
 
 //#define goto(x,y) move(y,x)
+
+// Common functions for loggers
+time_t rt_calc_next_sample_time(time_t now, int sample_interval);
+bool rt_hour_changed(time_t t1, time_t t2);
+bool rt_day_changed(time_t t1, time_t t2);
+bool rt_week_changed(time_t t1, time_t t2);
+bool rt_month_changed(time_t t1, time_t t2);
+bool rt_year_changed(time_t t1, time_t t2);
+void rt_make_day_file_name(time_t the_time, char *fname, int size_fname, const char *pre, const char *post, const char *loghome);
+FILE *rt_open_day_history_file(const char * pre, const char *post, const char *loghome, FILE *fp);
 
 #define dir_exists(f) (0 == access(f,F_OK))
 #define file_exists(f) (0 == access(f,F_OK))

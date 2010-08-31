@@ -44,6 +44,8 @@ void di_point_t::update(bool value)
 {
   /* Update the discrete input point. */
 
+  printf("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ tag: %s, value: %s\n", tag, value ? "T":"F");
+  
   pv_last = pv;
   pv  = value;
 

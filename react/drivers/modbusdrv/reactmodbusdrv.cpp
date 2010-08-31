@@ -143,7 +143,14 @@ extern "C" io_driver_t *new_reactmodbus(react_drv_base_t *r, const char *option)
 {
   logfile->vprint("Creating new reactmodbus iodriver\n");
    dfp = fopen("log/outlog.txt", "w");
+   //dfp = stdout;
   return new reactmodbus_driver_t(r, option);
+}
+
+/***********************************************************************/
+
+void reactmodbus_driver_t::check_overlap(int a_modbus_id, const char *io_type, int opcode, int n_io, int modbus_offset, int channel_offset)
+{
 }
 
 /***********************************************************************/
@@ -198,6 +205,11 @@ void reactmodbus_driver_t::add_io(int a_modbus_id, const char *io_type, int opco
   {
     tmp_mod_io.type = REACT_MOD_AO; 
     logfile->vprint("Type AO, ");
+  }
+  else if (0 == strcasecmp("ERROR_MAP", io_type))
+  {
+    tmp_mod_io.type = REACT_MOD_ERROR_MAP; 
+    logfile->vprint("Modbus Error Map, ");
   }
   else
   {
@@ -259,6 +271,12 @@ void reactmodbus_driver_t::add_io(int a_modbus_id, const char *io_type, int opco
       do_map[n_do_map] = tmp_mod_io;
       n_do_map++;
       break;
+    case REACT_MOD_ERROR_MAP:
+      modbus_error_map_start = tmp_mod_io.channel_offset;
+      modbus_error_map_n = tmp_mod_io.n;
+      logfile->vprint("Mapping errors starting at %d, n = %d\n",
+          modbus_error_map_start, modbus_error_map_n);
+      break;
     default:
       logfile->vprint("Invalid type: %d\n", tmp_mod_io.type);
       break;
@@ -290,6 +308,8 @@ reactmodbus_driver_t::reactmodbus_driver_t(react_drv_base_t *react, const char *
   logfile->vprint("---- initializing modbus %s ---------------------------\n", option);
   //modbus = rt_create_modbus("127.0.0.1:502");
   //modbus = rt_create_modbus("192.168.1.104:502");
+  modbus_error_map_start = -1; 
+  modbus_error_map_n = 0; 
   if (option == NULL)
   {
     modbus = rt_create_modbus("127.0.0.1:502");
@@ -452,7 +472,7 @@ void reactmodbus_driver_t::send_do(int ch, bool val)
 double reactmodbus_driver_t::get_ai(int channel)
 {
   double read_val;
-  if ((channel >= 0) && (channel < 32))
+  if ((channel >= 0) && (channel < REACT_MAX_MOD_AI))
   {
     read_val = (double) ai_vals[channel];
     xx_printf("AI %d, read %lf\n", channel, read_val);
@@ -469,10 +489,12 @@ double reactmodbus_driver_t::get_ai(int channel)
 bool reactmodbus_driver_t::get_di(int channel)
 {
   bool read_val;
-  if ((channel >= 0) && (channel < 32))
+  if ((channel >= 0) && (channel < REACT_MAX_MOD_DI))
   {
     read_val = di_vals[channel];
     xx_printf("DI %d, read %s\n", channel, read_val ? "T" : "F");
+    //if (channel == 82)
+      //fprintf(dfp, "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& DI %d, read %s\n", channel, read_val ? "T" : "F");
     return read_val;
   }
   else
@@ -497,24 +519,57 @@ long reactmodbus_driver_t::get_count(int channel)
 
 /***********************************************************************/
 
+void reactmodbus_driver_t::set_mod_error(int retval, int unit_id)
+{
+  if (unit_id >= modbus_error_map_n) return;
+  int ch = modbus_error_map_start + unit_id; 
+  bool is_err = (retval < 0); 
+  if (is_err) 
+  {
+    tmp_di_vals[ch] = true;
+    fprintf(dfp, "Com error: %s, unit id: %d, channel: %d, retval: %d, wrote %s to channel %d\n", 
+           (retval < 0) ? "YES" : "NO", unit_id, ch, retval, 
+              is_err? "ERROR": "OK", ch); 
+  }
+  for (int i=0; i < modbus_error_map_n; i++)
+  {
+    int ach = modbus_error_map_start + i;
+    //fprintf(dfp, "tmp_di_vals[%d] = %s\n", ach, tmp_di_vals[ach] ? "TRUE":"FALSE");
+  }
+  fflush(dfp);
+}
+
+/***********************************************************************/
+
 void reactmodbus_driver_t::read_mod_io(void)
 {
+  // First clear all the errors
+  // Later, if there is an error in any read for a unit id, we set an error
+  for (int i=0; i < modbus_error_map_n; i++)
+  {
+    tmp_di_vals[modbus_error_map_start + i] = false;
+  }
   for (int i=0; i < n_mod_io; i++)
   {
+    int retval;
     modbus->set_address(mod_io[i].modbus_id);
     switch (mod_io[i].type)
     {
       case REACT_MOD_DI:
+        //fprintf(dfp, "DI: ");
         switch (mod_io[i].opcode)
         {
           case 1:
-            modbus->read_do(mod_io[i].modbus_offset, mod_io[i].n, tmp_di_vals + mod_io[i].channel_offset);
+            retval = modbus->read_do(mod_io[i].modbus_offset, mod_io[i].n, tmp_di_vals + mod_io[i].channel_offset);
+            set_mod_error(retval, mod_io[i].modbus_id);
             break;
           case 2:
-            modbus->read_di(mod_io[i].modbus_offset, mod_io[i].n, tmp_di_vals + mod_io[i].channel_offset);
+            retval = modbus->read_di(mod_io[i].modbus_offset, mod_io[i].n, tmp_di_vals + mod_io[i].channel_offset);
+            set_mod_error(retval, mod_io[i].modbus_id);
             break;
           case 3:
-            modbus->read_di_register(mod_io[i].modbus_offset, mod_io[i].n, tmp_di_vals + mod_io[i].channel_offset);
+            retval = modbus->read_di_register(mod_io[i].modbus_offset, mod_io[i].n, tmp_di_vals + mod_io[i].channel_offset);
+            set_mod_error(retval, mod_io[i].modbus_id);
             break;
           default:
             xx_printf("Invalid opcode for DI: %d\n", mod_io[i].opcode);
@@ -522,13 +577,27 @@ void reactmodbus_driver_t::read_mod_io(void)
         }
         break;
       case REACT_MOD_AI:
+        //fprintf(dfp, "AI: ");
         switch (mod_io[i].opcode)
         {
           case 3:
-            modbus->read_reg(mod_io[i].modbus_offset, mod_io[i].n, tmp_ai_vals + mod_io[i].channel_offset);
+            retval = modbus->read_reg(mod_io[i].modbus_offset, mod_io[i].n, tmp_ai_vals + mod_io[i].channel_offset);
+            set_mod_error(retval, mod_io[i].modbus_id);
             break;
           case 4:
-            modbus->read_ai(mod_io[i].modbus_offset, mod_io[i].n, tmp_ai_vals + mod_io[i].channel_offset);
+            retval = modbus->read_ai(mod_io[i].modbus_offset, mod_io[i].n, tmp_ai_vals + mod_io[i].channel_offset);
+            //if ((mod_io[i].modbus_id == 4) && (mod_io[i].modbus_offset == 100))
+            {
+              fprintf(dfp, "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n");
+              fprintf(dfp, "unit id: %d, mod offset: %d\n ", 
+                        mod_io[i].modbus_id, mod_io[i].modbus_offset);
+              for (int j=0; j < 12; j++) 
+              {
+               fprintf(dfp, "%hu ", tmp_ai_vals[36 + j]);
+              }
+              fprintf(dfp, "\n");
+            }
+            set_mod_error(retval, mod_io[i].modbus_id);
             break;
           default:
             xx_printf("Invalid opcode for AI: %d\n", mod_io[i].opcode);
@@ -540,6 +609,7 @@ void reactmodbus_driver_t::read_mod_io(void)
         break;
     }
   }
+  //fprintf(dfp, "tmp_di_vals[82] = %s\n", tmp_di_vals[82] ? "TRUE":"FALSE");
 }
 
 /***********************************************************************/
@@ -555,9 +625,9 @@ void reactmodbus_driver_t::map_do(int ch, int *modbus_ch, int *modbus_id, int *o
       *modbus_ch = do_map[i].modbus_offset + (ch - do_map[i].channel_offset);
       *modbus_id = do_map[i].modbus_id;
       *opcode = do_map[i].opcode;
-      fprintf(dfp, "map DO ch %d to unitid %d, opcode %d, mod ch %d\n", 
-         ch, *modbus_id, *opcode, *modbus_ch); 
-      fflush(dfp);
+      //fprintf(dfp, "map DO ch %d to unitid %d, opcode %d, mod ch %d\n", 
+       //  ch, *modbus_id, *opcode, *modbus_ch); 
+      //fflush(dfp);
       return;
     }
   }
@@ -755,7 +825,11 @@ void reactmodbus_driver_t::read_thread(void)
     sem_wait(&read_mutex_sem);
       xx_printf("  -- read thread in critical section . . .\n");
       memcpy(ai_vals, tmp_ai_vals, sizeof(ai_vals));
+      //fprintf(dfp, "tmp_di_vals[82] = %s\n", tmp_di_vals[82] ? "TRUE":"FALSE");
+      //fprintf(dfp, "di_vals[82] = %s\n", di_vals[82] ? "TRUE":"FALSE");
       memcpy(di_vals, tmp_di_vals, sizeof(di_vals));
+      //fprintf(dfp, "tmp_di_vals[82] = %s\n", tmp_di_vals[82] ? "TRUE":"FALSE");
+      //fprintf(dfp, "di_vals[82] = %s\n", di_vals[82] ? "TRUE":"FALSE");
       read_values = true;
       xx_printf("  -- read thread leaving critical section . . .\n");
     sem_post(&read_mutex_sem);
@@ -776,13 +850,13 @@ void reactmodbus_driver_t::read(void)
     if (read_values)
     {
       wake_him_up = true;
-      di_vals[16] = false;
+      //di_vals[16] = false;
     }
     else
     {
       // Either the reader is slow or the link is down
       wake_him_up = false;
-      di_vals[16] = true;
+      //di_vals[16] = true;
     }
   //modbus->read_ai(0, 16, ai_vals);
   //modbus->read_di(0, 16, di_vals);

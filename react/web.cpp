@@ -386,6 +386,7 @@ void web_point_t::read_file(void)
         }
         else
         {
+          logfile->vprint("    Adding Discrete value: %s,  strings: %s %s\n", argv[0], argv[1], argv[2]);
           tmp_r->dp = (discrete_point_t *) db_point;
         }
       }

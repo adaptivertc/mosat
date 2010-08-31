@@ -27,7 +27,8 @@ void spd_create_image(const char *base_name, const char *gtitle, bool window)
     perror(fname);
     return;
   }
-  fprintf(fp, "set   autoscale\n");
+  //fprintf(fp, "set   autoscale\n");
+  fprintf(fp, "set auto x\n");
   fprintf(fp, "set yrange [25:60]\n");
   fprintf(fp, "unset log\n");
   fprintf(fp, "unset label\n");
@@ -93,7 +94,7 @@ void spd_create_image(const char *base_name, const char *gtitle, bool window)
 int main(int argc, char *argv[])
 {
 
-  const char *input_file = "poncitlan_dat.txt";
+  const char *input_file = "";
 
   if (argc > 1)
   {
@@ -101,7 +102,7 @@ int main(int argc, char *argv[])
   }
  else
   {
-    printf("\nError\n\n");
+    printf("\nError, you must include the base file name\n\n");
     exit(1);
   }
 

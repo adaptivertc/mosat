@@ -19,3 +19,8 @@ PUMP1_ON|Bomba 1 ON|0|0|8|ON|OFF|H|N|
 PUMP2_ON|Bomba 2 ON|0|0|9|ON|OFF|H|N|
 PUMP3_ON|Bomba 3 ON|0|0|10|ON|OFF|H|N|
 COM_FAILED|Communications Failed|0|0|16|ON|OFF|N|N|
+MOD_ID_1_OK|Mod error 1|0|0|81|OK|FAIL|N|N|
+MOD_ID_2_OK|Mod error 1|0|0|82|OK|FAIL|N|N|
+MOD_ID_3_OK|Mod error 1|0|0|83|OK|FAIL|N|N|
+MOD_ID_4_OK|Mod error 1|0|0|84|OK|FAIL|N|N|
+MOD_ID_5_OK|Mod error 1|0|0|85|OK|FAIL|N|N|

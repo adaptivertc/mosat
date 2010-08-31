@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define REACT_MOD_AI (2)
 #define REACT_MOD_AO (3)
 #define REACT_MOD_DO (4)
+#define REACT_MOD_ERROR_MAP (10)
 
 #define REACT_MAX_MOD_IO (32)
 #define REACT_MAX_MOD_DO_MAP (32)
@@ -69,6 +70,8 @@ private:
   ao_send_t ao_vals_to_send[64];  
   int n_dos_to_send;
   int n_aos_to_send;
+  int modbus_error_map_start;
+  int modbus_error_map_n;
   bool alt_do_opcode;
   bool alt_ao_opcode;
   uint8 default_modbus_id;
@@ -87,7 +90,10 @@ private:
   mod_io_def_t do_map[REACT_MAX_MOD_AO_MAP];
   void add_io(int modbus_id, const char *io_type, int opcode, int n_io, 
                int modbus_offset, int channel_offset);
+  void set_mod_error(int retval, int unit_id);
   void read_mod_io(void);
+  void check_overlap(int a_modbus_id, const char *io_type, int opcode, 
+                  int n_io, int modbus_offset, int channel_offset);
 public:
   reactmodbus_driver_t(react_drv_base_t *react, const char *option);
   void read(void);

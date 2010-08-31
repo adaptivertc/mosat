@@ -373,3 +373,32 @@ web_logger_t **web_logger_t::read(int *cnt, const char *home_dir)
 
 /*************************************************************************/
 
+time_t calc_next_time(time_t now, int sample_interval)
+{
+  struct tm nowtm;
+  long next_secs = 0;
+ 
+  localtime_r(&now, &nowtm);
+  printf("%s %ld secs since the Epoch\n", asctime(&nowtm), now);
+  int secs_after_hour = nowtm.tm_sec + (nowtm.tm_min * 60);
+  printf("Secs after hour: %d\n", secs_after_hour);
+     
+  for (int i=0; 
+       ((i * sample_interval) < (secs_after_hour)) && (i < 500); i++)
+  {
+    printf("%d: %d\n", i, i * sample_interval);
+    next_secs = (i + 1) * sample_interval;
+    printf("next: %ld\n", next_secs);
+  }
+  nowtm.tm_min = 0;
+  nowtm.tm_sec = 0;
+  time_t next_time =  mktime(&nowtm);
+  next_time += next_secs;
+
+  localtime_r(&next_time, &nowtm);
+  printf("%s\n", asctime(&nowtm));
+  return next_time;
+}
+
+/*************************************************************************/
+

@@ -46,9 +46,9 @@ Member functions for the real time database.
 #include <sys/stat.h>
 #include <mqueue.h>
 
-#ifdef __REACT_MSG__
 #include <sys/ipc.h>
 #include <sys/msg.h>
+#ifdef __REACT_MSG__
 #include "reactmsg.h"
 #endif
 #ifdef __REACT_SHM__
@@ -1285,16 +1285,25 @@ void react_t::delete_msg_queue(void)
 
 /**********************************************************************/
 
+/**
 static const char * qname = "/adaptivertc.react.write_tag"; 
 static mqd_t mq_fd = (mqd_t) -1;
+ **/
+
+static const char *wr_msg_name = "/home/artc";
+static int wr_msg_id;
+
+
 
 void react_t::open_write_tag_queue(void)
 {
+  /***
   mq_fd = mq_open(qname, O_RDWR | O_CREAT, 0755, NULL);
   if (mq_fd == ((mqd_t) -1))
   {
     perror("mq_open");
   }
+  ****/
 
 }
 
@@ -1302,9 +1311,8 @@ void react_t::open_write_tag_queue(void)
 
 void react_t::check_write_tag_queue(void)
 {
+  /**
   if (mq_fd == ((mqd_t) -1)) return;
-  
-  tag_rw_data_t rwd;
 
   unsigned prio;
   char msgbuf[8192];
@@ -1312,6 +1320,28 @@ void react_t::check_write_tag_queue(void)
 
   ts.tv_sec = 0;
   ts.tv_nsec = 0;
+  **/
+  tag_rw_data_t rwd;
+
+  key_t mykey = ftok(wr_msg_name, 1);
+  if (mykey == -1)
+  {
+    logfile->perror("Could not get shared memory key");
+    //logfile->vprint("Message queue destroyed successfully\n");
+    exit(0);
+  }
+  logfile->vprint("message queue key is: %x\n", mykey);
+
+  int myqid = msgget(mykey, IPC_CREAT | 0755);
+  if (myqid == -1)
+  {
+    logfile->perror("Could not create message queue");
+  }
+  else
+  {
+    logfile->vprint("I got a message queue, id = %d\n", myqid);
+  }
+
 
   //int rval = mq_receive(mq_fd, msgbuf, sizeof(msgbuf), &prio);
   //if (rval == -1)
@@ -1319,11 +1349,13 @@ void react_t::check_write_tag_queue(void)
   //  perror("mq_recieve");
   //}
 
+  /***
   int retv = mq_timedreceive(mq_fd, msgbuf, sizeof(msgbuf), &prio, &ts);
 
   if (retv != sizeof(rwd)) return;
 
   memcpy(&rwd, msgbuf, sizeof(rwd));
+  **/
 
   const char *tag = rwd.tag;
   db_point_t *dbp;

@@ -58,153 +58,10 @@ void file_logger_t::write_to_file(void)
 
 /**********************************************************************/
 
-static bool hour_changed(time_t t1, time_t t2)
-{
-  struct tm mytm1;
-  struct tm mytm2;
-  localtime_r(&t1, &mytm1);
-  localtime_r(&t2, &mytm2);
-  if (mytm1.tm_hour == mytm2.tm_hour)
-  {
-    return false;
-  }
-  else 
-  {
-    //printf("********* Hour Changed\n");
-    return true;
-  }
-}
-
-/**********************************************************************/
-
-static bool day_changed(time_t t1, time_t t2)
-{
-  struct tm mytm1;
-  struct tm mytm2;
-  localtime_r(&t1, &mytm1);
-  localtime_r(&t2, &mytm2);
-  if (mytm1.tm_yday == mytm2.tm_yday)
-  {
-    return false;
-  }
-  else 
-  {
-    logfile->vprint("********* Day Changed\n");
-    return true;
-  }
-}
-
-/**********************************************************************/
-
-static bool week_changed(time_t t1, time_t t2)
-{
-  struct tm mytm1;
-  struct tm mytm2;
-  localtime_r(&t1, &mytm1);
-  localtime_r(&t2, &mytm2);
-  // This works no matter which order the times are given in
-  if ( ((mytm1.tm_wday == 0) && (mytm1.tm_wday == 6)) ||
-     ((mytm2.tm_wday == 0) && (mytm1.tm_wday == 6)) ) 
-  {
-    logfile->vprint("********* Week Changed\n");
-    return true;
-  }
-  else 
-  {
-    return false;
-  }
-}
-
-/**********************************************************************/
-
-static bool month_changed(time_t t1, time_t t2)
-{
-  struct tm mytm1;
-  struct tm mytm2;
-  localtime_r(&t1, &mytm1);
-  localtime_r(&t2, &mytm2);
-  if (mytm1.tm_mon == mytm2.tm_mon)
-  {
-    return false;
-  }
-  else 
-  {
-    logfile->vprint("********* Month Changed\n");
-    return true;
-  }
-}
-
-/**********************************************************************/
-
-static bool year_changed(time_t t1, time_t t2)
-{
-  struct tm mytm1;
-  struct tm mytm2;
-  localtime_r(&t1, &mytm1);
-  localtime_r(&t2, &mytm2);
-  if (mytm1.tm_year == mytm2.tm_year)
-  {
-    return false;
-  }
-  else 
-  {
-    logfile->vprint("********* Year Changed\n");
-    return true;
-  }
-}
-
-/**********************************************************************/
-
-static void make_day_file_name(time_t the_time, char *fname, int size_fname, const char *pre, const char *post)
-{
-  const char *loghome = ap_config.get_config("LogHome");
-  if (loghome == NULL)
-  {
-    loghome = "./";
-    logfile->vprint("Log home not specified, using: %s\n", loghome);
-  }
-  if (pre == NULL)
-  {
-    pre = "";
-  }
-  if (post == NULL)
-  {
-    post = "";
-  }
-  char buf1[30];
-  struct tm mytm;
-  localtime_r(&the_time, &mytm);
-  strftime(buf1, sizeof(buf1), "%Y%m%d", &mytm);
-  snprintf(fname, size_fname, "%s/%s%s%s", loghome, pre, buf1, post);
-}
-
-/**********************************************************************/
-
-static FILE *open_day_history_file(const char * pre, const char *post, FILE *fp)
-{
-  char fname[500];
-  if (fp != NULL)
-  {
-    fclose(fp);
-  }
-  time_t now = time(NULL);
-  make_day_file_name(now, fname, sizeof(fname), pre, post);
-
-  //printf("Opening %s\n", fname);
-  fp = fopen(fname, "a");
-  if (fp == NULL)
-  {
-    logfile->vprint("**** Error Opening %s\n", fname);
-  }
-  return fp;
-}
-
-/**********************************************************************/ 
-
 void file_logger_t::delete_old_files(time_t now)
 {
   char fname[500];
-  make_day_file_name(now, fname, sizeof(fname), base_name, "_del_log.txt");
+  rt_make_day_file_name(now, fname, sizeof(fname), base_name, "_del_log.txt", ap_config.get_config("LogHome"));
   FILE *fp = fopen(fname, "w");
   if (fp != NULL) fprintf(fp, "Delete Log\n");
   if (fp != NULL) fprintf(fp, "keeping %d days of history\n", n_days_of_history);
@@ -218,7 +75,7 @@ void file_logger_t::delete_old_files(time_t now)
   {
     int ret;
     time_t day_time = now - ((i+1) * (60*60*24));
-    make_day_file_name(day_time, fname, sizeof(fname), base_name, ".txt");
+    rt_make_day_file_name(day_time, fname, sizeof(fname), base_name, ".txt", ap_config.get_config("LogHome"));
     if (fp != NULL) fprintf(fp, "Checking file: %s\n", fname);
     if (file_exists(fname))
     {
@@ -229,7 +86,7 @@ void file_logger_t::delete_old_files(time_t now)
     {
       if (fp != NULL) fprintf(fp, " DOES NOT EXIST\n\n");
     }
-    make_day_file_name(day_time, fname, sizeof(fname), base_name, "_hour.txt");
+    rt_make_day_file_name(day_time, fname, sizeof(fname), base_name, "_hour.txt", ap_config.get_config("LogHome"));
     if (fp != NULL) fprintf(fp, "Checking file: %s\n", fname);
     if (file_exists(fname))
     {
@@ -264,11 +121,11 @@ void file_logger_t::update(void)
   struct tm mytm;
   localtime_r(&now, &mytm);
   strftime(buf, sizeof(buf), "%F\t%T", &mytm);
-  bool day_change = day_changed(now, last_log_time);
+  bool day_change = rt_day_changed(now, last_log_time);
 
-  if (hour_changed(now, last_log_time))
+  if (rt_hour_changed(now, last_log_time))
   {
-    if (hour_fp != NULL)
+    if ((hour_fp != NULL) && (hour_averages != NULL))
     {
       fprintf(hour_fp, "%s", buf);
       for (int i=0; i < num_points; i++)
@@ -282,19 +139,23 @@ void file_logger_t::update(void)
   }
   if (day_change)
   {
-    instantaneous_fp = open_day_history_file(base_name, 
-                         ".txt", instantaneous_fp);
-    hour_fp = open_day_history_file(base_name, 
-                         "_hour.txt", hour_fp);
+    instantaneous_fp = rt_open_day_history_file(base_name, 
+           ".txt", ap_config.get_config("LogHome"), instantaneous_fp);
+    if (this->hour_enable)
+    {
+      hour_fp = rt_open_day_history_file(base_name, 
+          "_hour.txt", ap_config.get_config("LogHome"), hour_fp);
+
+    }
     delete_old_files(now);
   }
-  if (week_changed(now, last_log_time))
+  if (rt_week_changed(now, last_log_time))
   {
   }
-  if (month_changed(now, last_log_time))
+  if (rt_month_changed(now, last_log_time))
   {
   }
-  if (year_changed(now, last_log_time))
+  if (rt_year_changed(now, last_log_time))
   {
   }
 
@@ -309,7 +170,7 @@ void file_logger_t::update(void)
       val = analog_points[i]->get_pv();
     }
     fprintf(instantaneous_fp, "\t%lf", val);
-    hour_averages[i] += val;
+    if (hour_averages != NULL) hour_averages[i] += val;
     //printf(" %lf", hour_averages[i] / (n_hour_samples + 1));
   }
   n_hour_samples++;
@@ -399,7 +260,7 @@ file_logger_t **file_logger_t::read(int *cnt, const char *home_dir)
     p->month_enable = (argv[9][0] == '1');
     p->collecting = true;
     //p->instantaneous_fp = fopen(p->base_name, "w");
-    p->instantaneous_fp = open_day_history_file(p->base_name, ".txt", NULL);
+    p->instantaneous_fp = rt_open_day_history_file(p->base_name, ".txt", ap_config.get_config("LogHome"), NULL);
     if (p->instantaneous_fp == NULL)
     {
       perror(p->base_name);
@@ -437,7 +298,7 @@ file_logger_t **file_logger_t::read(int *cnt, const char *home_dir)
     if (p->hour_enable)
     {
       p->hour_averages = new double[p->num_points];
-      p->hour_fp = open_day_history_file(p->base_name, "_hour.txt", NULL);
+      p->hour_fp = rt_open_day_history_file(p->base_name, "_hour.txt", ap_config.get_config("LogHome"), NULL);
       if (p->hour_fp == NULL)
       {
         perror("Opening Hour File");

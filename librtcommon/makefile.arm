@@ -1,7 +1,7 @@
 
 AR=arm-unknown-linux-gnu-ar
 
-OBJS=  $(DIR)arg.o $(DIR)common.o $(DIR)safestr.o $(DIR)utimer.o $(DIR)memfail.o $(DIR)numbered_file.o $(DIR)ap_config.o $(DIR)separator.o
+OBJS=  $(DIR)arg.o $(DIR)common.o $(DIR)safestr.o $(DIR)utimer.o $(DIR)memfail.o $(DIR)numbered_file.o $(DIR)ap_config.o $(DIR)separator.o $(DIR)log_functions.o
 
 
 
