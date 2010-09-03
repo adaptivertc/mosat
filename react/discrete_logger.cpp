@@ -42,81 +42,6 @@ changes to discrete points given in the list.
 
 /**********************************************************************/
 
-static bool hour_changed(time_t t1, time_t t2)
-{
-  struct tm mytm1;
-  struct tm mytm2;
-  localtime_r(&t1, &mytm1);
-  localtime_r(&t2, &mytm2);
-  if (mytm1.tm_hour != mytm2.tm_hour)
-  {
-    return true;
-  }
-  else
-  {
-    return false;
-  }
-}
-
-/********************************************************************/
-
-static bool day_changed(time_t t1, time_t t2)
-{
-  struct tm mytm1;
-  struct tm mytm2;
-  localtime_r(&t1, &mytm1);
-  localtime_r(&t2, &mytm2);
-  if (mytm1.tm_yday == mytm2.tm_yday)
-  {
-    return false;
-  }
-  else 
-  {
-    logfile->vprint("********* Day Changed\n");
-    return true;
-  }
-}
-
-/**********************************************************************/
-
-static FILE *open_day_history_file(const char * pre, const char *post, FILE *fp)
-{
-  char fname[500];
-  if (fp != NULL)
-  {
-    fclose(fp);
-  }
-  const char *loghome = ap_config.get_config("LogHome");
-  if (loghome == NULL)
-  {
-    loghome = "./";
-    logfile->vprint("Log home not specified, using: %s\n", loghome);
-  }
-  if (pre == NULL)
-  {
-    pre = "";
-  }
-  if (post == NULL)
-  {
-    post = "";
-  }
-  time_t now = time(NULL);
-  char buf1[30];
-  struct tm mytm;
-  localtime_r(&now, &mytm);
-  strftime(buf1, sizeof(buf1), "%Y%m%d", &mytm);
-  snprintf(fname, sizeof(fname), "%s/%s%s%s", loghome, pre, buf1, post);
-  //printf("Opening %s\n", fname);
-  fp = fopen(fname, "a");
-  if (fp == NULL)
-  {
-    logfile->vprint("**** Error Opening %s\n", fname);
-  }
-  return fp;
-}
-
-/**********************************************************************/ 
-
 void discrete_logger_t::update(void)
 {
   //fprintf(instantaneous_fp, "data:");
@@ -130,13 +55,13 @@ void discrete_logger_t::update(void)
   char buf[30];
   struct tm mytm;
   localtime_r(&now, &mytm);
-  strftime(buf, sizeof(buf), "%F\t%T", &mytm);
+  strftime(buf, sizeof(buf), "%FT%T", &mytm); // Changed to use the ISO standard for timestamp.
 
-  bool day_change = day_changed(now, last_log_time);
+  bool day_change = rt_day_changed(now, last_log_time);
 
   if (log_hour_totals && (hour_fp != NULL))
   {
-    bool hour_change = hour_changed(now, last_log_time);
+    bool hour_change = rt_hour_changed(now, last_log_time);
    
     if (hour_change)
     {
@@ -156,8 +81,8 @@ void discrete_logger_t::update(void)
 
   if (day_change)
   {
-    instantaneous_fp = open_day_history_file(base_name, 
-            ".txt", instantaneous_fp);
+    instantaneous_fp = rt_open_day_history_file(base_name, 
+            ".txt", ap_config.get_config("LogHome"), instantaneous_fp);
     
     if (log_hour_totals)
     {
@@ -171,7 +96,7 @@ void discrete_logger_t::update(void)
       }
       fprintf(hour_fp, "\n");
 
-      hour_fp = open_day_history_file(base_name, "_hour.txt", hour_fp);
+      hour_fp = rt_open_day_history_file(base_name, "_hour.txt", ap_config.get_config("LogHome"), hour_fp);
 
       for (int i=0; i < num_points; i++)
       {
@@ -299,7 +224,7 @@ discrete_logger_t **discrete_logger_t::read(int *cnt, const char *home_dir)
     if (p->log_hour_totals) logfile->vprint("Logging hour totals\n");
     p->collecting = true;
 
-    p->instantaneous_fp = open_day_history_file(p->base_name, ".txt", NULL);
+    p->instantaneous_fp = rt_open_day_history_file(p->base_name, ".txt", ap_config.get_config("LogHome"), NULL);
     if (p->instantaneous_fp == NULL)
     {
       perror(p->base_name);
@@ -308,7 +233,7 @@ discrete_logger_t **discrete_logger_t::read(int *cnt, const char *home_dir)
 
     if (p->log_hour_totals)
     {
-      p->hour_fp = open_day_history_file(p->base_name, "_hour.txt", NULL);
+      p->hour_fp = rt_open_day_history_file(p->base_name, "_hour.txt", ap_config.get_config("LogHome"), NULL);
 
       if (p->hour_fp == NULL)
       {

@@ -52,9 +52,11 @@ void spd_create_image(const char *base_name, const char *gtitle, bool window)
   }
   fprintf(fp, "%s\n", "set output\n");
   fprintf(fp, "set xdata time\n");
-  fprintf(fp, "set timefmt \"%%H:%%M:%%S\"\n");
-  fprintf(fp, "plot \"%s.txt\" using 2:5 with lines lw 2 title \"Temperature\"", base_name);
-  fprintf(fp, ", \"%s.txt\" using 2:6 with lines lw 2 title \"Humidity\"", base_name);
+  fprintf(fp, "set timefmt \"%%Y-%%m-%%dT%%H:%%M:%%S\"\n");
+  fprintf(fp, "plot \"%s.txt\" using 1:2 with lines lw 2 title \"TempCo\"", base_name);
+  fprintf(fp, ", \"%s.txt\" using 1:3 with lines lw 2 title \"HumCo\"", base_name);
+  fprintf(fp, ", \"%s.txt\" using 1:4 with lines lw 2 title \"TempAs\"", base_name);
+  fprintf(fp, ", \"%s.txt\" using 1:5 with lines lw 2 title \"HumAs\"", base_name);
   fprintf(fp, "\n");
 
   fclose(fp);

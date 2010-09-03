@@ -39,52 +39,6 @@ static char plog_home[200];
 
 /********************************************************************/
 
-static FILE *open_day_history_file(const char *home, const char *post, FILE *fp)
-{
-  char fname[500];
-  if (fp != NULL)
-  {
-    fclose(fp);
-  }
-  time_t now = time(NULL);
-  char buf1[30];
-  struct tm mytm;
-  localtime_r(&now, &mytm);
-  strftime(buf1, sizeof(buf1), "%Y%m%d", &mytm);
-  snprintf(fname, sizeof(fname), "%s/%s%s", home, buf1, post);
-  //printf("Opening %s\n", fname);
-  fp = fopen(fname, "a");
-  if (fp == NULL)
-  {
-    logfile->vprint("**** Error Opening %s\n", fname);
-  }
-  return fp;
-}
-
-/********************************************************************/
-
-static bool hour_changed(time_t t1, time_t t2)
-{
-  struct tm mytm1;
-  struct tm mytm2;
-  localtime_r(&t1, &mytm1);
-  localtime_r(&t2, &mytm2);
-  return (mytm1.tm_hour != mytm2.tm_hour);
-}
-
-/********************************************************************/
-
-static bool day_changed(time_t t1, time_t t2)
-{
-  struct tm mytm1;
-  struct tm mytm2;
-  localtime_r(&t1, &mytm1);
-  localtime_r(&t2, &mytm2);
-  return (mytm1.tm_yday != mytm2.tm_yday);
-}
-
-/********************************************************************/
-
 void level_point_t::update(void)
 {
   /* Update the given level point. */
@@ -104,7 +58,7 @@ void level_point_t::update(void)
   lo_state = di_lo->get_pv();
   hi_state = di_hi->get_pv();
   
-  if (hour_changed(now, this_hour))
+  if (rt_hour_changed(now, this_hour))
   {
     struct tm mytm;
     localtime_r(&this_hour, &mytm);
@@ -117,7 +71,7 @@ void level_point_t::update(void)
     this_hour =  now;
   }
 
-  if (day_changed(now, this_day))
+  if (rt_day_changed(now, this_day))
   {
     double fill_rate = total_day_fill_rates / total_day_samples;
     fprintf(level_fp, "%s\t%0.2lf\t%0.2lf\n", "dia", 
@@ -126,7 +80,7 @@ void level_point_t::update(void)
     total_day_fill_rates = 0.0;
     total_day_samples = 0;
     this_day = now;
-    level_fp = open_day_history_file(plog_home, "_agua.txt", level_fp);
+    level_fp = rt_open_day_history_file(NULL, "_agua.txt", plog_home, level_fp);
   }
 
   if (pumping)
@@ -275,7 +229,7 @@ level_point_t **level_point_t::read(int *cnt, const char *home_dir)
       snprintf(plog_home, sizeof(plog_home), "%s/atemajac/", html_home);
     }
 
-    lvl->level_fp = open_day_history_file(plog_home, "_agua.txt", NULL);
+    lvl->level_fp = rt_open_day_history_file(NULL, "_agua.txt", plog_home, NULL);
 
     level_points[count] = lvl;
     count++;

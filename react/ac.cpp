@@ -40,51 +40,6 @@ static char ac_log_home[200];
 
 /********************************************************************/
 
-static FILE *open_day_history_file(const char *home, const char *post, FILE *fp) {
-  char fname[500];
-  if (fp != NULL)
-  {
-    fclose(fp);
-  }
-  time_t now = time(NULL);
-  char buf1[30];
-  struct tm mytm;
-  localtime_r(&now, &mytm);
-  strftime(buf1, sizeof(buf1), "%Y%m%d", &mytm);
-  snprintf(fname, sizeof(fname), "%s/%s%s", home, buf1, post);
-  logfile->vprint("Opening %s\n", fname);
-  fp = fopen(fname, "a");
-  if (fp == NULL)
-  {
-    logfile->vprint("**** Error Opening: %s\n", fname);
-  }
-  return fp;
-}
-
-/********************************************************************/
-
-static bool hour_changed(time_t t1, time_t t2)
-{
-  struct tm mytm1;
-  struct tm mytm2;
-  localtime_r(&t1, &mytm1);
-  localtime_r(&t2, &mytm2);
-  return (mytm1.tm_hour != mytm2.tm_hour);
-}
-
-/********************************************************************/
-
-static bool day_changed(time_t t1, time_t t2)
-{
-  struct tm mytm1;
-  struct tm mytm2;
-  localtime_r(&t1, &mytm1);
-  localtime_r(&t2, &mytm2);
-  return (mytm1.tm_yday != mytm2.tm_yday);
-}
-
-/********************************************************************/
-
 void ac_point_t::update(void)
 {
   /* Update the given ac point. */
@@ -119,7 +74,7 @@ void ac_point_t::update(void)
   double fraction_on;
   int total_readings;
 
-  if (hour_changed(now, this_hour))
+  if (rt_hour_changed(now, this_hour))
   {
     struct tm mytm;
     localtime_r(&this_hour, &mytm);
@@ -157,7 +112,7 @@ void ac_point_t::update(void)
     this_hour =  now;
   }
 
-  if (day_changed(now, this_day))
+  if (rt_day_changed(now, this_day))
   {
     if (day_num_temp_readings == 0)
     {
@@ -189,10 +144,10 @@ void ac_point_t::update(void)
     day_num_off_readings = 0;
     day_num_temp_readings = 0;
     this_day = now;
-    ac_fp = open_day_history_file(ac_log_home, "_ac_log.txt", NULL);
+    ac_fp = rt_open_day_history_file(NULL, "_ac_log.txt", ac_log_home, NULL);
     char tbuf[50];
     snprintf(tbuf, sizeof(tbuf), "_%s.txt", this->tag);
-    history_fp = open_day_history_file(ac_log_home, tbuf, NULL);
+    history_fp = rt_open_day_history_file(NULL, tbuf, ac_log_home, NULL);
   }
 
 
@@ -500,12 +455,12 @@ ac_point_t **ac_point_t::read(int *cnt, const char *home_dir)
 
     if (ac_fp == NULL)
     {
-      ac_fp = open_day_history_file(ac_log_home, "_ac_log.txt", NULL);
+      ac_fp = rt_open_day_history_file(NULL, "_ac_log.txt", ac_log_home, NULL);
     }
 
     char tbuf[50];
     snprintf(tbuf, sizeof(tbuf), "_%s.txt", ac->tag);
-    ac->history_fp = open_day_history_file(ac_log_home, tbuf, NULL);
+    ac->history_fp = rt_open_day_history_file(NULL, tbuf, ac_log_home, NULL);
     
     ac_points[count] = ac;
     count++;

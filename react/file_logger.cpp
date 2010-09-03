@@ -120,7 +120,7 @@ void file_logger_t::update(void)
   char buf[30];
   struct tm mytm;
   localtime_r(&now, &mytm);
-  strftime(buf, sizeof(buf), "%F\t%T", &mytm);
+  strftime(buf, sizeof(buf), "%FT%T", &mytm); // Changed to use the ISO standard for timestamp.
   bool day_change = rt_day_changed(now, last_log_time);
 
   if (rt_hour_changed(now, last_log_time))

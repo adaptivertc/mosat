@@ -584,7 +584,7 @@ void web_point_t::update_file_and_write(void)
     t = time(NULL);
     struct tm *mytm;
     mytm = localtime(&t);
-    strftime(datestr, sizeof(datestr), "%d/%m/%y %T", mytm);
+    strftime(datestr, sizeof(datestr), "%F %T", mytm);
     //strftime(timestr, sizeof(timestr), "%T", mytm);
 
     subst_string(time_location, datestr, time_size);

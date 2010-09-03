@@ -204,7 +204,7 @@ void logfile_t::insert_in_index(const char *file_name, const char *secuencia)
   now = time(NULL);
   struct tm mytm;
   localtime_r(&now, &mytm);
-  strftime(datestr, sizeof(datestr), "%d/%m/%y", &mytm);
+  strftime(datestr, sizeof(datestr), "%F", &mytm);
   strftime(timestr, sizeof(timestr), "%T", &mytm);
   snprintf(indexname, sizeof(indexname), "%s/index.txt", loghome);
   FILE *index_fp = fopen(indexname, "a+");
@@ -213,7 +213,7 @@ void logfile_t::insert_in_index(const char *file_name, const char *secuencia)
     printf("Can't open index file: %s\n\r", indexname);
     return;
   }
-  fprintf(index_fp, "%s\t%s\t\"%s\"\t\"%s\"\t", datestr, timestr, exp_num, secuencia);
+  fprintf(index_fp, "%sT%s\t\"%s\"\t\"%s\"\t", datestr, timestr, exp_num, secuencia); // Changed to use the ISO standard for timestamp.
   if (file_name == NULL)
   {
     fprintf(index_fp, "\n");
