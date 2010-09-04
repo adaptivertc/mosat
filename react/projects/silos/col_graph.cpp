@@ -57,6 +57,7 @@ void spd_create_image(const char *base_name, const char *gtitle, bool window)
   }
   fprintf(fp, "%s\n", "set output\n");
   fprintf(fp, "set xdata time\n");
+  //fprintf(fp, "set timefmt \"%%Y-%%m-%%dT%%H:%%M:%%S\"\n");
   fprintf(fp, "set timefmt \"%%H:%%M:%%S\"\n");
   fprintf(fp, "plot \"%s.txt\" using 2:3 with lines lw 2 title \"Sensor 1\"", base_name);
   fprintf(fp, ", \"%s.txt\" using 2:4 with lines lw 2 title \"Sensor 2\"", base_name);
