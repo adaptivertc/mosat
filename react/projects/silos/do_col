@@ -1,2 +1,11 @@
-wget --output-document=columns.txt http://adaptivertc.no-ip.org/root/log/U1_S1_C120100904.txt
-./a.out columns
+echo "$# parameter(s)"
+echo "The parameter(s) are: $@"
+wget --output-document=columns.txt http://adaptivertc.no-ip.org/root/log/U2_S2_C2$(date +%Y%m%d).txt
+#wget --output-document=columns.txt http://adaptivertc.no-ip.org/root/log/old/U2_S2_C220100905.txt
+if [ $# -lt  1 ]; then
+  echo "defaulting number of columns to 12"
+  ./col_graph columns 12 
+else
+  echo "using comand line arg for number of columns"
+  ./col_graph columns $@ 
+fi

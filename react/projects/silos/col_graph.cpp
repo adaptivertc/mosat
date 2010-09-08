@@ -18,7 +18,7 @@ FILE *dfp = NULL;
 
 /*************************************************************************/
 
-void spd_create_image(const char *base_name, const char *gtitle, bool window)
+void spd_create_image(const char *base_name, const char *gtitle, bool window, int n_cols)
 {
   const char *fname = "gnuplotoptions.txt";
   FILE *fp = fopen(fname, "w");
@@ -29,7 +29,7 @@ void spd_create_image(const char *base_name, const char *gtitle, bool window)
   }
   //fprintf(fp, "set   autoscale\n");
   fprintf(fp, "set auto x\n");
-  fprintf(fp, "set yrange [25:60]\n");
+  fprintf(fp, "set yrange [25:55]\n");
   fprintf(fp, "unset log\n");
   fprintf(fp, "unset label\n");
   fprintf(fp, "set xtic auto\n");
@@ -59,7 +59,15 @@ void spd_create_image(const char *base_name, const char *gtitle, bool window)
   fprintf(fp, "set xdata time\n");
   //fprintf(fp, "set timefmt \"%%Y-%%m-%%dT%%H:%%M:%%S\"\n");
   fprintf(fp, "set timefmt \"%%H:%%M:%%S\"\n");
-  fprintf(fp, "plot \"%s.txt\" using 2:3 with lines lw 2 title \"Sensor 1\"", base_name);
+  fprintf(fp, "plot "); 
+  for (int i=0; i < n_cols; i++)
+  {
+    if (i>0) fprintf(fp, ", ");
+    fprintf(fp, "\"%s.txt\" using 2:%d with lines lw 2 title \"Sensor %d\"", base_name, i+3, i+1);
+  } 
+  fprintf(fp, "\n");
+  /**
+  fprintf(fp, "  \"%s.txt\" using 2:3 with lines lw 2 title \"Sensor 1\"", base_name);
   fprintf(fp, ", \"%s.txt\" using 2:4 with lines lw 2 title \"Sensor 2\"", base_name);
   fprintf(fp, ", \"%s.txt\" using 2:5 with lines lw 2 title \"Sensor 3\"", base_name);
   fprintf(fp, ", \"%s.txt\" using 2:6 with lines lw 2 title \"Sensor 4\"", base_name);
@@ -72,6 +80,7 @@ void spd_create_image(const char *base_name, const char *gtitle, bool window)
   fprintf(fp, ", \"%s.txt\" using 2:13 with lines lw 2 title \"Sensor 11\"", base_name);
   fprintf(fp, ", \"%s.txt\" using 2:14 with lines lw 2 title \"Sensor 12\"", base_name);
   fprintf(fp, "\n");
+  **/
 
   fclose(fp);
   char command[500];
@@ -96,6 +105,7 @@ int main(int argc, char *argv[])
 {
 
   const char *input_file = "";
+  int n_cols;
 
   if (argc > 1)
   {
@@ -107,8 +117,18 @@ int main(int argc, char *argv[])
     exit(1);
   }
 
-  spd_create_image(input_file, "Temperature Column", true);
-  spd_create_image(input_file, "Temperature Column", false);
+  if (argc > 2)
+  {
+    n_cols = atoi(argv[2]);
+  }
+ else
+  {
+    n_cols = 12;
+  }
+  printf("\nGraphing %d columns.\n", n_cols);
+
+  spd_create_image(input_file, "Temperature Column", true, n_cols);
+  spd_create_image(input_file, "Temperature Column", false, n_cols);
 
   return(0);
 }

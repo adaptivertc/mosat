@@ -3,7 +3,7 @@ export CPATH=../../../include
 
 RTCOMMON=../../../librtcommon/librtcommon.a
 
-all: temp weblogger divide webbackground gen_graph dump_dat read_sim_file gen_react temp_graph col_graph
+all: temp weblogger divide webbackground gen_graph dump_dat read_sim_file gen_react temp_graph col_graph test
 
 temp: temp.cpp  
 	g++ -Wall -o temp temp.cpp  
@@ -36,6 +36,9 @@ col_graph: col_graph.cpp
 temp_graph: temp_graph.cpp
 	g++ -Wall -o temp_graph temp_graph.cpp
 
+test: test_post_cmds.cpp
+	g++ -Wall -o test test_post_cmds.cpp 
+
 clean:
-	rm -vf temp weblogger divide webbackground gen_graph read_sim_file gen_react
+	rm -vf temp weblogger divide webbackground gen_graph read_sim_file gen_react test
 

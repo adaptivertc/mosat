@@ -80,7 +80,7 @@ void spd_create_image(const char *base_name, const char *gtitle, bool window)
 int main(int argc, char *argv[])
 {
 
-  const char *input_file = "poncitlan_dat.txt";
+  const char *input_file = "";
 
   if (argc > 1)
   {
