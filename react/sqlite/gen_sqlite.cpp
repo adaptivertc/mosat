@@ -7,7 +7,7 @@
 #include "rtcommon.h"
 #include "arg.h"
 
-enum field_type_t {RT_FLOAT, RT_INT, RT_BOOL, RT_STRING, RT_SELECT};
+enum field_type_t {RT_FLOAT, RT_INT, RT_BOOL, RT_STRING, RT_SELECT, RT_ARRAY};
 
 struct db_field_t
 {
@@ -47,10 +47,13 @@ const char *field_type_to_string(field_type_t f)
       return "RT_STRING";
     case RT_SELECT:
       return "RT_SELECT";
+    case RT_ARRAY:
+      return "RT_ARRAY";
   }
   return "";
 }
 
+/************************************/
 
 const char *gen_value(db_field_t *dbf, int i, char *buf, int sz)
 {
@@ -72,6 +75,9 @@ const char *gen_value(db_field_t *dbf, int i, char *buf, int sz)
       snprintf(buf, sz, ",\n%sargv[%d]", indent, i);
       break;
     case RT_SELECT:
+      snprintf(buf, sz, ",\n%sargv[%d]", indent, i);
+      break;
+    case RT_ARRAY:
       snprintf(buf, sz, ",\n%sargv[%d]", indent, i);
       break;
   }
@@ -97,10 +103,14 @@ const char *gen_format(db_field_t *dbf, char *buf, int sz)
     case RT_SELECT:
       snprintf(buf, sz, "'%%s'");
       break;
+    case RT_ARRAY:
+      snprintf(buf, sz, "'%%s'");
+      break;
   }
   return buf;
 }
 
+/************************************/
 
 const char *field_spec(db_field_t *dbf, char *xspec, int sz)
 {
@@ -121,9 +131,14 @@ const char *field_spec(db_field_t *dbf, char *xspec, int sz)
     case RT_SELECT:
       snprintf(xspec, sz, "%s VARCHAR(%d)", dbf->name, dbf->length);
       break;
+    case RT_ARRAY:
+      snprintf(xspec, sz, "%s VARCHAR(1)", dbf->name);
+      break;
   }
   return xspec;
 }
+
+/************************************/
 
 void print_field(db_field_t *dbf)
 {
@@ -161,6 +176,13 @@ db_field_t *create_field(int argc, char *argv[])
   else if (0 == strcasecmp(argv[0], "bool"))
   {
     f->type = RT_BOOL;
+    f->prompt = strdup(argv[1]); 
+    f->name = strdup(argv[2]); 
+    f->length = 0;
+  }
+  else if (0 == strncasecmp(argv[0], "array", 5))
+  {
+    f->type = RT_ARRAY;
     f->prompt = strdup(argv[1]); 
     f->name = strdup(argv[2]); 
     f->length = 0;
@@ -275,6 +297,7 @@ void write_main_start(FILE *fp_out)
   fprintf(fp_out, "  int retval;\n");
   fprintf(fp_out, "  char *errmsg;\n");
   fprintf(fp_out, "\n");
+  fprintf(fp_out, "  printf(\"Creating 'react_def.db'\\n\");\n");
   fprintf(fp_out, "  retval = sqlite3_open_v2(\"react_def.db\",  &sqdb,\n");
   fprintf(fp_out, "     SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);\n");
   fprintf(fp_out, "  if (retval != SQLITE_OK)\n");
@@ -282,6 +305,10 @@ void write_main_start(FILE *fp_out)
   fprintf(fp_out, "    printf(\"Can not open db, error = %%d\\n\", retval);\n");
   fprintf(fp_out, "    printf(\"Err = %%s\\n\", sqlite3_errmsg(sqdb));\n");
   fprintf(fp_out, "    return 0;\n");
+  fprintf(fp_out, "  }\n");
+  fprintf(fp_out, "  else\n");
+  fprintf(fp_out, "  {\n");
+  fprintf(fp_out, "    printf(\"SUCCESS\\n\");\n");
   fprintf(fp_out, "  }\n");
   fprintf(fp_out, "  \n");
 }
@@ -333,6 +360,12 @@ void xprocess_file(FILE *fp_out, gen_names_t *gnames)
     {
       gnames->dbfs[gnames->nf] = dbf;
       gnames->nf++;
+    }
+    else
+    {
+      printf("Can't create field:");
+      for (int i=0; i < argc; i++) printf(" '%s'", argv[i]);
+      printf("\n");
     }
   }
   printf("Done parsing file, %d fields found\n", gnames->nf);
@@ -424,6 +457,7 @@ void process_file(FILE *fp_out, gen_names_t *gnames)
   fprintf(fp_out, "             NULL, NULL, &errmsg);\n");
   fprintf(fp_out, "  if (retval != SQLITE_OK)\n");
   fprintf(fp_out, "  {\n");
+  fprintf(fp_out, "    printf(\"qs = %s\\n\");\n", qs);
   fprintf(fp_out, "    printf(\"Can not execute query, error = %%d\\n\", retval);\n");
   fprintf(fp_out, "    if (errmsg != NULL)\n");
   fprintf(fp_out, "    {\n");
@@ -454,6 +488,10 @@ void gen_write_one(FILE *fp_out, gen_names_t *gnames)
   fprintf(fp_out, "  int retval;\n");
   fprintf(fp_out, "  char *errmsg;\n");
 
+  fprintf(fp_out, "  if (argc < %d) // There must be at least %d args\n", gnames->nf, gnames->nf);
+  fprintf(fp_out, "  {\n");
+  fprintf(fp_out, "    return -1;\n");
+  fprintf(fp_out, "  }\n");
   char str[5000];
   bool first = true;
   snprintf(str, sizeof(str), 
@@ -484,6 +522,7 @@ void gen_write_one(FILE *fp_out, gen_names_t *gnames)
   fprintf(fp_out, "             NULL, NULL, &errmsg);\n");
   fprintf(fp_out, "  if (retval != SQLITE_OK)\n");
   fprintf(fp_out, "  {\n");
+  fprintf(fp_out, "    printf(\"qs = %%s\\n\", qs);\n");
   fprintf(fp_out, "    printf(\"Can not execute query, error = %%d\\n\", retval);\n");
   fprintf(fp_out, "    if (errmsg != NULL)\n");
   fprintf(fp_out, "    {\n");
@@ -544,6 +583,7 @@ void gen_create_table(FILE *fp, gen_names_t *gnames)
   fprintf(fp, "             NULL, NULL, &errmsg);\n");
   fprintf(fp, "  if (retval != SQLITE_OK)\n");
   fprintf(fp, "  {\n");
+  fprintf(fp, "    printf(\"query = %s\\n\");\n", qs);
   fprintf(fp, "    printf(\"Can not execute query, error = %%d\\n\", retval);\n");
   fprintf(fp, "    if (errmsg != NULL)\n");
   fprintf(fp, "    {\n");

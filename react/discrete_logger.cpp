@@ -52,10 +52,10 @@ void discrete_logger_t::update(void)
   }
   time_t now = time(NULL);
 
-  char buf[30];
+  char buf[40];
   struct tm mytm;
   localtime_r(&now, &mytm);
-  strftime(buf, sizeof(buf), "%FT%T", &mytm); // Changed to use the ISO standard for timestamp.
+  strftime(buf, sizeof(buf), "%Y-%m-%dT%H:%M:%S%z", &mytm); // Changed to use the ISO standard for timestamp.
 
   bool day_change = rt_day_changed(now, last_log_time);
 

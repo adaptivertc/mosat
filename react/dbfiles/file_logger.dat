@@ -1,4 +1,4 @@
-silo_logger_1|My temp logger|silo_logger|300|5|1|1|0|0|0|HUM_1|HUM_2|TEMP|MINUTES|
+silo_logger_1|My temp logger|silo_logger|300|5|1|1|0|0|0|[HUM_1,HUM_2,TEMP,MINUTES]|
 #    Tag
 #    Description
 #    Base File Name (actual name is base + YYYYMMDD) (can include path) 

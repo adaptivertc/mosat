@@ -145,11 +145,11 @@ void pump_point_t::update(void)
 
   if (state != last_state_at_change)
   {
-    char datestr[30];
+    char datestr[40];
     time_t now = time(NULL); 
     struct tm mytm;
     localtime_r(&now, &mytm);
-    strftime(datestr, sizeof(datestr), "%FT%T", &mytm); // Changed to use the ISO standard for timestamp.
+    strftime(datestr, sizeof(datestr), "%Y-%m-%dT%H:%M:%S%z", &mytm); // Changed to use the ISO standard for timestamp.
  
     /***
     printf("%s\t%s\t%s\t%0.2lf\t%0.3lf\t", datestr, tag, 
