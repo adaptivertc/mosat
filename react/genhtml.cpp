@@ -26,7 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "db_point.h"
 #include "db.h"
-#include "common.h"
+#include "rtcommon.h"
 #include "arg.h"
 #include "reactpoint.h"
 

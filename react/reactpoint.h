@@ -29,7 +29,7 @@ Header file for database point routines.
 #define __REACTPOINT_INC__
 
 
-typedef char tag_t[21];
+typedef char tag_t[26];
 
 enum discrete_value_t
 {

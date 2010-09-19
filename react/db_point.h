@@ -240,6 +240,7 @@ public:
   void set_conversion(void);
   point_type_t point_type(void) {return ANALOG_INPUT;};
   static db_point_t *read_one(int argc, char *argv[], char *err, int esz);
+  ai_point_t *assign_one(int argc, char *argv[], char *err, int esz);
   //static ai_point_t **read(int *cnt, const char *home_dir);
 };
 
@@ -272,6 +273,7 @@ public:
   point_type_t point_type(void) {return ANALOG_OUTPUT;};
   static ao_point_t *read_one(int argc, char *argv[], char *err, int esz);
   static ao_point_t **read(int *cnt, const char * home_dir);
+  ao_point_t *assign_one(int argc, char *argv[], char *err, int esz);
 };
 
 
@@ -299,6 +301,7 @@ public:
   void update(long new_raw_count);
   point_type_t point_type(void) {return PCI_POINT;};
   static pci_point_t **read(int *cnt, const char *home_dir);
+  pci_point_t *assign_one(int argc, char *argv[], char *err, int esz);
 };
 
 class discrete_point_t : public db_point_t
@@ -365,6 +368,7 @@ public:
   void update(bool new_value);
   point_type_t point_type(void) {return DISCRETE_INPUT;};
   static di_point_t **read(int *cnt, const char * home_dir);
+  di_point_t *assign_one(int argc, char *argv[], char *err, int esz);
 };
 
 class dcalc_t : public discrete_update_point_t
@@ -381,6 +385,7 @@ public:
   bool eval_expr(void);
   point_type_t point_type(void) {return DCALC_POINT;};
   static dcalc_t **read(int *cnt, const char * home_dir);
+  dcalc_t *assign_one(int argc, char *argv[], char *err, int esz);
 };
 
 class int_t : public integer_point_t
@@ -397,6 +402,7 @@ public:
   int eval_expr(void);
   point_type_t point_type(void) {return INT_POINT;};
   static int_t **read(int *cnt, const char * home_dir);
+  int_t *assign_one(int argc, char *argv[], char *err, int esz);
 };
 
 
@@ -423,6 +429,7 @@ public:
   void update(void);
   point_type_t point_type(void) {return DISCRETE_OUTPUT;};
   static do_point_t **read(int *cnt, const char * home_dir);
+  do_point_t *assign_one(int argc, char *argv[], char *err, int esz);
 };
 
 class calc_point_t : public analog_update_point_t
@@ -435,6 +442,7 @@ public:
   point_type_t point_type(void) {return CALC_POINT;};
   static calc_point_t *read_one(int argc, char *argv[], char *err, int esz);
   static calc_point_t **read(int *cnt, const char * home_dir);
+  calc_point_t *assign_one(int argc, char *argv[], char *err, int esz);
 };
 
 class dcalc_point_t : public discrete_update_point_t
@@ -446,6 +454,7 @@ public:
   void parse_expr(void);
   point_type_t point_type(void) {return DCALC_POINT;};
   static dcalc_point_t **read(int *cnt, const char * home_dir);
+  dcalc_point_t *assign_one(int argc, char *argv[], char *err, int esz);
 };
 
 
@@ -469,6 +478,7 @@ public:
   void write_to_file(void);
   point_type_t point_type(void) {return DATA_POINT;};
   static data_point_t **read(int *cnt, const char * home_dir);
+  data_point_t *assign_one(int argc, char *argv[], char *err, int esz);
 };
 
 /*#SCRIPT_OBJECT#(FILE_LOGGER)*/
@@ -500,6 +510,7 @@ public:
   point_type_t point_type(void) {return FILE_LOGGER;};
   static file_logger_t **read(int *cnt, const char * home_dir);
   void delete_old_files(time_t now);
+  file_logger_t *assign_one(int argc, char *argv[], char *err, int esz);
 };
 
 class web_logger_t : public discrete_point_t
@@ -548,6 +559,7 @@ public:
   void update(void);
   point_type_t point_type(void) {return DATA_POINT;};
   static discrete_logger_t **read(int *cnt, const char * home_dir);
+  discrete_logger_t *assign_one(int argc, char *argv[], char *err, int esz);
 };
 
 /*#SCRIPT_OBJECT#(SCAN_POINT)*/
@@ -568,6 +580,7 @@ public:
   void write_to_file(void);
   point_type_t point_type(void) {return SCAN_POINT;};
   static scan_point_t **read(int *cnt, const char * home_dir);
+  scan_point_t *assign_one(int argc, char *argv[], char *err, int esz);
 };
 
 
@@ -607,7 +620,7 @@ public:
 class analog_value_point_t : public analog_point_t
 {
 private:
-
+  double initial_value;
 public:
 /*#SCRIPT_FUNCTION#*/
   void zero(void) {pv = 0.0;};
@@ -616,12 +629,14 @@ public:
   point_type_t point_type(void) {return ANALOG_VALUE_POINT;};
   static analog_value_point_t *read_one(int argc, char *argv[], char *err, int esz);
   static analog_value_point_t **read(int *cnt, const char * home_dir);
+  analog_value_point_t *assign_one(int argc, char *argv[], char *err, int esz);
 };
 
 /*#SCRIPT_OBJECT#(DISCRETE_VALUE_POINT)*/
 class discrete_value_point_t : public discrete_point_t
 {
 private:
+  bool initial_value;
 
 public:
 /*#SCRIPT_FUNCTION#*/
@@ -629,6 +644,7 @@ public:
   point_type_t point_type(void) {return DISCRETE_VALUE_POINT;};
   static discrete_value_point_t *read_one(int argc, char *argv[], char *err, int esz);
   static discrete_value_point_t **read(int *cnt, const char * home_dir);
+  discrete_value_point_t *assign_one(int argc, char *argv[], char *err, int esz);
 };
 
 
@@ -657,6 +673,7 @@ public:
   point_type_t point_type(void) {return TIMER_POINT;};
   static timer_point_t *read_one(int argc, char *argv[], char *err, int esz);
   static timer_point_t **read(int *cnt, const char * home_dir);
+  timer_point_t *assign_one(int argc, char *argv[], char *err, int esz);
 };
 
 /*#SCRIPT_OBJECT#(PID_POINT)*/
@@ -667,6 +684,9 @@ private:
   double p_gain;
   double i_time;
   double d_time;
+
+  tag_t ai_tag;
+  tag_t ao_tag;
 
       /* real-time */
   double last_input;
@@ -702,6 +722,7 @@ public:
   void update(void);
   void tune_update(void);
   static pid_point_t **read(int *cnt, const char * home_dir);
+  pid_point_t *assign_one(int argc, char *argv[], char *err, int esz);
 };
 
 class pump_point_t : public discrete_point_t
@@ -714,6 +735,10 @@ private:
   time_t last_change_time;
   bool last_state_at_change; 
   double last_current;
+
+  tag_t amps_tag;
+  tag_t level_tag;
+  tag_t pump_on_tag;
 
   bool change_started;
   char change_start_line[100];
@@ -742,6 +767,7 @@ public:
   point_type_t point_type(void) {return PUMP_POINT;};
   void update(void);
   static pump_point_t **read(int *cnt, const char * home_dir);
+  pump_point_t *assign_one(int argc, char *argv[], char *err, int esz);
 };
 
 
@@ -753,7 +779,12 @@ private:
   ai_point_t *level_point;
   di_point_t *di_lo;
   di_point_t *di_hi;
-  double volume;
+
+  tag_t level_tag;
+  tag_t di_lo_tag;
+  tag_t di_hi_tag;
+
+  double volume_lo_hi;
 
   double current_level;
   bool lo_state;
@@ -775,6 +806,7 @@ public:
   point_type_t point_type(void) {return LEVEL_POINT;};
   void update(void);
   static level_point_t **read(int *cnt, const char * home_dir);
+  level_point_t *assign_one(int argc, char *argv[], char *err, int esz);
 };
 
 class ac_point_t : public discrete_point_t
@@ -785,6 +817,11 @@ private:
   di_point_t *di_point;
   ai_point_t *level_ai_point;
   **/
+
+  tag_t cold_temp_tag;
+  tag_t hot_temp_tag;
+  tag_t unit_running_tag;
+  tag_t unit_disable_tag;
 
   ai_point_t *cold_temp_point;
   ai_point_t *hot_temp_point;
@@ -845,6 +882,7 @@ public:
   double get_cold_average(void); 
   void get_status(char *status, int len);
   void reset(void);
+  ac_point_t *assign_one(int argc, char *argv[], char *err, int esz);
 };
 
 class script_trigger_t : public discrete_point_t
@@ -917,8 +955,10 @@ class web_point_t : public discrete_point_t
 {
 private:
   double update_interval;
-  char source_file[200];
-  char dest_file[200];
+  //char source_file[200];
+  char template_file[200];
+  //char dest_file[200];
+  char output_file[200];
   int file_size;
   char *file_buf;
   discrete_ref_t *drefs;
@@ -936,6 +976,7 @@ public:
   static web_point_t **read(int *cnt, const char * home_dir);
   ~web_point_t(void);
   void free_all(void);
+  web_point_t *assign_one(int argc, char *argv[], char *err, int esz);
 };
 
 void enable_alarm_display(db_point_t *db_point);

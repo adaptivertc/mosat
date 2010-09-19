@@ -171,24 +171,24 @@ web_point_t **web_point_t::read(int *cnt, const char *home_dir)
     const char *template_home = ap_config.get_config("templatehome");
     if (html_home == NULL)
     {
-      safe_strcpy(p->dest_file, argv[4], sizeof(p->dest_file));
+      safe_strcpy(p->output_file, argv[4], sizeof(p->output_file));
     }
     else
     {
       char stmp[200];
       snprintf(stmp, sizeof(stmp), "%s/%s", html_home, argv[4]);
-      safe_strcpy(p->dest_file, stmp, sizeof(p->dest_file));
+      safe_strcpy(p->output_file, stmp, sizeof(p->output_file));
     }
 
     if (template_home == NULL)
     {
-      safe_strcpy(p->source_file, argv[3], sizeof(p->source_file));
+      safe_strcpy(p->template_file, argv[3], sizeof(p->template_file));
     }
     else
     {
       char stmp[200];
       snprintf(stmp, sizeof(stmp), "%s/%s",template_home, argv[3]);
-      safe_strcpy(p->source_file, stmp, sizeof(p->source_file));
+      safe_strcpy(p->template_file, stmp, sizeof(p->template_file));
     }
 
     p->pv = false;
@@ -224,11 +224,11 @@ web_point_t **web_point_t::read(int *cnt, const char *home_dir)
 
 void web_point_t::read_file(void)
 {
-  FILE *fp_html = fopen(source_file, "r");
+  FILE *fp_html = fopen(template_file, "r");
   if (fp_html == NULL)
   {
-    logfile->perror(source_file);
-    logfile->vprint("Can't open file: %s\n", source_file);
+    logfile->perror(template_file);
+    logfile->vprint("Can't open file: %s\n", template_file);
     drefs = NULL;
     irefs = NULL;
     file_buf = NULL;
@@ -292,14 +292,14 @@ void web_point_t::read_file(void)
       {
         newiref->ip = NULL;
         newiref->nvals = 0;
-        logfile->vprint("%s - NOT a database point: %s\n", source_file, argv[0]);
+        logfile->vprint("%s - NOT a database point: %s\n", template_file, argv[0]);
         continue;
       }
       else if (db_point->pv_type() != INTEGER_VALUE)
       {
         newiref->ip = NULL;
         newiref->nvals = 0;
-        logfile->vprint("%s - NOT an integer point: %s\n", source_file, argv[0]);
+        logfile->vprint("%s - NOT an integer point: %s\n", template_file, argv[0]);
         continue;
       }
       else
@@ -377,12 +377,12 @@ void web_point_t::read_file(void)
         if (db_point == NULL)
         {
           tmp_r->dp = NULL;
-          logfile->vprint("%s - NOT a database point: %s\n", source_file, argv[0]);
+          logfile->vprint("%s - NOT a database point: %s\n", template_file, argv[0]);
         }
         else if (db_point->pv_type() != DISCRETE_VALUE)
         {
           tmp_r->dp = NULL;
-          logfile->vprint("%s - NOT a discrete point: %s\n", source_file, argv[0]);
+          logfile->vprint("%s - NOT a discrete point: %s\n", template_file, argv[0]);
         }
         else
         {
@@ -433,12 +433,12 @@ void web_point_t::read_file(void)
         if (db_point == NULL)
         {
           tmp_r->ap = NULL;
-          logfile->vprint("%s - NOT a database point: %s\n", source_file, argv[0]);
+          logfile->vprint("%s - NOT a database point: %s\n", template_file, argv[0]);
         }
         else if (db_point->pv_type() != ANALOG_VALUE)
         {
           tmp_r->ap = NULL;
-          logfile->vprint("%s - NOT an analog point: %s\n", source_file, argv[0]);
+          logfile->vprint("%s - NOT an analog point: %s\n", template_file, argv[0]);
         }
         else
         {
@@ -681,11 +681,11 @@ void web_point_t::update_file_and_write(void)
   }
 
 
-  FILE *fp = fopen(dest_file, "w");
+  FILE *fp = fopen(output_file, "w");
   if (fp == NULL)
   {
-    logfile->perror(dest_file);
-    logfile->vprint("Can't open file: %s\n", dest_file);
+    logfile->perror(output_file);
+    logfile->vprint("Can't open file: %s\n", output_file);
     return;
   }
   fwrite(file_buf, file_size, 1, fp);

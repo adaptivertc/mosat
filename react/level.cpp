@@ -97,7 +97,7 @@ void level_point_t::update(void)
     if (lo_state && hi_state) // We reached the top 
     {
       double fill_rate = 
-        (60.0 * volume) / double (now - time_at_bottom);
+        (60.0 * volume_lo_hi) / double (now - time_at_bottom);
       //printf("Top reached, fill rate = %0.2lf\n", fill_rate); 
       total_day_fill_rates += fill_rate;
       total_day_samples++;
@@ -208,7 +208,7 @@ level_point_t **level_point_t::read(int *cnt, const char *home_dir)
       lvl->level_point = (ai_point_t *) db_point;
     }
 
-    lvl->volume = atof(argv[5]);
+    lvl->volume_lo_hi = atof(argv[5]);
 
     lvl->total_hour_fill_rates = 0.0;
     lvl->total_hour_samples = 0;
