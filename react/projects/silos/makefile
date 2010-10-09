@@ -39,6 +39,10 @@ temp_graph: temp_graph.cpp
 test: test_post_cmds.cpp
 	g++ -Wall -o test test_post_cmds.cpp 
 
+
+control_loop: control_loop.cpp
+	g++ -o control_loop control_loop.cpp
+
 clean:
-	rm -vf temp weblogger divide webbackground gen_graph read_sim_file gen_react test
+	rm -vf temp weblogger divide webbackground gen_graph read_sim_file gen_react test control_loop
 
