@@ -36,6 +36,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "ap_config.h"
 
+#include "section_reader.h"
+
 ap_config_t ap_config(',');
 
 /********************************************************/
@@ -45,10 +47,37 @@ class my_notify_t : public sim_ev_notify_t
 public:
   void trigger_arrival(int section, time_t now);
   void trigger_departure(int section, time_t now);
+  void trigger_crossing(int the_section, int the_sensor, time_t now);
 };
 
 
 static int qid;
+
+/********************************************************/
+
+void my_notify_t::trigger_crossing(int the_section, int the_sensor, time_t now)
+{
+  char buf[30];
+  struct tm mytm;
+  localtime_r(&now, &mytm);
+  strftime(buf, sizeof(buf), "%T", &mytm);
+
+  crossing_queue_event_t msgbuf;
+  msgbuf.mtype = 1;
+  msgbuf.data.time_stamp = now;
+  msgbuf.data.section = the_section;
+  msgbuf.data.departure = false;
+  msgbuf.data.sensor = the_sensor;
+  msgbuf.data.update = false;
+  int ret = msgsnd(qid, &msgbuf, sizeof(msgbuf.data), 0);
+  if (ret == -1)
+  {
+    perror("Could not send message");
+    exit(0);
+  }
+  printf("Crossing(%s): section %d, sensor %d\n", buf, the_section, the_sensor);
+}
+
 
 /********************************************************/
 
@@ -72,8 +101,10 @@ void my_notify_t::trigger_arrival(int section, time_t now)
     perror("Could not send message");
     exit(0);
   }
-  printf("Arrival(%s): %d\n", buf, section);
+  printf("Arrival(%s): section %d, sensor %d\n", buf, section, msgbuf.data.sensor);
 }
+
+/********************************************************/
 
 void my_notify_t::trigger_departure(int section, time_t now)
 {
@@ -96,7 +127,7 @@ void my_notify_t::trigger_departure(int section, time_t now)
     perror("Could not send message");
     exit(0);
   }
-  printf("Departure(%s): %d\n", buf, section);
+  printf("Departure(%s): section %d, sensor %d\n", buf, section, msgbuf.data.sensor);
 }
 
 /********************************************************/
@@ -210,6 +241,8 @@ int main(int argc, char *argv[])
   }
 
   sim.read_sections(sections_file);
+
+  sections.read_section_file();
 
   if (use_actual_time)
   {

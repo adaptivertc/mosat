@@ -69,6 +69,20 @@ int section_reader_t::get_sensor_loc(int section_number,
 }
 
 /********************************************************/
+
+int section_reader_t::get_dwell_time(int section_number)
+{
+  if ((section_number < 0) || (section_number >= n_sections))
+  {
+    printf("%s line %d: Out of range index (%d) to access section data\n",
+       __FILE__, __LINE__, section_number);
+    exit(1);
+  }
+  return (sections[section_number].dwell_time);
+}
+
+/********************************************************/
+
 int section_reader_t::get_departure_sensor_loc(int section_number)
 {
   if ((section_number < 0) || (section_number >= n_sections))
@@ -185,6 +199,7 @@ void section_reader_t::read_section_file(void)
     {
       sections[n_lines].sensor_location[i] = atol(argv[i+2]);
     }
+
     /***
     //sections[n_lines].departure_sensor_loc = atol(argv[2]);
     sections[n_lines].sensor_location[0] = atol(argv[2]);
@@ -203,10 +218,11 @@ void section_reader_t::read_section_file(void)
       printf("%d", sections[n_lines].sensor_location[i]); 
     } 
     printf("]\n"); 
+    sections[n_lines].dwell_time = RT_DWELL_TIME;  // Temporary until column is added.
     //sections[n_lines].sensor_location[0], 
     //sections[n_lines].sensor_location[1], 
     total_time += sections[n_lines].section_time; 
-    if (n_lines != 0) total_time += RT_DWELL_TIME;
+    if (n_lines != 0) total_time += sections[n_lines].dwell_time;
     n_lines++;
     if (n_lines >= max)
     {

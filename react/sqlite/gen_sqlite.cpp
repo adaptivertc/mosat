@@ -506,7 +506,7 @@ void  gen_field_header(FILE *fp_out, const char *exe_name)
 
 /**********************************************************************/
 
-void gen_assign_one_field_to_obj(FILE *fp_out, db_field_t *dbf, int argn)
+void gen_create_one_field_to_obj(FILE *fp_out, db_field_t *dbf, int argn)
 {
   switch (dbf->type)
   {
@@ -546,11 +546,11 @@ struct db_field_t
 
 /**********************************************************************/
 
-void gen_assign_fields_to_obj(FILE *fp_out, gen_names_t *gnames)
+void gen_create_fields_to_obj(FILE *fp_out, gen_names_t *gnames)
 {
   fprintf(fp_out, "\n\n/***************************/\n\n");
   //calc_point_t *calc_point_t::read_one(int argc, char *argv[], char *err, int esz);
-  fprintf(fp_out, "%s *%s::assign_one(int argc, char *argv[], char *err, int esz)\n", 
+  fprintf(fp_out, "%s *%s::create_one(int argc, char *argv[], char *err, int esz)\n", 
           gnames->obj_type, gnames->obj_type);
   fprintf(fp_out, "{\n");
 
@@ -565,7 +565,7 @@ void gen_assign_fields_to_obj(FILE *fp_out, gen_names_t *gnames)
 
   for (int i=0; i < gnames->nf; i++)
   {
-    gen_assign_one_field_to_obj(fp_out, gnames->dbfs[i], i);
+    gen_create_one_field_to_obj(fp_out, gnames->dbfs[i], i);
   }
   fprintf(fp_out, "  return objp;\n");
   fprintf(fp_out, "}\n");
@@ -790,8 +790,8 @@ int main(int argc, char *argv[])
       gnames.field_file_name = config_name;
       gnames.data_file_name = dat_name;
       gen_for_one_config(fp_out, fp_main, &gnames);
-      printf("Calling gen_assign_fields_to_obj()\n"); 
-      gen_assign_fields_to_obj(fp_out_obj, &gnames);
+      printf("Calling gen_create_fields_to_obj()\n"); 
+      gen_create_fields_to_obj(fp_out_obj, &gnames);
     }
     dent = readdir(dir);
   }

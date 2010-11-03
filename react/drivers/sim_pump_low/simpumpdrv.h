@@ -54,8 +54,8 @@ Header file for sim driver.
 
 #define PUMP_ON_TIME (30.0)
 #define PUMP_OFF_TIME (35.0)
-#define LO_SWITCH_CM (75.0)
-#define HI_SWITCH_CM (325.0)
+#define LO_SWITCH_CM (100.0)
+#define HI_SWITCH_CM (275.0)
 #define HI_HI_SWITCH_CM (450.0)
 
 #define SWITCH_DEADBAND (12.0)

@@ -24,6 +24,7 @@ class sim_ev_notify_t
 public:
   virtual void trigger_arrival(int section, time_t now) = 0;
   virtual void trigger_departure(int section, time_t now) = 0;
+  virtual void trigger_crossing(int the_section, int the_sensor, time_t now) = 0;
   virtual ~sim_ev_notify_t(void){};
 };
 
@@ -37,12 +38,14 @@ struct tsimdata_t
 {
   double driver_factor; // factor for this driver in calculating times
   int section; // section where the train is
+  int next_sensor;
   bool departure_triggered;
+  time_t next_crossing;
   time_t next_departure; // time that the next event is triggered
   time_t next_arival; // time that the next event is triggered
 };
 
-struct tsecdata_t
+struct xtsecdata_t
 {
   int section_time;
   int departure_sensor_loc;
@@ -57,7 +60,7 @@ private:
   int n_trains;
   tsimdata_t trains[20];
   int n_sections;
-  tsecdata_t sections[50];
+  xtsecdata_t xsections[50];
   int n_times;
   time_t times[500];
   char train_id[500][10];
@@ -65,6 +68,7 @@ private:
   sim_ev_notify_t *notify_obj;
   void add_train(time_t now);
   void update_train(int n, time_t now);
+  void xupdate_train(int n, time_t now);
 public:
   train_sim_t(sim_ev_notify_t *nobj);
   void next_day(void);

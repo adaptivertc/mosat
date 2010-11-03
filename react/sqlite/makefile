@@ -5,7 +5,7 @@ RTCOMMON=../../librtcommon/librtcommon.a
 
 CPP=g++ -g -Wall
 
-all: main gen_sqlite react_def.db read_dat insert_scripts read_script
+all: main gen_sqlite react_def.db read_dat insert_scripts read_script out_obj.o
 
 main: main.cpp 
 	$(CPP) -o main -lsqlite3 main.cpp
@@ -36,4 +36,4 @@ out_obj.o: out_obj.cpp
 	$(CPP) -c -o out_obj.o out_obj.cpp
 
 clean: 
-	rm -fv main gen_sqlite out_di out_ai out_di.cpp out_ai.cpp read_dat react_def.db write_one_fns.cpp outmain.cpp insert_scripts read_script gen_react_db 
+	rm -fv main gen_sqlite out_di out_ai out_di.cpp out_ai.cpp read_dat react_def.db write_one_fns.cpp outmain.cpp out_obj.cpp insert_scripts read_script gen_react_db

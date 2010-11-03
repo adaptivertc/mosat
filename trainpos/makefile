@@ -20,9 +20,9 @@ trainpos: trainpos.o event_dispatch.o alg1.o alarm_notify.o alarm_admin.o \
                  gp_evalg.o ag_evalg.o ri_evalg.o ri_tplib.o time_table.o display_reader.o \
 		section_reader.o gen_displays.o $(RTCOMMON)
 
-line_sim: line_sim.o msg_queue.o train_sim.o sim_msg.o $(INCLUDES)
+line_sim: line_sim.o msg_queue.o train_sim.o sim_msg.o section_reader.o $(INCLUDES)
 	$(CC) -o line_sim line_sim.o msg_queue.o \
-               train_sim.o sim_msg.o $(RTCOMMON) 
+               train_sim.o sim_msg.o section_reader.o $(RTCOMMON) 
 
 sim_error: sim_error.o $(INCLUDES)
 	$(CC) -o sim_error sim_error.o sim_msg.o
@@ -35,6 +35,11 @@ clean:
 rtautogen:	rtautogen.cpp
 	g++ -Wall -o rtautogen rtautogen.cpp $(RTCOMMON)
 
+check_section_file: check_section_file.cpp  section_reader.o $(INCLUDES)
+	g++ -Wall -o check_section_file check_section_file.cpp section_reader.o $(RTCOMMON) 
 
 n_x: n_section_reader.cpp n_section_reader.h
 	g++ -Wall -o n_x n_section_reader.cpp $(RTCOMMON)
+
+add_column: add_column.cpp
+	g++ -Wall -o add_column add_column.cpp $(RTCOMMON)

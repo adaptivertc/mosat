@@ -240,7 +240,7 @@ public:
   void set_conversion(void);
   point_type_t point_type(void) {return ANALOG_INPUT;};
   static db_point_t *read_one(int argc, char *argv[], char *err, int esz);
-  ai_point_t *assign_one(int argc, char *argv[], char *err, int esz);
+  static ai_point_t *create_one(int argc, char *argv[], char *err, int esz);
   //static ai_point_t **read(int *cnt, const char *home_dir);
 };
 
@@ -273,7 +273,7 @@ public:
   point_type_t point_type(void) {return ANALOG_OUTPUT;};
   static ao_point_t *read_one(int argc, char *argv[], char *err, int esz);
   static ao_point_t **read(int *cnt, const char * home_dir);
-  ao_point_t *assign_one(int argc, char *argv[], char *err, int esz);
+  static ao_point_t *create_one(int argc, char *argv[], char *err, int esz);
 };
 
 
@@ -301,7 +301,7 @@ public:
   void update(long new_raw_count);
   point_type_t point_type(void) {return PCI_POINT;};
   static pci_point_t **read(int *cnt, const char *home_dir);
-  pci_point_t *assign_one(int argc, char *argv[], char *err, int esz);
+  static pci_point_t *create_one(int argc, char *argv[], char *err, int esz);
 };
 
 class discrete_point_t : public db_point_t
@@ -368,7 +368,7 @@ public:
   void update(bool new_value);
   point_type_t point_type(void) {return DISCRETE_INPUT;};
   static di_point_t **read(int *cnt, const char * home_dir);
-  di_point_t *assign_one(int argc, char *argv[], char *err, int esz);
+  static di_point_t *create_one(int argc, char *argv[], char *err, int esz);
 };
 
 class dcalc_t : public discrete_update_point_t
@@ -385,7 +385,7 @@ public:
   bool eval_expr(void);
   point_type_t point_type(void) {return DCALC_POINT;};
   static dcalc_t **read(int *cnt, const char * home_dir);
-  dcalc_t *assign_one(int argc, char *argv[], char *err, int esz);
+  static dcalc_t *create_one(int argc, char *argv[], char *err, int esz);
 };
 
 class int_t : public integer_point_t
@@ -402,7 +402,7 @@ public:
   int eval_expr(void);
   point_type_t point_type(void) {return INT_POINT;};
   static int_t **read(int *cnt, const char * home_dir);
-  int_t *assign_one(int argc, char *argv[], char *err, int esz);
+  static int_t *create_one(int argc, char *argv[], char *err, int esz);
 };
 
 
@@ -429,7 +429,7 @@ public:
   void update(void);
   point_type_t point_type(void) {return DISCRETE_OUTPUT;};
   static do_point_t **read(int *cnt, const char * home_dir);
-  do_point_t *assign_one(int argc, char *argv[], char *err, int esz);
+  static do_point_t *create_one(int argc, char *argv[], char *err, int esz);
 };
 
 class calc_point_t : public analog_update_point_t
@@ -442,7 +442,7 @@ public:
   point_type_t point_type(void) {return CALC_POINT;};
   static calc_point_t *read_one(int argc, char *argv[], char *err, int esz);
   static calc_point_t **read(int *cnt, const char * home_dir);
-  calc_point_t *assign_one(int argc, char *argv[], char *err, int esz);
+  static calc_point_t *create_one(int argc, char *argv[], char *err, int esz);
 };
 
 class dcalc_point_t : public discrete_update_point_t
@@ -454,7 +454,7 @@ public:
   void parse_expr(void);
   point_type_t point_type(void) {return DCALC_POINT;};
   static dcalc_point_t **read(int *cnt, const char * home_dir);
-  dcalc_point_t *assign_one(int argc, char *argv[], char *err, int esz);
+  static dcalc_point_t *create_one(int argc, char *argv[], char *err, int esz);
 };
 
 
@@ -478,7 +478,7 @@ public:
   void write_to_file(void);
   point_type_t point_type(void) {return DATA_POINT;};
   static data_point_t **read(int *cnt, const char * home_dir);
-  data_point_t *assign_one(int argc, char *argv[], char *err, int esz);
+  static data_point_t *create_one(int argc, char *argv[], char *err, int esz);
 };
 
 /*#SCRIPT_OBJECT#(FILE_LOGGER)*/
@@ -510,7 +510,7 @@ public:
   point_type_t point_type(void) {return FILE_LOGGER;};
   static file_logger_t **read(int *cnt, const char * home_dir);
   void delete_old_files(time_t now);
-  file_logger_t *assign_one(int argc, char *argv[], char *err, int esz);
+  static file_logger_t *create_one(int argc, char *argv[], char *err, int esz);
 };
 
 class web_logger_t : public discrete_point_t
@@ -559,7 +559,7 @@ public:
   void update(void);
   point_type_t point_type(void) {return DATA_POINT;};
   static discrete_logger_t **read(int *cnt, const char * home_dir);
-  discrete_logger_t *assign_one(int argc, char *argv[], char *err, int esz);
+  static discrete_logger_t *create_one(int argc, char *argv[], char *err, int esz);
 };
 
 /*#SCRIPT_OBJECT#(SCAN_POINT)*/
@@ -580,7 +580,7 @@ public:
   void write_to_file(void);
   point_type_t point_type(void) {return SCAN_POINT;};
   static scan_point_t **read(int *cnt, const char * home_dir);
-  scan_point_t *assign_one(int argc, char *argv[], char *err, int esz);
+  static scan_point_t *create_one(int argc, char *argv[], char *err, int esz);
 };
 
 
@@ -629,7 +629,7 @@ public:
   point_type_t point_type(void) {return ANALOG_VALUE_POINT;};
   static analog_value_point_t *read_one(int argc, char *argv[], char *err, int esz);
   static analog_value_point_t **read(int *cnt, const char * home_dir);
-  analog_value_point_t *assign_one(int argc, char *argv[], char *err, int esz);
+  static analog_value_point_t *create_one(int argc, char *argv[], char *err, int esz);
 };
 
 /*#SCRIPT_OBJECT#(DISCRETE_VALUE_POINT)*/
@@ -644,7 +644,7 @@ public:
   point_type_t point_type(void) {return DISCRETE_VALUE_POINT;};
   static discrete_value_point_t *read_one(int argc, char *argv[], char *err, int esz);
   static discrete_value_point_t **read(int *cnt, const char * home_dir);
-  discrete_value_point_t *assign_one(int argc, char *argv[], char *err, int esz);
+  static discrete_value_point_t *create_one(int argc, char *argv[], char *err, int esz);
 };
 
 
@@ -673,7 +673,7 @@ public:
   point_type_t point_type(void) {return TIMER_POINT;};
   static timer_point_t *read_one(int argc, char *argv[], char *err, int esz);
   static timer_point_t **read(int *cnt, const char * home_dir);
-  timer_point_t *assign_one(int argc, char *argv[], char *err, int esz);
+  static timer_point_t *create_one(int argc, char *argv[], char *err, int esz);
 };
 
 /*#SCRIPT_OBJECT#(PID_POINT)*/
@@ -722,7 +722,7 @@ public:
   void update(void);
   void tune_update(void);
   static pid_point_t **read(int *cnt, const char * home_dir);
-  pid_point_t *assign_one(int argc, char *argv[], char *err, int esz);
+  static pid_point_t *create_one(int argc, char *argv[], char *err, int esz);
 };
 
 class pump_point_t : public discrete_point_t
@@ -767,7 +767,7 @@ public:
   point_type_t point_type(void) {return PUMP_POINT;};
   void update(void);
   static pump_point_t **read(int *cnt, const char * home_dir);
-  pump_point_t *assign_one(int argc, char *argv[], char *err, int esz);
+  static pump_point_t *create_one(int argc, char *argv[], char *err, int esz);
 };
 
 
@@ -806,7 +806,7 @@ public:
   point_type_t point_type(void) {return LEVEL_POINT;};
   void update(void);
   static level_point_t **read(int *cnt, const char * home_dir);
-  level_point_t *assign_one(int argc, char *argv[], char *err, int esz);
+  level_point_t *create_one(int argc, char *argv[], char *err, int esz);
 };
 
 class ac_point_t : public discrete_point_t
@@ -882,7 +882,7 @@ public:
   double get_cold_average(void); 
   void get_status(char *status, int len);
   void reset(void);
-  ac_point_t *assign_one(int argc, char *argv[], char *err, int esz);
+  static ac_point_t *create_one(int argc, char *argv[], char *err, int esz);
 };
 
 class script_trigger_t : public discrete_point_t
@@ -976,10 +976,24 @@ public:
   static web_point_t **read(int *cnt, const char * home_dir);
   ~web_point_t(void);
   void free_all(void);
-  web_point_t *assign_one(int argc, char *argv[], char *err, int esz);
+  static web_point_t *create_one(int argc, char *argv[], char *err, int esz);
+};
+
+class driver_point_t : public discrete_point_t
+{
+private:
+  bool enabled;
+  char *so_file;
+  char *extra_so_file;
+  char *constructor_function;
+  char *driver_params; 
+public:
+  point_type_t point_type(void) {return DRIVER_POINT;};
+  ~driver_point_t(void);
+  static driver_point_t **read(int *cnt, const char * home_dir);
+  static driver_point_t *create_one(int argc, char *argv[], char *err, int esz);
 };
 
 void enable_alarm_display(db_point_t *db_point);
-
 
 #endif

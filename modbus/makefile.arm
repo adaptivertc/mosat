@@ -1,7 +1,6 @@
 
 export CPATH=../include
 
-
 CC=arm-unknown-linux-gnu-gcc -mcpu=arm9 -Wall
 
 CPP=arm-unknown-linux-gnu-g++ -Wall

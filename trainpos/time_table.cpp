@@ -44,18 +44,24 @@ bool time_table_t::is_a_match(time_t scheduled_time, time_t actual_time)
 const char *time_table_t::match_departure(time_t actual_departure_time)
 {
   int found = false;
+  int count = 0;
   for (int i=(next_match); i < n_departures; i++)
   {
     if (is_a_match(this->times[i], actual_departure_time))
     {
        found = true;
        this->matched[i] = true;
-       if (i > 0) printf("******** Error, departures skipped\n");
+       if (count > 0) 
+       {
+         printf("******** Error, departures %d skipped\n", count);
+       }
        next_match = i + 1;
        return this->train_id[i];
     }
-  
+    count++; 
   }
+  // If there is an extra departure that does not mach anything, then we need
+  // need to fix the code to go back to where we started.
   return "?????";
 }
 

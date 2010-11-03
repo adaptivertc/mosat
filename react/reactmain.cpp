@@ -181,6 +181,13 @@ int main(int argc, char *argv[])
       // Don't print to the screen
       print_to_screen = false;
     }
+    else if (0 == strcmp(argv[current_arg], "-r") || (0 == strcmp(argv[current_arg], "--revision")))
+    {
+      printf( "%s\n", 
+            #include "revision_number"
+            );
+      exit(0);
+    }
     else if (0 == strcmp(argv[current_arg], "-bw"))
     {
       // Use busy wait, only for very fast sampling, but not perfect.

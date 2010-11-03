@@ -74,7 +74,6 @@ void ai_point_t::update(double new_raw_value)
   /* This routine updates the analog input point using the given raw
      value. */
 
-  //printf("%s, raw val = %lf\n", tag, new_raw_value);
   raw_value = new_raw_value;
   pv_last = pv;
 
@@ -93,6 +92,7 @@ void ai_point_t::update(double new_raw_value)
     }
   //printf("pv = %lf\n", pv);
   }
+  //printf("%s, raw val = %lf, pv = %lf\n", tag, new_raw_value, pv);
   check_alarms();
   display_pv();
   //printf("%s.pv = %lf\n", tag, pv);

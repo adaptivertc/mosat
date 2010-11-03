@@ -32,6 +32,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "ap_config.h"
 
+#include "section_reader.h"
+
+#define RANDOM_ON (false)
+
 const double driver_factors[10] = {1.02, 0.99, 0.98, 1.008, 1.02, 1.02, 0.99, 1.01, 0.98, 0.992};
 static int factor_loc = 0;
 
@@ -85,13 +89,13 @@ void train_sim_t::read_sections(const char *fname)
     {
       continue;
     }
-    sections[n_lines].section_time = atol(argv[1]);
-    sections[n_lines].departure_sensor_loc = atol(argv[2]);
-    sections[n_lines].arival_sensor_loc = atol(argv[3]);
+    xsections[n_lines].section_time = atol(argv[1]);
+    xsections[n_lines].departure_sensor_loc = atol(argv[2]);
+    xsections[n_lines].arival_sensor_loc = atol(argv[3]);
     printf("%d: %d %d %d\n", n_lines,
-      sections[n_lines].section_time,
-      sections[n_lines].departure_sensor_loc,
-      sections[n_lines].arival_sensor_loc );
+      xsections[n_lines].section_time,
+      xsections[n_lines].departure_sensor_loc,
+      xsections[n_lines].arival_sensor_loc );
     n_lines++;
     if (n_lines >= max)
     {
@@ -181,8 +185,15 @@ void train_sim_t::update(time_t now)
       {
         double d = ((double) random() / (double) RAND_MAX) * 12.0;
         int secs_dif = int(d) - 6; // This give a random value +/- 6 seconds
-        next_entry_time = times[next_entry] + secs_dif; 
-        printf("====== Random dif = %d\n", secs_dif);
+        if (RANDOM_ON)
+        {
+          next_entry_time = times[next_entry] + secs_dif; 
+          printf("====== Random dif = %d\n", secs_dif);
+        }
+        else
+        {
+          next_entry_time = times[next_entry]; 
+        }
       }
     }
   }
@@ -201,6 +212,7 @@ void train_sim_t::update(time_t now)
   for (int i=0; i < n_trains; i++)
   {
     this->update_train(i, now);
+    //this->xupdate_train(i, now);
   }
 }
 
@@ -212,13 +224,30 @@ void train_sim_t::add_train(time_t now)
   {
     trains[i+1] = trains[i];
   }
+
   trains[0].driver_factor = driver_factors[factor_loc];
   factor_loc = (factor_loc + 1) % 10;
   trains[0].section = 0;
-  trains[0].next_departure = times[next_entry] + sections[0].departure_sensor_loc;
-  trains[0].next_arival = times[next_entry] +
-   int (trains[0].driver_factor * double(sections[0].arival_sensor_loc));
+
+  // Old, to be removed.
+  trains[0].next_departure = times[next_entry] + xsections[0].departure_sensor_loc;
+  
+  if (RANDOM_ON)
+  {
+    trains[0].next_arival = times[next_entry] +
+       int (trains[0].driver_factor * double(xsections[0].arival_sensor_loc));
+  }
+  else
+  {
+    trains[0].next_arival = times[next_entry] + xsections[0].arival_sensor_loc;
+  }
   trains[0].departure_triggered = false;
+
+  // New, for n sensors.
+  trains[0].next_sensor = 0;
+  trains[0].next_crossing = times[next_entry] + sections.get_sensor_loc(0,0);
+  printf("new train: entry time: %ld, first sensor: %d seconds\n", times[next_entry], sections.get_sensor_loc(0,0));
+
   char buf[30];
   struct tm mytm;
   localtime_r(&now, &mytm);
@@ -235,6 +264,71 @@ void train_sim_t::add_train(time_t now)
   int section_time;
   int departure_sensor_loc;
 **/
+}
+
+/********************************************************/
+
+void train_sim_t::xupdate_train(int n, time_t now)
+{
+  if (now >= trains[n].next_crossing)
+  {
+    printf("train[%d], now: %ld, next_crossing: %ld\n", n, now, trains[n].next_crossing);
+    notify_obj->trigger_crossing(trains[n].section, trains[n].next_sensor+1, now);
+    trains[n].next_sensor++;
+    if (trains[n].next_sensor >= sections.get_n_sensors(trains[n].section))
+    {
+      trains[n].section++;
+      trains[n].next_sensor = 0;
+      printf("---- train[%d] crossing into section[%d]\n",
+               n, trains[n].section);
+      // Ok, we are now crossing into the next section, and arriving at a station.
+      // First check if this is the LAST section, if so, we are leaving service.
+      if (trains[n].section >= sections.get_n_sections())
+      {
+        // ok, the train is going out of service
+        char buf[30];
+        struct tm mytm;
+        localtime_r(&now, &mytm);
+        strftime(buf, sizeof(buf), "%T", &mytm);
+        printf("******* train left service (%s) %d\n", buf, n_trains);
+        n_trains--;
+      } 
+      else
+      {
+        int sn = trains[n].section;
+        int sr = sections.get_n_sensors(sn-1) - 1; // the last sensor in the last section.
+        int diff = sections.get_section_time(sn-1) - sections.get_sensor_loc(sn-1, sr);
+
+        if (RANDOM_ON)
+        {
+          double total_to_sensor =
+           double(diff + sections.get_sensor_loc(sn, 0) + sections.get_dwell_time(sn));
+          total_to_sensor *= trains[n].driver_factor;
+
+          trains[n].next_crossing = now + int(total_to_sensor);
+        }
+        else
+        {
+          diff += sections.get_dwell_time(sn); // Add the dwell time
+          diff += sections.get_sensor_loc(sn, 0);  // Add the time to next sensor
+          printf("diff = %d\n", diff);
+          trains[n].next_crossing = now + diff;
+        }
+      }
+    }
+    else
+    {
+               
+       int sn = trains[n].section;
+       int sr = trains[n].next_sensor;
+       printf("---- train[%d] crossed sensor %d in section %d\n",
+              n, sn, sr-1);
+       int diff =  sections.get_sensor_loc(sn, sr) -
+                      sections.get_sensor_loc(sn, sr-1);
+      
+       trains[n].next_crossing = now + diff; 
+    }
+  }
 }
 
 /********************************************************/
@@ -260,11 +354,11 @@ void train_sim_t::update_train(int n, time_t now)
       else
       {
         int s = trains[n].section;
-        int diff = sections[s].section_time - sections[s].arival_sensor_loc;
+        int diff = xsections[s].section_time - xsections[s].arival_sensor_loc;
         trains[n].departure_triggered = false;
-        trains[n].next_departure = now + sections[s].departure_sensor_loc + diff + RT_DWELL_TIME;
+        trains[n].next_departure = now + xsections[s].departure_sensor_loc + diff + RT_DWELL_TIME;
         double total_to_sensor =
-         double(sections[s].arival_sensor_loc + diff + RT_DWELL_TIME);
+         double(xsections[s].arival_sensor_loc + diff + RT_DWELL_TIME);
         total_to_sensor *= trains[n].driver_factor;
         trains[n].next_arival = now + int(total_to_sensor);
 /**

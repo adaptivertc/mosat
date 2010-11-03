@@ -12,8 +12,6 @@
 
 #include "n_section_reader.h"
 
-
-
 /********************************************************/
 
 int section_reader_t::get_n_sections(void)
@@ -150,6 +148,10 @@ void section_reader_t::read_section_file(void)
   }
 
 
+  printf("Reading %s\n", sections_file);
+  printf("-----------------------------------------------------------\n");
+
+
   char line[300];
 
   FILE *fp = fopen(sections_file, "r");
@@ -172,7 +174,7 @@ void section_reader_t::read_section_file(void)
 
     //printf("--- %s\n", line);
     safe_strcpy(tmp, line, sizeof(tmp));
-    argc = get_delim_args(tmp, argv, '\t', 4);
+    argc = get_delim_args(tmp, argv, '\t', (sizeof(argv) / sizeof(argv[0])));
     if ((argc < 3) || (argc > (TP_MAX_SENSORS + 3)))
     {
       printf("Wrong number of args, must be between 3 and %d: %s\n", TP_MAX_SENSORS + 3, line);
@@ -181,6 +183,7 @@ void section_reader_t::read_section_file(void)
     tsecdata_t *this_section = &sections[n_lines];
     
     this_section->n_sensors = argc - 3;
+    //printf("argc = %d, n_sensors = %d\n", argc, this_section->n_sensors);
 
     safe_strcpy(this_section->station, argv[0], sizeof(this_section->station));
     this_section->section_time = atol(argv[1]);
@@ -198,7 +201,7 @@ void section_reader_t::read_section_file(void)
     }
 
     sections[n_lines].time_to_start = total_time;
-    printf("%20s(%d): %d, %d, %d, sensors: [",
+    printf("%20s(%2d): %4d, %3d, %2d, sensors: [",
       sections[n_lines].station,
       n_lines, 
       sections[n_lines].time_to_start, 
@@ -207,9 +210,26 @@ void section_reader_t::read_section_file(void)
     for (int i=0; i <  sections[n_lines].n_sensors; i++) 
     { 
       if (i != 0) printf(", ");
-      printf("%d", sections[n_lines].sensor_location[i]); 
+      printf("%3d", sections[n_lines].sensor_location[i]); 
     } 
     printf("]\n"); 
+
+    if (sections[n_lines].sensor_location[0] < 2) 
+    {
+      printf("************ The first sensor must be at least 2 seconds aftter the start\n"); 
+    }
+    if (sections[n_lines].sensor_location[sections[n_lines].n_sensors - 1]  > (sections[n_lines].section_time - 2)) 
+    {
+      printf("************ The final sensor must be at least 2 seconds before arriving at the next station\n"); 
+    }
+    for (int i=1; i <  sections[n_lines].n_sensors; i++) 
+    { 
+      int sdiff = sections[n_lines].sensor_location[i] - sections[n_lines].sensor_location[i-1]; 
+      if (sdiff < 10)
+      {
+        printf("************ Sensor %d and %d are less than 10 seconds apart\n", i-1, i); 
+      }
+    } 
     //sections[n_lines].sensor_location[0], 
     //sections[n_lines].sensor_location[1], 
     total_time += sections[n_lines].section_time; 
@@ -217,7 +237,9 @@ void section_reader_t::read_section_file(void)
     n_lines++;
     if (n_lines >= max)
     {
-      break;
+      printf("%s line %d: Error max number of lines exceeded\n", 
+              __FILE__, __LINE__);
+      exit(1);
     }
   }
   n_sections = n_lines;
@@ -272,7 +294,7 @@ int section_reader_t::get_n_global_sensors(void)
 /*********************************************************/
 
 section_reader_t sections;
-ap_config_t ap_config;
+ap_config_t ap_config(',');
 
 int main(int argc, char *argv[])
 {

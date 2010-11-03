@@ -20,6 +20,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /******
   pump point
 
+  pump.cpp
+
+  This was originally written for SITEUR pumping station near the Atemajac station
+
 *************************************************************************/
 
 #include <stdio.h>
@@ -168,6 +172,28 @@ void pump_point_t::update(void)
   
 }
 
+/***************************/
+
+pump_point_t *pump_point_t::create_one(int argc, char *argv[], char *err, int esz)
+{
+  pump_point_t *objp;
+  objp = new pump_point_t;
+  if (objp == NULL)
+  {
+    perror("new pump_point_t");
+    return NULL;
+  }
+  safe_strcpy(objp->tag, (const char*) argv[0], sizeof(objp->tag));
+  safe_strcpy(objp->description, (const char*) argv[1], sizeof(objp->description));
+  safe_strcpy(objp->pump_on_tag, (const char*) argv[2], sizeof(objp->pump_on_tag));
+  safe_strcpy(objp->amps_tag, (const char*) argv[3], sizeof(objp->amps_tag));
+  safe_strcpy(objp->level_tag, (const char*) argv[4], sizeof(objp->level_tag));
+  objp->min_amps = atof(argv[5]);
+  objp->max_amps = atof(argv[6]);
+  objp->delay = atof(argv[7]);
+  return objp;
+}
+
 /********************************************************************/
 
 pump_point_t **pump_point_t::read(int *cnt, const char *home_dir)
@@ -222,59 +248,49 @@ pump_point_t **pump_point_t::read(int *cnt, const char *home_dir)
       continue;
     }
     logfile->vprint("%s\n", line);
-    pump_point_t *pmp = new pump_point_t;
 
-    safe_strcpy(pmp->tag, (const char*) argv[0], sizeof(pmp->tag));
-    safe_strcpy(pmp->description, (const char*) argv[1], sizeof(pmp->description));
+    char err[20];
+    pump_point_t *pmp = pump_point_t::create_one(argc, argv, err, sizeof(err));
 
-    char temp_tag[30];
+    rtrim(pmp->pump_on_tag);
 
-    safe_strcpy(temp_tag, (const char*) argv[2], sizeof(temp_tag));
-    rtrim(temp_tag);
-    db_point = db->get_db_point(temp_tag);
+    db_point = db->get_db_point(pmp->pump_on_tag);
     if ((db_point == NULL) || (db_point->point_type() != DISCRETE_INPUT))
     {
       pmp->di_point = NULL;
-      logfile->vprint("%s - bad discrete input point: %s\n", pmp->tag, temp_tag);
+      logfile->vprint("%s - bad discrete input point: %s\n", pmp->tag, pmp->pump_on_tag);
     }
     else
     {
       pmp->di_point = (di_point_t *) db_point;
     }
 
-    safe_strcpy(temp_tag, (const char*) argv[3], sizeof(temp_tag));
-    rtrim(temp_tag);
-    db_point = db->get_db_point(temp_tag);
+    rtrim(pmp->amps_tag);
+    db_point = db->get_db_point(pmp->amps_tag);
     if ((db_point == NULL) || (db_point->point_type() != ANALOG_INPUT))
     {
       pmp->ai_point = NULL;
-      logfile->vprint("%s - bad analog input point (amps): %s\n", pmp->tag, temp_tag);
+      logfile->vprint("%s - bad analog input point (amps): %s\n", pmp->tag, pmp->amps_tag);
     }
     else
     {
       pmp->ai_point = (ai_point_t *) db_point;
     }
 
-    safe_strcpy(temp_tag, (const char*) argv[4], sizeof(temp_tag));
-    rtrim(temp_tag);
-    db_point = db->get_db_point(temp_tag);
+    rtrim(pmp->level_tag);
+    db_point = db->get_db_point(pmp->level_tag);
     if ((db_point == NULL) || (db_point->point_type() != ANALOG_INPUT))
     {
       pmp->ai_point = NULL;
-      logfile->vprint("%s - bad analog input point (level): %s\n", pmp->tag, temp_tag);
+      logfile->vprint("%s - bad analog input point (level): %s\n", pmp->tag, pmp->level_tag);
     }
     else
     {
       pmp->level_ai_point = (ai_point_t *) db_point;
     }
 
-
-    pmp->min_amps = atof(argv[5]);
-    pmp->max_amps = atof(argv[6]);
-    pmp->delay = atof(argv[7]);
-
     logfile->vprint("%s: Min: %lf, Max %lf, Delay %lf\n", 
-      pmp->tag, pmp->min_amps, pmp->max_amps, pmp->delay);
+           pmp->tag, pmp->min_amps, pmp->max_amps, pmp->delay);
 
     pmp->last_state_at_change = true;
     pmp->last_change_time = time(NULL);
