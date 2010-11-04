@@ -22,7 +22,9 @@ LIBS = -ldl $(RTCOMMON)
 
 GENFILES =  gen_case.cpp gen_script.cpp gen_script.h
 
-DRIVERDIRS = drivers/pci9111 drivers/pci7248 drivers/sim drivers/modbusdrv drivers/shmdrv drivers/sim_pump drivers/sim_pump_low drivers/dallas_1wire drivers/sim_ac drivers/process drivers/simple_ascii drivers/simple_ascii_new
+DRIVERDIRS = drivers/pci9111 drivers/pci7248 drivers/sim drivers/modbusdrv drivers/shmdrv drivers/sim_pump drivers/sim_pump_low 
+
+DRIVERDIRS2 = drivers/sim_tina drivers/dallas_1wire drivers/sim_ac drivers/process drivers/simple_ascii drivers/simple_ascii_new 
 
 CDEBUG =
 
@@ -36,13 +38,16 @@ CPP = g++  $(CFLAGS)
 
 MAKE = make
 
-all: react integrate utest rconsole reactcgi rdrivers rtshmmain ai.so
+all: react integrate utest rconsole reactcgi rdrivers drivers2 rtshmmain ai.so
 
 %.o:	%.cpp $(INCLUDES)
 	$(CPP) -c  -o $@ $<
 
 rdrivers:
 	for i in $(DRIVERDIRS); do cd "$$i"; $(MAKE); cd ../..; done
+
+drivers2: 
+	for i in $(DRIVERDIRS2); do cd "$$i"; $(MAKE); cd ../..; done
 
 react:	$(INCLUDES) $(OBJS) dbpoint_util.so
 	echo \"`svn info | grep -i revision`\" > revision_number
@@ -143,6 +148,7 @@ clean:
 	rm -fv *.o *.so react rconsole rdisplay reactcgi gen utest integrate
 	rm -fv rtshmmain gen_case.cpp gen_script.cpp gen_script.h gen_php
 	for i in $(DRIVERDIRS) drivers/sixnet_rtu ; do cd "$$i"; $(MAKE) clean; cd ../..; done
+	for i in $(DRIVERDIRS2); do cd "$$i"; $(MAKE) clean; cd ../..; done
 
 
 install:

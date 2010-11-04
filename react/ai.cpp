@@ -92,7 +92,7 @@ void ai_point_t::update(double new_raw_value)
     }
   //printf("pv = %lf\n", pv);
   }
-  //printf("%s, raw val = %lf, pv = %lf\n", tag, new_raw_value, pv);
+  printf("%s, raw val = %lf, pv = %lf\n", tag, new_raw_value, pv);
   check_alarms();
   display_pv();
   //printf("%s.pv = %lf\n", tag, pv);
