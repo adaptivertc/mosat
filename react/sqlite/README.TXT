@@ -4,7 +4,7 @@ using a query:
 
 select name from sqlite_master where type='table';
 
-using a dod command:
+using a dot command:
 
 .tables
 

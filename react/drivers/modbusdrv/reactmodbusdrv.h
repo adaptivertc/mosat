@@ -101,6 +101,7 @@ public:
   void read_thread(void);
   bool get_di(int channel);
   double get_ai(int channel);
+  void get_ai_range(int start, int end, double vals[]);
   long get_count(int channel);
   void send_do(int channel, bool val);
   void send_ao(int channel, double val);

@@ -206,3 +206,35 @@ int get_delim_args(char *line, char *argv[], char delimeter, int max_args)
 
 /***********************************************************************/
 
+int get_delim_array(char *line, char *argv[], char delimeter, char left_char, char right_char, int max_args)
+{
+  // This assumes that there is an array in the string with a left array character and a right array character, typically [] or {}
+  // This also works to separate the elements of a structure.
+  char *p;  
+  char *start = NULL;
+  bool found = false;
+  for (p=line; *p != '\0'; p++)
+  {
+    if (*p == left_char)
+    {
+      *p = '\0';
+      found = true;
+      start = p + 1;
+    }
+  }
+  if (not found) return 0;
+
+  found = false;
+  int len = strlen(start);
+  for (p = start + (len - 1); p >= start; p--)
+  {
+    if (*p == right_char)
+    {
+      *p = '\0';
+      found = true;
+    }
+  }
+  if (not found) return 0;
+  
+  return get_delim_args(start, argv, delimeter, max_args);
+}

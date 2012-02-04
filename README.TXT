@@ -9,6 +9,8 @@ apt-get install libncurses5
 apt-get install libncurses5-dev
 apt-get install glibc-doc
 
+apt-get install subversion
+
 
 To checkout the latest version of the source code on another computer, use the following command:
 

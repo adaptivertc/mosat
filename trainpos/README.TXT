@@ -100,3 +100,35 @@ So, the question is: is it better to have a sub-system to convert presence infor
 
 For the radio systems, we will have to completely replace the position modules since there will be no concept of "crossing". However, we can use the same user interfaces.
 
+======================================================================
+
+From RTLWS 2011
+
+We need not only Open Source, we need OPEN PROOF 
+
+We need the entire implementation open: requirements, source code, testing methods,  . . . 
+
+openproofs.com
+
+www.dwheeler.com
+
+European Parlament said:
+Open Source is the only way to guarantee that there are no back doors.
+
+Formal specification
+
+http://www.acm.org/classics/sep95/ Ken Thompson
+
+Speaker: NO way to get compatibility across all railway systems in Europe without open source software
+
+--------------
+
+Variety of ways to comply
+
+Proven in use is not enough.
+
+software failure analysis / mitigation of software failures.
+
+--------------
+
+

@@ -2,7 +2,9 @@
 #web2|Schematic Web Page|1.0|schematic.html|sout.html|
 #web1|Pump Web Page|1.0|pump_temp.html|pump_diagram.html|
 #web2|AC Web Page|1.0|ac_temp.html|ac_diagram.html|
-tempweb|Temp Web Page|20.0|temp_template.html|temp.html|
+tempweb|Temp Web Page|1.0|temp_template.html|temp.html|
+pidweb|PID Web Page|5.0|pid_template.html|pid.html|
+aiweb|AI Web Page|5.0|ai_template.html|ai.html|
 #Tag
 #Description
 #update interval

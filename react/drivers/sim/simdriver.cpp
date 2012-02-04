@@ -169,6 +169,7 @@ bool sim_io_driver_t::get_di(int channel)
 {
   if ((channel > 0) && (channel < 64))
   {
+    di_data[channel] = ! di_data[channel];
     return di_data[channel];
   }
   else

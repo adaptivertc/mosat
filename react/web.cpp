@@ -493,6 +493,74 @@ void web_point_t::read_file(void)
         tmp_r->ap = NULL;
       }
     }
+    else if (0 == strncasecmp(&file_buf[i], "$$$$SCALE(", 10))
+    {
+      int j;
+      for (j = i; file_buf[j] != ')'; j++);
+      int tmpsize = j - i + 1;
+      int len = tmpsize-10;
+      char *tmp = new char[len+1];
+      //char *arg_str = tmp; // Save so it can be deleted 
+      strncpy(tmp, file_buf + i + 10, len);
+      tmp[len] = '\0';
+      int argc;
+      char *argv[10];
+      logfile->vprint("%s\n", tmp);
+      argc = get_delim_args(tmp, argv, '|', 10);
+      logfile->vprint("Args for SCALE = %d\n", argc);
+      if (argc == 9)
+      {
+        char *label = strdup(argv[0]);
+        char *eu_label = strdup(argv[1]);
+        int text_height = atoi(argv[2]);
+        int scale_top = atoi(argv[3]);
+        int scale_left = atoi(argv[4]);
+        int scale_bottom = atoi(argv[5]);
+        int scale_min = atoi(argv[6]);
+        int scale_max = atoi(argv[7]);
+        int n_divs = atol(argv[8]);
+
+        logfile->vprint("label %s, eu %s, txt_h %d, stop %d, slft %d, sbot %d, smin %d, smax %d, ndiv %d\n", 
+         label, eu_label, text_height, scale_top, scale_left, scale_bottom, scale_min, scale_max, n_divs);
+
+        int str_top = scale_top - (text_height / 2); 
+        int scale_dist = (scale_bottom - scale_top);
+        int current_top = str_top;
+        char *p = tmp; 
+        int size_left = len;
+        float div_distance = float(scale_dist) / float(n_divs);
+        int scale_current = scale_max;
+        int scale_dif = (scale_max - scale_min) / n_divs;
+        for (int k=0; k < (n_divs + 1); k++)
+        {
+          current_top = str_top + int((float(k) * div_distance) + 0.5);
+          logfile->vprint("%d, current_top = %d, scale_current = %d, dif = %d, eu = '%s'\n", k, current_top, scale_current, scale_dif, eu_label);
+          snprintf(p, size_left, "<div style=\"position: absolute; top: %dpx; left: %dpx;\">\n--- %d%s\n</div>\n", 
+                     current_top, scale_left, scale_current, eu_label);
+          size_left -= strlen(p);
+          p += strlen(p);
+          if (k < n_divs)
+          {
+            snprintf(p, size_left, "<div style=\"position: absolute; top: %dpx; left: %dpx;\">\n-\n</div>\n", 
+                     current_top + int(div_distance / 2.0), scale_left);
+            size_left -= strlen(p);
+            p += strlen(p);
+            scale_current = scale_current - scale_dif;
+          }
+        }
+        logfile->vprint("Writing label: %s\n", label);
+        snprintf(p, size_left, "<div style=\"position: absolute; top: %dpx; left: %dpx;\">\n%s\n</div>\n", 
+                 scale_top - int((text_height * 3)/2), scale_left - 20, label);
+        size_left -= strlen(p);
+        p += strlen(p);
+
+        subst_string(&file_buf[i], tmp, len+10);
+      }
+      else
+      {
+        logfile->vprint("Wrong number of args for $$$$SCALE: %d\n", argc);
+      }
+    }
   }
 }
 
@@ -582,10 +650,10 @@ void web_point_t::update_file_and_write(void)
     char datestr[100];
     time_t t;
     t = time(NULL);
-    struct tm *mytm;
-    mytm = localtime(&t);
-    strftime(datestr, sizeof(datestr), "%Y-%m-%d %H:%M:%S%z", mytm);
-    //strftime(timestr, sizeof(timestr), "%T", mytm);
+    struct tm mytm;
+    localtime_r(&t, &mytm);
+    strftime(datestr, sizeof(datestr), "%Y-%m-%d %H:%M:%S%z", &mytm);
+    //strftime(timestr, sizeof(timestr), "%T", &mytm);
 
     subst_string(time_location, datestr, time_size);
   }

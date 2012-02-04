@@ -21,7 +21,7 @@
 
 void my_sighandler(int signum)
 {
-  printf("Got signal\n");
+  //printf("Got signal\n");
 }
 
 // ssh dcarr@coyote2.dyndns.org:52483
@@ -35,7 +35,9 @@ int main(int argc, char *argv[])
  
   int unit_id;
 
-  signal(SIGIO , my_sighandler);
+  signal(SIGPIPE, SIG_IGN);
+  signal(SIGIO, SIG_IGN);
+  //signal(SIGIO , my_sighandler);
 
   if (argc == 5)
   {
@@ -96,7 +98,7 @@ int main(int argc, char *argv[])
   {
     modc = rt_create_modbus_serial(serial_dev, baudrate, timeout, 0);
   }
-  modc->set_debug_level(0);
+  modc->set_debug_level(10);
   modc->set_address(unit_id);
  
   while (true)

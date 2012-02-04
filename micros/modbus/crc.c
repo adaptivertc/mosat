@@ -2,8 +2,6 @@
 #include <stdint.h>
 #include <string.h>
 
-
-
 /********************************************************************/
 
 int odd(uint16_t byte)

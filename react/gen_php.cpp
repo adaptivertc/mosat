@@ -53,8 +53,8 @@ void process_file(const char *fname, FILE *fp_out)
     printf("\n");
     if (0 == strcasecmp(argv[0], "table"))
     {
-      fprintf(fp_out, "<h1>%s</h1><br>\n", argv[1]);
-      fprintf(fp_out, "<i>Campos marcados con un asterisco son obligatorios</i>\n");
+      fprintf(fp_out, "<h1>%s</h1>\n", argv[1]);
+      //fprintf(fp_out, "<i>Campos marcados con un asterisco son obligatorios</i>\n");
 //      fprintf(fp_out, "<hr><br>\n");
     }
     else if (0 == strcasecmp(argv[0], "separator"))
@@ -92,7 +92,7 @@ void process_file(const char *fname, FILE *fp_out)
     else if (0 == strcasecmp(argv[0], "int"))
     {
       fprintf(fp_out, "<tr>\n");
-      fprintf(fp_out, "  <td class=\"name\">int_%s: </td>\n", argv[1]);
+      fprintf(fp_out, "  <td class=\"name\">%s: </td>\n", argv[1]);
       fprintf(fp_out, "  <td class=\"input\">\n");
       fprintf(fp_out, "    <input TYPE=\"text\" name=\"int_%s\" size=\"8\" value=\"\">\n", argv[2]);
       fprintf(fp_out, "  </td>\n");

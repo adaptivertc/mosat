@@ -77,6 +77,57 @@ display_dist_t::display_dist_t(int a_x1, int a_x2,
 
 void display_dist_t::calc_xy(int section, double fraction, int *x, int *y, bool *coming_back)
 {
+  double extra;
+  double square;
+
+  /***
+  if (fraction > 0.75)
+  {
+   extra = 4;
+  }
+  else if (fraction > 0.50)
+  {
+    extra = 3;
+  }
+  else if (fraction > 0.25)
+  {
+    extra = 2;
+  }
+  else if (fraction > 0.01)
+  {
+    extra = 1;
+  }
+  else
+  {
+    extra = 0;
+  }
+  ***/
+  extra = fraction * 5.0; 
+
+  if (section >= return_start)
+  {
+    *y = y1;
+    *coming_back = true;
+    square = (5.0 * (double(section) - double(return_start))) + extra;
+    square = double(n_squares) - square - 1.0;
+  }
+  else
+  {
+    square = (5.0 * section) + extra;
+    *y = y2;
+    *coming_back = false;
+  }
+  *x = x1 + int(double(total_x_pixels) * (double(square) / double(n_squares-1)));
+  //printf("s = %d, fr = %0.2lf, ex = %d, sq = %d, x = %d, y = %d\n",
+  //  section, fraction, extra, square, *x, *y);
+}
+
+/*************************************************************************************************/
+
+
+/**
+void old_display_dist_t::calc_xy(int section, double fraction, int *x, int *y, bool *coming_back)
+{
   int extra;
   int square;
 
@@ -114,10 +165,12 @@ void display_dist_t::calc_xy(int section, double fraction, int *x, int *y, bool 
     *y = y2;
     *coming_back = false;
   }
+  double pixels_per_section 
   *x = x1 + int(double(total_x_pixels) * (double(square) / double(n_squares-1)));
   //printf("s = %d, fr = %0.2lf, ex = %d, sq = %d, x = %d, y = %d\n",
   //  section, fraction, extra, square, *x, *y);
 }
+***/
 
 /*******************************************************/
 

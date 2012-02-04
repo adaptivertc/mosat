@@ -1,6 +1,6 @@
 /************************************************************************
 This software is part of React, a control engine
-Copyright (C) 20010 Donald Wayne Carr 
+Copyright (C) 2010 Donald Wayne Carr 
 
 This program is free software; you can redistribute it and/or modify 
 it under the terms of the GNU General Public License as published by 

@@ -15,6 +15,7 @@ struct db_field_t
   int length;
   char *prompt;
   char *name;
+  char *extra_data;
   int n_select;
   char **select_prompts;
   char **select_names;
@@ -189,7 +190,8 @@ db_field_t *create_field(int argc, char *argv[])
     f->type = RT_ARRAY;
     f->prompt = strdup(argv[1]); 
     f->name = strdup(argv[2]); 
-    f->length = 0;
+    f->extra_data = strdup(argv[3]); // Definition of array in JSON format.
+    f->length = 1;
   }
   else if (0 == strcasecmp(argv[0], "dropdown"))
   {
@@ -573,6 +575,99 @@ void gen_create_fields_to_obj(FILE *fp_out, gen_names_t *gnames)
 
 /**********************************************************************/
 
+void gen_read_one_db(FILE *fp_out, gen_names_t *gnames)
+{
+  fprintf(fp_out, "    /*--------*/\n");
+  fprintf(fp_out, "\n");
+  fprintf(fp_out, "  printf(\"---- Reading database '%s' -------------\\n\");", gnames->table_name);
+  fprintf(fp_out, "\n");
+  fprintf(fp_out, "%s\n", "  cbdata.first = false;");
+  fprintf(fp_out, "%s\n", "  cbdata.n = 0;");
+  fprintf(fp_out, "  cbdata.nf = %d;\n", gnames->nf);
+  fprintf(fp_out, "  retval = sqlite3_exec(sqdb, \"select * from '%s';\",\n", gnames->table_name);
+  fprintf(fp_out, "%s\n", "             my_callback, &cbdata, &errmsg);");
+  fprintf(fp_out, "%s\n", "  if (retval != SQLITE_OK)");
+  fprintf(fp_out, "%s\n", "  {");
+  fprintf(fp_out, "%s\n", "    printf(\"Can not execute query, error = %d\\n\", retval);");
+  fprintf(fp_out, "%s\n", "    if (errmsg != NULL)");
+  fprintf(fp_out, "%s\n", "    {");
+  fprintf(fp_out, "%s\n", "      printf(\"errmsg: %s\\n\", errmsg);");
+  fprintf(fp_out, "%s\n", "      sqlite3_free(errmsg);");
+  fprintf(fp_out, "%s\n", "    }");
+  fprintf(fp_out, "%s\n", "    sqlite3_close(sqdb);");
+  fprintf(fp_out, "%s\n", "    return 0;");
+  fprintf(fp_out, "%s\n", "  }");
+  fprintf(fp_out, "\n");
+
+}
+
+
+/**********************************************************************/
+
+void gen_read_db(FILE *fp_out)
+{
+  fprintf(fp_out, "%s\n", "#include <stdio.h>");
+  fprintf(fp_out, "%s\n", "#include <sqlite3.h>");
+  fprintf(fp_out, "\n");
+  fprintf(fp_out, "%s\n", "struct callback_data_t");
+  fprintf(fp_out, "%s\n", "{");
+  fprintf(fp_out, "%s\n", "  bool first;");
+  fprintf(fp_out, "%s\n", "  int nf;");
+  fprintf(fp_out, "%s\n", "  int n;");
+  fprintf(fp_out, "%s\n", "};");
+  fprintf(fp_out, "\n");
+  fprintf(fp_out, "/**********************/\n");
+  fprintf(fp_out, "\n");
+  fprintf(fp_out, "%s\n", "int my_callback(void *data, int n, char **vals, char **fields)");
+  fprintf(fp_out, "%s\n", "{");
+  fprintf(fp_out, "%s\n", "  callback_data_t *cbdata;");
+  fprintf(fp_out, "%s\n", "  cbdata = (callback_data_t *) data; // how to pass data to callback.");
+  fprintf(fp_out, "%s\n", "  cbdata->n++;");
+  fprintf(fp_out, "%s\n", "  if (cbdata->first) printf(\"First callback!!!\\n\");");
+  fprintf(fp_out, "%s\n", "  printf(\"Callback: %d, n = %d\\n\", cbdata->n, n);");
+  fprintf(fp_out, "%s\n", "  if (n == cbdata->nf) printf(\"********** number of files MATCH!!\\n\");");
+  fprintf(fp_out, "%s\n", "  for (int i=0; i < n; i++)");
+  fprintf(fp_out, "%s\n", "  {");
+  fprintf(fp_out, "%s\n", "    printf(\"%d: field: '%s', value: '%s'\\n\", i, fields[i], vals[i]);");
+  fprintf(fp_out, "%s\n", "  }");
+  fprintf(fp_out, "%s\n", "  cbdata->first = false;");
+  fprintf(fp_out, "%s\n", "  return 0;");
+  fprintf(fp_out, "%s\n", "}");
+  fprintf(fp_out, "\n");
+  fprintf(fp_out, "/**********************/\n");
+  fprintf(fp_out, "\n");
+  fprintf(fp_out, "%s\n", "int main(int argc, char *argv[])");
+  fprintf(fp_out, "%s\n", "{");
+  fprintf(fp_out, "%s\n", "  sqlite3 *sqdb;");
+  fprintf(fp_out, "%s\n", "  sqlite3_stmt *stmt;");
+  fprintf(fp_out, "%s\n", "  const char *tail;");
+  fprintf(fp_out, "%s\n", "  int retval;");
+  fprintf(fp_out, "%s\n", "  char *errmsg;");
+  fprintf(fp_out, "%s\n", "  callback_data_t cbdata;");
+  fprintf(fp_out, "\n");
+  fprintf(fp_out, "%s\n", "  retval = sqlite3_open_v2(\"react_def.db\",  &sqdb,");
+  fprintf(fp_out, "%s\n", "     SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);");
+  fprintf(fp_out, "%s\n", "  if (retval != SQLITE_OK)");
+  fprintf(fp_out, "%s\n", "  {");
+  fprintf(fp_out, "%s\n", "    printf(\"Can not open db, error = %d\\n\", retval);");
+  fprintf(fp_out, "%s\n", "    printf(\"Err = %s\\n\", sqlite3_errmsg(sqdb));");
+  fprintf(fp_out, "%s\n", "    return 0;");
+  fprintf(fp_out, "%s\n", "  }");
+  fprintf(fp_out, "\n");
+  fprintf(fp_out, "\n");
+
+   /**
+  for (int i=0; i < gnames->nf; i++)
+  {
+    gen_create_one_db(fp_out, "xxxx");
+  }
+  fprintf(fp_out, "%s\n", "}");
+  **/
+}
+
+/**********************************************************************/
+
+
 void gen_write_one(FILE *fp_out, gen_names_t *gnames)
 {
   fprintf(fp_out, "\n\n/***************************/\n\n");
@@ -766,6 +861,16 @@ int main(int argc, char *argv[])
     exit(0);
   }
 
+  const char *read_db = "read_db.cpp";
+  FILE *fp_read_db = fopen(read_db, "w");
+  if (fp_read_db == NULL)
+  {
+    perror(read_db);
+    exit(0);
+  }
+
+  gen_read_db(fp_read_db);
+
   gen_header(fp_main, argv[0]);
   write_main_start(fp_main);
 
@@ -792,14 +897,18 @@ int main(int argc, char *argv[])
       gen_for_one_config(fp_out, fp_main, &gnames);
       printf("Calling gen_create_fields_to_obj()\n"); 
       gen_create_fields_to_obj(fp_out_obj, &gnames);
+      gen_read_one_db(fp_read_db, &gnames);
     }
     dent = readdir(dir);
   }
   write_main_end(fp_main);
 
+  fprintf(fp_read_db, "}\n");
+
   fclose(fp_out);
   fclose(fp_main);
   fclose(fp_out_obj);
+  fclose(fp_read_db);
 }
 
 /**********************************************************************/

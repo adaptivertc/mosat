@@ -39,6 +39,8 @@ changes to discrete points given in the list.
 #include "db.h"
 #include "arg.h" 
 #include "ap_config.h" 
+#include "rt_json.h"
+#include "dbref.h"
 
 /**********************************************************************/
 
@@ -155,6 +157,156 @@ void discrete_logger_t::update(void)
     fflush(instantaneous_fp);
   }
   last_log_time = now;
+}
+
+/**********************************************************************/
+
+bool discrete_logger_t::read_json(char *json_buffer, discrete_logger_t *p)
+{
+  char *argv[100];
+  int argc;
+  int type;
+  char *trailing_chars;
+  char err[100];
+
+  //char *rt_json_next_value(char *buf, char *argv[], int max_argc, int *actual_argc, int *type, char *err, int esz)  
+  trailing_chars = rt_json_next_value(json_buffer, argv, sizeof(argv)/sizeof(argv[0]), 
+                                               &argc, &type, err, sizeof(err)/sizeof(err[0]));  
+
+  ltrim(trailing_chars);
+  if (strlen(trailing_chars) != 0)
+  {
+    printf("Unexpected characters at end: %s\n", trailing_chars);
+    return false;
+  }
+
+  if (type == RT_JSON_ERROR)
+  {
+    p->num_points = 0; 
+    p->discrete_points = NULL;
+    p->bool_refs = NULL;
+    p->last_discrete_vals = NULL;
+    p->log_rising = NULL;
+    p->log_falling = NULL;
+    p->last_detect = NULL;
+    p->n_hour_detects = NULL;
+    p->n_day_detects = NULL;
+    logfile->vprint("Error parsing JSON for %s: %s\n", p->tag, err);
+    return false;
+  }
+  else if (type != RT_JSON_ARRAY)
+  {
+    p->num_points = 0; 
+    p->discrete_points = NULL;
+    p->bool_refs = NULL;
+    p->last_discrete_vals = NULL;
+    p->log_rising = NULL;
+    p->log_falling = NULL;
+    p->last_detect = NULL;
+    p->n_hour_detects = NULL;
+    p->n_day_detects = NULL;
+    logfile->vprint("Error parsing for %s, expected JSON ARRAY, found: %s\n", p->tag, rt_json_type_string(type));
+    return false;
+  }
+
+  p->num_points = argc; 
+  p->discrete_points = new discrete_point_t *[p->num_points + 1];
+  p->bool_refs = new rt_bool_ref_t *[p->num_points + 1];
+  p->last_discrete_vals = new bool[p->num_points + 1];
+  p->log_rising = new bool[p->num_points + 1];
+  p->log_falling = new bool[p->num_points + 1];
+  p->last_detect = new time_t[p->num_points + 1];
+  p->n_hour_detects = new int[p->num_points + 1];
+  p->n_day_detects = new int[p->num_points + 1];
+
+  char *item_argv[2];
+  int item_argc;
+  int item_type;
+
+  for (int i=0; i < argc; i++)
+  {
+    trailing_chars = rt_json_next_value(argv[i], item_argv, sizeof(item_argv)/sizeof(item_argv[0]), 
+                            &item_argc, &item_type, err, sizeof(err)/sizeof(err[0]));  
+
+    ltrim(trailing_chars);
+    if (strlen(trailing_chars) != 0)
+    {
+      printf("Unexpected characters at end: %s\n", trailing_chars);
+      return false;
+    }
+
+    if (item_type == RT_JSON_ERROR)
+    {
+      logfile->vprint("Error parsing JSON for %s: %s\n", p->tag, err);
+      p->bool_refs[i] = NULL;
+      p->log_rising[i] = false;
+      p->log_falling[i] = false;
+      continue;
+    }
+    else if (item_type != RT_JSON_ARRAY)
+    {
+      logfile->vprint("Error parsing for %s, expected JSON ARRAY, found: %s\n", p->tag, rt_json_type_string(item_type));
+      p->bool_refs[i] = NULL;
+      p->log_rising[i] = false;
+      p->log_falling[i] = false;
+      continue;
+    }
+    
+    if (item_argc != 2)
+    {
+      printf("Error, must have exactly two arguments for every tag / log type\n");
+      return false;
+    }
+
+     
+    char *tag = item_argv[0];
+    char *log_type = item_argv[1];
+    ltrim(tag);
+    rtrim(tag);
+    strip_quotes(tag);
+    ltrim(log_type);
+    rtrim(log_type);
+    strip_quotes(log_type);
+    rt_bool_ref_t *bref;
+    bref = react_get_discrete_ref_fn(tag);
+    if (bref == NULL)
+    {
+      logfile->vprint("BAD discrete tag: %s\n", tag);
+      p->bool_refs[i] = NULL;
+      continue;
+    }
+
+    switch (log_type[0])
+    {
+      case 'R':
+      case 'r':
+        logfile->vprint("rising only\n");
+        p->log_rising[i] = true;
+        p->log_falling[i] = false;
+        break;
+      case 'F':
+      case 'f':
+        logfile->vprint("falling only\n");
+        p->log_rising[i] = false;
+        p->log_falling[i] = true;
+        break;
+      case 'B':
+      case 'b':
+        logfile->vprint("both rising and falling\n");
+        p->log_rising[i] = true;
+        p->log_falling[i] = true;
+        break;
+      default:
+        logfile->vprint("******* Error %s: discrete %d, bad param: '%s' log type must be R, F, or B (rising, falling, or both)\n",
+                   p->tag, i, log_type); 
+        logfile->vprint("defaulting to both rising and falling\n");
+        p->log_rising[i] = true;
+        p->log_falling[i] = true;
+        break;
+    }
+  }
+
+  return true;
 }
 
 /**********************************************************************/

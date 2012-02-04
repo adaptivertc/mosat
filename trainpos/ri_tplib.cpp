@@ -871,8 +871,10 @@ void ri_rwSection::updatePos(time_t ct)
 {
   float cPos = (difftime(ct, m_trainData.m_dt) + m_sensors.Retrieve(0).m_relTTS) * m_dps;
   if (m_isBusy)
+  {
     if (cPos < m_trainData.m_mPos)
       m_trainData.m_cPos = cPos;
     else
       m_trainData.m_cPos = m_trainData.m_mPos;
+  }
 }

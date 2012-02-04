@@ -4,7 +4,7 @@ export CPATH=../../include
 RTCOMMON=../../librtcommon/librtcommon.a
 RTMODBUS=../../modbus/librtmodbus.a
 
-all: main crc.o mod_server_msg.o swap.o hexascii.o serial_mod_server
+all: main crc.o mod_server_msg.o swap.o hexascii.o serial_mod_server client_server_test
 
 hexascii.o: hexascii.c
 	gcc -Wall -c hexascii.c
@@ -36,5 +36,10 @@ serial_mod_server: serial_mod_server.o  crc.o  hexascii.o mod_server_msg.o \
 	g++ -o serial_mod_server serial_mod_server.o crc.o \
 		 hexascii.o mod_server_msg.o  swap.o mod_server_test.o $(RTMODBUS)
 
+client_server_test: client_server_test.o hexascii.o mod_server_msg.o \
+                 swap.o mod_server_test.o mod_client_msg.o 
+	g++ -o client_server_test client_server_test.o crc.o \
+		 hexascii.o mod_server_msg.o  swap.o mod_server_test.o mod_client_msg.o 
+
 clean: 
-	rm -v *.o main serial_mod_server
+	rm -v *.o main serial_mod_server client_server_test

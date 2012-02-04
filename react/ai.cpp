@@ -140,10 +140,10 @@ db_point_t *ai_point_t::read_one(int argc, char *argv[], char *err, int esz)
     return NULL;
   }
   ai_point_t *ai = new ai_point_t;
-  safe_strcpy(ai->tag, (const char*) argv[0], sizeof(ai->tag));
+  safe_strcpy(ai->tag, argv[0], sizeof(ai->tag));
   //printf("Tag = %s\n", ai->tag);
-  safe_strcpy(ai->description, (const char*) argv[1], sizeof(ai->description));
-  safe_strcpy(ai->eu, (const char*) argv[2], sizeof(ai->eu));
+  safe_strcpy(ai->description, argv[1], sizeof(ai->description));
+  safe_strcpy(ai->eu, argv[2], sizeof(ai->eu));
   ai->driver = atol(argv[3]);
   ai->card = atol(argv[4]);
   ai->channel = atol(argv[5]);

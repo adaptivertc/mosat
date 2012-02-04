@@ -345,6 +345,7 @@ void react_t::read_inputs(void)
     long val = io_driver[drv]->get_count(ch);
     pci_points[i]->update(val);
   }
+
   taa[j].stop();
   for (int i=0; i < num_io_drivers; i++)
   {

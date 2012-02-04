@@ -86,6 +86,7 @@ int rt_modbus_read_input_table(uint8_t *buf, int n)
   int byte, bit;
   uint8_t mask;
 
+  printf("In Read Input Table, n = %d\n", n);
   //trace.print_buf(0, "Read Input Table:\n", buf, 8);
   memcpy(&start_point, buf + 2, 2);
   swap16(&start_point);
@@ -93,8 +94,8 @@ int rt_modbus_read_input_table(uint8_t *buf, int n)
   swap16(&num_points);
   if (num_points > 128)
   {
-    //trace.dprintf(5, "*** Too many points specified!\n");
-    //trace.dprintf(5, "Start %u, Num %u\n", start_point, num_points);
+    printf("*** Too many points specified!\n");
+    printf("Start %u, Num %u\n", start_point, num_points);
     buf[1] = 128 + READ_INPUT_TABLE;
     buf[2] = 4;
     add_CRC(buf, 5, 0xffff);
@@ -110,6 +111,7 @@ int rt_modbus_read_input_table(uint8_t *buf, int n)
 
   /*******************/
   // put call to read actual values here
+  printf("In Read Input Table, byte count = %d, num_points = %d\n", byte_count, num_points);
   p = buf + 3;
   for (i=0; i < byte_count; i++)
   {
@@ -118,8 +120,8 @@ int rt_modbus_read_input_table(uint8_t *buf, int n)
 
   for (i=0; i < num_points; i++)
   {
-    // val = read_di(i + start_point); 
-    val = (i % 2) == 0;
+    val = read_di(i + start_point); 
+    //val = (i % 2) == 0;
     if (val)
     {
       byte = i / 8;
@@ -523,6 +525,7 @@ int rt_modbus_process_request(uint8_t *buf, int n)
       return rt_modbus_read_output_table(buf, n);
     case READ_INPUT_TABLE:
       printf("READ_INPUT_TABLE:\n");
+      printf("Calling rt_modbus_read_input_table()\n");
       return rt_modbus_read_input_table(buf, n);
     case READ_REGISTERS:
       printf("READ_REGISTERS:\n");

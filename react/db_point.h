@@ -212,6 +212,34 @@ public:
   analog_update_point_t(void);
 };
 
+class ai_array_t : public analog_update_point_t
+{
+public:
+  int driver;
+  int card;
+  int start_channel;
+  int end_channel;
+     // All must have the same eu conversion.
+  double eu_hi;
+  double eu_lo;
+  double raw_lo;
+  double raw_hi;
+  double conversion_factor;
+  double zero_cutoff;
+  double *values;
+  int n_values;
+     // The following are used to determine the size of the json buffer.
+  int decimals;
+  double max_value;
+  double min_value;
+public:
+
+  int max_json_buffer_size(void);
+  void fill_json_buffer(char *buffer, int sz);
+
+  static ai_array_t **read(int *cnt, const char *home_dir);
+  static ai_array_t *create_one(int argc, char *argv[], char *err, int esz);
+};
 
 class ai_point_t : public analog_update_point_t, public field_point_t
 {
@@ -241,7 +269,7 @@ public:
   point_type_t point_type(void) {return ANALOG_INPUT;};
   static db_point_t *read_one(int argc, char *argv[], char *err, int esz);
   static ai_point_t *create_one(int argc, char *argv[], char *err, int esz);
-  //static ai_point_t **read(int *cnt, const char *home_dir);
+  //static ai_point_t **read(int *cnt, char *home_dir);
 };
 
 /*#SCRIPT_OBJECT#(ANALOG_OUTPUT)*/
@@ -378,6 +406,7 @@ public:
   int update_time_stamp;
   int last_update_time_stamp;
   //char calc[200];
+  char json_string[100];
   int n_dpoints;
   discrete_point_t *dpoints[30];
 public:
@@ -501,6 +530,7 @@ public:
   bool month_enable;
   FILE *instantaneous_fp;
   FILE *hour_fp;
+  char json_string[100];
   void update(void);
 /*#SCRIPT_FUNCTION#*/
   void start(void);
@@ -544,6 +574,7 @@ public:
   char base_name[50];
   int num_points;
   bool log_hour_totals;
+  char json_string[200];
   discrete_point_t **discrete_points;
   bool *log_rising;
   bool *log_falling;
@@ -551,6 +582,7 @@ public:
   time_t *last_detect;
   int *n_hour_detects;
   int *n_day_detects;
+  rt_bool_ref_t **bool_refs;
 
   FILE *instantaneous_fp;
   FILE *hour_fp;
@@ -558,6 +590,7 @@ public:
   time_t last_log_time;
   void update(void);
   point_type_t point_type(void) {return DATA_POINT;};
+  static bool read_json(char *json_buffer, discrete_logger_t *p);
   static discrete_logger_t **read(int *cnt, const char * home_dir);
   static discrete_logger_t *create_one(int argc, char *argv[], char *err, int esz);
 };
@@ -573,6 +606,7 @@ private:
   bool collecting;
   int count;
   float **data;
+  char json_string[100];
 public:
   void update(void){};
 /*#SCRIPT_FUNCTION#*/
@@ -949,6 +983,22 @@ struct int_ref_t
   int values[10];
   int_t *ip;
   int_ref_t *next;
+};
+
+struct web_scale_t
+{
+  char *str;
+  int size;
+  char *arg_str;
+  char *eu_label;
+  char *label;
+  int text_height;
+  int scale_top;
+  int scale_left;
+  int scale_length; 
+  int scale_min; 
+  int scale_max; 
+  web_scale_t *next;
 };
 
 class web_point_t : public discrete_point_t

@@ -75,6 +75,7 @@ public:
 
 
 int get_delim_args(char *line, char *argv[], char delimeter, int max_args);
+int get_delim_array(char *line, char *argv[], char delimeter, char left_char, char right_char, int max_args);
 
 #endif
 

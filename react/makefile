@@ -28,7 +28,8 @@ DRIVERDIRS2 = drivers/sim_tina drivers/dallas_1wire drivers/sim_ac drivers/proce
 
 CDEBUG =
 
-CFLAGS = -Wall
+CFLAGS = -Wall 
+#CFLAGS = -Wall -Wextra -Wold-style-cast
 #CFLAGS=-Wall -Wstrict-prototypes -O2
 
 LDFLAGS =

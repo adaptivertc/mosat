@@ -13,6 +13,10 @@ The main program is "onboard" to run it type:
 
 onboard <options>
 
+Example use:
+./onboard -s -cp -a 
+then hit 'm' twice to select the line and station to start.
+
 Command line options:
 
   1) '-s' to run the program in simulation mode.

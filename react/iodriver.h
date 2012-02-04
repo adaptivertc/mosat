@@ -57,6 +57,7 @@ public:
   virtual void end_read(void){};
   virtual bool get_di(int channel){return false;};
   virtual double get_ai(int channel){return 0.0;};
+  virtual void get_ai_range(int start, int end, double vals[]){for (int i=0; i < (end - start); i++) vals[i] = 0.0;};
   virtual long get_count(int channel){return 0;};
   virtual void send_do(int channel, bool val){};
   virtual void send_ao(int channel, double val){};

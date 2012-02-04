@@ -469,6 +469,24 @@ void reactmodbus_driver_t::send_do(int ch, bool val)
 
 /***********************************************************************/
 
+void reactmodbus_driver_t::get_ai_range(int start, int end, double vals[])
+{
+  for (int i=0; i < (end - start); i++)
+  {
+    int channel = i + start;
+    if ((channel >= 0) && (channel < REACT_MAX_MOD_AI))
+    {
+      vals[i] = (double) ai_vals[channel];
+    }
+    else
+    {
+      vals[i] = 0.0;
+    }
+  } 
+}
+
+/***********************************************************************/
+
 double reactmodbus_driver_t::get_ai(int channel)
 {
   double read_val;

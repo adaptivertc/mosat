@@ -85,13 +85,14 @@ int rt_set_timeout(int fd, float timeout)
     perror("Can't set terminal parameters ");
     return -1 ;
   }
+  return 0;
 }
 
 /*****************************************************************/
 
 int rt_flush_serial(int fd) 
 {
-  tcflush(fd,TCIOFLUSH);
+  return tcflush(fd,TCIOFLUSH);
 }
 
 /*****************************************************************/

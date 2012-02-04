@@ -7,8 +7,8 @@
 #    High Description (string max 12)
 #    Alarm State (drop down {high, low, none})
 #    Shutdown State  (drop down {high, low, none})
-LO_LEVEL|Nivel Bajo|0|0|0|BELOW|ABOVE|H|N|
-HI_LEVEL|Nivel Alto|0|0|1|BELOW|ABOVE|H|N|
+LO_LEVEL|Nivel Bajo|0|0|0|BELOW|ABOVE|N|N|
+HI_LEVEL|Nivel Alto|0|0|1|BELOW|ABOVE|N|N|
 HI_HI_LEVEL|Nivel Muy Alto|0|0|2|BELOW|ABOVE|H|N|
 ULT_SON_ALM|Nivel Muy Alto|0|0|3|OK|ALARM|H|N|
 CFE_SUPPLY|Falla de alimentacion CFE|0|0|4|ALARM|OK|H|N|

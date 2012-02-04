@@ -1,4 +1,6 @@
-/home/carr/trunk/react/drivers/simple_ascii_new/libsimple_ascii_drv.so|new_simple_ascii||/dev/ttyUSB0|
+sim1|sim|T|/home/carr/trunk/react/drivers/sim_pump/libsimpumpdrv.so|new_simpumpdrv|||
+#modbus1|First Modbus|T|/home/carr/trunk/react/drivers/modbusdrv/libreactmodbusdrv.so|new_reactmodbus||/dev/ttyUSB0:57600:2:2|
+#/home/carr/trunk/react/drivers/simple_ascii_new/libsimple_ascii_drv.so|new_simple_ascii||/dev/ttyUSB0|
 #/home/carr/trunk/react/drivers/sim_pump_low/libsimpumpdrv.so|new_simpumpdrv|||
 #./drivers/modbusdrv/libreactmodbusdrv.so|new_reactmodbus||/dev/ttyUSB0:57600:2:2|
 #./drivers/simple_ascii/libsimple_ascii_drv.so|new_simple_ascii||/dev/ttyUSB1|
