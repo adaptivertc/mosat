@@ -1372,3 +1372,72 @@ react_t::serve_client(), req # 387, error on READ socket 31, n = 2
 react_t::serve_client(), closing socket and exiting thread
 react_t::serve_client(), req # 375, error on READ socket 4, n = 1
 react_t::serve_client(), closing socket and exiting thread
+New connection: 4
+Waiting for a connection!!
+In serve_cl(), sock_fd = 4, n = 3
+In react_t::serve_client(), sock_fd = 4, n = 3
+New connection: 31
+Waiting for a connection!!
+In serve_cl(), sock_fd = 31, n = 4
+In react_t::serve_client(), sock_fd = 31, n = 4
+NOT a database point: pump1_amps
+NOT a database point: pump1_amps
+NOT a database point: pump1_amps
+NOT a database point: pump1_amps
+NOT a database point: pump1_amps
+NOT a database point: pump1_amps
+NOT a database point: pump1_amps
+NOT a database point: pump1_amps
+NOT a database point: pump1_amps
+NOT a database point: pump1_amps
+NOT a database point: pump1_amps
+NOT a database point: pump1_amps
+NOT a database point: pump1_amps
+NOT a database point: pump1_amps
+NOT a database point: pump1_amps
+NOT a database point: pump1_amps
+NOT a database point: pump1_amps
+NOT a database point: pump1_amps
+NOT a database point: pump1_amps
+NOT a database point: pump1_amps
+NOT a database point: pump1_amps
+NOT a database point: pump1_amps
+NOT a database point: pump1_amps
+NOT a database point: pump1_amps
+NOT a database point: pump1_amps
+NOT a database point: pump1_amps
+NOT a database point: pump1_amps
+NOT a database point: pump1_amps
+NOT a database point: pump1_amps
+NOT a database point: pump1_amps
+NOT a database point: pump1_amps
+NOT a database point: pump1_amps
+NOT a database point: pump1_amps
+NOT a database point: pump1_amps
+NOT a database point: pump1_amps
+NOT a database point: pump1_amps
+NOT a database point: pump1_amps
+react_t::serve_client(), req # 79381, error on READ socket 4, n = 3
+react_t::serve_client(), closing socket and exiting thread
+react_t::serve_client(), req # 79422, error on READ socket 31, n = 4
+react_t::serve_client(), closing socket and exiting thread
+New connection: 33
+Waiting for a connection!!
+In serve_cl(), sock_fd = 33, n = 5
+In react_t::serve_client(), sock_fd = 33, n = 5
+New connection: 4
+Waiting for a connection!!
+In serve_cl(), sock_fd = 4, n = 6
+In react_t::serve_client(), sock_fd = 4, n = 6
+file opened
+In wait_conn()
+In react_t::wait_connections()
+Waiting for a connection!!
+New connection: 4
+Waiting for a connection!!
+In serve_cl(), sock_fd = 4, n = 1
+In react_t::serve_client(), sock_fd = 4, n = 1
+New connection: 31
+Waiting for a connection!!
+In serve_cl(), sock_fd = 31, n = 2
+In react_t::serve_client(), sock_fd = 31, n = 2

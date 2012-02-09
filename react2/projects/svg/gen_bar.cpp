@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <math.h>
 
+#include "react_svg.h"
+
 const double minor_length = 3;
 const double major_length = 6;
 //       90.0, 140.0, 380.0, 450.0, 
@@ -20,11 +22,6 @@ const double bar_height = 100;
 const double bar_width = 20; 
 const double a_bar_width = 10; 
 ***/
-
-void gen_imasa_logo(FILE *fp, double x, double y, 
-            double height, double width);
-void calc_scales(double max, double *max_val, double *max_major,  double *major_inc, double *minor_inc, int *n_major, int *n_minor, int *n_dec);
-
 
 //, float fraction_top, float fraction_bottom, float ftop2, float fbot2);
 /**********************************************************/
@@ -458,10 +455,8 @@ void gen_example_script(FILE *fp, double bar_x, double bar_y, double bar_height,
   fprintf(fp, "\n");
   gen_bar_object(fp, bar_x, bar_y, bar_height);
   fprintf(fp, "\n");
-  fprintf(fp, "    function log10(a_val)\n");
-  fprintf(fp, "    {\n");
-  fprintf(fp, "      return MATH.log(a_val) * %lf;\n", log(100)/log10(100));
-  fprintf(fp, "    }\n");
+
+  include_file(fp, "scales.js");
   
   fprintf(fp, "    function onResponse()\n");
   fprintf(fp, "    {\n");
@@ -908,6 +903,8 @@ int main(int argc, char *argv[])
   gen_example_script(fp, bar_x, bar_y, bar_height, scale_max);
 
   gen_bar(fp, bar_x, bar_y, bar_height, "my_rect", scale_max);
+
+  gen_bar(fp, bar_x * 4, bar_y * 2, bar_height / 2, "my_rect2", scale_max);
   //gen_bar(fp, bar_x + 60, bar_y + 10, bar_height - 20, "my_test", scale_max);
 
   fprintf(fp, "  <text id=\"pv_text\" x=\"%lf\" y=\"%lf\" font-family=\"Verdana\" font-size=\"%lf\" fill=\"black\" >360 PSI</text>\n",

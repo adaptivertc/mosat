@@ -2118,7 +2118,7 @@ void react_t::serve_client(serve_thread_data_t *st)
       } 
       else
       {
-        snprintf(buf_out, sizeof(buf_out), "{\"pv\":%lf,\"eulabel\":\"%s\"}", analog_point->get_pv(), analog_point->eu);
+        snprintf(buf_out, sizeof(buf_out), "{\"pv\":%0.*lf,\"eulabel\":\"%s\"}", analog_point->decimal_places, analog_point->get_pv(), analog_point->eu);
         msg = buf_out;
       }
     }
