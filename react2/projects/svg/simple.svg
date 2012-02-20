@@ -22,7 +22,7 @@
       bar_obj = document.getElementById("my_rect");
       text_obj = document.getElementById("my_text");
       pv_text_obj = document.getElementById("pv_text");
-      var interval = setInterval("intervalHandler()", 100);
+      var interval = setInterval("intervalHandler()", 1000);
     };
 
     function do_animation()
@@ -35,7 +35,7 @@
           going_down = false;
           text_obj.textContent="Hit Bottom";
         }
-      } 
+      }  
       else
       {
         bar_fill = bar_fill - 1;
@@ -46,6 +46,8 @@
         }
       }
       bar_obj.setAttribute("height", bar_fill);
+      bar_obj.setAttribute("x", 5+(bar_fill/2));
+      bar_obj.setAttribute("y", 5+(bar_fill/4));
       pv_text_obj.textContent=(bar_fill);
     };
   ]]></script>

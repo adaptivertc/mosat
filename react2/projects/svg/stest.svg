@@ -333,7 +333,7 @@ ScaleInfo.prototype.calc=f_do_calcs;
       var sinfo = new ScaleInfo();
       var tdata = new TicData();
       sinfo.print();
-      sinfo.calc(300,40,320);
+      sinfo.calc(400,45,315);
       sinfo.print();
       sinfo.reset_tic();
       while(sinfo.next_tic(tdata))
@@ -445,6 +445,16 @@ ScaleInfo.prototype.calc=f_do_calcs;
       if(switch_3_on) { level_3_obj.setAttribute("fill", "yellow"); }
       else { level_3_obj.setAttribute("fill", "gray"); }
     };
+
+    var functions = [do_animate, load, create_text];
+
+    function doit()
+    {
+      for(var i=0; i < functions.length; i++)
+      {
+        functions[i].update(10);
+      }
+    }
 
   ]]></script>
 

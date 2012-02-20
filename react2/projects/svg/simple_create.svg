@@ -24,6 +24,7 @@
       text_obj = document.getElementById("my_text");
       pv_text_obj = document.getElementById("pv_text");
       bar_obj = document.createElementNS(svgNS, "rect");
+      document.documentElement.appendChild(bar_obj);
       bar_obj.setAttribute("x", 50);
       bar_obj.setAttribute("y", 30);
       bar_obj.setAttribute("width", 20);
@@ -32,7 +33,6 @@
       bar_obj.setAttribute("stroke-width", 1);
       bar_obj.setAttribute("fill", "blue");
       bar_obj.setAttribute("transform", "rotate(180 60 80)");
-      document.documentElement.appendChild(bar_obj);
   //<rect fill="blue" id="my_rect" x="20" y="10" width="20" height="80" stroke="black" stroke-width="1"/>
 
       var interval = setInterval("intervalHandler()", 100);
