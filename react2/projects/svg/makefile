@@ -14,8 +14,8 @@ gen_bar: gen_bar.cpp gen_logo.cpp scales.cpp include_file.cpp
 gen_tank: gen_tank.cpp
 	g++ -g -Wall -o gen_tank gen_tank.cpp
 
-gen_display:  gen_display.cpp gen_display.h
-	g++ -Wall gen_display.cpp -ldl -rdynamic -o gen_display $(RTCOMMON)
+gen_display:  gen_display.cpp include_file.cpp gen_display.h react_svg.h
+	g++ -Wall gen_display.cpp include_file.cpp -ldl -rdynamic -o gen_display $(RTCOMMON)
 
 simple_rect.so: simple_rect.cpp gen_display.h
 	g++ -Wall -shared -o simple_rect.so simple_rect.cpp
@@ -25,9 +25,8 @@ simple_panel.so: simple_panel.cpp gen_display.h
 	g++ -Wall -shared -o simple_panel.so simple_panel.cpp
 	cp simple_panel.so plugins/
 
-dtest.svg: display.txt gen_display gen_svg simple_rect.so simple_panel.so 
+dtest.svg: display.txt gen_display simple_rect.so simple_panel.so 
 	./gen_display plugins/
-	./gen_svg
 
 install: 
 	sudo cp ai.svg /var/www

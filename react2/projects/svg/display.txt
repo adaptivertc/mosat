@@ -2,6 +2,6 @@ simple_panel|level|lime|gray|50|30|12|
 simple_rect|level|blue|10|20|100|
 simple_rect|pump1_amps|red|80|10|110|
 simple_panel|level|deepskyblue|gray|250|70|12|
-simple_rect|level|green|110|30|50|
+simple_rect|level|chartreuse|110|30|50|
 simple_panel|level|yellow|gray|50|70|12|
 simple_rect|level|hotpink|150|50|50|

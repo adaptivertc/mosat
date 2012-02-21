@@ -4,6 +4,7 @@
 
 void include_file(FILE *fp, const char *fname)
 {
+  printf("Including file: %s\n", fname);
   FILE *fp_include = fopen(fname, "r");
   if (fp_include == NULL)
   {
@@ -12,9 +13,9 @@ void include_file(FILE *fp, const char *fname)
     return;
   }
   char line[200];
-  while (NULL != fgets(line, sizeof(line), fp))
+  while (NULL != fgets(line, sizeof(line), fp_include))
   {
-    fprintf(fp_include, "%s", line);
+    fprintf(fp, "%s", line);
   }
   fclose(fp_include);
 }
