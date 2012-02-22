@@ -21,6 +21,10 @@ simple_rect.so: simple_rect.cpp gen_display.h
 	g++ -Wall -shared -o simple_rect.so simple_rect.cpp
 	cp simple_rect.so plugins/
 
+simple_pipe.so: simple_pipe.cpp gen_display.h
+	g++ -Wall -shared -o simple_pipe.so simple_pipe.cpp
+	cp simple_pipe.so plugins/
+
 simple_panel.so: simple_panel.cpp gen_display.h
 	g++ -Wall -shared -o simple_panel.so simple_panel.cpp
 	cp simple_panel.so plugins/
@@ -33,7 +37,7 @@ insert_svg.so: insert_svg.cpp gen_display.h
 	g++ -Wall -shared -o insert_svg.so insert_svg.cpp
 	cp insert_svg.so plugins/
 
-dtest.svg: display.txt gen_display simple_rect.so simple_panel.so only_text.so insert_svg.so 
+dtest.svg: display.txt gen_display simple_rect.so simple_panel.so only_text.so insert_svg.so simple_pipe.so 
 	./gen_display plugins/
 
 install: 

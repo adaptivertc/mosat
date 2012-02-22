@@ -48,7 +48,7 @@ void simple_panel_t::generate(FILE *svg_fp, FILE *js_fp, int argc, char **argv)
   fprintf(svg_fp, "<!--  END insert for simple_panel (%03d) -->\n", n_instance);
   fprintf(js_fp, "// --  END insert for simple_panel (%03d)\n", n_instance);
 
-  add_library("simple_panel.js");
+  add_js_library("simple_panel.js");
   add_update_object(tag, js_object_name);
 
   n_instance++;

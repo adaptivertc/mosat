@@ -17,26 +17,49 @@ gen_object_base_t *get_plugin(const char *type);
 static int n_objs = 0;
 static const char *js_objs[200];
 static const char *tags[200];
-static int n_libs = 0;
-static const char *lib_files[200];
+static int n_js_libs = 0;
+static const char *js_lib_files[200];
+static int n_svg_libs = 0;
+static const char *svg_lib_files[200];
 
-void add_library(const char *file_name)
+void add_js_library(const char *file_name)
 {
-  for (int i=0; i < n_libs; i++)
+  for (int i=0; i < n_js_libs; i++)
   {
-    if (0 == strcmp(lib_files[i], file_name))
+    if (0 == strcmp(js_lib_files[i], file_name))
     {
       return;
     }
   }
-  if (n_libs >= 200)
+  if (n_js_libs >= 200)
   {
-    printf("Max libraries exceeded, exiting . . . \n");
+    printf("Max javascript libraries exceeded, exiting . . . \n");
     exit(-1);
   }
-  lib_files[n_libs] = strdup(file_name);
-  n_libs++;
+  js_lib_files[n_js_libs] = strdup(file_name);
+  n_js_libs++;
 }
+
+/*********************************/
+
+void add_svg_library(const char *file_name)
+{
+  for (int i=0; i < n_svg_libs; i++)
+  {
+    if (0 == strcmp(svg_lib_files[i], file_name))
+    {
+      return;
+    }
+  }
+  if (n_svg_libs >= 200)
+  {
+    printf("Max SVG libraries exceeded, exiting . . . \n");
+    exit(-1);
+  }
+  svg_lib_files[n_svg_libs] = strdup(file_name);
+  n_svg_libs++;
+}
+
 
 /*********************************/
 
@@ -236,18 +259,33 @@ void gen_final_file(const char *fname)
     perror(fname);
     exit(-1);
   }
+
   gen_svg_header(fp, "zzTesting", 0, 0, 300, 150);
-  include_file(fp, "_tmp_display.svg");
-  fprintf(fp, "<script type=\"text/ecmascript\"><![CDATA[\n");
-  for (int i=0; i < n_libs; i++)
+
+  for (int i=0; i < n_svg_libs; i++)
   {
-    fprintf(fp, "// -- START insert js library: %s\n", lib_files[i]);
-    include_file(fp, lib_files[i]);
-    fprintf(fp, "// -- END insert js library: %s\n", lib_files[i]);
+    fprintf(fp, "<!-- START insert svg library: %s-->\n", svg_lib_files[i]);
+    include_file(fp, svg_lib_files[i]);
+    fprintf(fp, "<!-- END insert svg library: %s\n-->", svg_lib_files[i]);
   }
+
+  include_file(fp, "_tmp_display.svg");
+
+  fprintf(fp, "<script type=\"text/ecmascript\"><![CDATA[\n");
+
+  for (int i=0; i < n_js_libs; i++)
+  {
+    fprintf(fp, "// -- START insert js library: %s\n", js_lib_files[i]);
+    include_file(fp, js_lib_files[i]);
+    fprintf(fp, "// -- END insert js library: %s\n", js_lib_files[i]);
+  }
+
   include_file(fp, "_tmp_display.js");
+
   fprintf(fp, "]]></script>\n");
+
   fprintf(fp, "</svg>\n"); 
+
   fclose(fp);
 }
 
