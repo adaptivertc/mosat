@@ -4,7 +4,7 @@
 
 void include_file(FILE *fp, const char *fname)
 {
-  printf("Including file: %s\n", fname);
+  printf("//Including file: %s\n", fname);
   FILE *fp_include = fopen(fname, "r");
   if (fp_include == NULL)
   {

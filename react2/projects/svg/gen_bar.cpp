@@ -452,6 +452,7 @@ void gen_example_script(FILE *fp, double bar_x, double bar_y, double bar_height,
   fprintf(fp, "    var tcount=0;\n");
   fprintf(fp, "    var xReq;\n");
   fprintf(fp, "    var hrf;\n");
+  fprintf(fp, "    var eu_label = \"undef\";\n");
   fprintf(fp, "\n");
   gen_bar_object(fp, bar_x, bar_y, bar_height);
   fprintf(fp, "\n");
@@ -462,9 +463,10 @@ void gen_example_script(FILE *fp, double bar_x, double bar_y, double bar_height,
   fprintf(fp, "    {\n");
   fprintf(fp, "      if (xReq.readyState != 4)  { return; }\n");
   fprintf(fp, "      val = JSON.parse(xReq.responseText);\n");
-  fprintf(fp, "      pv_text_obj.textContent=(val.pv + \" \" + val.eulabel);\n");
-  fprintf(fp, "      bar_object_1.set_pv(val.pv)\n");
-  fprintf(fp, "      val.pv = val.pv * %lf;\n", bar_height / scale_max);
+  fprintf(fp, "      pv_text_obj.textContent=(val[0] + \" \" + eu_label);\n");
+  //fprintf(fp, "      pv_text_obj.textContent=(val[0]);\n");
+  fprintf(fp, "      bar_object_1.set_pv(val[0]);\n");
+  //fprintf(fp, "      val.pv = val.pv * %lf;\n", bar_height / scale_max);
   fprintf(fp, "      xReq.abort(); <!-- set the ready state back to 0 --> \n");
   fprintf(fp, "      //bar_obj.setAttribute(\"height\", val.pv);\n");
   fprintf(fp, "      //bar_obj.setAttribute(\"y\", %lf - val.pv);\n", bar_height + bar_y);
@@ -487,6 +489,8 @@ void gen_example_script(FILE *fp, double bar_x, double bar_y, double bar_height,
   fprintf(fp, "      bar_object_1.set_limits(val.eu_lo, val.eu_hi);\n");
   fprintf(fp, "      bar_object_1.set_alarms(val.hi_alarm, val.hi_caution, val.lo_caution, val.lo_alarm, val.hi_alarm_enable,\n");
   fprintf(fp, "                              val.hi_caution_enable, val.lo_caution_enable, val.lo_alarm_enable);\n");
+
+  fprintf(fp, "      eu_label = val.eu;\n");
   fprintf(fp, "      text_obj = document.getElementById(\"tag_text\");\n");
   fprintf(fp, "      text_obj.textContent=val.tag;\n");
   fprintf(fp, "      text_obj = document.getElementById(\"description_text\");\n");
@@ -904,7 +908,7 @@ int main(int argc, char *argv[])
 
   gen_bar(fp, bar_x, bar_y, bar_height, "my_rect", scale_max);
 
-  gen_bar(fp, bar_x * 4, bar_y * 2, bar_height / 2, "my_rect2", scale_max);
+  //gen_bar(fp, bar_x * 4, bar_y * 2, bar_height / 2, "my_rect2", scale_max);
   //gen_bar(fp, bar_x + 60, bar_y + 10, bar_height - 20, "my_test", scale_max);
 
   fprintf(fp, "  <text id=\"pv_text\" x=\"%lf\" y=\"%lf\" font-family=\"Verdana\" font-size=\"%lf\" fill=\"black\" >360 PSI</text>\n",

@@ -43,7 +43,8 @@ void add_update_object(const char *the_tag, const char *the_js_object)
 
 void gen_calls(FILE *js_fp)
 {
-  fprintf(js_fp, "var react_update_hrf = \"http://\" + location.hostname + \"/helloworld/tag?");
+  fprintf(js_fp, 
+    "var react_update_hrf = \"http://\" + location.hostname + \"/helloworld/tag?");
   for (int i=0; i < n_objs; i++)
   {
     fprintf(js_fp, "%s%s", i==0?"":"+", tags[i]);
@@ -57,18 +58,45 @@ void gen_calls(FILE *js_fp)
   }
   fprintf(js_fp, ");\n"); 
 
+  fprintf(js_fp, "var update_tags = new Array(");
+  for (int i=0; i < n_objs; i++)
+  {
+    fprintf(js_fp, "%s\"%s\"", i==0?"":",", tags[i]);
+  }
+  fprintf(js_fp, ");\n"); 
+
+  fprintf(js_fp, 
+     "var react_config_hrf = \"http://\" + location.hostname + \"/helloworld/config?\";\n");
+  fprintf(js_fp, "var update_xReq;\n");
+  fprintf(js_fp, "var config_xReq;\n");
+  fprintf(js_fp, "var n_cfg = 0;\n");
+
+  fprintf(js_fp, "function on_config_response()\n");
+  fprintf(js_fp, "{\n");
+  fprintf(js_fp, "  if (config_xReq.readyState != 4)  { return; }\n");
+  fprintf(js_fp, "  var val = JSON.parse(config_xReq.responseText);\n");
+  fprintf(js_fp, "  console.log(\"config response: \" + config_xReq.responseText);\n");
+  fprintf(js_fp, "  update_objs[n_cfg].init(val);\n");
+  
+  fprintf(js_fp, "  n_cfg++\n");
+  fprintf(js_fp, "  if (n_cfg >= update_tags.length) { return; }\n"); 
+  fprintf(js_fp, 
+     "  config_xReq.open(\"GET\", react_config_hrf + update_tags[n_cfg], true);\n");
+  fprintf(js_fp, "  config_xReq.send(null);\n");
+  fprintf(js_fp, "}\n");
+
 
   fprintf(js_fp, "var sim_val = 20;\n");
   fprintf(js_fp, "function on_update_response()\n");
   fprintf(js_fp, "{\n");
-  fprintf(js_fp, "  if (update_xReq.readyState != 4)  { return; }\n");
   fprintf(js_fp, "  var val = JSON.parse(update_xReq.responseText);\n");
   fprintf(js_fp, "  console.log(\"response: \" + update_xReq.responseText);\n");
   fprintf(js_fp, "  for (var i=0; i < update_objs.length; i++)\n");
   fprintf(js_fp, "  {\n");
-  fprintf(js_fp, "    //update_objs[i].update(val[i]);\n");
-  fprintf(js_fp, "    console.log(\"update_objs[\" + i + \"] = \" + update_objs[i]);\n");
-  fprintf(js_fp, "    update_objs[i].update(sim_val + (i * 5));\n");
+  fprintf(js_fp, "    //console.log(\"update_objs[\" + i + \"] = \" + update_objs[i] + \"sim_val: \" + sim_val);\n");
+  fprintf(js_fp, "    //update_objs[i].update(sim_val + (i * 5));\n");
+  fprintf(js_fp, "    console.log(\"val: \" + val[i]);\n");
+  fprintf(js_fp, "    update_objs[i].update(val[i]);\n");
   fprintf(js_fp, "    sim_val++;\n");
   fprintf(js_fp, "    if (sim_val==100)\n");
   fprintf(js_fp, "    {\n");
@@ -92,7 +120,14 @@ void gen_calls(FILE *js_fp)
   fprintf(js_fp, "{\n");
   fprintf(js_fp, "  update_xReq = new XMLHttpRequest();\n");
   fprintf(js_fp, "  update_xReq.onreadystatechange = on_update_response;\n");
-  fprintf(js_fp, "  var interval = setInterval(\"intervalHandler()\", 250);\n");
+  fprintf(js_fp, "  if (update_tags.length > 0)\n"); 
+  fprintf(js_fp, "  {\n");
+  fprintf(js_fp, "    config_xReq = new XMLHttpRequest();\n");
+  fprintf(js_fp, "    config_xReq.onreadystatechange = on_config_response;\n");
+  fprintf(js_fp, "    config_xReq.open(\"GET\", react_config_hrf + update_tags[0], true);\n");
+  fprintf(js_fp, "    config_xReq.send(null);\n");
+  fprintf(js_fp, "  }\n");
+  fprintf(js_fp, "  var interval = setInterval(\"intervalHandler()\", 1000);\n");
   fprintf(js_fp, "};\n");
   fprintf(js_fp, "// New generator!!\n");
   fprintf(js_fp, "\n");
@@ -188,7 +223,7 @@ void gen_final_file(const char *fname)
     perror(fname);
     exit(-1);
   }
-  gen_svg_header(fp, "xxTesting", 0, 0, 300, 150);
+  gen_svg_header(fp, "zzTesting", 0, 0, 300, 150);
   include_file(fp, "_tmp_display.svg");
   fprintf(fp, "<script type=\"text/ecmascript\"><![CDATA[\n");
   for (int i=0; i < n_libs; i++)
@@ -243,8 +278,11 @@ int main(int argc, char *argv[])
     perror(dir_name);
     exit(0);
   }
+  struct dirent entry;
 
-  for (dent = readdir(dir); dent != NULL; dent = readdir(dir))
+//dent = readdir(dir);  old call, NOT thread safe!!
+
+  for (readdir_r(dir, &entry, &dent); dent != NULL; readdir_r(dir, &entry, &dent))
   {
     if (dent->d_type != DT_REG)
     {
