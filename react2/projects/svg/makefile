@@ -25,7 +25,15 @@ simple_panel.so: simple_panel.cpp gen_display.h
 	g++ -Wall -shared -o simple_panel.so simple_panel.cpp
 	cp simple_panel.so plugins/
 
-dtest.svg: display.txt gen_display simple_rect.so simple_panel.so 
+only_text.so: only_text.cpp gen_display.h
+	g++ -Wall -shared -o only_text.so only_text.cpp
+	cp only_text.so plugins/
+
+insert_svg.so: insert_svg.cpp gen_display.h
+	g++ -Wall -shared -o insert_svg.so insert_svg.cpp
+	cp insert_svg.so plugins/
+
+dtest.svg: display.txt gen_display simple_rect.so simple_panel.so only_text.so insert_svg.so 
 	./gen_display plugins/
 
 install: 
