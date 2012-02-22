@@ -17,14 +17,18 @@ function simple_rect_init_f(val)
 {
   this.max=val.eu_hi;
   this.eu_label=val.eu;
+  console.log("max: " + this.max);
+  console.log("eu_label: " + this.eu_label);
 }
 simple_rect_t.prototype.init=simple_rect_init_f;
 
 function simple_rect_update_f(pv)
 {
-  //console.log("pv: " + pv + ", rect_obj = " + this.rect_obj);
+  console.log("pv: " + pv + ", rect_obj = " + this.rect_obj);
   this.text_obj.textContent = pv + " " + this.eu_label;
   if (pv < 0.0) {pv = 1.0;}
+  console.log("max: " + this.max);
+  console.log("length: " + this.length);
   this.rect_obj.setAttribute("height", pv * (this.length / this.max));
 }
 simple_rect_t.prototype.update=simple_rect_update_f;

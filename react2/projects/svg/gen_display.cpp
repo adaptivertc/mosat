@@ -127,7 +127,7 @@ void gen_calls(FILE *js_fp)
   fprintf(js_fp, "    config_xReq.open(\"GET\", react_config_hrf + update_tags[0], true);\n");
   fprintf(js_fp, "    config_xReq.send(null);\n");
   fprintf(js_fp, "  }\n");
-  fprintf(js_fp, "  var interval = setInterval(\"intervalHandler()\", 1000);\n");
+  fprintf(js_fp, "  var interval = setInterval(\"intervalHandler()\", 500);\n");
   fprintf(js_fp, "};\n");
   fprintf(js_fp, "// New generator!!\n");
   fprintf(js_fp, "\n");
