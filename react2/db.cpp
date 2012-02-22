@@ -2048,6 +2048,7 @@ void react_t::serve_client(serve_thread_data_t *st)
   int n_req = 0;
   analog_point_t *analog_point = NULL;
   db_point_t *db_point = NULL;
+  delim_separator_t ds_tag(100, 50, '+');
   while (true)
   {
     const char *msg = "React responded!!!!";
@@ -2090,37 +2091,32 @@ void react_t::serve_client(serve_thread_data_t *st)
     }
     else if (0 == strncasecmp(buf, "tag", 3))
     {
-      char *tag = buf + 4;
-      ltrim(tag); 
-      rtrim(tag); 
+      char *tag_string = buf + 4;
+      ltrim(tag_string); 
+      rtrim(tag_string); 
+      char **tag_argv;
+      int tag_argc;
+      tag_argv = ds_tag.separate(&tag_argc, tag_string);
 
-
-      analog_point = NULL;
-      db_point = db->get_db_point(tag);
-
-      if (db_point == NULL)
+      snprintf(buf_out, sizeof(buf_out), "[");
+      for (int i=0; i < tag_argc; i++)
       {
-        fprintf(sock_log_fp, "NOT a database point: %s\n", tag);
-      }
-      else
-      {
-        analog_point = dynamic_cast <analog_point_t *> (db_point);
-        if (analog_point == NULL)
+        if (i != 0) safe_strcat(buf_out, ",", sizeof(buf_out));
+        db_point = db->get_db_point(tag_argv[i]);
+        if (db_point == NULL)
         {
-          fprintf(sock_log_fp, "NOT a analog point: %s\n", tag);
+          safe_strcat(buf_out, "0", sizeof(buf_out));
+          fprintf(sock_log_fp, "Tag not found: %s\n", tag_argv[i]);
         }
-      }
-
-      if (analog_point == NULL)
-      {
-        snprintf(buf_out, sizeof(buf_out), "{\"pv\":99.99,\"eulabel\":\"not found: %s\"}", tag);
-        msg = buf_out;
+        else
+        {
+          char val_buf[30];
+          db_point->get_pv_json(val_buf, sizeof(val_buf));
+          safe_strcat(buf_out, val_buf, sizeof(buf_out));
+        }
       } 
-      else
-      {
-        snprintf(buf_out, sizeof(buf_out), "{\"pv\":%0.*lf,\"eulabel\":\"%s\"}", analog_point->decimal_places, analog_point->get_pv(), analog_point->eu);
-        msg = buf_out;
-      }
+      safe_strcat(buf_out, "]", sizeof(buf_out));
+      msg = buf_out;
     }
     else
     {

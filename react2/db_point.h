@@ -116,6 +116,7 @@ public:
   virtual int get_channel(void) {return -1;};
   virtual const char *get_faceplate(void) {return "<br><h1>NO FACEPLATE FOR THIS POINT TYPE</h1><br>\n";};
   virtual const char *get_config_json(void) {return "{\"error\":true,\"error_string\":\"No config data defined for this point type\"}";};
+  virtual void get_pv_json(char *buf, int sz) {snprintf(buf, sz, "0");};
   virtual const char *get_tag(void) = 0;
   virtual const char *get_description(void) = 0;
   virtual void exit_cleanup(void) {};
@@ -196,6 +197,8 @@ public:
   virtual  pv_type_t get_ref_type(const char *expr, char *err, int sz) 
           {return ANALOG_VALUE;};
   pv_type_t pv_type(void) {printf("pv type is ANALOG_VALUE\n"); return ANALOG_VALUE;};
+  void get_pv_json(char *buf, int sz)
+        {snprintf(buf, sz, "%0.*lf", this->decimal_places, this->pv);};
 };
 
 class analog_update_point_t;
@@ -366,6 +369,8 @@ public:
   virtual  pv_type_t get_ref_type(const char *expr, char *err, int sz) 
           {return DISCRETE_VALUE;};
   pv_type_t pv_type(void) {printf("pv type is DISCRETE_VALUE\n"); return DISCRETE_VALUE;};
+  void get_pv_json(char *buf, int sz)
+        {snprintf(buf, sz, "%s", this->pv?"true":"false");};
 };
 
 class integer_point_t : public db_point_t

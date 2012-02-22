@@ -278,7 +278,7 @@ static int helloworld_handler(request_rec* r)
   ap_rprintf(r, "n_calls: %d<br>\n", n_calls);
   ap_rprintf(r, "PID = %d, posix tid = %lu, lwp/spid = %d<br>\n", getpid(), self, lwp);
 
-  ap_rprintf(r, "<h1>Aqu&iacute estamos en el MTI jugando!!!!</h1><br>\n");
+  ap_rprintf(r, "<h1>Aqu&iacute estamos en el MTI jugando 14-02-2012!!!!</h1><br>\n");
   ap_rprintf(r, "<br>\n");
   
 
