@@ -138,6 +138,13 @@ void discrete_update_point_t::check_alarms(void)
 }
 
 /*************************************************************************/
+discrete_point_t::discrete_point_t(void)
+{
+  point_alarm_disable = false;
+  json_str = NULL;
+}
+
+/*************************************************************************/
 
 discrete_update_point_t::discrete_update_point_t(void)
 {
@@ -145,7 +152,24 @@ discrete_update_point_t::discrete_update_point_t(void)
 
   shutdown_state = DISCRETE_NONE;
   alarm_state = DISCRETE_NONE;
-  point_alarm_disable = false;
+}
+
+/*************************************************************************/
+
+const char *discrete_point_t::get_config_json(void)
+{
+ int asprintf(char **strp, const char *fmt, ...);
+
+  if (json_str == NULL)
+  {
+     asprintf(&json_str, "{\"tag\":\"%s\",\"description\":\"%s\", \"lo_desc\":\"%s\",\"hi_desc\":\"%s\"}",
+         this->tag,
+         this->description,
+         this->lo_desc,
+         this->hi_desc
+      );
+  }
+  return json_str;
 }
 
 /*************************************************************************/

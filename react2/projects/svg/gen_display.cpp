@@ -89,34 +89,38 @@ void gen_calls(FILE *js_fp)
   fprintf(js_fp, "function on_config_response()\n");
   fprintf(js_fp, "{\n");
   fprintf(js_fp, "  if (config_xReq.readyState != 4)  { return; }\n");
-  fprintf(js_fp, "  var val = JSON.parse(config_xReq.responseText);\n");
   fprintf(js_fp, "  console.log(\"config response: \" + config_xReq.responseText);\n");
+  fprintf(js_fp, "  var val = JSON.parse(config_xReq.responseText);\n");
   fprintf(js_fp, "  update_objs[n_cfg].init(val);\n");
   
-  fprintf(js_fp, "  n_cfg++\n");
-  fprintf(js_fp, "  if (n_cfg >= update_tags.length) { return; }\n"); 
+  fprintf(js_fp, "  n_cfg++;\n");
+  fprintf(js_fp, "  if (n_cfg >= update_tags.length) \n");
+  fprintf(js_fp, "  {\n");
+  fprintf(js_fp, "    config_xReq.abort();\n");
+  fprintf(js_fp, "    return;\n"); 
+  fprintf(js_fp, "  }\n"); 
   fprintf(js_fp, 
      "  config_xReq.open(\"GET\", react_config_hrf + update_tags[n_cfg], true);\n");
   fprintf(js_fp, "  config_xReq.send(null);\n");
   fprintf(js_fp, "}\n");
 
 
-  fprintf(js_fp, "var sim_val = 20;\n");
+  //fprintf(js_fp, "var sim_val = 20;\n");
   fprintf(js_fp, "function on_update_response()\n");
   fprintf(js_fp, "{\n");
   fprintf(js_fp, "  var val = JSON.parse(update_xReq.responseText);\n");
   fprintf(js_fp, "  console.log(\"response: \" + update_xReq.responseText);\n");
   fprintf(js_fp, "  for (var i=0; i < update_objs.length; i++)\n");
   fprintf(js_fp, "  {\n");
-  fprintf(js_fp, "    //console.log(\"update_objs[\" + i + \"] = \" + update_objs[i] + \"sim_val: \" + sim_val);\n");
-  fprintf(js_fp, "    //update_objs[i].update(sim_val + (i * 5));\n");
+  //fprintf(js_fp, "    //console.log(\"update_objs[\" + i + \"] = \" + update_objs[i] + \"sim_val: \" + sim_val);\n");
+  //fprintf(js_fp, "    //update_objs[i].update(sim_val + (i * 5));\n");
   fprintf(js_fp, "    console.log(\"val: \" + val[i]);\n");
   fprintf(js_fp, "    update_objs[i].update(val[i]);\n");
-  fprintf(js_fp, "    sim_val++;\n");
-  fprintf(js_fp, "    if (sim_val==100)\n");
-  fprintf(js_fp, "    {\n");
-  fprintf(js_fp, "      sim_val=0\n");
-  fprintf(js_fp, "    }\n");
+  //fprintf(js_fp, "    sim_val++;\n");
+  //fprintf(js_fp, "    if (sim_val==100)\n");
+  //fprintf(js_fp, "    {\n");
+  //fprintf(js_fp, "      sim_val=0\n");
+  //fprintf(js_fp, "    }\n");
            
   fprintf(js_fp, "  }\n");
   fprintf(js_fp, "  update_xReq.abort(); // set the ready state back to 0\n");
@@ -142,7 +146,7 @@ void gen_calls(FILE *js_fp)
   fprintf(js_fp, "    config_xReq.open(\"GET\", react_config_hrf + update_tags[0], true);\n");
   fprintf(js_fp, "    config_xReq.send(null);\n");
   fprintf(js_fp, "  }\n");
-  fprintf(js_fp, "  var interval = setInterval(\"intervalHandler()\", 500);\n");
+  fprintf(js_fp, "  var interval = setInterval(\"intervalHandler()\", 2000);\n");
   fprintf(js_fp, "};\n");
   fprintf(js_fp, "\n");
   fprintf(js_fp, "// -- END insert AJAX animation code --\n");

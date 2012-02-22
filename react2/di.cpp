@@ -60,7 +60,44 @@ void di_point_t::init_values(void)
 {
   pv_string = lo_desc;
   pv = false;
+  json_str = NULL;
 }
+
+/**********************************************************************/
+
+const char *di_point_t::get_config_json(void)
+{
+ int asprintf(char **strp, const char *fmt, ...);
+
+  if (json_str == NULL)
+  {
+     asprintf(&json_str, "{\"tag\":\"%s\",\"description\":\"%s\",\"driver\":%d,\"card\":%d,\"channel\":%d, \"lo_desc\":\"%s\",\"hi_desc\":\"%s\", \"alarm_state\":\"%s\",\"shutdown_state\":\"%s\"}",
+         this->tag,
+         this->description,
+         this->driver,
+         this->card,
+         this->channel,
+         this->lo_desc,
+         this->hi_desc,
+         "NONE",//this->alarm_state,
+         "NONE"//this->shutdown_state,
+      );
+  }
+  return json_str;
+}
+/**
+string|Tag|tag|25|
+string|Description|description|50|
+int|Driver|driver|25|
+int|Card|card|25|
+int|Channel|channel|
+string|Low Description|lo_desc|12|
+string|High Description|hi_desc|12|
+Separator|Alarms|
+dropdown|Alarm State|alarm_state|High,Low,None|H,L,N|
+dropdown|Shutdown State|shutdown_state|High,Low,None|H,L,N|
+**/
+
 
 /*********************************************************************/
 

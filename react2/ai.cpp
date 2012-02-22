@@ -172,10 +172,10 @@ const char *ai_point_t::get_config_json(void)
          this->lo_caution_enable?"true":"false",
          this->hi_caution_enable?"true":"false",
          this->hi_alarm_enable?"true":"false"
+      );  
            /**
 Tag: LevelDescription: Level of first tankEU Label: cm.Driver: 1Card: 0Channel: 231EU Low: 0EU High: 600Raw Low: 0Raw High: 10Decimal Places: 0Zero Cutoff: 2
 ***/
-      );  
   }
   return json_str;
 }

@@ -164,6 +164,8 @@ analog_update_point_t::analog_update_point_t(void)
   lo_alarm_shutdown = false;
   pv = 0;
   point_alarm_disable = false;
+  json_str = NULL;
+  zero_cutoff = 0;
 }
 
 /*********************************************************************/
@@ -303,6 +305,24 @@ void analog_point_t::display_pv(void)
   }
     ****/
 }
+
+const char *analog_point_t::get_config_json(void)
+{
+ int asprintf(char **strp, const char *fmt, ...);
+
+  if (json_str == NULL)
+  {
+     asprintf(&json_str, "{\"tag\":\"%s\",\"description\":\"%s\",\"eu\":\"%s\",decimal_places\":%d,\"zero_cutoff\":%lf}",
+         this->tag,
+         this->description,
+         this->eu,
+         this->decimal_places,
+         this->zero_cutoff
+       );
+  }
+  return json_str;
+}
+
 
 /*************************************************************************/
 

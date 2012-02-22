@@ -142,6 +142,7 @@ public:
   int display_x, display_y, display_width;
   bool display_is_on;
   bool point_alarm_disable;
+  char *json_str;
 
   void enable_display(int x, int y);
   void disable_display(void);
@@ -180,6 +181,7 @@ public:
   char faceplate_str[100];
   int round;
   int decimal_places;
+  double zero_cutoff;
   analog_point_t(void);
   void set_format(void);
   inline double get_pv(void) {return pv;};
@@ -199,6 +201,7 @@ public:
   pv_type_t pv_type(void) {printf("pv type is ANALOG_VALUE\n"); return ANALOG_VALUE;};
   void get_pv_json(char *buf, int sz)
         {snprintf(buf, sz, "%0.*lf", this->decimal_places, this->pv);};
+  virtual const char *get_config_json(void); 
 };
 
 class analog_update_point_t;
@@ -234,7 +237,6 @@ public:
   double raw_lo;
   double raw_hi;
   double conversion_factor;
-  double zero_cutoff;
   double *values;
   int n_values;
      // The following are used to determine the size of the json buffer.
@@ -264,7 +266,6 @@ public:
   double raw_hi;
   double conversion_factor;
   double zero_cutoff;
-  char *json_str;
 public:
   void update_analog(double v) {this->update(v);};
   double get_analog(void) {return this->pv;};
@@ -359,6 +360,7 @@ public:
   void display_pv(void);
   inline bool get_pv(void) {return pv;};
   bool *pv_ptr(void) {return &pv;};
+  discrete_point_t(void);
   virtual const char *get_faceplate(void) {snprintf(faceplate_str, sizeof(faceplate_str), "<br><h1>%s: %s</h1><br>\n", tag, pv_string); return faceplate_str;};
   rt_double_ref_t *get_double_ref(const char *expr, char *err, int sz)
           {snprintf(err, sz, "No double values"); return NULL;};
@@ -371,6 +373,7 @@ public:
   pv_type_t pv_type(void) {printf("pv type is DISCRETE_VALUE\n"); return DISCRETE_VALUE;};
   void get_pv_json(char *buf, int sz)
         {snprintf(buf, sz, "%s", this->pv?"true":"false");};
+  virtual const char *get_config_json(void); 
 };
 
 class integer_point_t : public db_point_t
@@ -381,6 +384,7 @@ public:
   //void display_pv(void);
   inline int get_pv(void) {return pv;};
   long *pv_ptr(void) {return &pv;};
+  integer_point_t(void);
   rt_double_ref_t *get_double_ref(const char *expr, char *err, int sz)
           {snprintf(err, sz, "No double values"); return NULL;};
   rt_bool_ref_t *get_bool_ref(const char *expr, char *err, int sz)
@@ -390,6 +394,9 @@ public:
   virtual  pv_type_t get_ref_type(const char *expr, char *err, int sz) 
     {return INTEGER_VALUE;};
   pv_type_t pv_type(void) {return INTEGER_VALUE;};
+  void get_pv_json(char *buf, int sz)
+        {snprintf(buf, sz, "%ld", this->pv);};
+  virtual const char *get_config_json(void); 
 };
 
 
@@ -409,6 +416,7 @@ public:
   int update_time_stamp;
   int last_update_time_stamp;
 public:
+  const char *get_config_json(void); 
   virtual int get_driver(void) {return this->driver;};
   virtual int get_card(void) {return this->card;};
   virtual int get_channel(void) {return this->channel;};
