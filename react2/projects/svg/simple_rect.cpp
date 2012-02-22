@@ -36,6 +36,9 @@ void simple_rect_t::generate(FILE *svg_fp, FILE *js_fp, int argc, char **argv)
   double cx = x + (width/2.0);
   double cy = y + (height/2.0);
 
+  
+  fprintf(svg_fp, "<!--  START insert for simple_rect (%03d) -->\n", n_instance);
+  fprintf(js_fp, "// --  START insert for simple_rect (%03d)\n", n_instance);
   fprintf(svg_fp, "<rect  id=\"simple_rect_%03d\" fill=\"%s\" x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\" stroke=\"none\" stroke-width=\"0\" transform=\"rotate(180 %lf %lf)\"/>\n",
                      n_instance, color, x, y, width, height, cx, cy);
   fprintf(svg_fp, "<rect  fill=\"none\" x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\" stroke=\"black\" stroke-width=\"1\"/>\n",
@@ -48,6 +51,8 @@ void simple_rect_t::generate(FILE *svg_fp, FILE *js_fp, int argc, char **argv)
 
   fprintf(js_fp, "var %s = new simple_rect_t(\"simple_rect_%03d\", \"simple_rect_pv_%03d\", %lf);\n", js_object_name, n_instance, n_instance, height); 
 
+  fprintf(svg_fp, "<!--  END insert for simple_rect (%03d) -->\n", n_instance);
+  fprintf(js_fp, "// --  END insert for simple_rect (%03d)\n", n_instance);
   add_library("simple_rect.js");
   add_update_object(tag, js_object_name);
 

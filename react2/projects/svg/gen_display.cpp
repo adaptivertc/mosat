@@ -29,20 +29,35 @@ void add_library(const char *file_name)
       return;
     }
   }
+  if (n_libs >= 200)
+  {
+    printf("Max libraries exceeded, exiting . . . \n");
+    exit(-1);
+  }
   lib_files[n_libs] = strdup(file_name);
   n_libs++;
 }
 
+/*********************************/
+
 void add_update_object(const char *the_tag, const char *the_js_object)
 {
+  if (n_objs >= 200)
+  {
+    printf("Max objects exceeded, exiting . . . \n");
+    exit(-1);
+  }
   //printf("Adding, tag: %s, object: %s\n", the_tag, the_js_object);
   tags[n_objs] = strdup(the_tag);  
   js_objs[n_objs] = strdup(the_js_object);
   n_objs++;
 }
 
+/*********************************/
+
 void gen_calls(FILE *js_fp)
 {
+  fprintf(js_fp, "// -- START insert AJAX animation code --\n");
   fprintf(js_fp, 
     "var react_update_hrf = \"http://\" + location.hostname + \"/helloworld/tag?");
   for (int i=0; i < n_objs; i++)
@@ -129,9 +144,11 @@ void gen_calls(FILE *js_fp)
   fprintf(js_fp, "  }\n");
   fprintf(js_fp, "  var interval = setInterval(\"intervalHandler()\", 500);\n");
   fprintf(js_fp, "};\n");
-  fprintf(js_fp, "// New generator!!\n");
   fprintf(js_fp, "\n");
+  fprintf(js_fp, "// -- END insert AJAX animation code --\n");
 }
+
+/*********************************/
 
 void do_gen(const char *fname)
 {
@@ -147,13 +164,6 @@ void do_gen(const char *fname)
   if (svg_fp == NULL)
   {
     perror(js_file);
-    exit(-1);
-  }
-
-  FILE *fp = fopen(fname, "r");
-  if (fp == NULL)
-  {
-    perror(fname);
     exit(-1);
   }
 
@@ -192,7 +202,6 @@ void do_gen(const char *fname)
 
   fclose(js_fp);
   fclose(svg_fp);
-  fclose(fp);
 }
 
 /*********************************/
@@ -228,7 +237,9 @@ void gen_final_file(const char *fname)
   fprintf(fp, "<script type=\"text/ecmascript\"><![CDATA[\n");
   for (int i=0; i < n_libs; i++)
   {
+    fprintf(fp, "// -- START insert js library: %s\n", lib_files[i]);
     include_file(fp, lib_files[i]);
+    fprintf(fp, "// -- END insert js library: %s\n", lib_files[i]);
   }
   include_file(fp, "_tmp_display.js");
   fprintf(fp, "]]></script>\n");
