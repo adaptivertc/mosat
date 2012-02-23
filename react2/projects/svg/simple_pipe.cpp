@@ -11,7 +11,7 @@
 void gen_elbo_ru(FILE *fp, double x, double y, double pipe_width, double elbo_width)
 {
   double small_width = elbo_width - pipe_width;
-  fprintf(fp, "<path fill=\"url(#grRadial)\" d=\"M%lf,%lf a%lf,%lf 0 0,0 %lf,%lf h%lf a%lf,%lf 0 0,1 %lf,%lf z\"/>",
+  fprintf(fp, "<path fill=\"url(#grRadial)\" d=\"M%lf,%lf a%lf,%lf 0 0,0 %lf,%lf h%lf a%lf,%lf 0 0,1 %lf,%lf z\"/>\n",
           /* M */ x, y + (pipe_width/2), 
           /* a */  elbo_width, elbo_width, elbo_width, -elbo_width,
           /* h */  -pipe_width,
@@ -23,7 +23,7 @@ void gen_elbo_ru(FILE *fp, double x, double y, double pipe_width, double elbo_wi
 void gen_elbo_rd(FILE *fp, double x, double y, double pipe_width, double elbo_width)
 {
   double small_width = elbo_width - pipe_width;
-  fprintf(fp, "<path fill=\"url(#grRadial)\" d=\"M%lf,%lf a%lf,%lf 0 0,1 %lf,%lf h%lf a%lf,%lf 0 0,0 %lf,%lf z\"/>",
+  fprintf(fp, "<path fill=\"url(#grRadial)\" d=\"M%lf,%lf a%lf,%lf 0 0,1 %lf,%lf h%lf a%lf,%lf 0 0,0 %lf,%lf z\"/>\n",
           /* M */ x, y - (pipe_width/2), 
           /* a */  elbo_width, elbo_width, elbo_width, elbo_width,
           /* h */  -pipe_width,
@@ -35,7 +35,7 @@ void gen_elbo_rd(FILE *fp, double x, double y, double pipe_width, double elbo_wi
 void gen_elbo_lu(FILE *fp, double x, double y, double pipe_width, double elbo_width)
 {
   double small_width = elbo_width - pipe_width;
-  fprintf(fp, "<path fill=\"url(#grRadial)\" d=\"M%lf,%lf a%lf,%lf 0 0,1 %lf,%lf h%lf a%lf,%lf 0 0,0 %lf,%lf z\"/>",
+  fprintf(fp, "<path fill=\"url(#grRadial)\" d=\"M%lf,%lf a%lf,%lf 0 0,1 %lf,%lf h%lf a%lf,%lf 0 0,0 %lf,%lf z\"/>\n",
           /* M */ x, y + (pipe_width/2), 
           /* a */  elbo_width, elbo_width, -elbo_width, -elbo_width,
           /* h */  pipe_width,
@@ -47,7 +47,7 @@ void gen_elbo_lu(FILE *fp, double x, double y, double pipe_width, double elbo_wi
 void gen_elbo_ld(FILE *fp, double x, double y, double pipe_width, double elbo_width)
 {
   double small_width = elbo_width - pipe_width;
-  fprintf(fp, "<path fill=\"url(#grRadial)\" d=\"M%lf,%lf a%lf,%lf 0 0,0 %lf,%lf h%lf a%lf,%lf 0 0,1 %lf,%lf z\"/>",
+  fprintf(fp, "<path fill=\"url(#grRadial)\" d=\"M%lf,%lf a%lf,%lf 0 0,0 %lf,%lf h%lf a%lf,%lf 0 0,1 %lf,%lf z\"/>\n",
           /* M */ x, y - (pipe_width/2), 
           /* a */  elbo_width, elbo_width, -elbo_width, elbo_width,
           /* h */  pipe_width,
@@ -62,7 +62,7 @@ class simple_pipe_t : public gen_object_base_t
 {
 public:
   const char *get_name(void); 
-  void generate(FILE *svg_fp, FILE *js_fp, int argc, char **argv);
+  void generate(FILE *svg_fp, FILE *svg_after_header_fp, FILE *js_fp, int argc, char **argv);
 };
 
 extern "C" gen_object_base_t *get_object(void)
@@ -75,7 +75,7 @@ const char *simple_pipe_t::get_name(void)
   return "simple_pipe";
 }
 
-void simple_pipe_t::generate(FILE *svg_fp, FILE *js_fp, int argc, char **argv)
+void simple_pipe_t::generate(FILE *svg_fp, FILE *svg_after_header_fp, FILE *js_fp, int argc, char **argv)
 {
   double x1 = atof(argv[1]);
   double x2 = atof(argv[2]);

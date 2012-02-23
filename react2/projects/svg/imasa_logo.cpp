@@ -126,7 +126,7 @@ class imasa_logo_t : public gen_object_base_t
 {
 public:
   const char *get_name(void); 
-  void generate(FILE *svg_fp, FILE *js_fp, int argc, char **argv);
+  void generate(FILE *svg_fp, FILE *svg_after_header_fp, FILE *js_fp, int argc, char **argv);
 };
 
 extern "C" gen_object_base_t *get_object(void)
@@ -139,7 +139,7 @@ const char *imasa_logo_t::get_name(void)
   return "imasa_logo";
 }
 
-void imasa_logo_t::generate(FILE *svg_fp, FILE *js_fp, int argc, char **argv)
+void imasa_logo_t::generate(FILE *svg_fp, FILE *svg_after_header_fp, FILE *js_fp, int argc, char **argv)
 {
   double x = atof(argv[1]);
   double y = atof(argv[2]);

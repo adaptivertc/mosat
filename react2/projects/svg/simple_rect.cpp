@@ -11,7 +11,7 @@ class simple_rect_t : public gen_object_base_t
 {
 public:
   const char *get_name(void); 
-  void generate(FILE *svg_fp, FILE *js_fp, int argc, char **argv);
+  void generate(FILE *svg_fp, FILE *svg_after_header_fp, FILE *js_fp, int argc, char **argv);
 };
 
 extern "C" gen_object_base_t *get_object(void)
@@ -24,7 +24,7 @@ const char *simple_rect_t::get_name(void)
   return "simple_rect";
 }
 
-void simple_rect_t::generate(FILE *svg_fp, FILE *js_fp, int argc, char **argv)
+void simple_rect_t::generate(FILE *svg_fp, FILE *svg_after_header_fp, FILE *js_fp, int argc, char **argv)
 {
   const char *tag = argv[1];
   const char *color = argv[2];
@@ -39,10 +39,10 @@ void simple_rect_t::generate(FILE *svg_fp, FILE *js_fp, int argc, char **argv)
   
   fprintf(svg_fp, "<!--  START insert for simple_rect (%03d) -->\n", n_instance);
   fprintf(js_fp, "// --  START insert for simple_rect (%03d)\n", n_instance);
+  fprintf(svg_fp, "<rect  fill=\"cornsilk\" x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\" stroke=\"black\" stroke-width=\"1\"/>\n",
+                     x, y, width, height);
   fprintf(svg_fp, "<rect  id=\"simple_rect_%03d\" fill=\"%s\" x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\" stroke=\"none\" stroke-width=\"0\" transform=\"rotate(180 %lf %lf)\"/>\n",
                      n_instance, color, x, y, width, height, cx, cy);
-  fprintf(svg_fp, "<rect  fill=\"none\" x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\" stroke=\"black\" stroke-width=\"1\"/>\n",
-                     x, y, width, height);
   fprintf(svg_fp, "<text id=\"simple_rect_pv_%03d\" x=\"%lf\" y=\"%lf\" font-family=\"Verdana\" font-size=\"%lf\" fill=\"black\" text-anchor=\"middle\">0</text>\n",
                      n_instance, cx, y + height + (font_size * 1.1), font_size); 
 

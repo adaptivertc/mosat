@@ -11,7 +11,7 @@ class simple_panel_t : public gen_object_base_t
 {
 public:
   const char *get_name(void); 
-  void generate(FILE *svg_fp, FILE *js_fp, int argc, char **argv);
+  void generate(FILE *svg_fp, FILE *svg_after_header_fp, FILE *js_fp, int argc, char **argv);
 };
 
 extern "C" gen_object_base_t *get_object(void)
@@ -24,7 +24,7 @@ const char *simple_panel_t::get_name(void)
   return "simple_panel";
 }
 
-void simple_panel_t::generate(FILE *svg_fp, FILE *js_fp, int argc, char **argv)
+void simple_panel_t::generate(FILE *svg_fp, FILE *svg_after_header_fp, FILE *js_fp, int argc, char **argv)
 {
   const char *tag = argv[1];
   const char *on_color = argv[2];

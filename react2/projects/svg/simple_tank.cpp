@@ -69,7 +69,7 @@ class simple_tank_t : public gen_object_base_t
 {
 public:
   const char *get_name(void); 
-  void generate(FILE *svg_fp, FILE *js_fp, int argc, char **argv);
+  void generate(FILE *svg_fp, FILE *svg_after_header_fp, FILE *js_fp, int argc, char **argv);
 };
 
 /**********************************************/
@@ -88,7 +88,7 @@ const char *simple_tank_t::get_name(void)
 
 /**********************************************/
 
-void simple_tank_t::generate(FILE *svg_fp, FILE *js_fp, int argc, char **argv)
+void simple_tank_t::generate(FILE *svg_fp, FILE *svg_after_header_fp, FILE *js_fp, int argc, char **argv)
 {
   double x = 50;
   double y = 50;

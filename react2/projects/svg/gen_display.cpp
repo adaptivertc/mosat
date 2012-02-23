@@ -78,7 +78,7 @@ void add_update_object(const char *the_tag, const char *the_js_object)
 
 /*********************************/
 
-void gen_calls(FILE *js_fp)
+void gen_ajax_animation(FILE *js_fp)
 {
   fprintf(js_fp, "// -- START insert AJAX animation code --\n");
   fprintf(js_fp, 
@@ -186,6 +186,7 @@ void do_gen(const char *fname)
     perror(svg_file);
     exit(-1);
   }
+
   const char *js_file = "_tmp_display.js";
   FILE *js_fp = fopen(js_file, "w");
   if (svg_fp == NULL)
@@ -193,6 +194,15 @@ void do_gen(const char *fname)
     perror(js_file);
     exit(-1);
   }
+
+  const char *after_header_file = "_tmp_after_header.svg";
+  FILE *svg_after_header_fp = fopen(after_header_file, "w");
+  if (svg_after_header_fp == NULL)
+  {
+    perror(after_header_file);
+    exit(-1);
+  }
+
 
   delim_file_t df(500, 50, '|', '#');
   df.print_lines(true);
@@ -222,13 +232,14 @@ void do_gen(const char *fname)
       exit(-1);
     }
     printf("    Generating %s . . . .\n", argv[0]);
-    obj->generate(svg_fp, js_fp, argc, argv);
+    obj->generate(svg_fp, svg_after_header_fp, js_fp, argc, argv);
   }
 
-  gen_calls(js_fp);
+  gen_ajax_animation(js_fp);
 
   fclose(js_fp);
   fclose(svg_fp);
+  fclose(svg_after_header_fp);
 }
 
 /*********************************/
@@ -261,6 +272,8 @@ void gen_final_file(const char *fname)
   }
 
   gen_svg_header(fp, "zzTesting", 0, 0, 300, 150);
+
+  include_file(fp, "_tmp_after_header.svg");
 
   for (int i=0; i < n_svg_libs; i++)
   {
