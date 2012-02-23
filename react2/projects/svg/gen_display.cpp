@@ -169,7 +169,7 @@ void gen_calls(FILE *js_fp)
   fprintf(js_fp, "    config_xReq.open(\"GET\", react_config_hrf + update_tags[0], true);\n");
   fprintf(js_fp, "    config_xReq.send(null);\n");
   fprintf(js_fp, "  }\n");
-  fprintf(js_fp, "  var interval = setInterval(\"intervalHandler()\", 2000);\n");
+  fprintf(js_fp, "  var interval = setInterval(\"intervalHandler()\", 500);\n");
   fprintf(js_fp, "};\n");
   fprintf(js_fp, "\n");
   fprintf(js_fp, "// -- END insert AJAX animation code --\n");
@@ -266,7 +266,7 @@ void gen_final_file(const char *fname)
   {
     fprintf(fp, "<!-- START insert svg library: %s-->\n", svg_lib_files[i]);
     include_file(fp, svg_lib_files[i]);
-    fprintf(fp, "<!-- END insert svg library: %s\n-->", svg_lib_files[i]);
+    fprintf(fp, "<!-- END insert svg library: %s -->\n", svg_lib_files[i]);
   }
 
   include_file(fp, "_tmp_display.svg");

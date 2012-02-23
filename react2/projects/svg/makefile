@@ -14,12 +14,20 @@ gen_bar: gen_bar.cpp gen_logo.cpp scales.cpp include_file.cpp
 gen_tank: gen_tank.cpp
 	g++ -g -Wall -o gen_tank gen_tank.cpp
 
-gen_display:  gen_display.cpp include_file.cpp gen_display.h react_svg.h simple_panel.so simple_rect.so
+gen_display:  gen_display.cpp include_file.cpp gen_display.h react_svg.h simple_panel.so simple_rect.so imasa_logo.so
 	g++ -Wall gen_display.cpp include_file.cpp -ldl -rdynamic -o gen_display $(RTCOMMON)
 
 simple_rect.so: simple_rect.cpp gen_display.h
 	g++ -Wall -shared -o simple_rect.so simple_rect.cpp
 	cp simple_rect.so plugins/
+
+imasa_logo.so: imasa_logo.cpp gen_display.h
+	g++ -Wall -shared -o imasa_logo.so imasa_logo.cpp
+	cp imasa_logo.so plugins/
+
+simple_tank.so: simple_tank.cpp gen_display.h
+	g++ -Wall -shared -o simple_tank.so simple_tank.cpp
+	cp simple_tank.so plugins/
 
 simple_pipe.so: simple_pipe.cpp gen_display.h
 	g++ -Wall -shared -o simple_pipe.so simple_pipe.cpp
@@ -37,7 +45,7 @@ insert_svg.so: insert_svg.cpp gen_display.h
 	g++ -Wall -shared -o insert_svg.so insert_svg.cpp
 	cp insert_svg.so plugins/
 
-dtest.svg: display.txt gen_display simple_rect.so simple_panel.so only_text.so insert_svg.so simple_pipe.so 
+dtest.svg: display.txt gen_display simple_rect.so simple_panel.so only_text.so insert_svg.so simple_pipe.so simple_tank.so imasa_logo.so
 	./gen_display plugins/
 
 install: 

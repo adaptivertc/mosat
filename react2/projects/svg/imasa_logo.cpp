@@ -1,5 +1,6 @@
-
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 /**********************************************************/
 
@@ -116,4 +117,38 @@ void gen_imasa_logo(FILE *fp, double x, double y, double height, double width)
 }
  
 /**********************************************************/
+
+#include "gen_display.h"
+
+static int n_instance = 1;
+
+class imasa_logo_t : public gen_object_base_t
+{
+public:
+  const char *get_name(void); 
+  void generate(FILE *svg_fp, FILE *js_fp, int argc, char **argv);
+};
+
+extern "C" gen_object_base_t *get_object(void)
+{
+  return new imasa_logo_t;
+}
+
+const char *imasa_logo_t::get_name(void)
+{
+  return "imasa_logo";
+}
+
+void imasa_logo_t::generate(FILE *svg_fp, FILE *js_fp, int argc, char **argv)
+{
+  double x = atof(argv[1]);
+  double y = atof(argv[2]);
+  double height = atof(argv[3]);
+  double width = height;
+  
+  fprintf(svg_fp, "<!--  START insert for imasa_logo (%03d) -->\n", n_instance);
+  gen_imasa_logo(svg_fp, x, y, height, width);
+  fprintf(svg_fp, "<!--  END insert for imasa_logo (%03d) -->\n", n_instance);
+  n_instance++;
+}
 
