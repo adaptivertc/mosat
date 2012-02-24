@@ -1,21 +1,18 @@
-background|tan|
+background|thistle|
 simple_rect|level|mediumslateblue|15|20|100|
 simple_rect|pump1_amp|red|70|30|80|
 simple_rect|pump2_amp|chartreuse|120|30|80|
 simple_rect|pump3_amp|hotpink|170|30|80|
-simple_panel|PUMP1_ON|gray|red|260|15|12|
-simple_panel|PUMP2_ON|rgb(65,65,65)|chartreuse|260|55|12|
-simple_panel|PUMP3_ON|#a0a0a0|hotpink|260|95|12|
+simple_panel|PUMP1_ON|gray|red|260|22|12|
+simple_panel|PUMP2_ON|rgb(65,65,65)|chartreuse|260|52|12|
+simple_panel|PUMP3_ON|#a0a0a0|hotpink|260|82|12|
 only_text|Atemajac Pumps|blue|120|20|20|middle|
 insert_svg|<text x="100" y="145" font-size="10" fill="green">Pure Simple SVG</text>
-simple_pipe|60|250|130|7|
-simple_tank|c|200|10|40|110|2|25|5|
+simple_tank|c|200|10|40|110|2|25|7|
 simple_tank|p|40|25|25|85|5|
+simple_pipe|7|0|145|h|60|v|130|h|220|v|120|
 imasa_logo|0|0|20|
-#simple_panel|HI_HI_LEVEL|lime|gray|6|40|5|
 simple_contact|HI_HI_LEVEL|yellow|gray|4|40|9|
-#simple_panel|HI_LEVEL|lime|gray|6|67|5|
 simple_contact|HI_LEVEL|yellow|gray|4|63|9|
-#simple_panel|LO_LEVEL|lime|gray|6|102|5|
-simple_contact|LO_LEVEL|yellow|gray|4|100|9|
+simple_contact|LO_LEVEL|yellow|gray|4|98|9|
 
