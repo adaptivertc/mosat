@@ -78,6 +78,68 @@ void add_update_object(const char *the_tag, const char *the_js_object)
 
 /*********************************/
 
+void gen_simulation(FILE *js_fp)
+{
+  fprintf(js_fp, "// -- START insert simulation code --\n");
+
+  fprintf(js_fp, "var update_objs = new Array(");
+  for (int i=0; i < n_objs; i++)
+  {
+    fprintf(js_fp, "%s%s", i==0?"":",", js_objs[i]);
+  }
+  fprintf(js_fp, ");\n"); 
+
+  fprintf(js_fp, "var update_tags = new Array(");
+  for (int i=0; i < n_objs; i++)
+  {
+    fprintf(js_fp, "%s\"%s\"", i==0?"":",", tags[i]);
+  }
+  fprintf(js_fp, ");\n"); 
+
+  fprintf(js_fp, "function update_objects()\n");
+  fprintf(js_fp, "{\n");
+  fprintf(js_fp, "  for (var i=0; i < update_objs.length; i++)\n");
+  fprintf(js_fp, "  {\n");
+  fprintf(js_fp, "    update_objs[i].update(sim.get_pv(update_tags[i]));\n");
+  fprintf(js_fp, "  }\n");
+  fprintf(js_fp, "}\n");
+  fprintf(js_fp, "\n");
+
+  fprintf(js_fp, "function config_objects()\n");
+  fprintf(js_fp, "{\n");
+  fprintf(js_fp, "  for (var i=0; i < update_objs.length; i++)\n");
+  fprintf(js_fp, "  {\n");
+  fprintf(js_fp, "    update_objs[i].init(sim.get_cfg(update_tags[i]));\n");
+  fprintf(js_fp, "  }\n");
+  fprintf(js_fp, "}\n");
+  fprintf(js_fp, "\n");
+
+  fprintf(js_fp, "function intervalHandler()\n");
+  fprintf(js_fp, "{\n");
+  fprintf(js_fp, "  sim.update();\n");
+  fprintf(js_fp, "  update_objects();\n");
+  fprintf(js_fp, "}\n");
+  fprintf(js_fp, "\n");
+
+  fprintf(js_fp, "function load()\n");
+  fprintf(js_fp, "{\n");
+  fprintf(js_fp, "  config_objects();\n");
+  fprintf(js_fp, "  update_objects();\n");
+  //fprintf(js_fp, "  pump_1_timeout();\n");
+  //fprintf(js_fp, "  pump_2_timeout();\n");
+  //fprintf(js_fp, "  pump_3_timeout();\n");
+  //fprintf(js_fp, "  pump_1_timeout();\n");
+  //fprintf(js_fp, "  pump_2_timeout();\n");
+  //fprintf(js_fp, "  pump_3_timeout();\n");
+
+  fprintf(js_fp, "  var interval = setInterval(\"intervalHandler()\", 200);\n");
+  fprintf(js_fp, "};\n");
+  fprintf(js_fp, "\n");
+  fprintf(js_fp, "// -- END insert simulation code --\n");
+}
+
+/*********************************/
+
 void gen_ajax_animation(FILE *js_fp)
 {
   fprintf(js_fp, "// -- START insert AJAX animation code --\n");
@@ -169,7 +231,7 @@ void gen_ajax_animation(FILE *js_fp)
   fprintf(js_fp, "    config_xReq.open(\"GET\", react_config_hrf + update_tags[0], true);\n");
   fprintf(js_fp, "    config_xReq.send(null);\n");
   fprintf(js_fp, "  }\n");
-  fprintf(js_fp, "  var interval = setInterval(\"intervalHandler()\", 500);\n");
+  //fprintf(js_fp, "  var interval = setInterval(\"intervalHandler()\", 500);\n");
   fprintf(js_fp, "};\n");
   fprintf(js_fp, "\n");
   fprintf(js_fp, "// -- END insert AJAX animation code --\n");
@@ -235,7 +297,10 @@ void do_gen(const char *fname)
     obj->generate(svg_fp, svg_after_header_fp, js_fp, argc, argv);
   }
 
-  gen_ajax_animation(js_fp);
+  //gen_ajax_animation(js_fp);
+  add_js_library("sim_pump.js");
+  gen_simulation(js_fp);
+
 
   fclose(js_fp);
   fclose(svg_fp);

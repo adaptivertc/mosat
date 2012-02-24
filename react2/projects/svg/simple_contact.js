@@ -23,7 +23,7 @@ simple_contact_t.prototype.init=simple_contact_init_f;
 
 function simple_contact_update_f(pv)
 {
-  console.log("pv = " + pv + ", obj = " + this.contact_obj);
+  //console.log("pv = " + pv + ", rect obj = " + this.rect_obj);
   if (pv)
   {
     this.rect_obj.setAttribute("fill", this.on_color);

@@ -17,7 +17,7 @@ simple_panel_t.prototype.init=simple_panel_init_f;
 
 function simple_panel_update_f(pv)
 {
-  console.log("pv = " + pv + ", obj = " + this.panel_obj);
+  //console.log("pv = " + pv + ", obj = " + this.panel_obj);
   if (pv)
     this.panel_obj.setAttribute("fill", this.on_color);
   else 
