@@ -12,6 +12,8 @@ function simple_panel_t(panel_name, on_color, off_color)
 
 function simple_panel_init_f(val)
 {
+  this.lo_desc = val.lo_desc;
+  this.hi_desc = val.hi_desc;
 }
 simple_panel_t.prototype.init=simple_panel_init_f;
 

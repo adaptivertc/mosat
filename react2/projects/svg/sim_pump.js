@@ -129,10 +129,10 @@ sim_object_t.prototype.get_pv=sim_object_get_pv_f;
         if (this.pv.LEVEL < (this.hi_level-3)) this.pv.HI_LEVEL=false;
         if (this.pv.LEVEL < (this.hi_hi_level-3)) this.pv.HI_HI_LEVEL=false;
       }
-      this.rate=5.0;
+      this.rate=10.0;
       if (!this.pv.PUMP1_ON) 
       {
-        this.rate -= 3.0;
+        this.rate -= 6.0;
         this.pv.PUMP1_AMP= (27 +((Math.random()-0.5)*0.6));
       }
       else
@@ -142,7 +142,7 @@ sim_object_t.prototype.get_pv=sim_object_get_pv_f;
 
       if (!this.pv.PUMP2_ON) 
       {
-        this.rate -= 3.0;
+        this.rate -= 6.0;
         this.pv.PUMP2_AMP= (27 +((Math.random()-0.5)*0.6));
       }
       else
@@ -152,7 +152,7 @@ sim_object_t.prototype.get_pv=sim_object_get_pv_f;
 
       if (!this.pv.PUMP3_ON)
       {
-        this.rate -= 3.0;
+        this.rate -= 6.0;
         this.pv.PUMP3_AMP= (27 +((Math.random()-0.5)*0.6));
       }
       else

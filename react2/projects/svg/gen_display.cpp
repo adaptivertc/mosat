@@ -132,7 +132,7 @@ void gen_simulation(FILE *js_fp)
   //fprintf(js_fp, "  pump_2_timeout();\n");
   //fprintf(js_fp, "  pump_3_timeout();\n");
 
-  fprintf(js_fp, "  var interval = setInterval(\"intervalHandler()\", 200);\n");
+  fprintf(js_fp, "  var interval = setInterval(\"intervalHandler()\", 250);\n");
   fprintf(js_fp, "};\n");
   fprintf(js_fp, "\n");
   fprintf(js_fp, "// -- END insert simulation code --\n");
