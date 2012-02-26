@@ -33,17 +33,23 @@ void simple_panel_t::generate(FILE *svg_fp, FILE *svg_after_header_fp, FILE *js_
   double cy = atof(argv[5]);
   double r = atof(argv[6]);
   double stroke_width = r * 0.1;
+  double font_size = r * 0.6;
 
   fprintf(svg_fp, "<!--  START insert for simple_panel (%03d) -->\n", n_instance);
   fprintf(js_fp, "// --  START insert for simple_panel (%03d)\n", n_instance);
 
   fprintf(svg_fp, "<circle id=\"simple_panel_%03d\" cx=\"%lf\" cy=\"%lf\" r=\"%lf\" fill=\"%s\" stroke=\"black\" stroke-width=\"%lf\"/>\n",
             n_instance, cx, cy, r, on_color, stroke_width);
+  fprintf(svg_fp, "<text id=\"simple_panel_pv_%03d\" x=\"%lf\" y=\"%lf\" font-family=\"Verdana\" font-size=\"%lf\" fill=\"black\" text-anchor=\"middle\">0</text>\n",
+                     n_instance, cx, cy + r + (font_size * 1.1), font_size);
+
 
   char js_object_name[30];
+  char js_pv_name[30];
   snprintf(js_object_name, sizeof(js_object_name), "simple_panel_obj_%03d", n_instance);
+  snprintf(js_pv_name, sizeof(js_object_name), "simple_panel_pv_obj_%03d", n_instance);
 
-  fprintf(js_fp, "var %s = new simple_panel_t(\"simple_panel_%03d\", \"%s\", \"%s\");\n", js_object_name, n_instance, on_color, off_color); 
+  fprintf(js_fp, "var %s = new simple_panel_t(\"simple_panel_%03d\", \"simple_panel_pv_%03d\", \"%s\", \"%s\");\n", js_object_name, n_instance, n_instance, on_color, off_color); 
 
   fprintf(svg_fp, "<!--  END insert for simple_panel (%03d) -->\n", n_instance);
   fprintf(js_fp, "// --  END insert for simple_panel (%03d)\n", n_instance);

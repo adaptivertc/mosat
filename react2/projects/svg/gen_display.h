@@ -11,6 +11,7 @@ public:
 void add_js_library(const char *file_name);
 void add_svg_library(const char *file_name);
 void add_update_object(const char *the_tag, const char *the_js_object);
+void set_viewbox(double x1, double y1, double x2, double y2);
 
 typedef gen_object_base_t * (*crear_objeto_t)(void);
 

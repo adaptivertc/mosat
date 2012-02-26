@@ -10,7 +10,7 @@
 #include "arg.h"
 #include "react_svg.h"
 
-gen_object_base_t *get_plugin(const char *type);
+static gen_object_base_t *get_plugin(const char *type);
 
 /*********************************/
 
@@ -21,6 +21,8 @@ static int n_js_libs = 0;
 static const char *js_lib_files[200];
 static int n_svg_libs = 0;
 static const char *svg_lib_files[200];
+
+/*********************************/
 
 void add_js_library(const char *file_name)
 {
@@ -78,7 +80,7 @@ void add_update_object(const char *the_tag, const char *the_js_object)
 
 /*********************************/
 
-void gen_simulation(FILE *js_fp)
+static void gen_simulation(FILE *js_fp)
 {
   fprintf(js_fp, "// -- START insert simulation code --\n");
 
@@ -140,7 +142,7 @@ void gen_simulation(FILE *js_fp)
 
 /*********************************/
 
-void gen_ajax_animation(FILE *js_fp)
+static void gen_ajax_animation(FILE *js_fp)
 {
   fprintf(js_fp, "// -- START insert AJAX animation code --\n");
   fprintf(js_fp, 
@@ -239,7 +241,7 @@ void gen_ajax_animation(FILE *js_fp)
 
 /*********************************/
 
-void do_gen(const char *fname)
+static void do_gen(const char *fname)
 {
   const char *svg_file = "_tmp_display.svg";
   FILE *svg_fp = fopen(svg_file, "w");
@@ -308,8 +310,19 @@ void do_gen(const char *fname)
 }
 
 /*********************************/
+static double vb_x1 = 0.0, vb_y1 = 0.0, vb_x2 = 300.0, vb_y2 = 150.0;
 
-void gen_svg_header(FILE *fp, const char *title, int vb_x1, int vb_y1, int vb_x2, int vb_y2)
+void set_viewbox(double x1, double y1, double x2, double y2)
+{
+  vb_x1 = x1;
+  vb_y1 = y1;
+  vb_x2 = x2;
+  vb_y2 = y2;
+}
+
+/*********************************/
+
+static void gen_svg_header(FILE *fp, const char *title)
 {
   fprintf(fp, "<!--\n");
   fprintf(fp, "Auto generated file DO NOT EDIT\n");
@@ -318,7 +331,7 @@ void gen_svg_header(FILE *fp, const char *title, int vb_x1, int vb_y1, int vb_x2
 
   fprintf(fp, "<svg xmlns=\"http://www.w3.org/2000/svg\"\n");
   fprintf(fp, "     xmlns:xlink=\"http://www.w3.org/1999/xlink\"\n");
-  fprintf(fp, "     width=\"100%%\" height=\"100%%\" viewBox=\"%d %d %d %d\" onload=\"load()\">\n",
+  fprintf(fp, "     width=\"100%%\" height=\"100%%\" viewBox=\"%lf %lf %lf %lf\" onload=\"load()\">\n",
           vb_x1, vb_y1, vb_x2, vb_y2);
   fprintf(fp, "\n");
   fprintf(fp, "  <title>%s</title>\n", title);
@@ -327,7 +340,7 @@ void gen_svg_header(FILE *fp, const char *title, int vb_x1, int vb_y1, int vb_x2
 
 /*********************************/
 
-void gen_final_file(const char *fname)
+static void gen_final_file(const char *fname)
 {
   FILE *fp = fopen(fname, "w");
   if (fp == NULL)
@@ -336,7 +349,7 @@ void gen_final_file(const char *fname)
     exit(-1);
   }
 
-  gen_svg_header(fp, "zzTesting", 0, 0, 300, 150);
+  gen_svg_header(fp, "zzTesting");
 
   include_file(fp, "_tmp_after_header.svg");
 
@@ -372,7 +385,7 @@ void gen_final_file(const char *fname)
 int n_plugins = 0;
 gen_object_base_t *mi_objs[100];
 
-gen_object_base_t *get_plugin(const char *type)
+static gen_object_base_t *get_plugin(const char *type)
 {
   for (int i=0; i < n_plugins; i++)
   {

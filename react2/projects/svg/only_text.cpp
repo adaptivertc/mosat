@@ -34,8 +34,8 @@ void only_text_t::generate(FILE *svg_fp, FILE *svg_after_header_fp, FILE *js_fp,
   const char *anchor = argv[6];
   
   fprintf(svg_fp, "<!--  START insert for only_text (%03d) -->\n", n_instance);
-  fprintf(svg_fp, "<text id=\"only_text_%03d\" x=\"%lf\" y=\"%lf\" font-family=\"Verdana\" font-size=\"%lf\" fill=\"%s\" text-anchor=\"%s\">%s</text>\n",
-                     n_instance, x, y, height, color, anchor, the_text); 
+  fprintf(svg_fp, "<text x=\"%lf\" y=\"%lf\" font-family=\"Verdana\" font-size=\"%lf\" fill=\"%s\" text-anchor=\"%s\">%s</text>\n",
+                     x, y, height, color, anchor, the_text); 
   fprintf(svg_fp, "<!--  END insert for only_text (%03d) -->\n", n_instance);
   n_instance++;
 }

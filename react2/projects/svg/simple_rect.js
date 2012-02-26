@@ -15,7 +15,7 @@ function simple_rect_t(rect_name, text_name, length)
 
 function simple_rect_init_f(val)
 {
-  this.max=val.eu_hi;
+  this.max=val.scale_hi;
   this.eu_label=val.eu;
   this.decimal_places = val.decimal_places;
   console.log("max: " + this.max);

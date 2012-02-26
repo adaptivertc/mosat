@@ -35,14 +35,16 @@ void simple_rect_t::generate(FILE *svg_fp, FILE *svg_after_header_fp, FILE *js_f
   double font_size = height * 0.1;
   double cx = x + (width/2.0);
   double cy = y + (height/2.0);
+  double stroke_width = height / 100.0;
 
   
   fprintf(svg_fp, "<!--  START insert for simple_rect (%03d) -->\n", n_instance);
   fprintf(js_fp, "// --  START insert for simple_rect (%03d)\n", n_instance);
-  fprintf(svg_fp, "<rect  fill=\"cornsilk\" x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\" stroke=\"black\" stroke-width=\"1\"/>\n",
-                     x, y, width, height);
+  fprintf(svg_fp, "<rect  fill=\"cornsilk\" x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\" stroke=\"black\" stroke-width=\"%lf\"/>\n",
+                     x, y, width, height, stroke_width);
   fprintf(svg_fp, "<rect  id=\"simple_rect_%03d\" fill=\"%s\" x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\" stroke=\"none\" stroke-width=\"0\" transform=\"rotate(180 %lf %lf)\"/>\n",
-                     n_instance, color, x, y, width, height, cx, cy);
+                     n_instance, color, (x + stroke_width / 2.0), 
+                     y, width-stroke_width, height, cx, cy);
   fprintf(svg_fp, "<text id=\"simple_rect_pv_%03d\" x=\"%lf\" y=\"%lf\" font-family=\"Verdana\" font-size=\"%lf\" fill=\"black\" text-anchor=\"middle\">0</text>\n",
                      n_instance, cx, y + height + (font_size * 1.1), font_size); 
 
