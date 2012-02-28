@@ -89,16 +89,16 @@ void gen_h_pipe(FILE *fp, double x1, double y, double x2, double width)
 
 static int n_instance = 1;
 
-class simple_pipe_t : public gen_object_base_t
+class simple_pipe_t : public gen_plugin_base_t
 {
 public:
   const char *get_name(void); 
-  void generate(FILE *svg_fp, FILE *svg_after_header_fp, FILE *js_fp, int argc, char **argv);
+  void generate(FILE *svg_fp, FILE *svg_top_of_file_fp, FILE *js_fp, int argc, char **argv);
 };
 
 /*******************************************/
 
-extern "C" gen_object_base_t *get_object(void)
+extern "C" gen_plugin_base_t *get_object(void)
 {
   return new simple_pipe_t;
 }
@@ -112,7 +112,7 @@ const char *simple_pipe_t::get_name(void)
 
 /*******************************************/
 
-void simple_pipe_t::generate(FILE *svg_fp, FILE *svg_after_header_fp, FILE *js_fp, int argc, char **argv)
+void simple_pipe_t::generate(FILE *svg_fp, FILE *svg_top_of_file_fp, FILE *js_fp, int argc, char **argv)
 {
   double width = atof(argv[1]);
   double x1 = atof(argv[2]);

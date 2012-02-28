@@ -7,14 +7,14 @@
 
 static int n_instance = 1;
 
-class simple_rect_t : public gen_object_base_t
+class simple_rect_t : public gen_plugin_base_t
 {
 public:
   const char *get_name(void); 
-  void generate(FILE *svg_fp, FILE *svg_after_header_fp, FILE *js_fp, int argc, char **argv);
+  void generate(FILE *svg_fp, FILE *svg_top_of_file_fp, FILE *js_fp, int argc, char **argv);
 };
 
-extern "C" gen_object_base_t *get_object(void)
+extern "C" gen_plugin_base_t *get_object(void)
 {
   return new simple_rect_t;
 }
@@ -24,7 +24,7 @@ const char *simple_rect_t::get_name(void)
   return "simple_rect";
 }
 
-void simple_rect_t::generate(FILE *svg_fp, FILE *svg_after_header_fp, FILE *js_fp, int argc, char **argv)
+void simple_rect_t::generate(FILE *svg_fp, FILE *svg_top_of_file_fp, FILE *js_fp, int argc, char **argv)
 {
   const char *tag = argv[1];
   const char *color = argv[2];
@@ -56,7 +56,7 @@ void simple_rect_t::generate(FILE *svg_fp, FILE *svg_after_header_fp, FILE *js_f
   fprintf(svg_fp, "<!--  END insert for simple_rect (%03d) -->\n", n_instance);
   fprintf(js_fp, "// --  END insert for simple_rect (%03d)\n", n_instance);
   add_js_library("simple_rect.js");
-  add_update_object(tag, js_object_name);
+  add_animation_object(tag, js_object_name);
 
   n_instance++;
 }

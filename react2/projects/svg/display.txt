@@ -1,5 +1,5 @@
+svg_header|My Title|0|0|300|150|
 background|thistle|
-viewbox|0|0|300|150|
 imasa_logo|0|0|35|
 simple_rect|LEVEL|mediumslateblue|38|20|100|
 simple_rect|PUMP1_AMP|darkturquoise|80|30|60|

@@ -10,7 +10,7 @@
 #include "arg.h"
 #include "react_svg.h"
 
-static gen_object_base_t *get_plugin(const char *type);
+static gen_plugin_base_t *get_plugin(const char *type);
 
 /*********************************/
 
@@ -65,7 +65,7 @@ void add_svg_library(const char *file_name)
 
 /*********************************/
 
-void add_update_object(const char *the_tag, const char *the_js_object)
+void add_animation_object(const char *the_tag, const char *the_js_object)
 {
   if (n_objs >= 200)
   {
@@ -259,11 +259,11 @@ static void do_gen(const char *fname)
     exit(-1);
   }
 
-  const char *after_header_file = "_tmp_after_header.svg";
-  FILE *svg_after_header_fp = fopen(after_header_file, "w");
-  if (svg_after_header_fp == NULL)
+  const char *top_of_file = "_tmp_top_of_file.svg";
+  FILE *svg_top_of_file_fp = fopen(top_of_file, "w");
+  if (svg_top_of_file_fp == NULL)
   {
-    perror(after_header_file);
+    perror(top_of_file);
     exit(-1);
   }
 
@@ -273,7 +273,7 @@ static void do_gen(const char *fname)
   char **argv;
   int argc;
   int line_num;
-  gen_object_base_t *obj;
+  gen_plugin_base_t *obj;
 
   for (argv = df.first(fname, &argc, &line_num);
          (argv != NULL);
@@ -296,7 +296,7 @@ static void do_gen(const char *fname)
       exit(-1);
     }
     printf("    Generating %s . . . .\n", argv[0]);
-    obj->generate(svg_fp, svg_after_header_fp, js_fp, argc, argv);
+    obj->generate(svg_fp, svg_top_of_file_fp, js_fp, argc, argv);
   }
 
   //gen_ajax_animation(js_fp);
@@ -306,7 +306,7 @@ static void do_gen(const char *fname)
 
   fclose(js_fp);
   fclose(svg_fp);
-  fclose(svg_after_header_fp);
+  fclose(svg_top_of_file_fp);
 }
 
 /*********************************/
@@ -349,9 +349,9 @@ static void gen_final_file(const char *fname)
     exit(-1);
   }
 
-  gen_svg_header(fp, "zzTesting");
+  //gen_svg_header(fp, "zzTesting");
 
-  include_file(fp, "_tmp_after_header.svg");
+  include_file(fp, "_tmp_top_of_file.svg");
 
   for (int i=0; i < n_svg_libs; i++)
   {
@@ -383,9 +383,9 @@ static void gen_final_file(const char *fname)
 /********************************/
 
 int n_plugins = 0;
-gen_object_base_t *mi_objs[100];
+gen_plugin_base_t *mi_objs[100];
 
-static gen_object_base_t *get_plugin(const char *type)
+static gen_plugin_base_t *get_plugin(const char *type)
 {
   for (int i=0; i < n_plugins; i++)
   {
