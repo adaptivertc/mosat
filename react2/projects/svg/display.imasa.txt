@@ -17,5 +17,3 @@ simple_pipe|7|220|130|v|144|h|247|v|4|h|190|v|25|h|72|v|12|h|45|v|0|
 simple_contact|HI_HI_LEVEL|yellow|gray|27|40|9|
 simple_contact|HI_LEVEL|yellow|gray|27|63|9|
 simple_contact|LO_LEVEL|yellow|gray|27|98|9|
-pendulo|level|hotpink|80|10|120|
-pendulo|level|fuchsia|180|20|100|

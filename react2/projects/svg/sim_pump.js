@@ -2,19 +2,16 @@ var sim;
 
     function pump_1_timeout()
     {
-      //pump_1_on=!pump_1_on;
       sim.toggle_pump1();
     };
 
     function pump_2_timeout()
     {
-      //pump_2_on=!pump_2_on;
       sim.toggle_pump2();
     };
 
     function pump_3_timeout()
     {
-      //pump_3_on=!pump_3_on;
       sim.toggle_pump3();
     };
 

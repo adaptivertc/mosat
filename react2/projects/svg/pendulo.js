@@ -27,13 +27,13 @@ pendulo_t.prototype.init=pendulo_init_f;
 
 function pendulo_update_f(pv)
 {
-  console.log("pv: " + pv + ", pendulo_obj = " + this.pendulo_obj);
-  console.log("max: " + this.max);
+  //console.log("pv: " + pv + ", pendulo_obj = " + this.pendulo_obj);
+  //console.log("max: " + this.max);
   if (pv < 0.0) {pv = 0.0;}
-  var angle = -((90.0 * (pv/this.max)) - 45.0);
-  console.log("angle: " + angle);
+  var angle = 45 - (90.0 * (pv/this.max));
+  //console.log("angle: " + angle);
   var mystr= "rotate("+ angle + " " + this.x + " " + this.y + ")";
-  console.log("mystr: " + mystr);
+  //console.log("mystr: " + mystr);
   this.pendulo_obj.setAttribute("transform", mystr);  
   this.pv_obj.textContent = 
      pv.toFixed(this.decimal_places) + " " + this.eu_label + " " + angle.toFixed(1);

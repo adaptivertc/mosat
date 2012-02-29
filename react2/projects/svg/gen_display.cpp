@@ -11,6 +11,9 @@
 #include "react_svg.h"
 
 static gen_plugin_base_t *get_plugin(const char *type);
+static const int RT_SIM_MODE = 0;
+static const int RT_REACT_MODE = 1;
+static int run_mode = RT_SIM_MODE;
 
 /*********************************/
 
@@ -299,9 +302,15 @@ static void do_gen(const char *fname)
     obj->generate(svg_fp, svg_top_of_file_fp, js_fp, argc, argv);
   }
 
-  //gen_ajax_animation(js_fp);
-  add_js_library("sim_pump.js");
-  gen_simulation(js_fp);
+  if (run_mode == RT_REACT_MODE)
+  {
+    gen_ajax_animation(js_fp);
+  }
+  else
+  {
+    add_js_library("sim_pump.js");
+    gen_simulation(js_fp);
+  }
 
 
   fclose(js_fp);
@@ -382,6 +391,32 @@ static gen_plugin_base_t *get_plugin(const char *type)
 
 /*********************************/
 
+void print_help()
+{
+  printf("Usage: gen_display [-f <config-file-name>] [-d <plugin-director>]\n");
+  printf("                   [-o <output-file-name>] [-react] [-sim]\n");
+  printf("Run the display builder (gen_display)\n\n");
+  printf("  -d   use an alternate directory for the plugin directory.\n");
+  printf("       The -d command must be followed by a plugin directory.\n");
+  printf("       This will be used as the plugin directory, in place of\n");
+  printf("       the default of \"./plugins/\".\n");
+  printf("  -f   use an alternate configuration file for the display.\n");
+  printf("       The -f command must be followed by a file name.\n");
+  printf("       This will be used as the configuration file name, in place of\n");
+  printf("       the default of \"display.txt\".\n");
+  printf("  -o   use an alternate output file name for the final output.\n");
+  printf("       The -o command must be followed by a file name.\n");
+  printf("       This will be used as the output file name, in place of\n");
+  printf("       the default of \"dtest.svg\".\n");
+  printf("  -react   option tells gen_display to generate Ajax code to connect to\n");
+  printf("           REACT (via Apache)  for configuration and point value information\n");
+  printf("  -sim     option tells gen_display to generate a simulator\n");
+  printf("           for configuration and point value information\n");
+  printf("\n");
+}
+
+/*********************************/
+
 int main(int argc, char *argv[])
 {
   DIR *dir;
@@ -394,13 +429,79 @@ int main(int argc, char *argv[])
 
   char sofile[100];
 
-  if (argc < 2)
+  const char *dir_name = "./plugins/";
+  const char *config_name = "display.txt"; 
+  const char *output_name = "dtest.svg"; 
+  for (int current_arg=1; current_arg < argc; current_arg++)
   {
-    printf("You must specify the directory\n");
-    exit(0);
+    if (0 == strcmp(argv[current_arg], "-react"))
+    {
+      run_mode = RT_REACT_MODE;
+    }
+    else if (0 == strcmp(argv[current_arg], "-sim"))
+    {
+      run_mode = RT_SIM_MODE;
+    }
+    else if (0 == strcmp(argv[current_arg], "-d"))
+    {
+      if (argc > (current_arg + 1))
+      {
+        current_arg++;
+        dir_name = argv[current_arg];
+      }
+      else
+      {
+        print_help();
+        printf("For -d option, you MUST specify the directory, %d, %d\n", argc, current_arg);
+        exit(1);
+      }
+    }
+    else if (0 == strcmp(argv[current_arg], "-f"))
+    {
+      if (argc > (current_arg + 1))
+      {
+        current_arg++;
+        config_name = argv[current_arg];
+      }
+      else
+      {
+        print_help();
+        printf("For -f option, you MUST specify the configuration file name, %d, %d\n", argc, current_arg);
+        exit(1);
+      }
+    }
+    else if (0 == strcmp(argv[current_arg], "-o"))
+    {
+      if (argc > (current_arg + 1))
+      {
+        current_arg++;
+        output_name = argv[current_arg];
+      }
+      else
+      {
+        print_help();
+        printf("For -o option, you MUST specify the output file name, %d, %d\n", argc, current_arg);
+        exit(1);
+      }
+    }
+    else if (0 == strcmp(argv[current_arg], "--help"))
+    {
+      print_help();
+      exit(0);
+    }
+    else if (argv[current_arg][0] == '-')
+    {
+      print_help();
+      exit(1);
+    }
+    else
+    {
+      break;
+    }
+
   }
 
-  const char *dir_name = argv[1]; 
+
   dir = opendir(dir_name);
 
   if (dir == NULL)
@@ -419,7 +520,23 @@ int main(int argc, char *argv[])
       continue;
     }
 
-    printf("File name = %s\n", dent->d_name);
+    int len = strlen(dent->d_name);
+    if (len < 4)
+    {
+      //printf("Skipping %s, too short\n", dent->d_name);
+      continue;
+    }
+    char *ext = dent->d_name + (len - 3);
+
+    //printf("File name = %s\n", dent->d_name);
+    if (0 != strcmp(ext, ".so"))
+    {
+      // Not a shared object file, IGNORE
+      continue;
+    }
+
+    //printf("ext = %s\n", ext);
+    //printf("File name = %s\n", dent->d_name);
 
     snprintf(sofile, sizeof(sofile), "%s/%s", dir_name, dent->d_name);
 
@@ -457,8 +574,11 @@ int main(int argc, char *argv[])
   }
   printf("\n\n");
 
-  do_gen("display.txt");
-  gen_final_file("dtest.svg");
+  printf("Config file is: %s\n", config_name);
+  printf("Output file is: %s\n", output_name);
+
+  do_gen(config_name);
+  gen_final_file(output_name);
 
   const char *cmd = "sudo cp dtest.svg /var/www/";
   printf("%s\n", cmd);
