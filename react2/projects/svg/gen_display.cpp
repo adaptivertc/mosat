@@ -299,9 +299,9 @@ static void do_gen(const char *fname)
     obj->generate(svg_fp, svg_top_of_file_fp, js_fp, argc, argv);
   }
 
-  gen_ajax_animation(js_fp);
-  //add_js_library("sim_pump.js");
-  //gen_simulation(js_fp);
+  //gen_ajax_animation(js_fp);
+  add_js_library("sim_pump.js");
+  gen_simulation(js_fp);
 
 
   fclose(js_fp);
