@@ -134,7 +134,7 @@ static void gen_simulation(FILE *js_fp)
   //fprintf(js_fp, "  pump_2_timeout();\n");
   //fprintf(js_fp, "  pump_3_timeout();\n");
 
-  fprintf(js_fp, "  var interval = setInterval(\"intervalHandler()\", 250);\n");
+  fprintf(js_fp, "  var interval = setInterval(\"intervalHandler()\", 25);\n");
   fprintf(js_fp, "};\n");
   fprintf(js_fp, "\n");
   fprintf(js_fp, "// -- END insert simulation code --\n");
@@ -233,7 +233,7 @@ static void gen_ajax_animation(FILE *js_fp)
   fprintf(js_fp, "    config_xReq.open(\"GET\", react_config_hrf + update_tags[0], true);\n");
   fprintf(js_fp, "    config_xReq.send(null);\n");
   fprintf(js_fp, "  }\n");
-  //fprintf(js_fp, "  var interval = setInterval(\"intervalHandler()\", 500);\n");
+  fprintf(js_fp, "  var interval = setInterval(\"intervalHandler()\", 1000);\n");
   fprintf(js_fp, "};\n");
   fprintf(js_fp, "\n");
   fprintf(js_fp, "// -- END insert AJAX animation code --\n");
@@ -299,9 +299,9 @@ static void do_gen(const char *fname)
     obj->generate(svg_fp, svg_top_of_file_fp, js_fp, argc, argv);
   }
 
-  //gen_ajax_animation(js_fp);
-  add_js_library("sim_pump.js");
-  gen_simulation(js_fp);
+  gen_ajax_animation(js_fp);
+  //add_js_library("sim_pump.js");
+  //gen_simulation(js_fp);
 
 
   fclose(js_fp);
