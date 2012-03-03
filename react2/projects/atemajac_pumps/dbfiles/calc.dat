@@ -1,4 +1,4 @@
-#CALC1|Calculation 1|Dogs|ai0 + (2.0 * exp(1.0))|1|10|20|80|90|5|0|0|0|0|
+CALC1|Calculation 1|amps|pump1_amp + pump2_amp + pump3_amp|1|10|20|80|90|5|0|0|0|0|
 # tag
 # description
 # engineering units

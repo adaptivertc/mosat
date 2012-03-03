@@ -104,13 +104,13 @@ void react_t::exit_clean_up(void)
     if (num_do > 0) logfile->vprint("Turning off %d discrete outputs:\n", num_do);
     for (int i=0; i < num_do; i++)
     {
-      logfile->vprint("\t%s\n", do_points[i]->tag);
+      logfile->vprint("\t%s\n", do_points[i]->get_tag());
       do_points[i]->send(false);
     }
     if (num_ao > 0) logfile->vprint("Zeroing %d analog outputs:\n", num_ao);
     for (int i=0; i < num_ao; i++)
     {
-      logfile->vprint("\t%s\n", ao_points[i]->tag);
+      logfile->vprint("\t%s\n", ao_points[i]->get_tag());
       ao_points[i]->send(0.0);
     }
   }
@@ -159,91 +159,95 @@ void react_t::print_all_points(void)
 {
   for (int i=0; i < num_di; i++)
   {
-    logfile->vprint("DI: %s\n", di_points[i]->tag);
+    logfile->vprint("DI: %s\n", di_points[i]->get_tag());
   }
   for (int i=0; i < num_do; i++)
   {
-    logfile->vprint("DO: %s\n", do_points[i]->tag);
+    logfile->vprint("DO: %s\n", do_points[i]->get_tag());
   }
   for (int i=0; i < num_calc; i++)
   {
-    logfile->vprint("Calc: %s\n", calcs[i]->tag);
+    logfile->vprint("Calc: %s\n", calcs[i]->get_tag());
   }
   for (int i=0; i < num_d_calc; i++)
   {
-    logfile->vprint("DiscreteCalc: %s\n", d_calcs[i]->tag);
+    logfile->vprint("DiscreteCalc: %s\n", d_calcs[i]->get_tag());
   }
   for (int i=0; i < num_dcalc; i++)
   {
-    logfile->vprint("DCalc: %s\n", dcalcs[i]->tag);
+    logfile->vprint("DCalc: %s\n", dcalcs[i]->get_tag());
   }
   for (int i=0; i < num_timer; i++)
   {
-    logfile->vprint("Timer: %s\n", timers[i]->tag);
+    logfile->vprint("Timer: %s\n", timers[i]->get_tag());
   }
   for (int i=0; i < num_analog_val; i++)
   {
-    logfile->vprint("Analog value: %s\n", analog_vals[i]->tag);
+    logfile->vprint("Analog value: %s\n", analog_vals[i]->get_tag());
   }
   for (int i=0; i < num_discrete_val; i++)
   {
-    logfile->vprint("Discrete value: %s\n", discrete_vals[i]->tag);
+    logfile->vprint("Discrete value: %s\n", discrete_vals[i]->get_tag());
   }
   for (int i=0; i < num_int; i++)
   {
-    logfile->vprint("Int: %s\n", ints[i]->tag);
+    logfile->vprint("Int: %s\n", ints[i]->get_tag());
   }
   for (int i=0; i < num_ai; i++)
   {
-    logfile->vprint("AI: %s\n", ai_points[i]->tag);
+    logfile->vprint("AI: %s\n", ai_points[i]->get_tag());
   }
   for (int i=0; i < num_ao; i++)
   {
-    logfile->vprint("AO: %s\n", ao_points[i]->tag);
+    logfile->vprint("AO: %s\n", ao_points[i]->get_tag());
   }
   for (int i=0; i < num_pci; i++)
   {
-    logfile->vprint("PCI: %s\n", pci_points[i]->tag);
+    logfile->vprint("PCI: %s\n", pci_points[i]->get_tag());
   }
   for (int i=0; i < num_pid; i++)
   {
-    logfile->vprint("PID: %s\n", pid_points[i]->tag);
+    logfile->vprint("PID: %s\n", pid_points[i]->get_tag());
+  }
+  for (int i=0; i < num_rpid; i++)
+  {
+    logfile->vprint("PID: %s\n", rpid_points[i]->get_tag());
   }
   for (int i=0; i < num_pump; i++)
   {
-    logfile->vprint("PUMP: %s\n", pump_points[i]->tag);
+    logfile->vprint("PUMP: %s\n", pump_points[i]->get_tag());
   }
   for (int i=0; i < num_ac; i++)
   {
-    logfile->vprint("AC: %s\n", ac_points[i]->tag);
+    logfile->vprint("AC: %s\n", ac_points[i]->get_tag());
   }
   for (int i=0; i < num_level; i++)
   {
-    logfile->vprint("LEVEL: %s\n", level_points[i]->tag);
+    logfile->vprint("LEVEL: %s\n", level_points[i]->get_tag());
   }
   for (int i=0; i < num_data; i++)
   {
-    logfile->vprint("Data: %s\n", data_points[i]->tag);
+    logfile->vprint("Data: %s\n", data_points[i]->get_tag());
   }
   for (int i=0; i < num_file_logger; i++)
   {
-    logfile->vprint("FileLogger: %s\n", file_logger_points[i]->tag);
+    logfile->vprint("FileLogger: %s\n", file_logger_points[i]->get_tag());
   }
   for (int i=0; i < num_web_logger; i++)
   {
-    logfile->vprint("FileLogger: %s\n", web_logger_points[i]->tag);
+    logfile->vprint("FileLogger: %s\n", web_logger_points[i]->get_tag());
   }
   for (int i=0; i < num_discrete_logger; i++)
   {
-    logfile->vprint("DiscreteLogger: %s\n", discrete_logger_points[i]->tag);
+    logfile->vprint("DiscreteLogger: %s\n", discrete_logger_points[i]->get_tag());
   }
   for (int i=0; i < num_scan; i++)
   {
-    logfile->vprint("Scan: %s\n", scan_points[i]->tag);
+    logfile->vprint("Scan: %s\n", scan_points[i]->get_tag());
   }
   for (int i=0; i < num_web; i++)
   {
-    logfile->vprint("Web: %s\n", web_points[i]->tag);
+    logfile->vprint("Web: %s\n", web_points[i]->get_tag());
   }
 }
 
@@ -257,7 +261,7 @@ void react_t::verify_drivers(void)
     int drv = ai_points[i]->get_driver();
     if ((drv < 0) || (drv >= num_io_drivers))
     {
-      logfile->vprint("Driver out of range for ai point %s: %d\n", ai_points[i]->tag, drv); 
+      logfile->vprint("Driver out of range for ai point %s: %d\n", ai_points[i]->get_tag(), drv); 
       exit(0);
     } 
   }
@@ -266,7 +270,7 @@ void react_t::verify_drivers(void)
     int drv = di_points[i]->get_driver();
     if ((drv < 0) || (drv >= num_io_drivers))
     {
-      logfile->vprint("Driver out of range for di point %s: %d\n", di_points[i]->tag, drv); 
+      logfile->vprint("Driver out of range for di point %s: %d\n", di_points[i]->get_tag(), drv); 
       exit(0);
     } 
   }
@@ -275,7 +279,7 @@ void react_t::verify_drivers(void)
     int drv = do_points[i]->get_driver();
     if ((drv < 0) || (drv >= num_io_drivers))
     {
-      logfile->vprint("Driver out of range for do point %s: %d\n", do_points[i]->tag, drv); 
+      logfile->vprint("Driver out of range for do point %s: %d\n", do_points[i]->get_tag(), drv); 
       exit(0);
     } 
   }
@@ -284,7 +288,7 @@ void react_t::verify_drivers(void)
     int drv = ao_points[i]->get_driver();
     if ((drv < 0) || (drv >= num_io_drivers))
     {
-      logfile->vprint("Driver out of range for ao point %s: %d\n", ao_points[i]->tag, drv); 
+      logfile->vprint("Driver out of range for ao point %s: %d\n", ao_points[i]->get_tag(), drv); 
       exit(0);
     } 
   }
@@ -293,7 +297,7 @@ void react_t::verify_drivers(void)
     int drv = pci_points[i]->get_driver();
     if ((drv < 0) || (drv >= num_io_drivers))
     {
-      logfile->vprint("Driver out of range for pci point %s: %d\n", ai_points[i]->tag, drv); 
+      logfile->vprint("Driver out of range for pci point %s: %d\n", ai_points[i]->get_tag(), drv); 
       exit(0);
     } 
   }
@@ -324,7 +328,7 @@ void react_t::read_inputs(void)
     bool val = io_driver[drv]->get_di(ch);
     di_points[i]->update(val);
   }
-  printf("%d di_points updated\n", num_di);
+  //printf("%d di_points updated\n", num_di);
   taa[j].stop();
 
   j++;
@@ -336,7 +340,7 @@ void react_t::read_inputs(void)
     double val = io_driver[drv]->get_ai(ch);
     ai_points[i]->update_analog(val);
   }
-  printf("%d ai_points updated\n", num_ai);
+  //printf("%d ai_points updated\n", num_ai);
   taa[j].stop();
 
   j++;
@@ -363,6 +367,10 @@ void react_t::read_inputs(void)
   for (int i=0; i < num_pid; i++)
   {
     pid_points[i]->update();
+  }
+  for (int i=0; i < num_rpid; i++)
+  {
+    rpid_points[i]->update();
   }
   taa[j].stop();
 
@@ -408,9 +416,9 @@ void react_t::read_inputs(void)
   taa[j].start();
   for (int i=0; i < num_ao; i++)
   {
-    ao_points[i]->update_ramp();
+    ao_points[i]->update();
   }
-  printf("%d ao_points updated\n", num_ao);
+  //printf("%d ao_points updated\n", num_ao);
   taa[j].stop();
 
   j++;
@@ -419,7 +427,7 @@ void react_t::read_inputs(void)
   {
     do_points[i]->update();
   }
-  printf("%d do_points updated\n", num_do);
+  //printf("%d do_points updated\n", num_do);
   taa[j].stop();
 
   j++;
@@ -463,11 +471,13 @@ void react_t::read_inputs(void)
 #ifdef __REACT_SHM__
   this->update_shared_memory();
 #endif
+  /**
   {
     time_t t;
     t = time(NULL);
     printf("%s\n", ctime(&t));
   }
+  **/
 
   //printf("\n");
   if (shutdown)
@@ -562,7 +572,7 @@ rt_bool_ref_t *react_get_discrete_ref_fn(char *tag)
 
 /***********************************************************************/
 
-bool *react_get_discrete_ptr_fn(char *tag)
+const bool *react_get_discrete_ptr_fn(char *tag)
 {
   db_point_t *db_point;
   db_point = reactdb->get_db_point(tag);
@@ -606,7 +616,7 @@ rt_double_ref_t *react_get_analog_ref_fn(char *tag)
 
 /***********************************************************************/
 
-double *react_get_analog_ptr_fn(char *tag)
+const double *react_get_analog_ptr_fn(char *tag)
 {
   db_point_t *db_point;
   db_point = reactdb->get_db_point(tag);
@@ -656,6 +666,8 @@ react_t::react_t()
   ints = NULL;
   num_pid = 0;
   pid_points = NULL;
+  num_rpid = 0;
+  rpid_points = NULL;
   num_pump = 0;
   pump_points = NULL;
   num_ac = 0;
@@ -936,7 +948,7 @@ void react_t::read_all_points(const char *a_home_dir)
   do_points = do_point_t::read(&num_do, a_home_dir);
   for (int i=0; i < num_do; i++)
   {
-    printf("****************** adding do: %s\n", do_points[i]->tag);
+    printf("****************** adding do: %s\n", do_points[i]->get_tag());
     index_db_point(do_points[i]);
   }
 
@@ -1006,6 +1018,13 @@ void react_t::read_all_points(const char *a_home_dir)
   for (int i=0; i < num_pid; i++)
   {
     index_db_point(pid_points[i]);
+  }
+
+  logfile->vprint("Reading remote pid ........\n");
+  rpid_points = remote_pid_t::read(&num_rpid, a_home_dir);
+  for (int i=0; i < num_rpid; i++)
+  {
+    index_db_point(rpid_points[i]);
   }
 
   logfile->vprint("Reading pump ........\n");
@@ -1147,7 +1166,7 @@ void react_t::fill_shared_memory(void)
   int k=0;
   for (int i=0; i < num_ai; i++)
   {
-    safe_strcpy(dinfo.adata[k].tag, ai_points[i]->tag,
+    safe_strcpy(dinfo.adata[k].tag, ai_points[i]->get_tag(),
                    sizeof(dinfo.adata[k].tag));
     safe_strcpy(dinfo.adata[k].description, ai_points[i]->description,
                    sizeof(dinfo.adata[k].description));
@@ -1158,7 +1177,7 @@ void react_t::fill_shared_memory(void)
   }
   for (int i=0; i < num_ao; i++)
   {
-    safe_strcpy(dinfo.adata[k].tag, ao_points[i]->tag,
+    safe_strcpy(dinfo.adata[k].tag, ao_points[i]->get_tag(),
                    sizeof(dinfo.adata[k].tag));
     safe_strcpy(dinfo.adata[k].description, ao_points[i]->description,
                    sizeof(dinfo.adata[k].description));
@@ -1170,7 +1189,7 @@ void react_t::fill_shared_memory(void)
   k=0;
   for (int i=0; i < num_di; i++)
   {
-    safe_strcpy(dinfo.ddata[k].tag, di_points[i]->tag,
+    safe_strcpy(dinfo.ddata[k].tag, di_points[i]->get_tag(),
                    sizeof(dinfo.ddata[k].tag));
     safe_strcpy(dinfo.ddata[k].description, di_points[i]->description,
                    sizeof(dinfo.ddata[k].description));
@@ -1178,7 +1197,7 @@ void react_t::fill_shared_memory(void)
   }
   for (int i=0; i < num_do; i++)
   {
-    safe_strcpy(dinfo.ddata[k].tag, do_points[i]->tag,
+    safe_strcpy(dinfo.ddata[k].tag, do_points[i]->get_tag(),
                    sizeof(dinfo.ddata[k].tag));
     safe_strcpy(dinfo.ddata[k].description, do_points[i]->description,
                    sizeof(dinfo.ddata[k].description));
@@ -1186,7 +1205,7 @@ void react_t::fill_shared_memory(void)
   }
   for (int i=0; i < num_dcalc; i++)
   {
-    safe_strcpy(dinfo.ddata[k].tag, dcalcs[i]->tag,
+    safe_strcpy(dinfo.ddata[k].tag, dcalcs[i]->get_tag(),
                    sizeof(dinfo.ddata[k].tag));
     safe_strcpy(dinfo.ddata[k].description, dcalcs[i]->description,
                    sizeof(dinfo.ddata[k].description));
@@ -1711,6 +1730,7 @@ db_point_t::db_point_t(void)
   display_is_on = true;
   display_x = display_y = 0;
   point_state = last_point_state = STATE_NORMAL;
+  sem_init(&point_lock, 0, 1); // Initilize the point lock
 }
 
 /***********************************************************************/
@@ -1721,7 +1741,7 @@ rt_double_ref_t *db_point_t::get_double_ref(const char *expr, char *err, int sz)
   if (ANALOG_VALUE == this->pv_type())
   {
     analog_point_t *ap = (analog_point_t *) this;
-    return new rt_double_ptr_ref_t(&ap->pv);  
+    return new rt_double_ptr_ref_t(ap->pv_ptr());  
   }
   snprintf(err, sz, "Not an analog point"); 
   return NULL;
@@ -1775,7 +1795,7 @@ void react_t::index_db_point(db_point_t *dbp)
 {
   char tag[50];
 
-  snprintf(tag, sizeof(tag), "%s", dbp->tag);
+  snprintf(tag, sizeof(tag), "%s", dbp->get_tag());
   for (char *p=tag; *p != '\0'; p++) 
   {
     *p = tolower(*p);
@@ -1804,8 +1824,9 @@ db_point_t *react_t::get_db_point(const char *the_tag)
     *p = tolower(*p);
   }
 
-  printf("---- looking for: %s\n", tag);
+  //printf("---- looking for: %s\n", tag);
   p = map[tag];
+  /**
   if (p == NULL)
   {
     printf("NOT found\n");
@@ -1814,6 +1835,7 @@ db_point_t *react_t::get_db_point(const char *the_tag)
   {
     printf("found\n");
   }
+  **/
 
   return p;
 
@@ -1822,7 +1844,7 @@ db_point_t *react_t::get_db_point(const char *the_tag)
 
   for (i=0; i < num_ai; i++)
   {
-    if (0 == strcasecmp(ai_points[i]->tag, tag))
+    if (0 == strcasecmp(ai_points[i]->get_tag(), tag))
     {
       return ai_points[i];
     }
@@ -1830,7 +1852,7 @@ db_point_t *react_t::get_db_point(const char *the_tag)
 
   for (i=0; i < num_pci; i++)
   {
-    if (0 == strcasecmp(pci_points[i]->tag, tag))
+    if (0 == strcasecmp(pci_points[i]->get_tag(), tag))
     {
       return pci_points[i];
     }
@@ -1839,7 +1861,7 @@ db_point_t *react_t::get_db_point(const char *the_tag)
 
   for (i=0; i < num_ao; i++)
   {
-    if (0 == strcasecmp(ao_points[i]->tag, tag))
+    if (0 == strcasecmp(ao_points[i]->get_tag(), tag))
     {
       return ao_points[i];
     }
@@ -1847,7 +1869,7 @@ db_point_t *react_t::get_db_point(const char *the_tag)
 
   for (i=0; i < num_di; i++)
   {
-    if (0 == strcasecmp(di_points[i]->tag, tag))
+    if (0 == strcasecmp(di_points[i]->get_tag(), tag))
     {
       return di_points[i];
     }
@@ -1856,7 +1878,7 @@ db_point_t *react_t::get_db_point(const char *the_tag)
 
   for (i=0; i < num_do; i++)
   {
-    if (0 == strcasecmp(do_points[i]->tag, tag))
+    if (0 == strcasecmp(do_points[i]->get_tag(), tag))
     {
       return do_points[i];
     }
@@ -1864,7 +1886,7 @@ db_point_t *react_t::get_db_point(const char *the_tag)
 
   for (i=0; i < num_calc; i++)
   {
-    if (0 == strcasecmp(calcs[i]->tag, tag))
+    if (0 == strcasecmp(calcs[i]->get_tag(), tag))
     {
       return calcs[i];
     }
@@ -1872,7 +1894,7 @@ db_point_t *react_t::get_db_point(const char *the_tag)
 
   for (i=0; i < num_d_calc; i++)
   {
-    if (0 == strcasecmp(d_calcs[i]->tag, tag))
+    if (0 == strcasecmp(d_calcs[i]->get_tag(), tag))
     {
       return d_calcs[i];
     }
@@ -1880,7 +1902,7 @@ db_point_t *react_t::get_db_point(const char *the_tag)
 
   for (i=0; i < num_dcalc; i++)
   {
-    if (0 == strcasecmp(dcalcs[i]->tag, tag))
+    if (0 == strcasecmp(dcalcs[i]->get_tag(), tag))
     {
       return dcalcs[i];
     }
@@ -1888,7 +1910,7 @@ db_point_t *react_t::get_db_point(const char *the_tag)
 
   for (i=0; i < num_timer; i++)
   {
-    if (0 == strcasecmp(timers[i]->tag, tag))
+    if (0 == strcasecmp(timers[i]->get_tag(), tag))
     {
       return timers[i];
     }
@@ -1896,7 +1918,7 @@ db_point_t *react_t::get_db_point(const char *the_tag)
 
   for (i=0; i < num_analog_val; i++)
   {
-    if (0 == strcasecmp(analog_vals[i]->tag, tag))
+    if (0 == strcasecmp(analog_vals[i]->get_tag(), tag))
     {
       return analog_vals[i];
     }
@@ -1904,7 +1926,7 @@ db_point_t *react_t::get_db_point(const char *the_tag)
 
   for (i=0; i < num_discrete_val; i++)
   {
-    if (0 == strcasecmp(discrete_vals[i]->tag, tag))
+    if (0 == strcasecmp(discrete_vals[i]->get_tag(), tag))
     {
       return discrete_vals[i];
     }
@@ -1913,7 +1935,7 @@ db_point_t *react_t::get_db_point(const char *the_tag)
 
   for (i=0; i < num_int; i++)
   {
-    if (0 == strcasecmp(ints[i]->tag, tag))
+    if (0 == strcasecmp(ints[i]->get_tag(), tag))
     {
       return ints[i];
     }
@@ -1921,15 +1943,23 @@ db_point_t *react_t::get_db_point(const char *the_tag)
 
   for (i=0; i < num_pid; i++)
   {
-    if (0 == strcasecmp(pid_points[i]->tag, tag))
+    if (0 == strcasecmp(pid_points[i]->get_tag(), tag))
     {
       return pid_points[i];
     }
   }
 
+  for (i=0; i < num_rpid; i++)
+  {
+    if (0 == strcasecmp(rpid_points[i]->get_tag(), tag))
+    {
+      return rpid_points[i];
+    }
+  }
+
   for (i=0; i < num_pump; i++)
   {
-    if (0 == strcasecmp(pump_points[i]->tag, tag))
+    if (0 == strcasecmp(pump_points[i]->get_tag(), tag))
     {
       return pump_points[i];
     }
@@ -1937,7 +1967,7 @@ db_point_t *react_t::get_db_point(const char *the_tag)
 
   for (i=0; i < num_ac; i++)
   {
-    if (0 == strcasecmp(ac_points[i]->tag, tag))
+    if (0 == strcasecmp(ac_points[i]->get_tag(), tag))
     {
       return ac_points[i];
     }
@@ -1946,7 +1976,7 @@ db_point_t *react_t::get_db_point(const char *the_tag)
 
   for (i=0; i < num_level; i++)
   {
-    if (0 == strcasecmp(level_points[i]->tag, tag))
+    if (0 == strcasecmp(level_points[i]->get_tag(), tag))
     {
       return level_points[i];
     }
@@ -1955,7 +1985,7 @@ db_point_t *react_t::get_db_point(const char *the_tag)
 
   for (i=0; i < num_data; i++)
   {
-    if (0 == strcasecmp(data_points[i]->tag, tag))
+    if (0 == strcasecmp(data_points[i]->get_tag(), tag))
     {
       return data_points[i];
     }
@@ -1963,7 +1993,7 @@ db_point_t *react_t::get_db_point(const char *the_tag)
 
   for (i=0; i < num_file_logger; i++)
   {
-    if (0 == strcasecmp(file_logger_points[i]->tag, tag))
+    if (0 == strcasecmp(file_logger_points[i]->get_tag(), tag))
     {
       return file_logger_points[i];
     }
@@ -1971,7 +2001,7 @@ db_point_t *react_t::get_db_point(const char *the_tag)
 
   for (i=0; i < num_web_logger; i++)
   {
-    if (0 == strcasecmp(web_logger_points[i]->tag, tag))
+    if (0 == strcasecmp(web_logger_points[i]->get_tag(), tag))
     {
       return web_logger_points[i];
     }
@@ -1979,7 +2009,7 @@ db_point_t *react_t::get_db_point(const char *the_tag)
 
   for (i=0; i < num_discrete_logger; i++)
   {
-    if (0 == strcasecmp(discrete_logger_points[i]->tag, tag))
+    if (0 == strcasecmp(discrete_logger_points[i]->get_tag(), tag))
     {
       return discrete_logger_points[i];
     }
@@ -1987,7 +2017,7 @@ db_point_t *react_t::get_db_point(const char *the_tag)
 
   for (i=0; i < num_scan; i++)
   {
-    if (0 == strcasecmp(scan_points[i]->tag, tag))
+    if (0 == strcasecmp(scan_points[i]->get_tag(), tag))
     {
       return scan_points[i];
     }
@@ -1995,7 +2025,7 @@ db_point_t *react_t::get_db_point(const char *the_tag)
 
   for (i=0; i < num_web; i++)
   {
-    if (0 == strcasecmp(web_points[i]->tag, tag))
+    if (0 == strcasecmp(web_points[i]->get_tag(), tag))
     {
       return web_points[i];
     }
@@ -2266,3 +2296,40 @@ void react_t::setup_connection_handler(void)
 }
 
 /*************************************************************************/
+static int xsemcnt=0;
+/****************
+The followig is used to lock an object during method execution. This
+helps eliminate bugs, by assuring that the post will automatically
+be called on exit, as, C++ automatically calls the destructor of
+objects allowcated on the stack. In other words, the constructor
+calls "sem_wait", and, the destructor calls "sem_post";
+
+However, be VERY careful. You must never call another member function that
+also has a lock (instant deadlock). The best policy, is, to put this in all public
+member functions, but, NOT in private member functions. Then, public member
+functions are also prohibited from calling other public member functions.
+****************/
+
+point_lock_t::point_lock_t(sem_t *s, const char *t)
+{
+  //xsemcnt--;
+  //n=0;
+  //tag=t;
+  sem=s;
+  sem_wait(sem);
+  //printf("'%s' locked\n",t);
+}
+
+point_lock_t::~point_lock_t(void)
+{
+  //xsemcnt++;
+  //n++;
+  //printf("'%s' un-locked %d\n",tag, n);
+  //int sv;
+  //sem_getvalue(sem, &sv);
+  /*int r=*/sem_post(sem);
+  //printf("sem ret: %d, p: %p, sv: %d, cnt: %d\n",r,sem, sv, xsemcnt);
+}
+
+/*************************************************************************/
+

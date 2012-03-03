@@ -1,8 +1,11 @@
 
 
+.PHONY: mod install restart clean
 
 mod: 
 	apxs2 -c mod_helloworld.c
+
+install:
 	sudo apxs2 -ie mod_helloworld.la
 
 restart:

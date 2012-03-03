@@ -135,6 +135,8 @@ public:
   int num_int;
   pid_point_t **pid_points;
   int num_pid;
+  remote_pid_t **rpid_points;
+  int num_rpid;
   pump_point_t **pump_points;
   int num_pump;
   ac_point_t **ac_points;

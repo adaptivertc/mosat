@@ -178,8 +178,8 @@ typedef bool (*discrete_point_handler_t)(void *p);
 void set_eval_analog_point_handler(analog_point_handler_t handler);
 void set_eval_discrete_point_handler(discrete_point_handler_t handler);
 
-typedef double *(*get_analog_ptr_fn_t)(char *tag);
-typedef bool *(*get_discrete_ptr_fn_t)(char *tag);
+typedef const double *(*get_analog_ptr_fn_t)(char *tag);
+typedef const bool *(*get_discrete_ptr_fn_t)(char *tag);
 
 void set_get_discrete_ptr_fn(get_discrete_ptr_fn_t fn);
 void set_get_analog_ptr_fn(get_analog_ptr_fn_t fn);

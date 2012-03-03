@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /*********
 Discrete.c
 
-Member functions for discrete point types.
+Member functions for discrete point types and discrete update points.
 
 *************************************************************************/
 
@@ -66,22 +66,13 @@ void discrete_point_t::display_pv(void)
 
   if (display_is_on /* && screen_refresh_is_on()*/)
   {
-    switch (pv)
+    if (pv)
     {
-      case DISCRETE_HI:
-	pv_string = hi_desc;
-	break;
-      case DISCRETE_LO:
-	pv_string = lo_desc;
-	break;
-      case DISCRETE_FAILED:
-	pv_string = "FAULT";
-	point_state = STATE_FAILED;
-	//pv_attr = FAILED_ATTR;
-	break;
-      default:
-	pv_string = "ERROR";
-	break;
+      pv_string = hi_desc;
+    }
+    else
+    {
+      pv_string = lo_desc;
     }
     //printf("%s:%s,", tag, pv_string);
     /***
@@ -138,8 +129,10 @@ void discrete_update_point_t::check_alarms(void)
 }
 
 /*************************************************************************/
+
 discrete_point_t::discrete_point_t(void)
 {
+  invert_pv = false;
   point_alarm_disable = false;
   json_str = NULL;
 }
@@ -158,7 +151,7 @@ discrete_update_point_t::discrete_update_point_t(void)
 
 const char *discrete_point_t::get_config_json(void)
 {
- int asprintf(char **strp, const char *fmt, ...);
+  point_lock_t l(&this->point_lock, tag);
 
   if (json_str == NULL)
   {

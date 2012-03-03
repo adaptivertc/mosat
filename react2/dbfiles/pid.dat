@@ -1,4 +1,4 @@
-pid1|My PID point|RPM|1|500.0|0.0|0.2|0.8|0.05|AI0|AO0|0.0|0.0|0.0|0|0|0|
+pid1|My PID point|RPM|1|500.0|0.0|0.2|0.8|0.05|AI0|AO0|0.0|0.0|0.0|0|0|0|0|100|
 #pid1|My PID point|RPM|1|500.0|0.0|1.8|0.2|0.05|AI0|AO0|0.0|0.0|0.0|0|0|0|
 #pid1|My PID point|RPM|1|500.0|0.0|0.9|0.4|0.05|AI0|AO0|0.0|0.0|0.0|0|0|0|
 # tag
@@ -18,3 +18,5 @@ pid1|My PID point|RPM|1|500.0|0.0|0.2|0.8|0.05|AI0|AO0|0.0|0.0|0.0|0|0|0|
 # dev_alarm_enable
 # dev_alarm_shutdown
 # dev_caution_enable
+# scale low
+# scale high

@@ -1,14 +1,16 @@
 # Makefile for react.
 OBJ1 = reactmain.o db.o di.o do.o ao.o data.o file_logger.o web_logger.o discrete_logger.o scan.o dcalc.o discrete_calc.o shutdown.o alarmwin.o pointstate.o react_sms.o
-OBJ2 = secuencia.o iodriver.o pid.o secuencia_step.o logfile.o control.o web.o displaydata.o script_support.o gen_case.o gen_script.o conio.o integer.o
+OBJ2 = secuencia.o iodriver.o pid.o remote_pid.o valve.o secuencia_step.o logfile.o control.o web.o displaydata.o script_support.o gen_case.o gen_script.o conio.o integer.o
 OBJ3 =	int.o pci.o ldiodriver.o timeaccum.o error.o eval.o expr.o exprlist.o exprtree.o point.o  calc.o lddbpoint.o analog.o discrete.o ac.o pump.o level.o timer_point.o analog_value.o discrete_value.o int_value.o
 OBJS =  $(OBJ1) $(OBJ2) $(OBJ3)
 
 SRC1 =	reactmain.cpp db.cpp di.cpp do.cpp ao.cpp data.cpp scan.cpp dcalc.cpp discrete_calc.cpp shutdown.cpp alarmwin.cpp pointstate.cpp react_sms.cpp
-SRC2 = secuencia.cpp iodriver.cpp pid.cpp secuencia_step.cpp logfile.cpp control.cpp web.cpp displaydata.cpp integer.cpp
+SRC2 = secuencia.cpp iodriver.cpp pid.cpp remote_pid.cpp valve.cpp secuencia_step.cpp logfile.cpp control.cpp web.cpp displaydata.cpp integer.cpp
 SRC3 = script_support.cpp gen_case.cpp gen_script.cpp conio.cpp int.cpp
 SRC4 =	pci.cpp ldiodriver.cpp timeaccum.cpp error.cpp eval.cpp expr.cpp exprlist.cpp exprtree.cpp point.cpp calc.cpp lddbpoint.cpp analog.cpp discrete.cpp ac.cpp pump.cpp level.cpp timer_point.cpp analog_value.cpp discrete_value.cpp int_value.cpp
 SRCS =  $(SRC1) $(SRC2) $(SRC3) $(SRC4)
+
+.PHONY: clean all project rdrivers drivers2 install ppcall ppcclean armall armclean
 
 export CPATH=../include
 
@@ -41,7 +43,7 @@ CPP = g++  -g -std=c++0x $(CFLAGS)
 
 MAKE = make
 
-all: react2 integrate utest rconsole reactcgi rdrivers drivers2 rtshmmain ai.so
+all: react2 integrate utest rconsole reactcgi rdrivers drivers2 rtshmmain ai.so project
 
 %.o:	%.cpp $(INCLUDES)
 	$(CPP) -c  -o $@ $<
@@ -173,6 +175,7 @@ ppcclean:
 
 armall:
 	make -f makefile.arm
+
 armclean:
 	make -f makefile.arm clean
 

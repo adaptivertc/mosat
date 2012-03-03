@@ -187,6 +187,7 @@ void dcalc_point_t::parse_expr(void)
 {
   /* Parse the expression for the dcalc point. */
 
+  logfile->vprint("%s Parsing Expression: %s\n", tag, expr_string);
   expression.expr = make_expr(expr_string);
   if (expression.expr == NULL)
   {

@@ -322,7 +322,7 @@ int step_start_acq_t::execute(double time)
   collect_cnt = 0;
   collect_start = time;
   logfile->vprint("Start data collection, %s, %s, at %0.1lf\n",
-      file_name, ai_point->tag, time);
+      file_name, ai_point->get_tag(), time);
   return 1;
 }
 

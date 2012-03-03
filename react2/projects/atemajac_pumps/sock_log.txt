@@ -14225,3 +14225,449 @@ New connection: 32
 Waiting for a connection!!
 In serve_cl(), sock_fd = 32, n = 2
 In react_t::serve_client(), sock_fd = 32, n = 2
+file opened
+In wait_conn()
+In react_t::wait_connections()
+Waiting for a connection!!
+New connection: 31
+Waiting for a connection!!
+In serve_cl(), sock_fd = 31, n = 1
+In react_t::serve_client(), sock_fd = 31, n = 1
+New connection: 32
+Waiting for a connection!!
+In serve_cl(), sock_fd = 32, n = 2
+In react_t::serve_client(), sock_fd = 32, n = 2
+file opened
+In wait_conn()
+In react_t::wait_connections()
+Waiting for a connection!!
+New connection: 31
+Waiting for a connection!!
+In serve_cl(), sock_fd = 31, n = 1
+In react_t::serve_client(), sock_fd = 31, n = 1
+New connection: 32
+Waiting for a connection!!
+In serve_cl(), sock_fd = 32, n = 2
+In react_t::serve_client(), sock_fd = 32, n = 2
+NOT a database point: pump1_a
+Tag not found: pump1_a
+Tag not found: pump1_a
+Tag not found: pump1_a
+Tag not found: pump1_a
+Tag not found: pump1_a
+Tag not found: pump1_a
+Tag not found: pump1_a
+Tag not found: pump1_a
+Tag not found: pump1_a
+Tag not found: pump1_a
+Tag not found: pump1_a
+Tag not found: pump1_a
+Tag not found: pump1_a
+Tag not found: pump1_a
+Tag not found: pump1_a
+Tag not found: pump1_a
+Tag not found: pump1_a
+Tag not found: pump1_a
+Tag not found: pump1_a
+Tag not found: pump1_a
+Tag not found: pump1_a
+Tag not found: pump1_a
+Tag not found: pump1_a
+Tag not found: pump1_a
+Tag not found: pump1_a
+Tag not found: pump1_a
+Tag not found: pump1_a
+Tag not found: pump1_a
+Tag not found: pump1_a
+Tag not found: pump1_a
+Tag not found: pump1_a
+Tag not found: pump1_a
+Tag not found: pump1_a
+Tag not found: pump1_a
+Tag not found: pump1_a
+Tag not found: pump1_a
+Tag not found: pump1_a
+Tag not found: pump1_a
+Tag not found: pump1_a
+Tag not found: pump1_a
+Tag not found: pump1_a
+Tag not found: pump1_a
+Tag not found: pump1_a
+Tag not found: pump1_a
+Tag not found: pump1_a
+Tag not found: pump1_a
+Tag not found: pump1_a
+Tag not found: pump1_a
+Tag not found: pump1_a
+file opened
+In wait_conn()
+In react_t::wait_connections()
+Waiting for a connection!!
+New connection: 4
+Waiting for a connection!!
+In serve_cl(), sock_fd = 4, n = 1
+In react_t::serve_client(), sock_fd = 4, n = 1
+New connection: 31
+Waiting for a connection!!
+In serve_cl(), sock_fd = 31, n = 2
+In react_t::serve_client(), sock_fd = 31, n = 2
+file opened
+In wait_conn()
+In react_t::wait_connections()
+Waiting for a connection!!
+file opened
+In wait_conn()
+In react_t::wait_connections()
+Waiting for a connection!!
+file opened
+In wait_conn()
+In react_t::wait_connections()
+Waiting for a connection!!
+New connection: 4
+Waiting for a connection!!
+In serve_cl(), sock_fd = 4, n = 1
+In react_t::serve_client(), sock_fd = 4, n = 1
+New connection: 32
+Waiting for a connection!!
+In serve_cl(), sock_fd = 32, n = 2
+In react_t::serve_client(), sock_fd = 32, n = 2
+file opened
+In wait_conn()
+In react_t::wait_connections()
+Waiting for a connection!!
+New connection: 4
+Waiting for a connection!!
+In serve_cl(), sock_fd = 4, n = 1
+In react_t::serve_client(), sock_fd = 4, n = 1
+New connection: 31
+Waiting for a connection!!
+In serve_cl(), sock_fd = 31, n = 2
+In react_t::serve_client(), sock_fd = 31, n = 2
+file opened
+In wait_conn()
+In react_t::wait_connections()
+Waiting for a connection!!
+New connection: 4
+Waiting for a connection!!
+In serve_cl(), sock_fd = 4, n = 1
+In react_t::serve_client(), sock_fd = 4, n = 1
+New connection: 31
+Waiting for a connection!!
+In serve_cl(), sock_fd = 31, n = 2
+In react_t::serve_client(), sock_fd = 31, n = 2
+file opened
+In wait_conn()
+In react_t::wait_connections()
+bind error: 
+file opened
+In wait_conn()
+In react_t::wait_connections()
+Waiting for a connection!!
+New connection: 31
+Waiting for a connection!!
+In serve_cl(), sock_fd = 31, n = 1
+In react_t::serve_client(), sock_fd = 31, n = 1
+New connection: 32
+Waiting for a connection!!
+In serve_cl(), sock_fd = 32, n = 2
+In react_t::serve_client(), sock_fd = 32, n = 2
+react_t::serve_client(), req # 1203, error on READ socket 31, n = 1
+react_t::serve_client(), closing socket and exiting thread
+react_t::serve_client(), req # 641, error on READ socket 32, n = 2
+react_t::serve_client(), closing socket and exiting thread
+file opened
+In wait_conn()
+In react_t::wait_connections()
+Waiting for a connection!!
+New connection: 4
+Waiting for a connection!!
+In serve_cl(), sock_fd = 4, n = 1
+In react_t::serve_client(), sock_fd = 4, n = 1
+New connection: 33
+Waiting for a connection!!
+In serve_cl(), sock_fd = 33, n = 2
+In react_t::serve_client(), sock_fd = 33, n = 2
+file opened
+In wait_conn()
+In react_t::wait_connections()
+Waiting for a connection!!
+file opened
+In wait_conn()
+In react_t::wait_connections()
+Waiting for a connection!!
+file opened
+In wait_conn()
+In react_t::wait_connections()
+Waiting for a connection!!
+file opened
+In wait_conn()
+In react_t::wait_connections()
+Waiting for a connection!!
+file opened
+In wait_conn()
+In react_t::wait_connections()
+Waiting for a connection!!
+file opened
+In wait_conn()
+In react_t::wait_connections()
+Waiting for a connection!!
+file opened
+In wait_conn()
+In react_t::wait_connections()
+Waiting for a connection!!
+file opened
+In wait_conn()
+In react_t::wait_connections()
+Waiting for a connection!!
+file opened
+In wait_conn()
+In react_t::wait_connections()
+Waiting for a connection!!
+file opened
+In wait_conn()
+In react_t::wait_connections()
+Waiting for a connection!!
+file opened
+In wait_conn()
+In react_t::wait_connections()
+Waiting for a connection!!
+file opened
+In wait_conn()
+In react_t::wait_connections()
+Waiting for a connection!!
+file opened
+In wait_conn()
+In react_t::wait_connections()
+Waiting for a connection!!
+file opened
+In wait_conn()
+In react_t::wait_connections()
+Waiting for a connection!!
+file opened
+In wait_conn()
+In react_t::wait_connections()
+Waiting for a connection!!
+file opened
+In wait_conn()
+In react_t::wait_connections()
+Waiting for a connection!!
+file opened
+In wait_conn()
+In react_t::wait_connections()
+Waiting for a connection!!
+New connection: 32
+Waiting for a connection!!
+In serve_cl(), sock_fd = 32, n = 1
+In react_t::serve_client(), sock_fd = 32, n = 1
+file opened
+In wait_conn()
+In react_t::wait_connections()
+Waiting for a connection!!
+New connection: 32
+Waiting for a connection!!
+In serve_cl(), sock_fd = 32, n = 1
+In react_t::serve_client(), sock_fd = 32, n = 1
+file opened
+In wait_conn()
+In react_t::wait_connections()
+Waiting for a connection!!
+New connection: 32
+Waiting for a connection!!
+In serve_cl(), sock_fd = 32, n = 1
+In react_t::serve_client(), sock_fd = 32, n = 1
+file opened
+In wait_conn()
+In react_t::wait_connections()
+Waiting for a connection!!
+New connection: 32
+Waiting for a connection!!
+In serve_cl(), sock_fd = 32, n = 1
+In react_t::serve_client(), sock_fd = 32, n = 1
+New connection: 33
+Waiting for a connection!!
+In serve_cl(), sock_fd = 33, n = 2
+In react_t::serve_client(), sock_fd = 33, n = 2
+file opened
+In wait_conn()
+In react_t::wait_connections()
+Waiting for a connection!!
+New connection: 32
+Waiting for a connection!!
+In serve_cl(), sock_fd = 32, n = 1
+In react_t::serve_client(), sock_fd = 32, n = 1
+file opened
+In wait_conn()
+In react_t::wait_connections()
+Waiting for a connection!!
+New connection: 32
+Waiting for a connection!!
+In serve_cl(), sock_fd = 32, n = 1
+In react_t::serve_client(), sock_fd = 32, n = 1
+New connection: 33
+Waiting for a connection!!
+In serve_cl(), sock_fd = 33, n = 2
+In react_t::serve_client(), sock_fd = 33, n = 2
+file opened
+In wait_conn()
+In react_t::wait_connections()
+bind error: 
+file opened
+In wait_conn()
+In react_t::wait_connections()
+Waiting for a connection!!
+New connection: 32
+Waiting for a connection!!
+In serve_cl(), sock_fd = 32, n = 1
+In react_t::serve_client(), sock_fd = 32, n = 1
+New connection: 33
+Waiting for a connection!!
+In serve_cl(), sock_fd = 33, n = 2
+In react_t::serve_client(), sock_fd = 33, n = 2
+file opened
+In wait_conn()
+In react_t::wait_connections()
+Waiting for a connection!!
+New connection: 32
+Waiting for a connection!!
+In serve_cl(), sock_fd = 32, n = 1
+In react_t::serve_client(), sock_fd = 32, n = 1
+file opened
+In wait_conn()
+In react_t::wait_connections()
+Waiting for a connection!!
+New connection: 32
+Waiting for a connection!!
+In serve_cl(), sock_fd = 32, n = 1
+In react_t::serve_client(), sock_fd = 32, n = 1
+file opened
+In wait_conn()
+In react_t::wait_connections()
+Waiting for a connection!!
+New connection: 32
+Waiting for a connection!!
+In serve_cl(), sock_fd = 32, n = 1
+In react_t::serve_client(), sock_fd = 32, n = 1
+file opened
+In wait_conn()
+In react_t::wait_connections()
+Waiting for a connection!!
+New connection: 33
+Waiting for a connection!!
+In serve_cl(), sock_fd = 33, n = 1
+In react_t::serve_client(), sock_fd = 33, n = 1
+file opened
+In wait_conn()
+In react_t::wait_connections()
+Waiting for a connection!!
+New connection: 33
+Waiting for a connection!!
+In serve_cl(), sock_fd = 33, n = 1
+In react_t::serve_client(), sock_fd = 33, n = 1
+file opened
+In wait_conn()
+In react_t::wait_connections()
+Waiting for a connection!!
+New connection: 33
+Waiting for a connection!!
+In serve_cl(), sock_fd = 33, n = 1
+In react_t::serve_client(), sock_fd = 33, n = 1
+file opened
+In wait_conn()
+In react_t::wait_connections()
+Waiting for a connection!!
+New connection: 33
+Waiting for a connection!!
+In serve_cl(), sock_fd = 33, n = 1
+In react_t::serve_client(), sock_fd = 33, n = 1
+file opened
+In wait_conn()
+In react_t::wait_connections()
+Waiting for a connection!!
+New connection: 33
+Waiting for a connection!!
+In serve_cl(), sock_fd = 33, n = 1
+In react_t::serve_client(), sock_fd = 33, n = 1
+file opened
+In wait_conn()
+In react_t::wait_connections()
+Waiting for a connection!!
+New connection: 33
+Waiting for a connection!!
+In serve_cl(), sock_fd = 33, n = 1
+In react_t::serve_client(), sock_fd = 33, n = 1
+New connection: 34
+Waiting for a connection!!
+In serve_cl(), sock_fd = 34, n = 2
+In react_t::serve_client(), sock_fd = 34, n = 2
+file opened
+In wait_conn()
+In react_t::wait_connections()
+Waiting for a connection!!
+New connection: 4
+Waiting for a connection!!
+In serve_cl(), sock_fd = 4, n = 1
+In react_t::serve_client(), sock_fd = 4, n = 1
+New connection: 32
+Waiting for a connection!!
+In serve_cl(), sock_fd = 32, n = 2
+In react_t::serve_client(), sock_fd = 32, n = 2
+file opened
+In wait_conn()
+In react_t::wait_connections()
+Waiting for a connection!!
+New connection: 4
+Waiting for a connection!!
+In serve_cl(), sock_fd = 4, n = 1
+In react_t::serve_client(), sock_fd = 4, n = 1
+New connection: 32
+Waiting for a connection!!
+In serve_cl(), sock_fd = 32, n = 2
+In react_t::serve_client(), sock_fd = 32, n = 2
+file opened
+In wait_conn()
+In react_t::wait_connections()
+Waiting for a connection!!
+New connection: 32
+Waiting for a connection!!
+In serve_cl(), sock_fd = 32, n = 1
+In react_t::serve_client(), sock_fd = 32, n = 1
+New connection: 33
+Waiting for a connection!!
+In serve_cl(), sock_fd = 33, n = 2
+In react_t::serve_client(), sock_fd = 33, n = 2
+file opened
+In wait_conn()
+In react_t::wait_connections()
+Waiting for a connection!!
+New connection: 32
+Waiting for a connection!!
+In serve_cl(), sock_fd = 32, n = 1
+In react_t::serve_client(), sock_fd = 32, n = 1
+New connection: 33
+Waiting for a connection!!
+In serve_cl(), sock_fd = 33, n = 2
+In react_t::serve_client(), sock_fd = 33, n = 2
+file opened
+In wait_conn()
+In react_t::wait_connections()
+Waiting for a connection!!
+New connection: 4
+Waiting for a connection!!
+In serve_cl(), sock_fd = 4, n = 1
+In react_t::serve_client(), sock_fd = 4, n = 1
+New connection: 33
+Waiting for a connection!!
+In serve_cl(), sock_fd = 33, n = 2
+In react_t::serve_client(), sock_fd = 33, n = 2
+file opened
+In wait_conn()
+In react_t::wait_connections()
+Waiting for a connection!!
+New connection: 6
+Waiting for a connection!!
+In serve_cl(), sock_fd = 6, n = 1
+In react_t::serve_client(), sock_fd = 6, n = 1
+New connection: 35
+Waiting for a connection!!
+In serve_cl(), sock_fd = 35, n = 2
+In react_t::serve_client(), sock_fd = 35, n = 2

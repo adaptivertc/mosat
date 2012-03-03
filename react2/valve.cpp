@@ -19,9 +19,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 /***
 
-Do.c
+valve.cpp
 
-Member functions for discrete output points.
+Member functions for a valve monitor.
 
 *************************************************************************/
 
@@ -38,118 +38,138 @@ Member functions for discrete output points.
 
 /********************************************************************/
 
-void do_point_t::send(bool val)
+void valve_point_t::open(void)
 {
   point_lock_t l(&this->point_lock, tag);
-  if (invert_pv) val = not val;
-  tdo_on = false; // if tdo is on, turn it off;
-  blink_on = false; // if blink is on, turn it off;
-  send_it(val);
+  this->in_transition = true; 
+  this->start_time = db->get_time();
+  this->pv = true;
+  this->do_point->send(true);
+  this->pv_string = this->hi_desc;
 }
 
 /********************************************************************/
 
-void do_point_t::send_it(bool val)
+void valve_point_t::close(void)
 {
-  /* Send the discrete output. */
+  point_lock_t l(&this->point_lock, tag);
+  this->in_transition = true; 
+  this->start_time = db->get_time();
+  this->pv = false;
+  this->do_point->send(false);
+  this->pv_string = this->lo_desc;
+}
 
-  db->send_do(driver, card, channel, val);
-  pv = val;
-  if (pv)
+/********************************************************************/
+
+void valve_point_t::update(void)
+{
+  point_lock_t l(&this->point_lock, tag);
+
+  bool open = open_point->get_pv();
+  bool closed = closed_point->get_pv();
+  double tnow = db->get_time();
+  bool valid = (!pv && !open && closed) || (pv && open && !closed);
+  
+  if (this->in_transition)
   {
-    pv_string = hi_desc;
+    if ((tnow - this->start_time) > this->delay)
+    {
+      this->in_transition = false; 
+    }
+    else
+    {
+      return; 
+    }
+  }
+
+  if (!valid)
+  {
+  }
+}
+
+
+/********************************************************************/
+
+void valve_point_t::init_values(void)
+{
+  pv = false;
+  snprintf(lo_desc, sizeof(lo_desc), "CLOSED");
+  snprintf(hi_desc, sizeof(hi_desc), "OPEN");
+  pv_string = lo_desc;
+
+  db_point_t *db_point;
+
+  ltrim(do_tag);
+  rtrim(do_tag);
+  db_point = db->get_db_point(do_tag);
+
+  if (db_point == NULL)
+  {
+    logfile->vprint("%s - bad TAGNAME: %s\n", tag, do_tag);
+    do_point = NULL;
   }
   else
   {
-    pv_string = lo_desc;
-  }
-  display_pv();
-}
-
-/********************************************************************/
-
-void do_point_t::blink(double val)
-{
-  point_lock_t l(&this->point_lock, tag);
-  //printf("%s: Turning on blink, %0.1lf\n", tag, val);
-  blink_on = true;
-  tdo_on = false;
-  blink_time = val;
-  double tnow = db->get_time();
-  this->send_it(not pv);
-  operation_end_time = tnow + val;
-}
-
-/********************************************************************/
-
-void do_point_t::tdo(double val)
-{
-  point_lock_t l(&this->point_lock, tag);
-  this->send_it(true);
-  double tnow = db->get_time();
-  operation_end_time = tnow + val;
-  tdo_on = true;
-  blink_on = false;
-}
-
-
-/********************************************************************/
-
-void do_point_t::update(void)
-{
-  point_lock_t l(&this->point_lock, tag);
-  double tnow = db->get_time();
-  //printf("///////// %s: Now: %0.1lf, Next%0.1lf, %s, %s\n", 
-  //     tag, tnow, operation_end_time, tdo_on ? "T":"F", blink_on ? "T":"F");
-  if (tdo_on)
-  {
-    if (tnow > operation_end_time)
+    do_point = dynamic_cast <do_point_t *> (db_point);
+    if (do_point == NULL)
     {
-      this->send_it(false);
-      tdo_on = false;
+      logfile->vprint("%s - bad discrete output point: %s\n", tag, do_tag);
     }
   }
 
-  if (blink_on)
+  ltrim(closed_tag);
+  rtrim(closed_tag);
+  db_point = db->get_db_point(closed_tag);
+
+  if (db_point == NULL)
   {
-    //printf("//////////////////// %s: Now: %0.1lf, Next%0.1lf\n", 
-    //      tag, tnow, operation_end_time);
-    if (tnow > operation_end_time)
+    logfile->vprint("%s - bad TAGNAME: %s\n", tag, closed_tag);
+    closed_point = NULL;
+  }
+  else
+  {
+    closed_point = dynamic_cast <discrete_point_t *> (db_point);
+    if (closed_point == NULL)
     {
-      operation_end_time += blink_time;
-      this->send_it(not pv);
+      logfile->vprint("%s - bad discrete tag for closed: %s\n", tag, closed_tag);
+    }
+  }
+
+  ltrim(open_tag);
+  rtrim(open_tag);
+  db_point = db->get_db_point(open_tag);
+
+  if (db_point == NULL)
+  {
+    logfile->vprint("%s - bad TAGNAME: %s\n", tag, open_tag);
+    open_point = NULL;
+  }
+  else
+  {
+    open_point = dynamic_cast <discrete_point_t *> (db_point);
+    if (open_point == NULL)
+    {
+      logfile->vprint("%s - bad discrete tag for open: %s\n", tag, open_tag);
     }
   }
 }
 
-
 /********************************************************************/
 
-void do_point_t::init_values(void)
-{
-  pv = false;
-  pv_string = lo_desc;
-  //pv_attr = NORMAL_PV_ATTR;
-  tdo_on = false;
-  blink_on = false;
-  operation_end_time = 0.0;
-}
-
-/********************************************************************/
-
-do_point_t **do_point_t::read(int *cnt, const char *home_dir)
+valve_point_t **valve_point_t::read(int *cnt, const char *home_dir)
 {
   int max_points = 200;
   int count = 0;
-  do_point_t **do_points =
-	(do_point_t **) malloc(max_points * sizeof(do_point_t*));
-  MALLOC_CHECK(do_points);
+  valve_point_t **valve_points =
+	(valve_point_t **) malloc(max_points * sizeof(valve_point_t*));
+  MALLOC_CHECK(valve_points);
 
   *cnt = 0;
 
   char path[200];
   safe_strcpy(path, home_dir, sizeof(path));
-  safe_strcat(path, "/dbfiles/do.dat", sizeof(path));
+  safe_strcat(path, "/dbfiles/valve.dat", sizeof(path));
   FILE *fp = fopen(path, "r");
   if (fp == NULL)
   {
@@ -177,55 +197,51 @@ do_point_t **do_point_t::read(int *cnt, const char *home_dir)
     {
       continue;
     }
-    else if ((argc != 7) && (argc != 8))
+    else if (argc != 6)
     {
       logfile->vprint("%s: Wrong number of args, line %d", path, i+1);
       continue;
     }
     logfile->vprint("%s\n", line);
-    do_point_t *p = new do_point_t;
+    valve_point_t *p = new valve_point_t;
 
     /*****
     Tag
     Description
-    Driver Number
-    Card
-    Channel
-    Low Description
-    High Description
+    do_tag
+    closed_tag
+    open_tag
+    delay
     ******/
 
     safe_strcpy(p->tag, (const char*) argv[0], sizeof(p->tag));
     safe_strcpy(p->description, (const char*) argv[1], sizeof(p->description));
 
-    p->driver = atol(argv[2]);
-    p->card = atol(argv[3]);
-    p->channel = atol(argv[4]);
+    snprintf(p->do_tag, sizeof(p->do_tag), "%s", argv[2]);
+    snprintf(p->closed_tag, sizeof(p->closed_tag), "%s", argv[3]);
+    snprintf(p->open_tag, sizeof(p->open_tag), "%s", argv[4]);
 
-    safe_strcpy(p->lo_desc, (const char*) argv[5], sizeof(p->lo_desc));
-    safe_strcpy(p->hi_desc, (const char*) argv[6], sizeof(p->hi_desc));
-    if (argc > 7) p->invert_pv = (argv[0][7] == '1');
-
+    p->delay = atof(argv[5]);
 
     p->init_values();
 
-    do_points[count] = p;
+    valve_points[count] = p;
     count++;
     if (count >= max_points)
     {
       max_points += 50;
-      do_points = (do_point_t **) realloc(do_points,
-	    max_points * sizeof(do_point_t*));
-      MALLOC_CHECK(do_points);
+      valve_points = (valve_point_t **) realloc(valve_points,
+	    max_points * sizeof(valve_point_t*));
+      MALLOC_CHECK(valve_points);
     }
   }
   *cnt = count;
   if (count == 0)
   {
-    free(do_points);
+    free(valve_points);
     return NULL;
   }
-  return do_points;
+  return valve_points;
 }
 
 /************************************************************************/

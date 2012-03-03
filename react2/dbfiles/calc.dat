@@ -1,4 +1,4 @@
-CALC1|Calculation 1|Dogs|TEMP_COLD_AC1 + (2.0 * exp(1.0))|1|10|20|80|90|5|0|0|0|0|
+CALC1|Calculation 1|Dogs|TEMP_COLD_AC1 + (2.0 * exp(1.0))|1|10|20|80|90|5|0|0|0|0|0|100|
 # tag
 # description
 # engineering units
@@ -13,3 +13,5 @@ CALC1|Calculation 1|Dogs|TEMP_COLD_AC1 + (2.0 * exp(1.0))|1|10|20|80|90|5|0|0|0|
 # low caution enable
 # high caution enable
 # high alarm enable
+# scale_lo
+# scale_hi

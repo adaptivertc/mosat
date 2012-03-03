@@ -26,9 +26,9 @@ public:
 class rt_double_ptr_ref_t : public rt_double_ref_t
 {
 private:
-  double *dptr;
+  const double *dptr;
 public:
-  rt_double_ptr_ref_t(double *a_dptr){dptr = a_dptr;};
+  rt_double_ptr_ref_t(const double *a_dptr){dptr = a_dptr;};
   inline double val(void){return *dptr;};
   virtual ~rt_double_ptr_ref_t(void){};
 };

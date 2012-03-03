@@ -96,165 +96,10 @@ void pid_point_t::stop_control(void)
 
 /******************************************************************/
 
-enum tune_type_t {TUNE_PI, TUNE_PID};
-struct tune_data_t
-{
-  double A0;
-  double A1;
-  double k;
-  double L;
-  double T;
-  double a;
-  double Kp;
-  double Ti;
-  double Td;
-};
-
-/******************************************************************/
-
-double find_k(double data[], int n)
-{
-  /* This is the steady state at the end - the stead state value
-   * at the start.
-   */
-  return data[n-1] - data[0];
-}
-
-/******************************************************************/
-
-double integrate_above(double data[], int n, double dt)
-{
-  /* This is the area ABOVE the curve, from start to end
-   */
-  double hi = data[n];
-  double total = 0.0;
-  for (int i=1; i < n; i++)
-  {
-    total += (((hi - data[i]) + (hi - data[i-1])) / 2.0) * dt;
-  }
-  return total;
-}
-
-/******************************************************************/
-
-double integrate_below(double data[], int n, double dt, double LplusT)
-{
-  /* This is the area BELOW the curve, from start to (L + T) */
-  double lo = data[0];
-  double total = 0.0;
-  for (int i=1; i < n; i++)
-  {
-    total += (((data[i] - lo) + (data[i-1] - lo)) / 2.0) * dt;
-    if ((i * dt) > LplusT)
-    {
-      break;
-    }
-  }
-  return total;
-}
-
-/******************************************************************/
-
-void calc_tune_coef(double data[], int n, double dt, tune_type_t tt)
-{
-  double LplusT;
-  tune_data_t td;
-
-  td.k = find_k(data, n);
-  td.A0 = integrate_above(data, n, dt);
-  LplusT = td.A0 / td.k;
-  td.A1 = integrate_below(data, n, dt, LplusT);
-  td.T = (td.A1 / td.k) * M_E;
-  td.L = LplusT - td.T;
-  td.a = td.L * (td.k / td.T);
-  switch (tt)
-  {
-    case TUNE_PID:
-      td.Kp = 1.2 / td.a;
-      td.Ti = 2 * td.L;
-      td.Td = td.L / 2.0;
-      break;
-    case TUNE_PI:
-      td.Kp = 0.9 / td.a;
-      td.Ti = 3 * td.L;
-      td.Td = 0;
-      break;
-  }
-  logfile->vprint("Kp = %lf, Ti = %lf, Td = %lf\n", td.Kp, td.Ti, td.Td);
-  logfile->vprint("A0 = %lf, A1 = %lf, L = %lf, T = %lf, k = %lf, a = %lf\n",
-		  td.A0, td.A1, td.L, td.T, td.k, td.a);
-}
-
-/******************************************************************/
-
-void pid_point_t::auto_tune(double initial, double final, double time)
-{
-  tune = true;
-  tune_delay = time;
-  tune_initial_output = initial;
-  tune_final_output = final;
-  ao_point->send(initial);
-  logfile->vprint("sending %lf\n", initial);
-  tune_start_time = db->get_time();
-  tune_total_samples = (int)(time * db->get_sample_rate()) + 1;
-  tune_data = new double[tune_total_samples];
-  tune_n_samples = 0;
-  tune_phase_2 = false;
-  MALLOC_CHECK(tune_data);
-  logfile->vprint("Tune phase 1, %lf\n", initial);
-  logfile->vprint("sample rate: %lf\n", db->get_sample_rate());
-  logfile->vprint("Total Samples: %d, initial: %lf, final: %lf, time: %lf\n",
-		  tune_total_samples, initial, final, time);
-}
-
-/******************************************************************/
-
-void pid_point_t::tune_update(void)
-{
-  double elapsed_time = db->get_time() - tune_start_time;
-  if (tune_n_samples >= tune_total_samples)
-  {
-    tune = false;
-    logfile->vprint("Tune finished, calculating gains\n");
-    calc_tune_coef(tune_data, tune_n_samples,
-             1.0 / db->get_sample_rate(), TUNE_PID);
-    const char *fname = "tuneout.txt";
-    FILE *fp = fopen(fname, "w");
-    logfile->vprint("Writing tune data to %s\n", fname);
-    for (int i=0; i < tune_n_samples; i++)
-    {
-      fprintf(fp, "%d\t%lf\n", i, tune_data[i]);
-    }
-    fclose(fp);
-    return;
-  }
-  else if (tune_phase_2)
-  {
-    tune_data[tune_n_samples] = ai_point->get_pv();
-    tune_n_samples++;
-  }
-  else if (elapsed_time > tune_delay)
-  {
-    ao_point->send(tune_final_output);
-    logfile->vprint("sending %lf\n", tune_final_output);
-    tune_data[0] = ai_point->get_pv();
-    tune_n_samples++;
-    logfile->vprint("Tune phase 2, starting data collection, %lf\n", tune_final_output);
-    tune_phase_2 = true;
-  }
-}
-
-/******************************************************************/
-
 void pid_point_t::update(void)
 {
   /* Update the given control point. */
 
-  if (this->tune)
-  {
-    tune_update();
-    return;
-  }
   if (!control_enabled)
   {
     return;
@@ -373,8 +218,6 @@ void pid_point_t::init_values(void)
   ramp_is_on = false;
   updates_per_evaluation = 1;
   delay_counter = updates_per_evaluation - 1;
-  tune = false;
-  tune_data = NULL;
 }
 
 /********************************************************************/
@@ -422,7 +265,7 @@ pid_point_t **pid_point_t::read(int *cnt, const char *home_dir)
     {
       continue;
     }
-    else if (argc != 17)
+    else if ((argc != 17) && (argc != 19))
     {
       logfile->vprint("%s: Wrong number of args, line %d\n", path, i+1);
       continue;
@@ -453,6 +296,9 @@ pid_point_t **pid_point_t::read(int *cnt, const char *home_dir)
     pid->dev_alarm_enable = (argv[14][0] == '1');
     pid->dev_alarm_shutdown = (argv[15][0] == '1');
     pid->dev_caution_enable = (argv[16][0] == '1');
+    if (argc > 17) pid->scale_lo = atof(argv[17]);
+    if (argc > 18) pid->scale_hi = atof(argv[18]);
+
 
     pid->init_values();
 

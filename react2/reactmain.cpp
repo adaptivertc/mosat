@@ -102,6 +102,7 @@ void react_signal_handler(int sig_num)
 
 void exit_clean_up(void)
 {
+  reactdb->print_all_points();
   if (logfile != NULL)
   {
     logfile->close();

@@ -137,7 +137,7 @@ static void gen_simulation(FILE *js_fp)
   //fprintf(js_fp, "  pump_2_timeout();\n");
   //fprintf(js_fp, "  pump_3_timeout();\n");
 
-  fprintf(js_fp, "  var interval = setInterval(\"intervalHandler()\", 25);\n");
+  fprintf(js_fp, "  var interval = setInterval(\"intervalHandler()\", 250);\n");
   fprintf(js_fp, "};\n");
   fprintf(js_fp, "\n");
   fprintf(js_fp, "// -- END insert simulation code --\n");
@@ -540,7 +540,7 @@ int main(int argc, char *argv[])
 
     snprintf(sofile, sizeof(sofile), "%s/%s", dir_name, dent->d_name);
 
-    printf("Opening plugin: %s\n", sofile);
+    printf("Opening plugin[%d]: %s\n", n_plugins + 1,  sofile);
 
     if (n_plugins > 99) 
     {
@@ -569,10 +569,10 @@ int main(int argc, char *argv[])
   // Ok, probamos todos de los objetos para ver que si funcionan.
   for (i=0; i < n_plugins; i++)
   {
-    printf("Handles objects of type: %s\n\n", mi_objs[i]->get_name());
+    printf("plugin[%d]-handles objects of type: %s\n", i+1, mi_objs[i]->get_name());
     //convertir_uno(mi_objs[i], "Teacher, esto es una prueba MUY MUY MUY tonta");
   }
-  printf("\n\n");
+  printf("\n");
 
   printf("Config file is: %s\n", config_name);
   printf("Output file is: %s\n", output_name);

@@ -157,14 +157,14 @@ void pump_point_t::update(void)
  
     /***
     printf("%s\t%s\t%s\t%0.2lf\t%0.3lf\t", datestr, tag, 
-            di_point->pv_string, level, amps);
+            di_point->get_pv_string_ptr(), level, amps);
     fflush(stdout);
     fprintf(pump_fp, "%s\t%s\t%s\t%0.2lf\t%0.3lf\t", datestr, tag, 
-            di_point->pv_string, level, amps);
+            di_point->get_pv_string_ptr(), level, amps);
     ****/
     snprintf(change_start_line, sizeof(change_start_line), 
             "%s\t%s\t%s\t%0.2lf\t%0.3lf\t", datestr, tag, 
-            di_point->pv_string, level, amps);
+            di_point->get_pv_string_ptr(), level, amps);
     last_state_at_change = state;
     last_change_time = now;
     change_started = true;
@@ -261,6 +261,7 @@ pump_point_t **pump_point_t::read(int *cnt, const char *home_dir)
     rtrim(pmp->pump_on_tag);
 
     db_point = db->get_db_point(pmp->pump_on_tag);
+    printf("tagb = %s, db_point = %p\n", pmp->pump_on_tag, db_point); 
     if ((db_point == NULL) || (db_point->point_type() != DISCRETE_INPUT))
     {
       pmp->di_point = NULL;

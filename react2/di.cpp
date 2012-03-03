@@ -42,15 +42,19 @@ Member functions for discrete input points.
 
 void di_point_t::update(bool value)
 {
+  point_lock_t l(&point_lock, tag);
+  //printf("entering update for %s\n", tag);
   /* Update the discrete input point. */
 
-  //printf("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ tag: %s, value: %s\n", tag, value ? "T":"F");
+  //printf("@@@@@@@@@@@@@@@@ tag: %s, value: %s\n", tag, value ? "T":"F");
   
+  if (invert_pv) value = not value;
   pv_last = pv;
   pv  = value;
 
   display_pv();
   check_alarms();
+  //printf("exiting update for %s\n", tag);
 
 }
 
@@ -64,11 +68,27 @@ void di_point_t::init_values(void)
 }
 
 /**********************************************************************/
+static const char *get_json_dstate(int state)
+{
+  switch (state) 
+  {
+    case DISCRETE_LO:
+      return "LOW";
+      break;
+    case DISCRETE_HI:
+      return "HIGH";
+      break;
+    case DISCRETE_NONE:
+    default:
+      return "NONE";
+      break;
+  }
+}
+/**********************************************************************/
 
 const char *di_point_t::get_config_json(void)
 {
- int asprintf(char **strp, const char *fmt, ...);
-
+  point_lock_t l(&this->point_lock, tag);
   if (json_str == NULL)
   {
      asprintf(&json_str, "{\"tag\":\"%s\",\"description\":\"%s\",\"driver\":%d,\"card\":%d,\"channel\":%d, \"lo_desc\":\"%s\",\"hi_desc\":\"%s\", \"alarm_state\":\"%s\",\"shutdown_state\":\"%s\"}",
@@ -79,8 +99,8 @@ const char *di_point_t::get_config_json(void)
          this->channel,
          this->lo_desc,
          this->hi_desc,
-         "NONE",//this->alarm_state,
-         "NONE"//this->shutdown_state,
+         get_json_dstate(this->alarm_state),
+         get_json_dstate(this->shutdown_state)
       );
   }
   return json_str;
@@ -142,7 +162,7 @@ di_point_t **di_point_t::read(int *cnt, const char *home_dir)
       continue;
     }
 
-    else if (argc != 9)
+    else if ((argc != 9) && (argc != 10))
     {
       logfile->vprint("%s: Wrong number of args, line %d\n", path, i+1);
       continue;
@@ -210,6 +230,7 @@ di_point_t **di_point_t::read(int *cnt, const char *home_dir)
 	p->shutdown_state = DISCRETE_NONE;
 	break;
     }
+    if (argc > 9) p->invert_pv = (argv[0][9] == '1');
 
     p->init_values();
 

@@ -188,6 +188,8 @@ analog_point_t::analog_point_t(void)
   pv = 0.0;
   safe_strcpy(fmt, "%-6.0f", sizeof(fmt));
   display_width = 6;
+  scale_lo = 0;
+  scale_hi = 0;
 }
 
 /************************************************************************/
@@ -306,18 +308,22 @@ void analog_point_t::display_pv(void)
     ****/
 }
 
+/*************************************************************************/
+
 const char *analog_point_t::get_config_json(void)
 {
- int asprintf(char **strp, const char *fmt, ...);
+  point_lock_t l(&this->point_lock, tag);
 
   if (json_str == NULL)
   {
-     asprintf(&json_str, "{\"tag\":\"%s\",\"description\":\"%s\",\"eu\":\"%s\",decimal_places\":%d,\"zero_cutoff\":%lf}",
+     asprintf(&json_str, "{\"tag\":\"%s\",\"description\":\"%s\",\"eu\":\"%s\",decimal_places\":%d,\"zero_cutoff\":%lf,\"scale_lo\":%lf, \"scale_hi\":%lf}",
          this->tag,
          this->description,
          this->eu,
          this->decimal_places,
-         this->zero_cutoff
+         this->zero_cutoff,
+         this->scale_lo,
+         this->scale_hi
        );
   }
   return json_str;

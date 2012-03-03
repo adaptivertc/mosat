@@ -1,6 +1,10 @@
 
 export CPATH=../../../include/
 
+.PHONY : clean
+.PHONY : all
+.PHONY : so_files 
+
 RTCOMMON=../../../librtcommon/librtcommon.a
 
 

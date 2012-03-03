@@ -31,6 +31,7 @@ database.
 
 #include <time.h>
 #include <sys/time.h>
+#include <semaphore.h>
 //#include <ncurses.h>
 #include "rtcommon.h"
 #include "reactpoint.h"
@@ -40,6 +41,18 @@ database.
 #define DESCRIPTION_OFFSET 0
 #define PV_OFFSET 21
 #define EU_OFFSET 28
+
+class point_lock_t
+{
+private:
+  sem_t *sem;
+  const char *tag;
+  int n;
+public:
+  point_lock_t(sem_t *s, const char *t);
+  ~point_lock_t(void);
+};
+
 
 class db_point_t;
 
@@ -134,7 +147,7 @@ public:
 
 class db_point_t : public db_point_interface_t
 {
-public:
+protected:
   tag_t tag;
   char description[21];
   point_state_t point_state;
@@ -143,6 +156,7 @@ public:
   bool display_is_on;
   bool point_alarm_disable;
   char *json_str;
+public:
 
   void enable_display(int x, int y);
   void disable_display(void);
@@ -162,6 +176,8 @@ public:
   virtual rt_long_ref_t *get_long_ref(const char *expr, char *err, int sz) = 0;
 
   virtual ~db_point_t(void) {};
+protected:
+  sem_t point_lock;
 };
 
 class field_point_t
@@ -174,7 +190,7 @@ public:
 
 class analog_point_t : public db_point_t
 {
-public:
+protected:
   double pv;
   char eu[8];
   char fmt[8];
@@ -182,12 +198,15 @@ public:
   int round;
   int decimal_places;
   double zero_cutoff;
+  double scale_lo;
+  double scale_hi;
   analog_point_t(void);
   void set_format(void);
+public:
   inline double get_pv(void) {return pv;};
   void display(void);
   void display_pv(void);
-  inline double *pv_ptr(void) {printf("Got ptr: %s\n", tag);return &pv;};
+  inline const double *pv_ptr(void) {printf("Got ptr: %s\n", tag);return &pv;};
   //virtual const char *get_faceplate(void) {snprintf(faceplate_str, sizeof(faceplate_str), "<br><h1>%s: %0.1lf</h1><br>\n", tag, pv); return faceplate_str;};
   virtual const char *get_faceplate(void) {snprintf(faceplate_str, sizeof(faceplate_str), "A: %s, %lf\n", tag, pv);return faceplate_str;};
   rt_double_ref_t *get_double_ref(const char *expr, char *err, int sz)
@@ -200,7 +219,7 @@ public:
           {return ANALOG_VALUE;};
   pv_type_t pv_type(void) {printf("pv type is ANALOG_VALUE\n"); return ANALOG_VALUE;};
   void get_pv_json(char *buf, int sz)
-        {snprintf(buf, sz, "%0.*lf", this->decimal_places, this->pv);};
+        {point_lock_t l(&point_lock, "******************************************************");snprintf(buf, sz, "%0.*lf", this->decimal_places, this->pv);};
   virtual const char *get_config_json(void); 
 };
 
@@ -311,7 +330,7 @@ public:
 /*#SCRIPT_FUNCTION#*/
   void ramp(double val, double time);
   void sendit(double val);
-  void update_ramp(void);
+  void update(void);
   point_type_t point_type(void) {return ANALOG_OUTPUT;};
   static ao_point_t *read_one(int argc, char *argv[], char *err, int esz);
   static ao_point_t **read(int *cnt, const char * home_dir);
@@ -350,12 +369,17 @@ public:
 
 class discrete_point_t : public db_point_t
 {
-public:
+protected:
   bool pv;
   const char *pv_string;
   char hi_desc[12];
   char lo_desc[12];
+  bool invert_pv;
   char faceplate_str[100];
+public:
+  const char *get_pv_string_ptr(void) {return pv_string;};
+  const char *get_lo_desc_ptr(void) {return lo_desc;};
+  const char *get_hi_desc_ptr(void) {return hi_desc;};
   void display(void);
   void display_pv(void);
   inline bool get_pv(void) {return pv;};
@@ -372,7 +396,7 @@ public:
           {return DISCRETE_VALUE;};
   pv_type_t pv_type(void) {printf("pv type is DISCRETE_VALUE\n"); return DISCRETE_VALUE;};
   void get_pv_json(char *buf, int sz)
-        {snprintf(buf, sz, "%s", this->pv?"true":"false");};
+        {point_lock_t l(&point_lock, "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");snprintf(buf, sz, "%s", this->pv?"true":"false");};
   virtual const char *get_config_json(void); 
 };
 
@@ -395,7 +419,7 @@ public:
     {return INTEGER_VALUE;};
   pv_type_t pv_type(void) {return INTEGER_VALUE;};
   void get_pv_json(char *buf, int sz)
-        {snprintf(buf, sz, "%ld", this->pv);};
+        {point_lock_t l(&point_lock, tag);snprintf(buf, sz, "%ld", this->pv);};
   virtual const char *get_config_json(void); 
 };
 
@@ -768,6 +792,46 @@ public:
   void init_values(void);
 };
 
+/*#SCRIPT_OBJECT#(REMOTE_PID)*/
+class remote_pid_t : public control_point_t
+{
+private:
+	/* configuration */
+  tag_t ai_tag; // to monitor the process value (PV)
+  tag_t ao_tag; // to send the setpoint (SP)
+  tag_t enable_tag; // to enable / disable control (if available)
+  tag_t p_tag; // to send the proportional gain (if available)
+  tag_t i_tag; // to send the integral time (if available)
+  tag_t d_tag; // to send the derivative time (if available)
+  double p_gain;
+  double i_time;
+  double d_time;
+  do_point_t *enable_point;
+  ao_point_t *p_point;
+  ao_point_t *i_point;
+  ao_point_t *d_point;
+public:
+/*#SCRIPT_FUNCTION#*/
+  void change_setpoint(double val, double ramp_time);
+/*#SCRIPT_FUNCTION#*/
+  void spt(double val) {change_setpoint(val,0.0);};
+/*#SCRIPT_FUNCTION#*/
+  void ramp(double val, double time) {change_setpoint(val,time);};
+/*#SCRIPT_FUNCTION#*/
+  void start_control(void);
+/*#SCRIPT_FUNCTION#*/
+  void stop_control(void);
+
+  void get_gains(double *p, double *i, double *d);
+  void send_gains(double p, double i, double d);
+  point_type_t point_type(void) {return REMOTE_PID;};
+
+  void update(void);
+  void init_values(void);
+  static remote_pid_t **read(int *cnt, const char * home_dir);
+  static remote_pid_t *create_one(int argc, char *argv[], char *err, int esz);
+};
+
 /*#SCRIPT_OBJECT#(PID_POINT)*/
 class pid_point_t : public control_point_t
 {
@@ -780,7 +844,7 @@ private:
   tag_t ai_tag;
   tag_t ao_tag;
 
-      /* real-time */
+   /* real-time */
   double last_input;
   double last_output;
   double last_error;
@@ -788,15 +852,6 @@ private:
   double last_time;
   int updates_per_evaluation;
   int delay_counter;
-  bool tune;
-  bool tune_phase_2;
-  double tune_start_time;
-  double tune_delay;
-  double tune_initial_output;
-  double tune_final_output;
-  double *tune_data;
-  int tune_n_samples;
-  int tune_total_samples;
 public:
 /*#SCRIPT_FUNCTION#*/
   void change_setpoint(double val, double ramp_time);
@@ -808,11 +863,8 @@ public:
   void start_control(void);
 /*#SCRIPT_FUNCTION#*/
   void stop_control(void);
-/*#SCRIPT_FUNCTION#*/
-  void auto_tune(double initial, double final, double time);
   point_type_t point_type(void) {return PID_POINT;};
   void update(void);
-  void tune_update(void);
   static pid_point_t **read(int *cnt, const char * home_dir);
   static pid_point_t *create_one(int argc, char *argv[], char *err, int esz);
   void init_values(void);
@@ -1094,6 +1146,32 @@ public:
   static driver_point_t *create_one(int argc, char *argv[], char *err, int esz);
   void init_values(void);
 };
+
+/*#SCRIPT_OBJECT#(VALVE_POINT)*/
+class valve_point_t : public discrete_point_t
+{
+private:
+  tag_t do_tag;
+  tag_t closed_tag;
+  tag_t open_tag;
+  do_point_t *do_point;
+  discrete_point_t *closed_point;
+  discrete_point_t *open_point;
+  double delay;
+  double start_time; 
+  bool in_transition;
+public:
+/*#SCRIPT_FUNCTION#*/
+  void open(void);
+/*#SCRIPT_FUNCTION#*/
+  void close(void);
+  void update(void);
+  point_type_t point_type(void) {return VALVE_POINT;};
+  static valve_point_t **read(int *cnt, const char * home_dir);
+  static valve_point_t *create_one(int argc, char *argv[], char *err, int esz);
+  void init_values(void);
+};
+
 
 void enable_alarm_display(db_point_t *db_point);
 

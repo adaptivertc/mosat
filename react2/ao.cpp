@@ -40,6 +40,7 @@ Code for the analog output member functions.
 
 void ao_point_t::send(double val)
 {
+  point_lock_t l(&this->point_lock, tag);
   ramp_on = false;
   this->sendit(val);
 }
@@ -69,8 +70,9 @@ void ao_point_t::sendit(double val)
 
 /********************************************************************/
 
-void ao_point_t::update_ramp(void)
+void ao_point_t::update(void)
 {
+  point_lock_t l(&this->point_lock, tag);
   if (!ramp_on)
   {
     return;
@@ -100,6 +102,7 @@ void ao_point_t::update_ramp(void)
 
 void ao_point_t::ramp(double val, double time)
 {
+  point_lock_t l(&this->point_lock, tag);
   ramp_on = true;
   ramp_val = val;
   double dif = val - pv;
@@ -122,7 +125,7 @@ void ao_point_t::init_values(void)
 ao_point_t *ao_point_t::read_one(int argc, char *argv[], char *err, int esz)
 {
     ao_point_t *p = new ao_point_t;
-    if (argc != 13)
+    if ((argc != 13) && (argc != 15))
     {
       snprintf(err, esz, "Wrong number of args for ao");
       return NULL;
@@ -141,6 +144,9 @@ ao_point_t *ao_point_t::read_one(int argc, char *argv[], char *err, int esz)
 
     p->output_limit_lo = atof(argv[11]);
     p->output_limit_hi = atof(argv[12]);
+    if (argc > 11) p->scale_lo = atof(argv[11]);
+    if (argc > 12) p->scale_hi = atof(argv[12]);
+
 
     p->init_values();
 

@@ -340,7 +340,7 @@ void web_point_t::read_file(void)
       }
 
       logfile->vprint("Integer point: %s, default value: %s\n",
-           newiref->ip->tag, newiref->default_str);
+           newiref->ip->get_tag(), newiref->default_str);
       for (int k=0; k < newiref->nvals; k++)
       {
         logfile->vprint("Value: %d, string: %s\n",

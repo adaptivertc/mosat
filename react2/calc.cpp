@@ -56,9 +56,9 @@ void calc_point_t::update()
 
 calc_point_t *calc_point_t::read_one(int argc, char *argv[], char *err, int esz)
 {
-  if (argc != 14)
+  if ((argc != 14) && (argc != 16))
   {
-    snprintf(err, esz, "Wrong number of args for ai");
+    snprintf(err, esz, "Wrong number of args for calc");
     return NULL;
   }
   calc_point_t *p = new calc_point_t;
@@ -85,7 +85,10 @@ calc_point_t *calc_point_t::read_one(int argc, char *argv[], char *err, int esz)
   p->lo_caution_enable = (argv[11][0] == '1');
   p->hi_caution_enable = (argv[12][0] == '1');
   p->hi_alarm_enable = (argv[13][0] == '1');
+  if (argc > 14) p->scale_lo = atof(argv[14]);
+  if (argc > 15) p->scale_hi = atof(argv[15]);
   p->expression.expr = NULL;
+
 
     //p->window_size = 0;
     //p->window = NULL;

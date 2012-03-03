@@ -103,7 +103,7 @@ void discrete_logger_t::update(void)
       for (int i=0; i < num_points; i++)
       {
         if (discrete_points[i] == NULL) continue;
-        fprintf(hour_fp, "\t%s", discrete_points[i]->tag);
+        fprintf(hour_fp, "\t%s", discrete_points[i]->get_tag());
       }
       fprintf(hour_fp, "\n");
     }
@@ -123,13 +123,13 @@ void discrete_logger_t::update(void)
 
       if (vnow) 
       {
-        snow = discrete_points[i]->hi_desc;
-        slast = discrete_points[i]->lo_desc;
+        snow = discrete_points[i]->get_hi_desc_ptr();
+        slast = discrete_points[i]->get_lo_desc_ptr();
       }
       else
       {
-        snow = discrete_points[i]->lo_desc;
-        slast = discrete_points[i]->hi_desc;
+        snow = discrete_points[i]->get_lo_desc_ptr();
+        slast = discrete_points[i]->get_hi_desc_ptr();
       }
 
       if ((log_falling[i] && !vnow) || (log_rising[i] && vnow))
@@ -191,7 +191,7 @@ bool discrete_logger_t::read_json(char *json_buffer, discrete_logger_t *p)
     p->last_detect = NULL;
     p->n_hour_detects = NULL;
     p->n_day_detects = NULL;
-    logfile->vprint("Error parsing JSON for %s: %s\n", p->tag, err);
+    logfile->vprint("Error parsing JSON for %s: %s\n", p->get_tag(), err);
     return false;
   }
   else if (type != RT_JSON_ARRAY)
@@ -205,7 +205,7 @@ bool discrete_logger_t::read_json(char *json_buffer, discrete_logger_t *p)
     p->last_detect = NULL;
     p->n_hour_detects = NULL;
     p->n_day_detects = NULL;
-    logfile->vprint("Error parsing for %s, expected JSON ARRAY, found: %s\n", p->tag, rt_json_type_string(type));
+    logfile->vprint("Error parsing for %s, expected JSON ARRAY, found: %s\n", p->get_tag(), rt_json_type_string(type));
     return false;
   }
 
@@ -237,7 +237,7 @@ bool discrete_logger_t::read_json(char *json_buffer, discrete_logger_t *p)
 
     if (item_type == RT_JSON_ERROR)
     {
-      logfile->vprint("Error parsing JSON for %s: %s\n", p->tag, err);
+      logfile->vprint("Error parsing JSON for %s: %s\n", p->get_tag(), err);
       p->bool_refs[i] = NULL;
       p->log_rising[i] = false;
       p->log_falling[i] = false;
@@ -245,7 +245,7 @@ bool discrete_logger_t::read_json(char *json_buffer, discrete_logger_t *p)
     }
     else if (item_type != RT_JSON_ARRAY)
     {
-      logfile->vprint("Error parsing for %s, expected JSON ARRAY, found: %s\n", p->tag, rt_json_type_string(item_type));
+      logfile->vprint("Error parsing for %s, expected JSON ARRAY, found: %s\n", p->get_tag(), rt_json_type_string(item_type));
       p->bool_refs[i] = NULL;
       p->log_rising[i] = false;
       p->log_falling[i] = false;
@@ -298,7 +298,7 @@ bool discrete_logger_t::read_json(char *json_buffer, discrete_logger_t *p)
         break;
       default:
         logfile->vprint("******* Error %s: discrete %d, bad param: '%s' log type must be R, F, or B (rising, falling, or both)\n",
-                   p->tag, i, log_type); 
+                   p->get_tag(), i, log_type); 
         logfile->vprint("defaulting to both rising and falling\n");
         p->log_rising[i] = true;
         p->log_falling[i] = true;
@@ -402,13 +402,13 @@ discrete_logger_t **discrete_logger_t::read(int *cnt, const char *home_dir)
 
     if (p->collecting)
     {
-      logfile->vprint("collection is on for %s\n", p->tag);
+      logfile->vprint("collection is on for %s\n", p->get_tag());
     }
 
     int n_extra = argc - 4;
     if ((n_extra % 2) != 0)
     {
-      logfile->vprint("%s: There must be an even number of extra parameters - each with tag, and log type (rise, fall, or both (RFB))\n", p->tag);
+      logfile->vprint("%s: There must be an even number of extra parameters - each with tag, and log type (rise, fall, or both (RFB))\n", p->get_tag());
       logfile->vprint("    There were %d parameters, and %d extra parameters\n", argc, n_extra);
     }
     p->num_points = n_extra / 2; 
@@ -463,7 +463,7 @@ discrete_logger_t **discrete_logger_t::read(int *cnt, const char *home_dir)
           p->log_falling[nd] = true;
           break;
         default:
-          logfile->vprint("******* Error %s: discrete %d, bad param: '%s' log type must be R, F, or B (rising, falling, or both)\n", p->tag, nd, argv[j+1]); 
+          logfile->vprint("******* Error %s: discrete %d, bad param: '%s' log type must be R, F, or B (rising, falling, or both)\n", p->get_tag(), nd, argv[j+1]); 
           logfile->vprint("defaulting to both rising and falling\n");
           p->log_rising[nd] = true;
           p->log_falling[nd] = true;
@@ -476,7 +476,7 @@ discrete_logger_t **discrete_logger_t::read(int *cnt, const char *home_dir)
       for (int i=0; i < p->num_points; i++)
       {
         if (p->discrete_points[i] == NULL) continue;
-        fprintf(p->hour_fp, "\t%s", p->discrete_points[i]->tag);
+        fprintf(p->hour_fp, "\t%s", p->discrete_points[i]->get_tag());
       }
       fprintf(p->hour_fp, "\n");
     }

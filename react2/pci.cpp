@@ -70,6 +70,14 @@ void pci_point_t::update(long new_raw_count)
 
 void pci_point_t::init_values(void)
 {
+    this->lo_alarm_shutdown = false;
+    this->hi_alarm_shutdown = false;
+
+    this->set_format();
+    this->pv = 0;
+    this->raw_count = 0;
+    this->history_loc = 0;
+    //int n = sizeof(pci->count_history) / sizeof(pci->count_history[0]);
 }
 
 /*************************************************************************/
@@ -114,7 +122,7 @@ pci_point_t **pci_point_t::read(int *cnt, const char *home_dir)
     {
       continue;
     }
-    else if (argc != 21)
+    else if ((argc != 21) && (argc != 23))
     {
       logfile->vprint("%s: Wrong number of args, line %d", path, i+1);
       continue;
@@ -168,15 +176,11 @@ pci_point_t **pci_point_t::read(int *cnt, const char *home_dir)
     pci->lo_caution_enable = (argv[18][0] == '1');
     pci->hi_caution_enable = (argv[19][0] == '1');
     pci->hi_alarm_enable = (argv[20][0] == '1');
+    if (argc > 21) pci->scale_lo = atof(argv[21]);
+    if (argc > 22) pci->scale_hi = atof(argv[22]);
 
-    pci->lo_alarm_shutdown = false;
-    pci->hi_alarm_shutdown = false;
+    pci->init_values();
 
-    pci->set_format();
-    pci->pv = 0;
-    pci->raw_count = 0;
-    pci->history_loc = 0;
-    //int n = sizeof(pci->count_history) / sizeof(pci->count_history[0]);
 
     /*****/
     pci_points[i] = pci;

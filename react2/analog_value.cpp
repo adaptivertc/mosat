@@ -47,7 +47,7 @@ void analog_value_point_t::init_values(void)
 /************************************************************************/
 analog_value_point_t *analog_value_point_t::read_one(int argc, char *argv[], char *err, int esz)
 {
-  if (argc != 5)
+  if ((argc != 5) && (argc != 7))
   {
     snprintf(err, esz, "Should be 5 args for analog_value, found: %d\n", argc);
     return NULL;
@@ -60,6 +60,8 @@ analog_value_point_t *analog_value_point_t::read_one(int argc, char *argv[], cha
 
   p->decimal_places = atoi(argv[3]);
   p->pv = atof(argv[4]);
+  if (argc > 5) p->scale_lo = atof(argv[5]);
+  if (argc > 6) p->scale_hi = atof(argv[6]);
 
   return p;
 }

@@ -73,6 +73,8 @@ void ai_point_t::update(double new_raw_value)
 {
   /* This routine updates the analog input point using the given raw
      value. */
+  point_lock_t l(&this->point_lock, tag);
+  //printf("Entering ai update\n");
 
   raw_value = new_raw_value;
   pv_last = pv;
@@ -96,6 +98,7 @@ void ai_point_t::update(double new_raw_value)
   check_alarms();
   display_pv();
   //printf("%s.pv = %lf\n", tag, pv);
+  //printf("leaving ai update\n");
 }
 
 /*************************************************************************/
@@ -146,11 +149,11 @@ void ai_point_t::init_values(void)
 
 const char *ai_point_t::get_config_json(void)
 {
- int asprintf(char **strp, const char *fmt, ...);
+  point_lock_t l(&this->point_lock, tag);
 
   if (json_str == NULL)
   {
-     asprintf(&json_str, "{\"tag\":\"%s\",\"description\":\"%s\",\"eu\":\"%s\",\"driver\":%d,\"card\":%d,\"channel\":%d,\"eu_lo\":%lf,\"eu_hi\":%lf,\"raw_lo\":%lf,\"raw_hi\":%lf,\"decimal_places\":%d,\"zero_cutoff\":%lf,\"lo_alarm\":%lf,\"lo_caution\":%lf,\"hi_caution\":%lf,\"hi_alarm\":%lf,\"deadband\":%lf,\"lo_alarm_enable\":%s,\"lo_caution_enable\":%s,\"hi_caution_enable\":%s,\"hi_alarm_enable\":%s}",
+     asprintf(&json_str, "{\"tag\":\"%s\",\"description\":\"%s\",\"eu\":\"%s\",\"driver\":%d,\"card\":%d,\"channel\":%d,\"eu_lo\":%lf,\"eu_hi\":%lf,\"raw_lo\":%lf,\"raw_hi\":%lf,\"decimal_places\":%d,\"zero_cutoff\":%lf,\"lo_alarm\":%lf,\"lo_caution\":%lf,\"hi_caution\":%lf,\"hi_alarm\":%lf,\"deadband\":%lf,\"lo_alarm_enable\":%s,\"lo_caution_enable\":%s,\"hi_caution_enable\":%s,\"hi_alarm_enable\":%s,\"scale_lo\":%lf, \"scale_hi\":%lf}",
          this->tag, 
          this->description, 
          this->eu, 
@@ -171,7 +174,9 @@ const char *ai_point_t::get_config_json(void)
          this->lo_alarm_enable?"true":"false",
          this->lo_caution_enable?"true":"false",
          this->hi_caution_enable?"true":"false",
-         this->hi_alarm_enable?"true":"false"
+         this->hi_alarm_enable?"true":"false",
+         this->scale_lo,
+         this->scale_hi
       );  
            /**
 Tag: LevelDescription: Level of first tankEU Label: cm.Driver: 1Card: 0Channel: 231EU Low: 0EU High: 600Raw Low: 0Raw High: 10Decimal Places: 0Zero Cutoff: 2
@@ -184,7 +189,7 @@ Tag: LevelDescription: Level of first tankEU Label: cm.Driver: 1Card: 0Channel: 
 
 db_point_t *ai_point_t::read_one(int argc, char *argv[], char *err, int esz)
 {
-  if (argc != 21)
+  if ((argc != 21) && (argc != 23))
   {
     snprintf(err, esz, "Wrong number of args for ai");
     return NULL;
@@ -212,6 +217,8 @@ db_point_t *ai_point_t::read_one(int argc, char *argv[], char *err, int esz)
   ai->lo_caution_enable = (argv[18][0] == '1');
   ai->hi_caution_enable = (argv[19][0] == '1');
   ai->hi_alarm_enable = (argv[20][0] == '1');
+  if (argc > 21) ai->scale_lo = atof(argv[21]);
+  if (argc > 22) ai->scale_hi = atof(argv[22]);
 
   ai->init_values();
 

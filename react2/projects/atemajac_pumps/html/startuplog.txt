@@ -1,38 +1,40 @@
-Wed Feb 22 12:43:28 2012
-React PID: 25816
+Sat Mar  3 12:17:29 2012
+React PID: 30708
 SampleRate set to: 5.000000
 Loading db point factory from: ../../ai.so
 Reading AI ........
-PUMP1_AMP|BOMBA 1|amps|0|0|5|0.0|50.0|6400|32000|1|-12.50|0|0|30|35|0|0|0|1|1|
-PUMP2_AMP|BOMBA 2|amps|0|0|4|0.0|50.0|6400|32000|1|-12.50|0|0|30|35|0|0|0|1|1|
-PUMP3_AMP|BOMBA 3|amps|0|0|3|0.0|50.0|6400|32000|1|-12.50|0|0|30|35|0|0|0|1|1|
-LEVEL|NIVEL|cm|0|0|2|0.0|500.0|32000|6400|1|-125.0|0|0|370|400|0|0|0|1|1|
+PUMP1_AMP|BOMBA 1|amps|0|0|5|0.0|50.0|6400|32000|1|-12.50|0|0|30|35|0|0|0|1|1|0|50|
+PUMP2_AMP|BOMBA 2|amps|0|0|4|0.0|50.0|6400|32000|1|-12.50|0|0|30|35|0|0|0|1|1|0|50|
+PUMP3_AMP|BOMBA 3|amps|0|0|3|0.0|50.0|6400|32000|1|-12.50|0|0|30|35|0|0|0|1|1|0|50|
+LEVEL|NIVEL|cm|0|0|2|0.0|500.0|32000|6400|0|-125.0|0|0|370|400|0|0|0|1|1|0|500|
 Reading ao ........
 Reading di ........
-LO_LEVEL|Nivel Bajo|0|1|0|BELOW|ABOVE|H|N|
-HI_LEVEL|Nivel Alto|0|1|1|BELOW|ABOVE|H|N|
-HI_HI_LEVEL|Nivel Muy Alto|0|1|2|BELOW|ABOVE|H|N|
-ULT_SON_ALM|Nivel Muy Alto|0|1|3|OK|ALARM|H|N|
-CFE_SUPPLY|Falla de alimentacion CFE|0|1|8|ALARM|OK|H|N|
-MIXER|Mescladora ON|0|1|10|ON|OFF|H|N|
-VPUMP1_ON|Bomba V1 ON|0|0|6|ON|OFF|H|N|
-VPUMP2_ON|Bomba V2 ON|0|0|7|ON|OFF|H|N|
-PUMP1_ON|Bomba 1 ON|0|0|8|ON|OFF|H|N|
-PUMP2_ON|Bomba 1 ON|0|0|9|ON|OFF|H|N|
-PUMP3_ON|Bomba 1 ON|0|0|10|ON|OFF|H|N|
-COM_FAILED|Communications Failed|0|1|16|ALARM|OK|N|N|
+LO_LEVEL|Nivel Bajo|0|1|0|BELOW|ABOVE|H|N|0|
+HI_LEVEL|Nivel Alto|0|1|1|BELOW|ABOVE|H|N|0|
+HI_HI_LEVEL|Nivel Muy Alto|0|1|2|BELOW|ABOVE|H|N|0|
+ULT_SON_ALM|Nivel Muy Alto|0|1|3|OK|ALARM|H|N|0|
+CFE_SUPPLY|Falla de alimentacion CFE|0|1|8|ALARM|OK|H|N|0|
+MIXER|Mescladora ON|0|1|10|ON|OFF|H|N|0|
+VPUMP1_ON|Bomba V1 ON|0|0|6|ON|OFF|H|N|0|
+VPUMP2_ON|Bomba V2 ON|0|0|7|ON|OFF|H|N|0|
+PUMP1_ON|Bomba 1 ON|0|0|8|off|ON|H|N|0|
+PUMP2_ON|Bomba 1 ON|0|0|9|off|ON|H|N|0|
+PUMP3_ON|Bomba 1 ON|0|0|10|off|ON|H|N|0|
+COM_FAILED|Communications Failed|0|1|16|ALARM|OK|N|N|0|
 Reading do ........
-PUMP1_DO|Bomba 1|0|0|1|Off|On|
-PUMP2_DO|Bomba 2|0|0|2|Off|On|
-PUMP3_DO|Bomba 3|0|0|3|Off|On|
-PUMP1V_DO|Bomba 1|0|0|4|Off|On|
-PUMP2V_DO|Bomba 2|0|0|5|Off|On|
+PUMP1_DO|Bomba 1|0|0|1|Off|On|0|
+PUMP2_DO|Bomba 2|0|0|2|Off|On|0|
+PUMP3_DO|Bomba 3|0|0|3|Off|On|0|
+PUMP1V_DO|Bomba 1|0|0|4|Off|On|0|
+PUMP2V_DO|Bomba 2|0|0|5|Off|On|0|
 Reading pci ........
 Reading calc ........
+CALC1|Calculation 1|amps|pump1_amp + pump2_amp + pump3_amp|1|10|20|80|90|5|0|0|0|0|
+Expression: pump1_amp + pump2_amp + pump3_amp
 Reading discrete calc ........
-.//dbfiles/discrete_calc.dat: No such file or directory
-Can't open .//dbfiles/discrete_calc.dat
-0 discrete calcs read
+DCALC1|Discrete Calc 1|(pump1_amp < 0.0) or (pump2_amp > 200) and pump1_on|Alarm|ok|N|N|
+Expression: (pump1_amp < 0.0) or (pump2_amp > 200) and pump1_on
+1 discrete calcs read
 Reading dcalc ........
 Reading timer ........
 .//dbfiles/timer.dat: No such file or directory
@@ -48,6 +50,9 @@ Can't open file: .//dbfiles/discrete_value.dat
 num discrete values = 0
 Reading int ........
 Reading pid ........
+Reading remote pid ........
+.//dbfiles/remote_pid.dat: No such file or directory
+Can't open .//dbfiles/remote_pid.dat
 Reading pump ........
 PUMP1|First Pump|PUMP1_ON|PUMP1_AMP|LEVEL|10|30|1.0|
 PUMP1: Min: 10.000000, Max 30.000000, Delay 1.000000
@@ -95,8 +100,10 @@ Bar: extra/bar.png, extra/half_off.png, extra/half_on.png
     Adding Discrete value: ULT_SON_ALM,  strings: ALARM OK
     Adding Discrete value: CFE_SUPPLY,  strings: ALARM OK
     Adding Discrete value: MIXER,  strings: OFF ON
-Parsing 0 Analog Expressions ......
-Parsing 0 Discrete Expressions ......
+Parsing 1 Analog Expressions ......
+CALC1 Parsing "pump1_amp + pump2_amp + pump3_amp"
+Parsing 1 Discrete Expressions ......
+DCALC1 Parsing Expression: (pump1_amp < 0.0) or (pump2_amp > 200) and pump1_on
 Creating thread to wait on connections . . . 
 -- Reading background scripts: .//dbfiles/background.dat
 control_pumps.txt
@@ -144,6 +151,8 @@ sys.loop()
 Loading iodrivers from: .//dbfiles/drivers.dat
 ../../drivers/sim_pump_low/libsimpumpdrv.so|new_simpumpdrv|||
 Loading iodriver from: ../../drivers/sim_pump_low/libsimpumpdrv.so
+In react_t::wait_connections()
+react_t::wait_connections(), All OK, waiting for connections
 Class factory function is: new_simpumpdrv
-Wed Feb 22 12:43:28 2012
-No foreground script executing, use "kill -1 25816" or <CTRL-C> to stop
+Sat Mar  3 12:17:29 2012
+No foreground script executing, use "kill -1 30708" or <CTRL-C> to stop
