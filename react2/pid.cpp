@@ -265,7 +265,7 @@ pid_point_t **pid_point_t::read(int *cnt, const char *home_dir)
     {
       continue;
     }
-    else if ((argc != 17) && (argc != 19))
+    else if (argc != 19)
     {
       logfile->vprint("%s: Wrong number of args, line %d\n", path, i+1);
       continue;
@@ -296,8 +296,8 @@ pid_point_t **pid_point_t::read(int *cnt, const char *home_dir)
     pid->dev_alarm_enable = (argv[14][0] == '1');
     pid->dev_alarm_shutdown = (argv[15][0] == '1');
     pid->dev_caution_enable = (argv[16][0] == '1');
-    if (argc > 17) pid->scale_lo = atof(argv[17]);
-    if (argc > 18) pid->scale_hi = atof(argv[18]);
+    pid->scale_lo = atof(argv[17]);
+    pid->scale_hi = atof(argv[18]);
 
 
     pid->init_values();

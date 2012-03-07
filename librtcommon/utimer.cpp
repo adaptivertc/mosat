@@ -44,159 +44,49 @@ DEALINGS IN THE SOFTWARE.
 
 *******************************************************************/
 
-void utimer_t::normalize_timeval(struct timeval *atv)
+void utimer_t::normalize_timespec(struct timespec *ats)
 {
-  /*
-   * Here we normalize the timeval structure after adding or
-   * subtracting microseconds.
-   */
-
-  while (atv->tv_usec >= 1000000)
+  while (ats->tv_nsec >= 1000000000)
   {
-    atv->tv_sec += 1;
-    atv->tv_usec -= 1000000;
+    ats->tv_sec += 1;
+    ats->tv_nsec -= 1000000000;
   }
-  while (atv->tv_usec < 0)
+  while (ats->tv_nsec < 0)
   {
-    atv->tv_sec -= 1;
-    atv->tv_usec += 1000000;
+    ats->tv_sec -= 1;
+    ats->tv_nsec += 1000000000;
   }
 }
 
 /*******************************************************************/
 
-void utimer_print(utimer_status_t s)
-{
-  printf("start time:   %ld, %6ld\n",
-		  s.start_time.tv_sec, s.start_time.tv_usec);
-  printf("current time: %ld, %6ld\n",
-		  s.current_time.tv_sec, s.current_time.tv_usec);
-  printf("elapsed time: %ld, %6ld\n",
-		  s.elapsed_time.tv_sec, s.elapsed_time.tv_usec);
-  printf("next time:    %ld, %6ld\n",
-		  s.next_time.tv_sec, s.next_time.tv_usec);
-  printf("time left   :      %6ld\n", s.time_left);
-  printf("interval    :      %6ld\n", s.interval);
-}
-
-/*******************************************************************/
-
-void utimer_t::print_status(void)
-{
-  utimer_status_t s;
-  s = this->get_status();
-  utimer_print(s);
-}
-
-/*******************************************************************/
-
-utimer_status_t utimer_t::get_status(void)
-{
-  utimer_status_t s;
-  struct timeval tv2;
-  struct timeval tv3;
-  gettimeofday(&tv2, NULL);
-  long dif = usec_timer_dif(tv2);
-  tv3.tv_sec = tv2.tv_sec - tv0.tv_sec;
-  tv3.tv_usec = tv2.tv_usec - tv0.tv_usec;
-  normalize_timeval(&tv3);
-
-  s.start_time = tv0;
-  s.current_time = tv2;
-  s.next_time = tv1;
-  s.elapsed_time = tv3;
-  s.time_left = dif;
-  s.interval = interval;
-  return s;
-}
-
-/*******************************************************************/
-
-void utimer_t::inc_time(long usecs)
+void utimer_t::inc_time(void)
 {
   /*
    * This increments the time for the next event by the
    * given number of microsecents.
    */
 
-  tv1.tv_usec += usecs;
-  normalize_timeval(&tv1);
-}
-
-/*******************************************************************/
-
-struct timeval utimer_t::elapsed_time(void)
-{
-  /*
-   * This returns the total elapsed time since the timer was started.
-   */
-
-  struct timeval tv2;
-  struct timeval tv3;
-  gettimeofday(&tv2, NULL);
-  tv3.tv_sec = tv2.tv_sec - tv0.tv_sec;
-  tv3.tv_usec = tv2.tv_usec - tv0.tv_usec;
-  normalize_timeval(&tv3);
-  return tv3;
-}
-
-/*******************************************************************/
-
-struct timespec utimer_t::timespec_dif(struct timeval atv) 
-{
-  struct timespec temp_ts;
-  struct timeval mytv;
-  
-  mytv.tv_sec = tv1.tv_sec - atv.tv_sec;
-  mytv.tv_usec = tv1.tv_usec - atv.tv_usec;
-  normalize_timeval(&mytv);
-  
-  temp_ts.tv_sec = mytv.tv_sec;
-  temp_ts.tv_nsec = mytv.tv_usec * long(1000);
-  return temp_ts;
-}
-
-/*******************************************************************/
-
-long utimer_t::usec_timer_dif(struct timeval atv)
-{
-  /*
-   * This returns the difference in microseconds between two
-   * timeval structures.
-   */
-
-  long secdif = tv1.tv_sec - atv.tv_sec;
-  long usecdif = tv1.tv_usec - atv.tv_usec;
-  //long secdif = atv.tv_sec - tv1.tv_sec;
-  //long usecdif = atv.tv_usec - tv1.tv_usec;
-  return usecdif + (secdif * 1000000);
+  //printf("inc_time (before): %ld %ld\n", next_time.tv_sec, next_time.tv_nsec);
+  next_time.tv_sec += interval.tv_sec;
+  next_time.tv_nsec += interval.tv_nsec;
+  //printf("inc_time (after1): %ld %ld\n", next_time.tv_sec, next_time.tv_nsec);
+  normalize_timespec(&next_time);
+  //printf("inc_time (after2): %ld %ld\n", next_time.tv_sec, next_time.tv_nsec);
 }
 
 /*******************************************************************/
 
 void utimer_t::my_busy_wait()
 {
-  struct timeval tv2;
+  struct timespec ts;
   bool done = false;
   while (!done)
   {
-    gettimeofday(&tv2, NULL);
-    long dif = usec_timer_dif(tv2);
-    if (dif <= 0)
-    {
-      done = true;
-    }
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+    if ((ts.tv_sec == next_time.tv_sec) && (ts.tv_nsec > next_time.tv_nsec)) done = true;
+    else if (ts.tv_sec > next_time.tv_sec) done = true;
   }
-}
-
-/*******************************************************************/
-
-double utimer_t::late_time(void)
-{
-  struct timeval tv2;
-  gettimeofday(&tv2, NULL);
-  long dif = usec_timer_dif(tv2);
-  return double(dif) * -1.0e-6;
 }
 
 /*******************************************************************/
@@ -211,48 +101,32 @@ void utimer_t::wait_next(void)
    * inacuracies in the way the OS handles sleep. For instance in
    * DOS, the wait would be to the nearest 55 miliseconds.
    */
-
-  struct timeval tv2;
-  gettimeofday(&tv2, NULL);
-  long dif = usec_timer_dif(tv2);
-
-  //printf("now time: %ld, %ld\n", tv2.tv_sec, tv2.tv_usec);
-  //printf("next time: %ld, %ld\n", tv1.tv_sec, tv1.tv_usec);
-  //printf("waiting: %ld\n", dif);
-  if (dif <= 0)
-  {
-    //printf("More than 1 sec late!: %ld usecs\n", dif);
-    inc_time(interval); // We are behind, hope we can catch up!
-    return;
-  }
-  //printf("Sleeping for %ld usecs\n", dif);
+  struct timespec ts;
+  clock_gettime(CLOCK_MONOTONIC, &ts);
+  //printf("time is: %ld %ld\n", ts.tv_sec, ts.tv_nsec);
   if (busy_wait)
   {
+    //printf("Calling busy wait: %ld %ld\n", next_time.tv_sec, next_time.tv_nsec);
     my_busy_wait();
   }
   else
   {
-    //usleep(dif);
-    struct timespec remain;
-    struct timespec request = timespec_dif(tv2);
-    //printf("waiting (%ld, %ld)\n", request.tv_sec, request.tv_nsec);
-    int retval = nanosleep(&request, &remain);
+    //printf("waiting for: %ld %ld\n", next_time.tv_sec, next_time.tv_nsec);
+    int retval = clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME,  &next_time, NULL);
     while (retval == -1)
     { 
       if (errno == EINTR)
       {
-        request = remain; // Ok, a signal screwed things up, sleep again.
-        printf("waiting for rest(%ld, %ld)\n", request.tv_sec, request.tv_nsec);
-        retval = nanosleep(&request, &remain);
+        retval = clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME,  &next_time, NULL);
       }
       else if (errno == EINVAL)
       {
-        printf("Error in utimer code %s:%d\n", __FILE__, __LINE__);
+        //printf("Error in utimer code %s:%d\n", __FILE__, __LINE__);
         break;
       }
       else if (errno == EFAULT)
       {
-        printf("System error in utimer (EFAULT) %s:%d\n", __FILE__, __LINE__);
+        //printf("System error in utimer (EFAULT) %s:%d\n", __FILE__, __LINE__);
         break;
       }
       else
@@ -261,28 +135,17 @@ void utimer_t::wait_next(void)
       }
     }
   }
-  gettimeofday(&tv2, NULL);
-  dif = usec_timer_dif(tv2);
-  //printf("wait difference: %ld\n", dif);
-  //struct timespec ts;
-  //ts.tv_sec = 0;
-  //ts.tv_nsec = dif * 1000L;
-  //nanosleep(&ts, NULL);
-  //printf("done sleeping\n");
-  inc_time(interval);
+  //printf("time expired: %ld %ld\n", next_time.tv_sec, next_time.tv_nsec);
+  inc_time();
 }
 
 /*******************************************************************/
-
 void utimer_t::set_start_time(void)
 {
-  /*
-   * This sets the start time for the timer to NOW.
-   */
-
-  gettimeofday(&tv1, NULL);
-  tv0 = tv1;
-  inc_time(interval);
+  clock_gettime(CLOCK_MONOTONIC, &next_time);
+  printf("current time: %ld %ld\n", next_time.tv_sec, next_time.tv_nsec);
+  inc_time();
+  printf("next time: %ld %ld\n", next_time.tv_sec, next_time.tv_nsec);
 }
 
 /*******************************************************************/
@@ -294,9 +157,19 @@ utimer_t::utimer_t()
    * and a 1 second interval.
    */
 
+  struct timespec ts;
+  clock_gettime(CLOCK_MONOTONIC, &ts);
+  printf("time now is: %ld %ld\n", ts.tv_sec, ts.tv_nsec);
+
+  ts.tv_sec = 1;
+  ts.tv_nsec = 0;
+
   busy_wait = false; // Default, do not use busy wait, use usleep(). 
-  set_interval(1000000); // Default interval is 1 second.
+  set_interval(ts); // Default interval is 1 second.
+  printf("Interval is: %ld %ld\n", interval.tv_sec, interval.tv_nsec);
   set_start_time(); // Default start time is now
+  printf("Interval is: %ld %ld\n", interval.tv_sec, interval.tv_nsec);
+  printf("next_time is: %ld %ld\n", next_time.tv_sec, next_time.tv_nsec);
 }
 
 /*******************************************************************

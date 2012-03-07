@@ -149,6 +149,16 @@ discrete_update_point_t::discrete_update_point_t(void)
 
 /*************************************************************************/
 
+void discrete_point_t::get_pv_json(char *buf, int sz)
+{
+  point_lock_t l(&point_lock, tag);
+  snprintf(buf, sz, "%s", this->pv?"true":"false");
+  //printf("#### tag: %s, json value: %s, invert: %s\n", tag, buf, invert_pv ? "T":"F");
+
+}
+
+/*************************************************************************/
+
 const char *discrete_point_t::get_config_json(void)
 {
   point_lock_t l(&this->point_lock, tag);

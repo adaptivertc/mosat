@@ -1,6 +1,6 @@
-Sat Mar  3 12:17:29 2012
-React PID: 30708
-SampleRate set to: 5.000000
+Mon Mar  5 12:15:04 2012
+React PID: 11890
+SampleRate set to: 10.000000
 Loading db point factory from: ../../ai.so
 Reading AI ........
 PUMP1_AMP|BOMBA 1|amps|0|0|5|0.0|50.0|6400|32000|1|-12.50|0|0|30|35|0|0|0|1|1|0|50|
@@ -151,8 +151,6 @@ sys.loop()
 Loading iodrivers from: .//dbfiles/drivers.dat
 ../../drivers/sim_pump_low/libsimpumpdrv.so|new_simpumpdrv|||
 Loading iodriver from: ../../drivers/sim_pump_low/libsimpumpdrv.so
-In react_t::wait_connections()
-react_t::wait_connections(), All OK, waiting for connections
 Class factory function is: new_simpumpdrv
-Sat Mar  3 12:17:29 2012
-No foreground script executing, use "kill -1 30708" or <CTRL-C> to stop
+Mon Mar  5 12:15:04 2012
+No foreground script executing, use "kill -1 11890" or <CTRL-C> to stop

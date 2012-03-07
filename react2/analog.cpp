@@ -310,6 +310,14 @@ void analog_point_t::display_pv(void)
 
 /*************************************************************************/
 
+void analog_point_t::get_pv_json(char *buf, int sz)
+{
+  point_lock_t l(&point_lock, tag);
+  snprintf(buf, sz, "%0.*lf", this->decimal_places, this->pv);
+}
+
+/*************************************************************************/
+
 const char *analog_point_t::get_config_json(void)
 {
   point_lock_t l(&this->point_lock, tag);

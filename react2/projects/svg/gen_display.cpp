@@ -199,12 +199,12 @@ static void gen_ajax_animation(FILE *js_fp)
   fprintf(js_fp, "function on_update_response()\n");
   fprintf(js_fp, "{\n");
   fprintf(js_fp, "  var val = JSON.parse(update_xReq.responseText);\n");
-  fprintf(js_fp, "  console.log(\"response: \" + update_xReq.responseText);\n");
+  fprintf(js_fp, "  //console.log(\"response: \" + update_xReq.responseText);\n");
   fprintf(js_fp, "  for (var i=0; i < update_objs.length; i++)\n");
   fprintf(js_fp, "  {\n");
   //fprintf(js_fp, "    //console.log(\"update_objs[\" + i + \"] = \" + update_objs[i] + \"sim_val: \" + sim_val);\n");
   //fprintf(js_fp, "    //update_objs[i].update(sim_val + (i * 5));\n");
-  fprintf(js_fp, "    console.log(\"val: \" + val[i]);\n");
+  fprintf(js_fp, "    //console.log(\"val: \" + val[i]);\n");
   fprintf(js_fp, "    update_objs[i].update(val[i]);\n");
   //fprintf(js_fp, "    sim_val++;\n");
   //fprintf(js_fp, "    if (sim_val==100)\n");
@@ -580,7 +580,8 @@ int main(int argc, char *argv[])
   do_gen(config_name);
   gen_final_file(output_name);
 
-  const char *cmd = "sudo cp dtest.svg /var/www/";
+  char cmd[300];
+  snprintf(cmd, sizeof(cmd), "sudo cp %s /var/www/", output_name); 
   printf("%s\n", cmd);
   system(cmd);
 

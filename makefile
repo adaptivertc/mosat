@@ -1,11 +1,15 @@
 
-DIRS= librtcommon modbus mosat react trainpos onboard classic_tcontrol
+DIRS= librtcommon modbus mosat react react2 trainpos onboard classic_tcontrol
 
 PPCDIRS= librtcommon mosat react 
 
 ARMDIRS= librtcommon modbus onboard react
 
 MAKE= make
+
+.PHONY : clean
+
+.PHONY : all 
 
 all:
 	for i in $(DIRS); do cd "$$i"; $(MAKE); cd ..; done

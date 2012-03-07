@@ -41,27 +41,24 @@ void utimer_print(utimer_status_t s);
 class utimer_t
 {
 private:
-  struct timeval tv0; /* Time the timer was started. */
-  struct timeval tv1; /* Next time that something needs to be done. */
-  long interval;      /* The number of microseconds between tasks */
+  struct timespec next_time;
+  struct timespec interval;
   bool busy_wait;
-  void inc_time(long usecs);
-  long usec_timer_dif(struct timeval atv);
-  struct timespec timespec_dif(struct timeval atv); // used for nanosseep, 
-       // though we should convert all internal data structures to timespec 
-  void normalize_timeval(struct timeval *atv);
+  void inc_time(void);
+  void normalize_timespec(struct timespec *ats);
   void my_busy_wait();
 public:
   utimer_t();
-  struct timeval elapsed_time(void);
+  utimer_t(struct timespec ts){set_interval(ts); busy_wait=false; set_start_time();};
+  //struct timeval elapsed_time(void);
   void set_busy_wait(bool v) {busy_wait = v;};
-  void set_interval(long usecs) {interval = usecs;};
+  void set_interval(struct timespec ts) {interval.tv_sec = ts.tv_sec; interval.tv_nsec = ts.tv_nsec;};
   void set_start_time(void);
-  void print_status(void);
-  utimer_status_t get_status(void);
+  // void print_status(void);
+  //utimer_status_t get_status(void);
   void wait_next(void);
-  double late_time(void);
-  bool late(void);
+  //double late_time(void);
+  //bool late(void);
 };
 
 

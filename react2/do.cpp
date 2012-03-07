@@ -204,7 +204,7 @@ do_point_t **do_point_t::read(int *cnt, const char *home_dir)
 
     safe_strcpy(p->lo_desc, (const char*) argv[5], sizeof(p->lo_desc));
     safe_strcpy(p->hi_desc, (const char*) argv[6], sizeof(p->hi_desc));
-    if (argc > 7) p->invert_pv = (argv[0][7] == '1');
+    if (argc > 7) p->invert_pv = (argv[7][0] == '1');
 
 
     p->init_values();

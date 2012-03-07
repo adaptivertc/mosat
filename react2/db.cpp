@@ -2071,14 +2071,14 @@ void react_t::serve_client(serve_thread_data_t *st)
   int sock_fd = st->sock_fd;
   int nc = st->n;
   delete st; 
-  char buf[500];
-  char buf_out[500];
+  char buf[1000];
+  char buf_out[1000];
   fprintf(sock_log_fp, "In react_t::serve_client(), sock_fd = %d, n = %d\n", sock_fd, nc);
   fflush(sock_log_fp);
   int n_req = 0;
   analog_point_t *analog_point = NULL;
   db_point_t *db_point = NULL;
-  delim_separator_t ds_tag(100, 50, '+');
+  delim_separator_t ds_tag(1000, 100, '+');
   while (true)
   {
     const char *msg = "React responded!!!!";
@@ -2121,6 +2121,7 @@ void react_t::serve_client(serve_thread_data_t *st)
     }
     else if (0 == strncasecmp(buf, "tag", 3))
     {
+      printf("msg: %s\n", buf);
       char *tag_string = buf + 4;
       ltrim(tag_string); 
       rtrim(tag_string); 
@@ -2129,9 +2130,11 @@ void react_t::serve_client(serve_thread_data_t *st)
       tag_argv = ds_tag.separate(&tag_argc, tag_string);
 
       snprintf(buf_out, sizeof(buf_out), "[");
+      printf("Tags[%d]: ", tag_argc);
       for (int i=0; i < tag_argc; i++)
       {
         if (i != 0) safe_strcat(buf_out, ",", sizeof(buf_out));
+        printf("%s ", tag_argv[i]);
         db_point = db->get_db_point(tag_argv[i]);
         if (db_point == NULL)
         {
@@ -2143,8 +2146,10 @@ void react_t::serve_client(serve_thread_data_t *st)
           char val_buf[30];
           db_point->get_pv_json(val_buf, sizeof(val_buf));
           safe_strcat(buf_out, val_buf, sizeof(buf_out));
+          //printf("tag: %s, val: %s\n", tag_argv[i], val_buf);
         }
       } 
+      printf("\n");
       safe_strcat(buf_out, "]", sizeof(buf_out));
       msg = buf_out;
     }
@@ -2153,7 +2158,8 @@ void react_t::serve_client(serve_thread_data_t *st)
       snprintf(buf_out, sizeof(buf_out), "Unknown Command: '%s'\n", buf);
       msg = buf_out;
     }
-    n = write(sock_fd, msg, strlen(msg) + 1); 
+    printf("reply: %s\n", msg);
+    n = write(sock_fd, msg, strlen(msg)); 
     if (n <= 0)
     {
       fprintf(sock_log_fp, "react_t::serve_client(), error on WRITE socket %d, n = %d\n", sock_fd, nc);

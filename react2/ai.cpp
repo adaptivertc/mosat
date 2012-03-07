@@ -189,7 +189,7 @@ Tag: LevelDescription: Level of first tankEU Label: cm.Driver: 1Card: 0Channel: 
 
 db_point_t *ai_point_t::read_one(int argc, char *argv[], char *err, int esz)
 {
-  if ((argc != 21) && (argc != 23))
+  if (argc != 23)
   {
     snprintf(err, esz, "Wrong number of args for ai");
     return NULL;
@@ -217,8 +217,8 @@ db_point_t *ai_point_t::read_one(int argc, char *argv[], char *err, int esz)
   ai->lo_caution_enable = (argv[18][0] == '1');
   ai->hi_caution_enable = (argv[19][0] == '1');
   ai->hi_alarm_enable = (argv[20][0] == '1');
-  if (argc > 21) ai->scale_lo = atof(argv[21]);
-  if (argc > 22) ai->scale_hi = atof(argv[22]);
+  ai->scale_lo = atof(argv[21]);
+  ai->scale_hi = atof(argv[22]);
 
   ai->init_values();
 

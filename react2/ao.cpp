@@ -125,7 +125,7 @@ void ao_point_t::init_values(void)
 ao_point_t *ao_point_t::read_one(int argc, char *argv[], char *err, int esz)
 {
     ao_point_t *p = new ao_point_t;
-    if ((argc != 13) && (argc != 15))
+    if (argc != 15)
     {
       snprintf(err, esz, "Wrong number of args for ao");
       return NULL;
@@ -144,8 +144,8 @@ ao_point_t *ao_point_t::read_one(int argc, char *argv[], char *err, int esz)
 
     p->output_limit_lo = atof(argv[11]);
     p->output_limit_hi = atof(argv[12]);
-    if (argc > 11) p->scale_lo = atof(argv[11]);
-    if (argc > 12) p->scale_hi = atof(argv[12]);
+    p->scale_lo = atof(argv[13]);
+    p->scale_hi = atof(argv[14]);
 
 
     p->init_values();

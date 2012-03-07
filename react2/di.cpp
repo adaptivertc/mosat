@@ -46,7 +46,7 @@ void di_point_t::update(bool value)
   //printf("entering update for %s\n", tag);
   /* Update the discrete input point. */
 
-  //printf("@@@@@@@@@@@@@@@@ tag: %s, value: %s\n", tag, value ? "T":"F");
+  //printf("@@ tag: %s, value: %s, invert: %s\n", tag, value ? "T":"F", invert_pv ? "T":"F");
   
   if (invert_pv) value = not value;
   pv_last = pv;
@@ -162,7 +162,7 @@ di_point_t **di_point_t::read(int *cnt, const char *home_dir)
       continue;
     }
 
-    else if ((argc != 9) && (argc != 10))
+    else if (argc != 10)
     {
       logfile->vprint("%s: Wrong number of args, line %d\n", path, i+1);
       continue;
@@ -230,7 +230,7 @@ di_point_t **di_point_t::read(int *cnt, const char *home_dir)
 	p->shutdown_state = DISCRETE_NONE;
 	break;
     }
-    if (argc > 9) p->invert_pv = (argv[0][9] == '1');
+    p->invert_pv = (argv[9][0] == '1');
 
     p->init_values();
 

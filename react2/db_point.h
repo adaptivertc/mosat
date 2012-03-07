@@ -203,10 +203,12 @@ protected:
   analog_point_t(void);
   void set_format(void);
 public:
-  inline double get_pv(void) {return pv;};
+  inline double get_pv(void) {point_lock_t l(&point_lock, tag);return pv;};
   void display(void);
   void display_pv(void);
+
   inline const double *pv_ptr(void) {printf("Got ptr: %s\n", tag);return &pv;};
+
   //virtual const char *get_faceplate(void) {snprintf(faceplate_str, sizeof(faceplate_str), "<br><h1>%s: %0.1lf</h1><br>\n", tag, pv); return faceplate_str;};
   virtual const char *get_faceplate(void) {snprintf(faceplate_str, sizeof(faceplate_str), "A: %s, %lf\n", tag, pv);return faceplate_str;};
   rt_double_ref_t *get_double_ref(const char *expr, char *err, int sz)
@@ -218,8 +220,8 @@ public:
   virtual  pv_type_t get_ref_type(const char *expr, char *err, int sz) 
           {return ANALOG_VALUE;};
   pv_type_t pv_type(void) {printf("pv type is ANALOG_VALUE\n"); return ANALOG_VALUE;};
-  void get_pv_json(char *buf, int sz)
-        {point_lock_t l(&point_lock, "******************************************************");snprintf(buf, sz, "%0.*lf", this->decimal_places, this->pv);};
+  void get_pv_json(char *buf, int sz);
+        //{point_lock_t l(&point_lock, tag);snprintf(buf, sz, "%0.*lf", this->decimal_places, this->pv);};
   virtual const char *get_config_json(void); 
 };
 
@@ -377,13 +379,20 @@ protected:
   bool invert_pv;
   char faceplate_str[100];
 public:
+
+  /* The following four functions could be dangerous and probably should be
+     eliminated, but, for now, they are only called by functions that are part 
+     of the main loop, and the pointers will not be accessed when the points
+     are being updated.
+   */
   const char *get_pv_string_ptr(void) {return pv_string;};
   const char *get_lo_desc_ptr(void) {return lo_desc;};
   const char *get_hi_desc_ptr(void) {return hi_desc;};
+  const bool *pv_ptr(void) {return &pv;};
+
+  inline bool get_pv(void) {point_lock_t l(&point_lock, tag);return pv;};
   void display(void);
   void display_pv(void);
-  inline bool get_pv(void) {return pv;};
-  bool *pv_ptr(void) {return &pv;};
   discrete_point_t(void);
   virtual const char *get_faceplate(void) {snprintf(faceplate_str, sizeof(faceplate_str), "<br><h1>%s: %s</h1><br>\n", tag, pv_string); return faceplate_str;};
   rt_double_ref_t *get_double_ref(const char *expr, char *err, int sz)
@@ -395,8 +404,8 @@ public:
   virtual  pv_type_t get_ref_type(const char *expr, char *err, int sz) 
           {return DISCRETE_VALUE;};
   pv_type_t pv_type(void) {printf("pv type is DISCRETE_VALUE\n"); return DISCRETE_VALUE;};
-  void get_pv_json(char *buf, int sz)
-        {point_lock_t l(&point_lock, "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");snprintf(buf, sz, "%s", this->pv?"true":"false");};
+  void get_pv_json(char *buf, int sz);
+        //{point_lock_t l(&point_lock, tag);snprintf(buf, sz, "%s", this->pv?"true":"false");};
   virtual const char *get_config_json(void); 
 };
 
@@ -406,8 +415,8 @@ public:
   long pv;
   //void display(void);
   //void display_pv(void);
-  inline int get_pv(void) {return pv;};
   long *pv_ptr(void) {return &pv;};
+  inline int get_pv(void) {point_lock_t l(&point_lock, tag);return pv;};
   integer_point_t(void);
   rt_double_ref_t *get_double_ref(const char *expr, char *err, int sz)
           {snprintf(err, sz, "No double values"); return NULL;};

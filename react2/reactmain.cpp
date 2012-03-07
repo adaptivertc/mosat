@@ -328,7 +328,10 @@ int main(int argc, char *argv[])
 
   utimer_t utimer;
   utimer.set_busy_wait(busy_wait);
-  utimer.set_interval(usecs_per_sample);
+  struct timespec ts; 
+  ts.tv_sec = usecs_per_sample / 1000000;
+  ts.tv_nsec = (usecs_per_sample % 1000000) * 1000;
+  utimer.set_interval(ts);
   utimer.set_start_time();
   bool done = false;
 

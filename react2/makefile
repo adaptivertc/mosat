@@ -43,7 +43,7 @@ CPP = g++  -g -std=c++0x $(CFLAGS)
 
 MAKE = make
 
-all: react2 integrate utest rconsole reactcgi rdrivers drivers2 rtshmmain ai.so project
+all: react2 integrate rconsole reactcgi rdrivers drivers2 rtshmmain ai.so project
 
 %.o:	%.cpp $(INCLUDES)
 	$(CPP) -c  -o $@ $<
@@ -62,7 +62,7 @@ react2:	$(INCLUDES) $(OBJS) dbpoint_util.so
 	$(CPP) $(LDFLAGS) -rdynamic -o $@ $(OBJS) -lrt $(LIBS)
 
 rtshmmain: rtshmmain.o ldiodriver.o reactshmio.o logfile.o reactshmio.h $(INCLUDES)
-	$(CPP) -rdynamic -o rtshmmain rtshmmain.o ldiodriver.o reactshmio.o logfile.o -ldl $(RTCOMMON)
+	$(CPP) -rdynamic -o rtshmmain rtshmmain.o ldiodriver.o reactshmio.o logfile.o -ldl -lrt $(RTCOMMON)
 
 $(OBJS):	$(INCLUDES)
 
