@@ -27,8 +27,8 @@ const char *simple_panel_t::get_name(void)
 void simple_panel_t::generate(FILE *svg_fp, FILE *svg_top_of_file_fp, FILE *js_fp, int argc, char **argv)
 {
   const char *tag = argv[1];
-  const char *off_color = argv[2];
-  const char *on_color = argv[3];
+  const char *on_color = argv[2];
+  const char *off_color = argv[3];
   double cx = atof(argv[4]);
   double cy = atof(argv[5]);
   double r = atof(argv[6]);
