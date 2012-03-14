@@ -25,6 +25,44 @@ static const char *js_lib_files[200];
 static int n_svg_libs = 0;
 static const char *svg_lib_files[200];
 
+struct obj_list_t 
+{
+  const char *obj;
+  obj_list_t *next;
+};
+
+static int max_argn = -1;
+static obj_list_t *arg_objs[50] = {
+NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+}; 
+
+/*********************************/
+
+void add_arg_object(int argn, const char *obj)
+{
+  if (argn >= 50)
+  {
+    printf("Max args exceeded (%d), exiting . . . \n", argn);
+    exit(-1);
+  }
+  if (argn < 1)
+  {
+    printf("Args can NOT be less than 1, (%d), exiting . . . \n", argn);
+    exit(-1);
+  }
+  argn--; // Java script arrays start with zero
+  printf("Adding, object: %s, to be updated by the tag at position %d\n", obj, argn);
+  obj_list_t *tmp = new obj_list_t;
+  tmp->next = arg_objs[argn];
+  tmp->obj = strdup(obj);
+  arg_objs[argn] = tmp;
+  if (argn > max_argn) max_argn = argn;
+}
+
 /*********************************/
 
 void add_js_library(const char *file_name)
@@ -70,6 +108,13 @@ void add_svg_library(const char *file_name)
 
 void add_animation_object(const char *the_tag, const char *the_js_object)
 {
+  // First check to see if the tagname will come from the command line.
+  if (the_tag[0] == '$')
+  {
+    add_arg_object(atoi(the_tag+1), the_js_object);
+    return;
+  }
+  // Now make sure we have not exceeded the MAX.
   if (n_objs >= 200)
   {
     printf("Max objects exceeded, exiting . . . \n");
@@ -170,6 +215,31 @@ static void gen_ajax_animation(FILE *js_fp)
   }
   fprintf(js_fp, ");\n"); 
 
+  if (max_argn >= 0)
+  {
+
+    // Only generate the array of arrays of objects if there is at least one argument. 
+    fprintf(js_fp, "var arg_objs = new Array(");
+    for (int i=0; i <= max_argn; i++)
+    {
+      fprintf(js_fp, "%s\n    [", i==0?"":",");
+      obj_list_t *tmp = arg_objs[i]; 
+      for (int j=0; tmp != NULL; j++)
+      {
+        fprintf(js_fp, "%s%s", j==0?"":",", tmp->obj);
+        tmp = tmp->next;
+      }
+      fprintf(js_fp, "]"); 
+    }
+    fprintf(js_fp, ");\n"); 
+    fprintf(js_fp, "var arg_update_hrf = \"http://\" + location.hostname + \"/helloworld/tag\" + location.search;\n");
+    fprintf(js_fp, "var arg_config_hrf = \"http://\" + location.hostname + \"/helloworld/config?\";\n");
+    fprintf(js_fp, "var arg_update_xReq;\n");
+    fprintf(js_fp, "var arg_config_xReq;\n");
+    fprintf(js_fp, "var arg_tags;\n"); 
+  }
+
+
   fprintf(js_fp, 
      "var react_config_hrf = \"http://\" + location.hostname + \"/helloworld/config?\";\n");
   fprintf(js_fp, "var update_xReq;\n");
@@ -194,10 +264,32 @@ static void gen_ajax_animation(FILE *js_fp)
   fprintf(js_fp, "  config_xReq.send(null);\n");
   fprintf(js_fp, "}\n");
 
+  if (max_argn >= 0)
+  {
+    fprintf(js_fp, "function update_arg_objects(objs, vals)\n");
+    fprintf(js_fp, "{\n");
+    fprintf(js_fp, "  for (var i=0; (i < vals.length) && (i < objs.length); i++)\n");
+    fprintf(js_fp, "  {\n");
+    fprintf(js_fp, "    var aobjs = objs[i]\n");
+    fprintf(js_fp, "    for (var j=0; j < aobjs.length; j++)\n");
+    fprintf(js_fp, "    {\n");
+    fprintf(js_fp, "      aobjs[j].update(vals[i]);\n");
+    fprintf(js_fp, "    }\n");
+    fprintf(js_fp, "  }\n");
+    fprintf(js_fp, "}\n");
+    fprintf(js_fp, "function on_arg_update_response()\n");
+    fprintf(js_fp, "{\n");
+    fprintf(js_fp, "  if (update_xReq.readyState != 4)  { return; }\n");
+    fprintf(js_fp, "  var val = JSON.parse(update_xReq.responseText);\n");
+    fprintf(js_fp, "  update_arg_objects(arg_objs, val);\n");
+    fprintf(js_fp, "}\n");
+  }
+  
 
   //fprintf(js_fp, "var sim_val = 20;\n");
   fprintf(js_fp, "function on_update_response()\n");
   fprintf(js_fp, "{\n");
+  fprintf(js_fp, "  if (update_xReq.readyState != 4)  { return; }\n");
   fprintf(js_fp, "  var val = JSON.parse(update_xReq.responseText);\n");
   fprintf(js_fp, "  //console.log(\"response: \" + update_xReq.responseText);\n");
   fprintf(js_fp, "  for (var i=0; i < update_objs.length; i++)\n");
@@ -219,9 +311,19 @@ static void gen_ajax_animation(FILE *js_fp)
 
   fprintf(js_fp, "function intervalHandler()\n");
   fprintf(js_fp, "{\n");
-  fprintf(js_fp, "  if (update_xReq.readyState != 0)  { return; }\n");
-  fprintf(js_fp, "  update_xReq.open(\"GET\", react_update_hrf, true);\n");
-  fprintf(js_fp, "  update_xReq.send(null);\n");
+  fprintf(js_fp, "  if (update_xReq.readyState == 0)\n");  
+  fprintf(js_fp, "  {\n");
+  fprintf(js_fp, "    update_xReq.open(\"GET\", react_update_hrf, true);\n");
+  fprintf(js_fp, "    update_xReq.send(null);\n");
+  fprintf(js_fp, "  }\n");
+  if (max_argn >= 0)
+  {
+    fprintf(js_fp, "  if (arg_update_xReq.readyState == 0)\n");  
+    fprintf(js_fp, "  {\n");
+    fprintf(js_fp, "    //arg_update_xReq.open(\"GET\", arg_update_hrf, true);\n");
+    fprintf(js_fp, "    //arg_update_xReq.send(null);\n");
+    fprintf(js_fp, "  }\n");
+  }
   fprintf(js_fp, "}\n");
   fprintf(js_fp, "\n");
 
@@ -236,6 +338,26 @@ static void gen_ajax_animation(FILE *js_fp)
   fprintf(js_fp, "    config_xReq.open(\"GET\", react_config_hrf + update_tags[0], true);\n");
   fprintf(js_fp, "    config_xReq.send(null);\n");
   fprintf(js_fp, "  }\n");
+  if (max_argn >= 0)
+  {
+    fprintf(js_fp, "  arg_update_xReq = new XMLHttpRequest();\n");
+    fprintf(js_fp, "  arg_update_xReq.onreadystatechange = on_arg_update_response;\n");
+    fprintf(js_fp, "  console.log(\"arg_update_hrf: \" + arg_update_hrf)\n");
+    fprintf(js_fp, "  var argtmp = location.search.substr(1);\n");
+    fprintf(js_fp, "  arg_tags = argtmp.split('+');\n");
+    fprintf(js_fp, "  for (var i=0; i < arg_tags.length; i++)\n");
+    fprintf(js_fp, "  {\n");
+    fprintf(js_fp, "    console.log(\"arg_tags[\" + i +  \"]: \" + arg_tags[i])\n");
+    fprintf(js_fp, "  }\n");
+    fprintf(js_fp, "  for (var i=0; (i < arg_objs.length); i++)\n");
+    fprintf(js_fp, "  {\n");
+    fprintf(js_fp, "    var aobjs = arg_objs[i]\n");
+    fprintf(js_fp, "    for (var j=0; j < aobjs.length; j++)\n");
+    fprintf(js_fp, "    {\n");
+    fprintf(js_fp, "      console.log(\"arg objs[\" + i +\"][\" + j + \"]: \" + aobjs[j]);\n");
+    fprintf(js_fp, "    }\n");
+    fprintf(js_fp, "  }\n");
+  }
   fprintf(js_fp, "  var interval = setInterval(\"intervalHandler()\", 1000);\n");
   fprintf(js_fp, "};\n");
   fprintf(js_fp, "\n");

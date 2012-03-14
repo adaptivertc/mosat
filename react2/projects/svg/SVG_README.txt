@@ -1,10 +1,10 @@
-
-
 This is a document on how the real-time SVG generator works to create an animated SVG file.
 
 First, all objects that are displayed are plugin objects, there are no built-in objects. The idea is to expose all of the APIs, insert points, include libraries, etc, so that plugins do everything. 
 
 Second, when you write a plugin, you do NOT need to worry about the data connection, you ONLY need to give a TAG (UID), and, an object with an "init" method, and an "update" method (see "add_animation_object()" below). The system will then call the "init" method at startup with an object that has all of the attributes of the object specified by the TAG, and, periodically, call "update" with the real-time value of the object specified by the TAG. The point value is either boolean or numeric depending on the object type that the tag refers to.
+
+Third, the tag can come from the URL, which allows you to make displays for any object of a certain type, or a group of objects of certain types. For instance, if you have a number of identical pumping stations, you can create one display that works with all pumping stations, the tags are in the URL after the '?', separated by '+'. This will be also used to create a default display for any object type. So, when you specify the tag, instead of specifying an actual tag, you do it like bash parameters, and, put, $1, $2, $3, . . . $N, to reference the tags that will be in the url after the '?'.
 
 Plugins do NOT need to do animations, they can just draw things. A plugin that does not do animation will NOT call the add_animation_object() function. Note: a plugin can call add_animation_object() multiple times if it will animated by the values from more than one TAG.
 
