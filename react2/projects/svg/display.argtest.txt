@@ -1,7 +1,7 @@
 svg_header|My Title|0|0|300|150|
 background|thistle|
 imasa_logo|0|0|35|
-bar|$1|mediumslateblue|38|20|100|
+bar|$1|mediumslateblue|36|20|100|
 bar|$2|darkturquoise|80|30|60|
 bar|$3|crimson|120|30|60|
 bar|$4|mediumspringgreen|160|30|60|
