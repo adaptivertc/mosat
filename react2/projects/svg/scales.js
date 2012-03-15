@@ -29,7 +29,6 @@ function f_do_print(max)
   console.log("n_minor = " + this.n_minor);
   console.log("n_dec = " + this.n_dec);
 }
-
 ScaleInfo.prototype.print=f_do_print;
 
 
@@ -239,5 +238,5 @@ function f_do_calcs(max, screen_min, screen_max)
   this.max_val = (the_scale) *  Math.pow(10.0, (the_floor - 1));
   this.max_major = (top_major) *  Math.pow(10.0, (the_floor - 1));
 }
-
+ScaleInfo.prototype.calc=f_do_calcs;
 

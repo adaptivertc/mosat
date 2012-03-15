@@ -38,9 +38,6 @@ This function adds a SVG file to the list of SVG libraries to be inserted into t
 
 This function adds an animation object to the list of animation objects, and must include a TAG to identify the source of the animation information. Your animation object MUST have init() and update() methods, and, the system will AUTOMATICALLY call these methods. The init() method will be called once at startup, and the update() method will be called periodically.
 
-4) void set_viewbox(double x1, double y1, double x2, double y2);
-
-This method is so that a plugin can set the viewbox for the SVG file, and there should be only one plugin calling this function. There is one standard plugin "viewbox", that currently calles this function.
 
 The final content of the output SVG file is created in the following order:
 

@@ -39,6 +39,7 @@ NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
 NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
 NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 }; 
+static int arg_count[50];
 
 /*********************************/
 
@@ -55,6 +56,7 @@ void add_arg_object(int argn, const char *obj)
     exit(-1);
   }
   argn--; // Java script arrays start with zero
+  arg_count[argn]++;
   printf("Adding, object: %s, to be updated by the tag at position %d\n", obj, argn);
   obj_list_t *tmp = new obj_list_t;
   tmp->next = arg_objs[argn];
@@ -193,27 +195,30 @@ static void gen_simulation(FILE *js_fp)
 static void gen_ajax_animation(FILE *js_fp)
 {
   fprintf(js_fp, "// -- START insert AJAX animation code --\n");
-  fprintf(js_fp, 
+  if (n_objs > 0)
+  {
+    fprintf(js_fp, 
     "var react_update_hrf = \"http://\" + location.hostname + \"/helloworld/tag?");
-  for (int i=0; i < n_objs; i++)
-  {
-    fprintf(js_fp, "%s%s", i==0?"":"+", tags[i]);
-  }
-  fprintf(js_fp, "\";\n"); 
+    for (int i=0; i < n_objs; i++)
+    {
+      fprintf(js_fp, "%s%s", i==0?"":"+", tags[i]);
+    }
+    fprintf(js_fp, "\";\n"); 
 
-  fprintf(js_fp, "var update_objs = new Array(");
-  for (int i=0; i < n_objs; i++)
-  {
-    fprintf(js_fp, "%s%s", i==0?"":",", js_objs[i]);
-  }
-  fprintf(js_fp, ");\n"); 
+    fprintf(js_fp, "var update_objs = new Array(");
+    for (int i=0; i < n_objs; i++)
+    {
+      fprintf(js_fp, "%s%s", i==0?"":",", js_objs[i]);
+    }
+    fprintf(js_fp, ");\n"); 
 
-  fprintf(js_fp, "var update_tags = new Array(");
-  for (int i=0; i < n_objs; i++)
-  {
-    fprintf(js_fp, "%s\"%s\"", i==0?"":",", tags[i]);
+    fprintf(js_fp, "var update_tags = new Array(");
+    for (int i=0; i < n_objs; i++)
+    {
+      fprintf(js_fp, "%s\"%s\"", i==0?"":",", tags[i]);
+    }
+    fprintf(js_fp, ");\n"); 
   }
-  fprintf(js_fp, ");\n"); 
 
   if (max_argn >= 0)
   {
@@ -237,40 +242,66 @@ static void gen_ajax_animation(FILE *js_fp)
     fprintf(js_fp, "var arg_update_xReq;\n");
     fprintf(js_fp, "var arg_config_xReq;\n");
     fprintf(js_fp, "var arg_tags;\n"); 
+    fprintf(js_fp, "var n_arg_cfg = 0;\n");
   }
 
 
-  fprintf(js_fp, 
+  if (n_objs > 0)
+  {
+    fprintf(js_fp, 
      "var react_config_hrf = \"http://\" + location.hostname + \"/helloworld/config?\";\n");
-  fprintf(js_fp, "var update_xReq;\n");
-  fprintf(js_fp, "var config_xReq;\n");
-  fprintf(js_fp, "var n_cfg = 0;\n");
+    fprintf(js_fp, "var update_xReq;\n");
+    fprintf(js_fp, "var config_xReq;\n");
+    fprintf(js_fp, "var n_cfg = 0;\n");
 
-  fprintf(js_fp, "function on_config_response()\n");
-  fprintf(js_fp, "{\n");
-  fprintf(js_fp, "  if (config_xReq.readyState != 4)  { return; }\n");
-  fprintf(js_fp, "  console.log(\"config response: \" + config_xReq.responseText);\n");
-  fprintf(js_fp, "  var val = JSON.parse(config_xReq.responseText);\n");
-  fprintf(js_fp, "  update_objs[n_cfg].init(val);\n");
+    fprintf(js_fp, "function on_config_response()\n");
+    fprintf(js_fp, "{\n");
+    fprintf(js_fp, "  if (config_xReq.readyState != 4)  { return; }\n");
+    fprintf(js_fp, "  console.log(\"config response: \" + config_xReq.responseText);\n");
+    fprintf(js_fp, "  var val = JSON.parse(config_xReq.responseText);\n");
+    fprintf(js_fp, "  update_objs[n_cfg].init(val);\n");
   
-  fprintf(js_fp, "  n_cfg++;\n");
-  fprintf(js_fp, "  if (n_cfg >= update_tags.length) \n");
-  fprintf(js_fp, "  {\n");
-  fprintf(js_fp, "    config_xReq.abort();\n");
-  fprintf(js_fp, "    return;\n"); 
-  fprintf(js_fp, "  }\n"); 
-  fprintf(js_fp, 
-     "  config_xReq.open(\"GET\", react_config_hrf + update_tags[n_cfg], true);\n");
-  fprintf(js_fp, "  config_xReq.send(null);\n");
-  fprintf(js_fp, "}\n");
+    fprintf(js_fp, "  n_cfg++;\n");
+    fprintf(js_fp, "  if (n_cfg >= update_tags.length) \n");
+    fprintf(js_fp, "  {\n");
+    fprintf(js_fp, "    config_xReq.abort();\n");
+    fprintf(js_fp, "    return;\n"); 
+    fprintf(js_fp, "  }\n"); 
+    fprintf(js_fp, 
+       "  config_xReq.open(\"GET\", react_config_hrf + update_tags[n_cfg], true);\n");
+    fprintf(js_fp, "  config_xReq.send(null);\n");
+    fprintf(js_fp, "}\n");
+  }
 
   if (max_argn >= 0)
   {
+    fprintf(js_fp, "function on_arg_config_response()\n");
+    fprintf(js_fp, "{\n");
+    fprintf(js_fp, "  if (arg_config_xReq.readyState != 4)  { return; }\n");
+    fprintf(js_fp, "  console.log(\"arg config response: \" + arg_config_xReq.responseText);\n");
+    fprintf(js_fp, "  var val = JSON.parse(arg_config_xReq.responseText);\n");
+    fprintf(js_fp, "    var aobjs = arg_objs[n_arg_cfg]\n");
+    fprintf(js_fp, "    for (var j=0; j < aobjs.length; j++)\n");
+    fprintf(js_fp, "    {\n");
+    fprintf(js_fp, "      aobjs[j].init(val);\n");
+    fprintf(js_fp, "    }\n");
+  
+    fprintf(js_fp, "  n_arg_cfg++;\n");
+    fprintf(js_fp, "  if (n_arg_cfg >= arg_tags.length) \n");
+    fprintf(js_fp, "  {\n");
+    fprintf(js_fp, "    arg_config_xReq.abort();\n");
+    fprintf(js_fp, "    return;\n"); 
+    fprintf(js_fp, "  }\n"); 
+    fprintf(js_fp, 
+     "  arg_config_xReq.open(\"GET\", arg_config_hrf + arg_tags[n_arg_cfg], true);\n");
+    fprintf(js_fp, "  arg_config_xReq.send(null);\n");
+    fprintf(js_fp, "}\n");
+
     fprintf(js_fp, "function update_arg_objects(objs, vals)\n");
     fprintf(js_fp, "{\n");
     fprintf(js_fp, "  for (var i=0; (i < vals.length) && (i < objs.length); i++)\n");
     fprintf(js_fp, "  {\n");
-    fprintf(js_fp, "    var aobjs = objs[i]\n");
+    fprintf(js_fp, "    var aobjs = arg_objs[i]\n");
     fprintf(js_fp, "    for (var j=0; j < aobjs.length; j++)\n");
     fprintf(js_fp, "    {\n");
     fprintf(js_fp, "      aobjs[j].update(vals[i]);\n");
@@ -279,49 +310,56 @@ static void gen_ajax_animation(FILE *js_fp)
     fprintf(js_fp, "}\n");
     fprintf(js_fp, "function on_arg_update_response()\n");
     fprintf(js_fp, "{\n");
-    fprintf(js_fp, "  if (update_xReq.readyState != 4)  { return; }\n");
-    fprintf(js_fp, "  var val = JSON.parse(update_xReq.responseText);\n");
+    fprintf(js_fp, "  if (arg_update_xReq.readyState != 4)  { return; }\n");
+    fprintf(js_fp, "  var val = JSON.parse(arg_update_xReq.responseText);\n");
     fprintf(js_fp, "  update_arg_objects(arg_objs, val);\n");
+    fprintf(js_fp, "  arg_update_xReq.abort(); // set the ready state back to 0\n");
     fprintf(js_fp, "}\n");
   }
   
 
-  //fprintf(js_fp, "var sim_val = 20;\n");
-  fprintf(js_fp, "function on_update_response()\n");
-  fprintf(js_fp, "{\n");
-  fprintf(js_fp, "  if (update_xReq.readyState != 4)  { return; }\n");
-  fprintf(js_fp, "  var val = JSON.parse(update_xReq.responseText);\n");
-  fprintf(js_fp, "  //console.log(\"response: \" + update_xReq.responseText);\n");
-  fprintf(js_fp, "  for (var i=0; i < update_objs.length; i++)\n");
-  fprintf(js_fp, "  {\n");
-  //fprintf(js_fp, "    //console.log(\"update_objs[\" + i + \"] = \" + update_objs[i] + \"sim_val: \" + sim_val);\n");
-  //fprintf(js_fp, "    //update_objs[i].update(sim_val + (i * 5));\n");
-  fprintf(js_fp, "    //console.log(\"val: \" + val[i]);\n");
-  fprintf(js_fp, "    update_objs[i].update(val[i]);\n");
-  //fprintf(js_fp, "    sim_val++;\n");
-  //fprintf(js_fp, "    if (sim_val==100)\n");
-  //fprintf(js_fp, "    {\n");
-  //fprintf(js_fp, "      sim_val=0\n");
-  //fprintf(js_fp, "    }\n");
+  if (n_objs > 0)
+  {
+    //fprintf(js_fp, "var sim_val = 20;\n");
+    fprintf(js_fp, "function on_update_response()\n");
+    fprintf(js_fp, "{\n");
+    fprintf(js_fp, "  if (update_xReq.readyState != 4)  { return; }\n");
+    fprintf(js_fp, "  var val = JSON.parse(update_xReq.responseText);\n");
+    fprintf(js_fp, "  //console.log(\"response: \" + update_xReq.responseText);\n");
+    fprintf(js_fp, "  for (var i=0; i < update_objs.length; i++)\n");
+    fprintf(js_fp, "  {\n");
+    //fprintf(js_fp, "    //console.log(\"update_objs[\" + i + \"] = \" + update_objs[i] + \"sim_val: \" + sim_val);\n");
+    //fprintf(js_fp, "    //update_objs[i].update(sim_val + (i * 5));\n");
+    //fprintf(js_fp, "    //console.log(\"val: \" + val[i]);\n");
+    fprintf(js_fp, "    update_objs[i].update(val[i]);\n");
+    //fprintf(js_fp, "    sim_val++;\n");
+    //fprintf(js_fp, "    if (sim_val==100)\n");
+    //fprintf(js_fp, "    {\n");
+    //fprintf(js_fp, "      sim_val=0\n");
+    //fprintf(js_fp, "    }\n");
            
-  fprintf(js_fp, "  }\n");
-  fprintf(js_fp, "  update_xReq.abort(); // set the ready state back to 0\n");
-  fprintf(js_fp, "}\n");
-  fprintf(js_fp, "\n");
+    fprintf(js_fp, "  }\n");
+    fprintf(js_fp, "  update_xReq.abort(); // set the ready state back to 0\n");
+    fprintf(js_fp, "}\n");
+    fprintf(js_fp, "\n");
+  }
 
   fprintf(js_fp, "function intervalHandler()\n");
   fprintf(js_fp, "{\n");
-  fprintf(js_fp, "  if (update_xReq.readyState == 0)\n");  
-  fprintf(js_fp, "  {\n");
-  fprintf(js_fp, "    update_xReq.open(\"GET\", react_update_hrf, true);\n");
-  fprintf(js_fp, "    update_xReq.send(null);\n");
-  fprintf(js_fp, "  }\n");
+  if (n_objs > 0)
+  {
+    fprintf(js_fp, "  if (update_xReq.readyState == 0)\n");  
+    fprintf(js_fp, "  {\n");
+    fprintf(js_fp, "    update_xReq.open(\"GET\", react_update_hrf, true);\n");
+    fprintf(js_fp, "    update_xReq.send(null);\n");
+    fprintf(js_fp, "  }\n");
+  }
   if (max_argn >= 0)
   {
     fprintf(js_fp, "  if (arg_update_xReq.readyState == 0)\n");  
     fprintf(js_fp, "  {\n");
-    fprintf(js_fp, "    //arg_update_xReq.open(\"GET\", arg_update_hrf, true);\n");
-    fprintf(js_fp, "    //arg_update_xReq.send(null);\n");
+    fprintf(js_fp, "    arg_update_xReq.open(\"GET\", arg_update_hrf, true);\n");
+    fprintf(js_fp, "    arg_update_xReq.send(null);\n");
     fprintf(js_fp, "  }\n");
   }
   fprintf(js_fp, "}\n");
@@ -329,15 +367,18 @@ static void gen_ajax_animation(FILE *js_fp)
 
   fprintf(js_fp, "function load()\n");
   fprintf(js_fp, "{\n");
-  fprintf(js_fp, "  update_xReq = new XMLHttpRequest();\n");
-  fprintf(js_fp, "  update_xReq.onreadystatechange = on_update_response;\n");
-  fprintf(js_fp, "  if (update_tags.length > 0)\n"); 
-  fprintf(js_fp, "  {\n");
-  fprintf(js_fp, "    config_xReq = new XMLHttpRequest();\n");
-  fprintf(js_fp, "    config_xReq.onreadystatechange = on_config_response;\n");
-  fprintf(js_fp, "    config_xReq.open(\"GET\", react_config_hrf + update_tags[0], true);\n");
-  fprintf(js_fp, "    config_xReq.send(null);\n");
-  fprintf(js_fp, "  }\n");
+  if (n_objs > 0)
+  {
+    fprintf(js_fp, "  update_xReq = new XMLHttpRequest();\n");
+    fprintf(js_fp, "  update_xReq.onreadystatechange = on_update_response;\n");
+    fprintf(js_fp, "  if (update_tags.length > 0)\n"); 
+    fprintf(js_fp, "  {\n");
+    fprintf(js_fp, "    config_xReq = new XMLHttpRequest();\n");
+    fprintf(js_fp, "    config_xReq.onreadystatechange = on_config_response;\n");
+    fprintf(js_fp, "    config_xReq.open(\"GET\", react_config_hrf + update_tags[0], true);\n");
+    fprintf(js_fp, "    config_xReq.send(null);\n");
+    fprintf(js_fp, "  }\n");
+  }
   if (max_argn >= 0)
   {
     fprintf(js_fp, "  arg_update_xReq = new XMLHttpRequest();\n");
@@ -356,6 +397,13 @@ static void gen_ajax_animation(FILE *js_fp)
     fprintf(js_fp, "    {\n");
     fprintf(js_fp, "      console.log(\"arg objs[\" + i +\"][\" + j + \"]: \" + aobjs[j]);\n");
     fprintf(js_fp, "    }\n");
+    fprintf(js_fp, "  }\n");
+    fprintf(js_fp, "  if (arg_tags.length > 0)\n"); 
+    fprintf(js_fp, "  {\n");
+    fprintf(js_fp, "    arg_config_xReq = new XMLHttpRequest();\n");
+    fprintf(js_fp, "    arg_config_xReq.onreadystatechange = on_arg_config_response;\n");
+    fprintf(js_fp, "    arg_config_xReq.open(\"GET\", arg_config_hrf + arg_tags[0], true);\n");
+    fprintf(js_fp, "    arg_config_xReq.send(null);\n");
     fprintf(js_fp, "  }\n");
   }
   fprintf(js_fp, "  var interval = setInterval(\"intervalHandler()\", 1000);\n");
@@ -480,6 +528,7 @@ static void gen_final_file(const char *fname)
   include_file(fp, "_tmp_display.svg");
 
   fprintf(fp, "<script type=\"text/ecmascript\"><![CDATA[\n");
+  fprintf(fp, "const svgNS = \"http://www.w3.org/2000/svg\";\n");
 
   for (int i=0; i < n_js_libs; i++)
   {
@@ -700,6 +749,26 @@ int main(int argc, char *argv[])
   printf("Output file is: %s\n", output_name);
 
   do_gen(config_name);
+  if (max_argn >= 0)
+  {
+    bool args_ok = true;
+    for (int i=0; i <= max_argn; i++)
+    {
+      printf("$%d: %d object(s)", i, arg_count[i]);
+      if (arg_count[i] == 0)
+      {
+        args_ok = false;
+        printf(" ERROR");
+      }
+      printf("\n");
+    }
+    if (!args_ok)
+    {
+      printf("There must be at least one object using each argument\n");
+      exit(-1);
+    }
+  }
+
   gen_final_file(output_name);
 
   char cmd[300];
