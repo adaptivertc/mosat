@@ -1,4 +1,13 @@
 svg_header|Round Gauge|0|0|300|150|
 background|thistle|
-gauge|$1|firebrick|5|5|140|
-gauge|$2|darkorange|150|5|140|
+bar|level|blue|30|5|125|
+gauge|pump1_amp|darkorange|76|1|73|
+gauge|pump2_amp|darkorange|151|1|73|
+gauge|pump3_amp|darkorange|226|1|73|
+simple_contact|HI_HI_LEVEL|yellow|gray|14|20|9|
+simple_contact|HI_LEVEL|yellow|gray|14|52|9|
+simple_contact|LO_LEVEL|yellow|gray|14|100|9|
+simple_panel|PUMP1_ON|gray|lime|112|102|18|
+simple_panel|PUMP2_ON|gray|lime|187|102|18|
+simple_panel|PUMP3_ON|gray|lime|263|102|18|
+

@@ -1,12 +1,12 @@
-Mon Mar  5 12:15:04 2012
-React PID: 11890
+Fri Mar 16 16:07:12 2012
+React PID: 5921
 SampleRate set to: 10.000000
 Loading db point factory from: ../../ai.so
 Reading AI ........
-PUMP1_AMP|BOMBA 1|amps|0|0|5|0.0|50.0|6400|32000|1|-12.50|0|0|30|35|0|0|0|1|1|0|50|
-PUMP2_AMP|BOMBA 2|amps|0|0|4|0.0|50.0|6400|32000|1|-12.50|0|0|30|35|0|0|0|1|1|0|50|
-PUMP3_AMP|BOMBA 3|amps|0|0|3|0.0|50.0|6400|32000|1|-12.50|0|0|30|35|0|0|0|1|1|0|50|
-LEVEL|NIVEL|cm|0|0|2|0.0|500.0|32000|6400|0|-125.0|0|0|370|400|0|0|0|1|1|0|500|
+PUMP1_AMP|BOMBA 1|amps|0|0|5|0.0|50.0|6400|32000|1|-12.50|0|0|30|35|0|0|0|1|1|0|40|
+PUMP2_AMP|BOMBA 2|amps|0|0|4|0.0|50.0|6400|32000|1|-12.50|0|0|30|35|0|0|0|1|1|0|40|
+PUMP3_AMP|BOMBA 3|amps|0|0|3|0.0|50.0|6400|32000|1|-12.50|0|0|30|35|0|0|0|1|1|0|40|
+LEVEL|NIVEL|cm|0|0|2|0.0|500.0|32000|6400|0|-125.0|20|40|325|375|1.5|1|1|1|1|0|450|
 Reading ao ........
 Reading di ........
 LO_LEVEL|Nivel Bajo|0|1|0|BELOW|ABOVE|H|N|0|
@@ -30,7 +30,7 @@ PUMP2V_DO|Bomba 2|0|0|5|Off|On|0|
 Reading pci ........
 Reading calc ........
 CALC1|Calculation 1|amps|pump1_amp + pump2_amp + pump3_amp|1|10|20|80|90|5|0|0|0|0|
-Expression: pump1_amp + pump2_amp + pump3_amp
+.//dbfiles/calc.dat:1 Wrong number of args for calc
 Reading discrete calc ........
 DCALC1|Discrete Calc 1|(pump1_amp < 0.0) or (pump2_amp > 200) and pump1_on|Alarm|ok|N|N|
 Expression: (pump1_amp < 0.0) or (pump2_amp > 200) and pump1_on
@@ -100,8 +100,7 @@ Bar: extra/bar.png, extra/half_off.png, extra/half_on.png
     Adding Discrete value: ULT_SON_ALM,  strings: ALARM OK
     Adding Discrete value: CFE_SUPPLY,  strings: ALARM OK
     Adding Discrete value: MIXER,  strings: OFF ON
-Parsing 1 Analog Expressions ......
-CALC1 Parsing "pump1_amp + pump2_amp + pump3_amp"
+Parsing 0 Analog Expressions ......
 Parsing 1 Discrete Expressions ......
 DCALC1 Parsing Expression: (pump1_amp < 0.0) or (pump2_amp > 200) and pump1_on
 Creating thread to wait on connections . . . 
@@ -152,5 +151,5 @@ Loading iodrivers from: .//dbfiles/drivers.dat
 ../../drivers/sim_pump_low/libsimpumpdrv.so|new_simpumpdrv|||
 Loading iodriver from: ../../drivers/sim_pump_low/libsimpumpdrv.so
 Class factory function is: new_simpumpdrv
-Mon Mar  5 12:15:04 2012
-No foreground script executing, use "kill -1 11890" or <CTRL-C> to stop
+Fri Mar 16 16:07:12 2012
+No foreground script executing, use "kill -1 5921" or <CTRL-C> to stop

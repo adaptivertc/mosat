@@ -31,7 +31,7 @@ void bar_t::generate(FILE *svg_fp, FILE *svg_top_of_file_fp, FILE *js_fp, int ar
   double x = atof(argv[3]);
   double y = atof(argv[4]);
   double height = atof(argv[5]);
-  double width = height * 0.2;
+  double width = height * 0.12;
   double font_size = height * 0.1;
   double cx = x + (width/2.0);
   double cy = y + (height/2.0);
@@ -62,8 +62,8 @@ void bar_t::generate(FILE *svg_fp, FILE *svg_top_of_file_fp, FILE *js_fp, int ar
   char js_object_name[30];
   snprintf(js_object_name, sizeof(js_object_name), "bar_obj_%03d", n_instance);
 
-  fprintf(js_fp, "var %s = new bar_t(\"bar_%03d\", \"bar_pv_%03d\", %lf, %lf, %lf, %lf);\n", 
-               js_object_name, n_instance, n_instance, y, y+height, x+width, stroke_width); 
+  fprintf(js_fp, "var %s = new bar_t(\"bar_%03d\", \"bar_pv_%03d\", %lf, %lf, %lf, %lf, %lf);\n", 
+               js_object_name, n_instance, n_instance, x, y, x+width, y+height, stroke_width); 
 
   fprintf(svg_fp, "<!--  END insert for bar (%03d) -->\n", n_instance);
   fprintf(js_fp, "// --  END insert for bar (%03d)\n", n_instance);

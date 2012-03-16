@@ -1,5 +1,5 @@
 
-function bar_t(bar_name, text_name, y1, y2, x2, stroke_width)
+function bar_t(bar_name, text_name, x1, y1, x2, y2, stroke_width)
 {
   console.log("bar_name " + bar_name);
   console.log("text_name " + text_name);
@@ -9,12 +9,25 @@ function bar_t(bar_name, text_name, y1, y2, x2, stroke_width)
   this.bar_obj=document.getElementById(bar_name);
   this.text_obj=document.getElementById(text_name);
   this.eu_label="not set";
+  this.x1=x1;
   this.y1=y1;
-  this.y2=y2;
   this.x2=x2;
+  this.y2=y2;
   this.stroke_width = stroke_width;
   console.log("bar_obj: " + this.bar_obj);
   console.log("text_obj: " + this.text_obj);
+}
+
+function bar_draw_alarm(x, y1, y2, color, width)
+{
+  var shape = document.createElementNS(svgNS, "line");
+  shape.setAttribute("x1", x);
+  shape.setAttribute("y1", y1);
+  shape.setAttribute("x2", x);
+  shape.setAttribute("y2", y2);
+  shape.setAttribute("stroke", color);
+  shape.setAttribute("stroke-width", width);
+  document.documentElement.appendChild(shape);
 }
 
 function bar_init_f(val)
@@ -24,6 +37,44 @@ function bar_init_f(val)
   this.decimal_places = val.decimal_places;
   console.log("max: " + this.max);
   console.log("eu_label: " + this.eu_label);
+      var ay;
+      var awidth = (this.x2 - this.x1) * 0.3;
+      var ax = this.x1 - (awidth * 0.5) - (this.stroke_width * 0.5);
+      bar_draw_alarm(ax, this.y1, this.y2, "lime", awidth);
+      if (val.hi_caution_enable)
+      {
+        ay = this.y2 -((val.hi_caution / this.max) * (this.y2 - this.y1));
+        if ((ay > this.y1) && (ay < this.y2))
+        {
+          bar_draw_alarm(ax, this.y1, ay, "yellow", awidth);
+        }
+      }
+      if (val.hi_alarm_enable)
+      {
+        ay = this.y2 -((val.hi_alarm / this.max) * (this.y2 - this.y1));
+        if ((ay > this.y1) && (ay < this.y2))
+        {
+          bar_draw_alarm(ax, this.y1, ay, "red", awidth);
+        }
+      }
+
+      if (val.lo_caution_enable)
+      {
+        ay = this.y2 -((val.lo_caution / this.max) * (this.y2 - this.y1));
+        if ((ay > this.y1) && (ay < this.y2))
+        {
+          bar_draw_alarm(ax, ay, this.y2, "yellow", awidth);
+        }
+      }
+      if (val.lo_alarm_enable)
+      {
+        ay = this.y2 -((val.lo_alarm / this.max) * (this.y2 - this.y1));
+        if ((ay > this.y1) && (ay < this.y2))
+        {
+          bar_draw_alarm(ax, ay, this.y2, "red", awidth);
+        }
+      }
+
       var sinfo = new ScaleInfo();
       var tdata = new TicData();
       var shape;

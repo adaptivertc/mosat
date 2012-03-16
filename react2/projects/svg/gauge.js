@@ -2,7 +2,8 @@
 
 function delete_trailing_zeros(str)
 {
-  //if (-1 == str.search('/\./')) return str;
+  // Deletes any trailing zeros if there is a decimal point.
+  // There MUST be better more elegant way to do this, PLEASE HELP
   console.log("delete trailing zeros: " + str);
   var found = false;
   var the_ch;
@@ -23,6 +24,39 @@ function delete_trailing_zeros(str)
   if ('.' == str.charAt(str.length-1)) str = str.substring(0, str.length-1);
   return str;
 } 
+
+function gauge_create_band(angle1, angle2, cx, cy, r1, r2, color)
+{
+  var x1;
+  var y1;
+  var x1;
+  var y1;
+  var shape;
+  var stroke_width = r2 - r1;
+  var r = (r1 + r2) / 2;
+
+  var rads1 = (angle1 - 90.0) * ((2.0 * Math.PI) / 360.0);
+  var rads2 = (angle2 - 90.0) * ((2.0 * Math.PI) / 360.0);
+
+  //fprintf(svg_fp, "<path fill=\"none\" stroke=\"yellow\" stroke-width=\"5.000000\"\n");
+  //fprintf(svg_fp, "  d=\"M118.388164,23.292000 A67.500000,67.500000 0 0,1 141.474523,63.278748\"/>\n");
+
+  //fprintf(svg_fp, "<path fill=\"none\" stroke=\"red\" stroke-width=\"5.000000\"\n");
+  //fprintf(svg_fp, "   d=\"M141.474523,63.278748 A67.500000,67.500000 0 0,1 122.729708,122.729708\"/>\n");
+
+  var x1 = cx - (r * Math.cos(rads1));
+  var y1 = cy - (r * Math.sin(rads1));
+  var x2 = cx - (r * Math.cos(rads2));
+  var y2 = cy - (r * Math.sin(rads2));
+  var shape = document.createElementNS(svgNS, "path");
+  shape.setAttribute("fill", "none");
+  shape.setAttribute("stroke", color);
+  shape.setAttribute("stroke-width", stroke_width);
+  var dstr = "M" + x1 + "," + y1 + " A" + r + "," + r + " 0 0,1 " + x2 + "," + y2;
+  console.log("dstr: " + dstr);
+  shape.setAttribute("d", dstr);
+  document.documentElement.appendChild(shape);
+}
 
 function gauge_create_text(val, angle, cx, cy, radius, font_size, dec)
 {
@@ -76,6 +110,43 @@ function gauge_init_f(val)
       var sinfo = new ScaleInfo();
       var tdata = new TicData();
       var shape;
+      var angle;
+      if (val.hi_caution_enable)
+      {
+        angle = ((val.hi_caution / this.max) * 270) + 45; 
+        if ((angle > 45) && (angle < 315))
+        {
+          gauge_create_band(angle, 315, this.cx, this.cy, 
+                  this.width * (65.5/150), this.width * (70/150), "yellow");
+        }
+      }
+      if (val.hi_alarm_enable)
+      {
+        angle = ((val.hi_alarm / this.max) * 270) + 45; 
+        if ((angle > 45) && (angle < 315))
+        {
+          gauge_create_band(angle, 315, this.cx, this.cy, 
+                  this.width * (65.5/150), this.width * (70/150), "red");
+        }
+      }
+      if (val.lo_caution_enable)
+      {
+        angle = ((val.lo_caution / this.max) * 270) + 45; 
+        if ((angle > 45) && (angle < 315))
+        {
+          gauge_create_band(45, angle, this.cx, this.cy, 
+                  this.width * (65.5/150), this.width * (70/150), "yellow");
+        }
+      }
+      if (val.lo_alarm_enable)
+      {
+        angle = ((val.lo_alarm / this.max) * 270) + 45; 
+        if ((angle > 45) && (angle < 315))
+        {
+          gauge_create_band(45, angle, this.cx, this.cy, 
+                  this.width * (65.5/150), this.width * (70/150), "red");
+        }
+      }
       sinfo.print();
       sinfo.calc(this.max,45,315);
       sinfo.print();
