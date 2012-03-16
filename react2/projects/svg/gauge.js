@@ -1,5 +1,30 @@
 
-function gauge_create_text(val, angle, cx, cy, radius, font_size)
+
+function delete_trailing_zeros(str)
+{
+  //if (-1 == str.search('/\./')) return str;
+  console.log("delete trailing zeros: " + str);
+  var found = false;
+  var the_ch;
+  for (var i=0; i < str.length; i++)
+  {
+    the_ch = str.charAt(i);
+    console.log("the char at " + i + ": " + the_ch);
+    if ('.' == the_ch) found = true; 
+  }
+  if (!found) return str;
+
+  console.log(str);
+  while ('0' == str.charAt(str.length-1)) 
+  {
+    str = str.substring(0, str.length-1);
+    console.log(str);
+  }
+  if ('.' == str.charAt(str.length-1)) str = str.substring(0, str.length-1);
+  return str;
+} 
+
+function gauge_create_text(val, angle, cx, cy, radius, font_size, dec)
 {
   var rads;
   var x;
@@ -16,7 +41,7 @@ function gauge_create_text(val, angle, cx, cy, radius, font_size)
   shape.setAttribute("font-size", font_size);
   shape.setAttribute("baseline-shift", "-33%");
   shape.setAttribute("text-anchor", "middle");
-  shape.textContent=Math.round(val);
+  shape.textContent=delete_trailing_zeros(val.toFixed(dec));
   document.documentElement.appendChild(shape);
 }
 
@@ -72,7 +97,7 @@ function gauge_init_f(val)
           shape.setAttribute("transform", mystr);
           document.documentElement.appendChild(shape);
           gauge_create_text(tdata.eu_val, tdata.screen_val, this.cx, this.cy, 
-                              this.width * (52.5/150), this.width * (10/150))
+                this.width * (52.5/150), this.width * (10/150), this.decimal_places)
         }
         else
         {

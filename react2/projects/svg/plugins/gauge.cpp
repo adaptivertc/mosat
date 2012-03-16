@@ -50,8 +50,8 @@ void gauge_t::generate(FILE *svg_fp, FILE *svg_top_of_file_fp, FILE *js_fp, int 
            js_object_name, n_instance, n_instance, n_instance, x, y, width); 
 
   fprintf(svg_fp, "<rect x=\"%lf\" y=\"%lf\" rx=\"%lf\" ry=\"%lf\" width=\"%lf\" height=\"%lf\"\n",
-               x, y, width * (2.0/15.0), width * (2.0/15.0), width, width);
-  fprintf(svg_fp, "style=\"fill:#2F4F4F;stroke:black;stroke-width:%lf;opacity:1.0\"/>\n", width *(3.0/150));
+               x, y, width * (1.0/15.0), width * (1.0/15.0), width, width);
+  fprintf(svg_fp, "style=\"fill:#2F4F4F;stroke:black;stroke-width:%lf;opacity:1.0\"/>\n", width *(2.0/150));
 
   fprintf(svg_fp, "<circle cx=\"%lf\" cy=\"%lf\" r=\"%lf\" fill=\"white\"/>\n", 
              cx, cy, width * (70.0/150.0));

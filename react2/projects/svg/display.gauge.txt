@@ -1,3 +1,4 @@
-svg_header|My Title|0|0|300|150|
+svg_header|Round Gauge|0|0|300|150|
 background|thistle|
-gauge|$1|blue|50|15|120|
+gauge|$1|firebrick|5|5|140|
+gauge|$2|darkorange|150|5|140|
