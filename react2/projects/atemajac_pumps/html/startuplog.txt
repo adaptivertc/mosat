@@ -1,5 +1,5 @@
-Tue Mar 20 09:49:22 2012
-React PID: 2099
+Tue Mar 20 19:09:54 2012
+React PID: 6899
 SampleRate set to: 10.000000
 Loading db point factory from: ../../ai.so
 Reading AI ........
@@ -105,8 +105,10 @@ Parsing 1 Discrete Expressions ......
 DCALC1 Parsing Expression: (pump1_amp < 0.0) or (pump2_amp > 200) and pump1_on
 Creating thread to wait on connections . . . 
 -- Reading background scripts: .//dbfiles/background.dat
+In react_t::wait_connections()
 control_pumps.txt
 ----- reading .//corridas//control_pumps.txt -----
+react_t::wait_connections(), All OK, waiting for connections
 sys.wait_until("HI_HI_LEVEL or (HI_LEVEL or (level > 380))", 10:00)
 sys.wait_until("HI_HI_LEVEL or (HI_LEVEL or (level > 380))", 10:00)
 
@@ -150,8 +152,6 @@ sys.loop()
 Loading iodrivers from: .//dbfiles/drivers.dat
 ../../drivers/sim_pump_low/libsimpumpdrv.so|new_simpumpdrv|||
 Loading iodriver from: ../../drivers/sim_pump_low/libsimpumpdrv.so
-In react_t::wait_connections()
-react_t::wait_connections(), All OK, waiting for connections
 Class factory function is: new_simpumpdrv
-Tue Mar 20 09:49:22 2012
-No foreground script executing, use "kill -1 2099" or <CTRL-C> to stop
+Tue Mar 20 19:09:55 2012
+No foreground script executing, use "kill -1 6899" or <CTRL-C> to stop

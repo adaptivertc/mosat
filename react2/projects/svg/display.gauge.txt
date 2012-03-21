@@ -11,4 +11,3 @@ simple_contact|LO_LEVEL|yellow|gray|20|100|9|
 simple_panel|PUMP1_ON|gray|lime|112|102|18|
 simple_panel|PUMP2_ON|gray|lime|187|102|18|
 simple_panel|PUMP3_ON|gray|lime|263|102|18|
-
