@@ -149,6 +149,43 @@ discrete_update_point_t::discrete_update_point_t(void)
 
 /*************************************************************************/
 
+int discrete_point_t::get_json(char *attribute, char *buf, int sz)
+{
+  point_lock_t l(&point_lock, tag);
+  if (0 == strcmp(attribute, "pv"))
+  {
+    snprintf(buf, sz, "%s", this->pv?"true":"false");
+    return 0;
+  }
+  else if (0 == strcmp(attribute, "pv_string"))
+  {
+    snprintf(buf, sz, "\"%s\"", this->pv_string);
+    return 0;
+  }
+  else if (0 == strcmp(attribute, "lo_desc"))
+  {
+    snprintf(buf, sz, "\"%s\"", this->lo_desc);
+    return 0;
+  }
+  else if (0 == strcmp(attribute, "hi_desc"))
+  {
+    snprintf(buf, sz, "\"%s\"", this->hi_desc);
+    return 0;
+  }
+  buf[0] = '\0';
+  return -2;
+}
+
+/*************************************************************************/
+
+int discrete_point_t::set_json(char *attribute, char *value)
+{
+  point_lock_t l(&point_lock, tag);
+  return -2;
+}
+
+/*************************************************************************/
+
 void discrete_point_t::get_pv_json(char *buf, int sz)
 {
   point_lock_t l(&point_lock, tag);

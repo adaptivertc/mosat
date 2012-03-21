@@ -47,6 +47,51 @@ void ao_point_t::send(double val)
 
 /********************************************************************/
 
+int ao_point_t::get_json(char *attribute, char *buf, int sz)
+{
+  return analog_point_t::get_json(attribute, buf, sz);
+}
+
+/********************************************************************/
+
+int ao_point_t::set_json(char *attribute, char *value)
+{
+  if (0 == strcmp(attribute, "pv"))
+  {
+    this->send(atof(value));
+    return 0;
+  }
+  else if (0 == strcmp(attribute, "send"))
+  {
+    this->send(atof(value));
+    return 0;
+  }
+  else if (0 == strcmp(attribute, "ramp"))
+  {
+    if (value[0] != '[') return -3; // must be an array
+    double ramp_val = atof(value + 1);
+    double ramp_time = 0;
+    bool found = false;
+    for (unsigned int i=0; i < strlen(value); i++)
+    {
+      if (value[i] == ',')
+      {
+        found = true;
+        ramp_time = atof(&value[i + 1]);
+      }
+    }
+    if (found) 
+    {
+      this->ramp(ramp_val, ramp_time);
+      return 0;
+    }
+    return -3;
+  }
+  return -2;
+}
+
+/********************************************************************/
+
 void ao_point_t::sendit(double val)
 {
   /* Send an analog output. */

@@ -122,6 +122,40 @@ void do_point_t::update(void)
   }
 }
 
+/********************************************************************/
+
+int do_point_t::get_json(char *attribute, char *buf, int sz)
+{
+  return discrete_point_t::get_json(attribute, buf, sz);
+}
+
+/********************************************************************/
+
+int do_point_t::set_json(char *attribute, char *value)
+{
+  if (0 == strcmp(attribute, "pv"))
+  {
+    this->send(0 == strcmp(value, "true"));
+    return 0;
+  }
+  else if (0 == strcmp(attribute, "send"))
+  {
+    this->send(0 == strcmp(value, "true"));
+    return 0;
+  }
+  else if (0 == strcmp(attribute, "blink"))
+  {
+    this->blink(atof(value));
+    return 0;
+  }
+  else if (0 == strcmp(attribute, "tdo"))
+  {
+    this->tdo(atof(value));
+    return 0;
+  }
+  return -2;
+
+}
 
 /********************************************************************/
 

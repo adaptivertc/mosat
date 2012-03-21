@@ -77,8 +77,8 @@ function toggle_pump1_f(val)
   this.pv.PUMP1_ON = !this.pv.PUMP1_ON
   console.log("Toggle pump 1 to:", this.pv.PUMP1_ON);
 }
-sim_object_t.prototype.toggle_pump1=toggle_pump1_f;
 
+sim_object_t.prototype.toggle_pump1=toggle_pump1_f;
 
 function sim_object_get_cfg_f(tag)
 {
