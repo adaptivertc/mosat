@@ -5,6 +5,7 @@
 
 #include "gen_display.h"
 
+static const char *tank_color = "gray";
 
 /******************************************/
 
@@ -12,10 +13,10 @@ void gen_cone_tank(FILE *fp, double x, double y, double width, double height, do
               double cone_height, double cone_width)
 {
   fprintf(fp, "  <g stroke=\"#000000\" stroke-width=\"0\">\n");
-  fprintf(fp, "    <rect fill=\"url(#grLinearV)\"\n");
+  fprintf(fp, "    <rect fill=\"url(#%sLinearV)\"\n", tank_color);
   fprintf(fp, "      x=\"%f\" y=\"%f\" width=\"%f\" height=\"%f\"/>\n", 
                           x, y + cap_height, width, height - cone_height - cap_height);
-  fprintf(fp, "    <path fill=\"url(#grRadial)\"\n");
+  fprintf(fp, "    <path fill=\"url(#%sRadial)\"\n", tank_color);
   fprintf(fp, "      d=\"M%f,%f A%f,%f 0 1,1 %f,%f z M%f,%f L%f,%f\"/>\n",
                      //d="M0,50 A125,50 0 1,1 250,50 M250,100 L250,100"/>
                           x, y + cap_height, 
@@ -23,7 +24,7 @@ void gen_cone_tank(FILE *fp, double x, double y, double width, double height, do
                           x + width, y + cap_height,
                           x, y + (cap_height * 2.0),
                           x, y + (cap_height * 2.0)); 
-  fprintf(fp, "    <path fill=\"url(#grRadial)\"\n");
+  fprintf(fp, "    <path fill=\"url(#%sRadial)\"\n", tank_color);
   fprintf(fp, "d=\"M%f,%f h%f l%f,%f h%f z m 0 %f h 0\"/>\n",
                      //d="M0,400 h200 l-50,100 h-100 z "/>
                           x, y + height - cone_height,
@@ -39,10 +40,10 @@ void gen_cone_tank(FILE *fp, double x, double y, double width, double height, do
 void gen_pressure_tank(FILE *fp, double x, double y, double width, double height, double top_height)
 {
   fprintf(fp, "  <g stroke=\"#000000\" stroke-width=\"0\">\n");
-  fprintf(fp, "    <rect fill=\"url(#grLinearV)\"\n");
+  fprintf(fp, "    <rect fill=\"url(#%sLinearV)\"\n", tank_color);
   fprintf(fp, "      x=\"%f\" y=\"%f\" width=\"%f\" height=\"%f\"/>\n", 
                           x, y + top_height, width, height - (2 * top_height));
-  fprintf(fp, "    <path fill=\"url(#grRadial)\"\n");
+  fprintf(fp, "    <path fill=\"url(#%sRadial)\"\n", tank_color);
   fprintf(fp, "      d=\"M%f,%f A%f,%f 0 1,1 %f,%f z M%f,%f L%f,%f\"/>\n",
                      //d="M0,50 A125,50 0 1,1 250,50 M250,100 L250,100"/>
                           x, y + top_height, 
@@ -50,7 +51,7 @@ void gen_pressure_tank(FILE *fp, double x, double y, double width, double height
                           x + width, y + top_height,
                           x, y + (top_height * 2.0),
                           x, y + (top_height * 2.0)); 
-  fprintf(fp, "    <path fill=\"url(#grRadial)\"\n");
+  fprintf(fp, "    <path fill=\"url(#%sRadial)\"\n", tank_color);
   fprintf(fp, "      d=\"M%f,%f A%f,%f 0 1,0 %f,%f z M%f,%f L%f,%f\"/>\n",
                       //d="M0,450 A125,50 0 1,0 250,450 M250,400 L250,400"/>
                           x, y + height - (top_height), 
@@ -98,17 +99,67 @@ void simple_tank_t::generate(FILE *svg_fp, FILE *svg_top_of_file_fp, FILE *js_fp
   double cone_height = 200;
   double cone_width = 30;
 
+  const char *the_color = argv[2];
+
+  if (0 == strcasecmp(the_color, "yellow")) 
+  {
+    tank_color = "yellow";
+    add_svg_library("yellow_gradients.svg");
+  }
+  else if (0 == strcasecmp(the_color, "black")) 
+  {
+    tank_color = "black";
+    add_svg_library("black_gradients.svg");
+  }
+  else if (0 == strcasecmp(the_color, "orange")) 
+  {
+    tank_color = "orange";
+    add_svg_library("orange_gradients.svg");
+  }
+  else if (0 == strcasecmp(the_color, "brown")) 
+  {
+    tank_color = "brown";
+    add_svg_library("brown_gradients.svg");
+  }
+  else if (0 == strcasecmp(the_color, "white")) 
+  {
+    tank_color = "white";
+    add_svg_library("white_gradients.svg");
+  }
+  else if (0 == strcasecmp(the_color, "red")) 
+  {
+    tank_color = "red";
+    add_svg_library("red_gradients.svg");
+  }
+  else if (0 == strcasecmp(the_color, "blue")) 
+  {
+    tank_color = "blue";
+    add_svg_library("blue_gradients.svg");
+  }
+  else if (0 == strcasecmp(the_color, "green")) 
+  {
+    tank_color = "green";
+    add_svg_library("green_gradients.svg");
+  }
+  else // Anything else, use gray
+  {
+    tank_color = "gray";
+    add_svg_library("gray_gradients.svg");
+  }
+
+
+
   fprintf(svg_fp, "<!--  START insert for simple_tank (%03d) -->\n", n_instance);
-  if ((argc == 9) && (argv[1][0] == 'c'))
+  if ((argc == 10) && (argv[1][0] == 'c'))
   {
     // /gen_tank c 0 0 300 400 20 50 20
-    x = atof(argv[2]);
-    y = atof(argv[3]);
-    width = atof(argv[4]);
-    height = atof(argv[5]);
-    cap_height = atof(argv[6]);
-    cone_height = atof(argv[7]);
-    cone_width = atof(argv[8]);
+    x = atof(argv[3]);
+    y = atof(argv[4]);
+    width = atof(argv[5]);
+    height = atof(argv[6]);
+    cap_height = atof(argv[7]);
+    cone_height = atof(argv[8]);
+    cone_width = atof(argv[9]);
     printf("cone tank:\n");
     printf("x = %lf\n", x);
     printf("y = %lf\n", y);
@@ -119,14 +170,14 @@ void simple_tank_t::generate(FILE *svg_fp, FILE *svg_top_of_file_fp, FILE *js_fp
     printf("cone_width = %lf\n", cone_width);
     gen_cone_tank(svg_fp, x, y, width, height, cap_height, cone_height, cone_width);
   }
-  else if ((argc == 7) && (argv[1][0] == 'p'))
+  else if ((argc == 8) && (argv[1][0] == 'p'))
   {
     // /gen_tank p 0 0 300 400 20 
-    x = atof(argv[2]);
-    y = atof(argv[3]);
-    width = atof(argv[4]);
-    height = atof(argv[5]);
-    cap_height = atof(argv[6]);
+    x = atof(argv[3]);
+    y = atof(argv[4]);
+    width = atof(argv[5]);
+    height = atof(argv[6]);
+    cap_height = atof(argv[7]);
     printf("pressure tank:\n");
     printf("x = %lf\n", x);
     printf("y = %lf\n", y);
@@ -142,7 +193,7 @@ void simple_tank_t::generate(FILE *svg_fp, FILE *svg_top_of_file_fp, FILE *js_fp
     printf("    |simple_tank|p|0|0|300|400|20|\n");
   }
   fprintf(svg_fp, "<!--  END insert for simple_tank (%03d) -->\n", n_instance);
-  add_svg_library("gray_gradients.svg");
+  //add_svg_library("gray_gradients.svg");
   n_instance++;
 }
 

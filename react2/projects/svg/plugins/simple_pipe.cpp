@@ -6,12 +6,15 @@
 #include "gen_display.h"
 
 
+static const char *pipe_color = "gray";
+
 /*******************************************/
 
 void gen_elbo_ru(FILE *fp, double x, double y, double pipe_width, double elbo_width)
 {
   double small_width = elbo_width - pipe_width;
-  fprintf(fp, "<path fill=\"url(#grRadial)\" d=\"M%lf,%lf a%lf,%lf 0 0,0 %lf,%lf h%lf a%lf,%lf 0 0,1 %lf,%lf z\"/>\n",
+  fprintf(fp, "<path fill=\"url(#%sRadial)\" d=\"M%lf,%lf a%lf,%lf 0 0,0 %lf,%lf h%lf a%lf,%lf 0 0,1 %lf,%lf z\"/>\n",
+          pipe_color,
           /* M */ x, y + (pipe_width/2), 
           /* a */  elbo_width, elbo_width, elbo_width, -elbo_width,
           /* h */  -pipe_width,
@@ -23,7 +26,8 @@ void gen_elbo_ru(FILE *fp, double x, double y, double pipe_width, double elbo_wi
 void gen_elbo_rd(FILE *fp, double x, double y, double pipe_width, double elbo_width)
 {
   double small_width = elbo_width - pipe_width;
-  fprintf(fp, "<path fill=\"url(#grRadial)\" d=\"M%lf,%lf a%lf,%lf 0 0,1 %lf,%lf h%lf a%lf,%lf 0 0,0 %lf,%lf z\"/>\n",
+  fprintf(fp, "<path fill=\"url(#%sRadial)\" d=\"M%lf,%lf a%lf,%lf 0 0,1 %lf,%lf h%lf a%lf,%lf 0 0,0 %lf,%lf z\"/>\n",
+          pipe_color,
           /* M */ x, y - (pipe_width/2), 
           /* a */  elbo_width, elbo_width, elbo_width, elbo_width,
           /* h */  -pipe_width,
@@ -35,7 +39,8 @@ void gen_elbo_rd(FILE *fp, double x, double y, double pipe_width, double elbo_wi
 void gen_elbo_lu(FILE *fp, double x, double y, double pipe_width, double elbo_width)
 {
   double small_width = elbo_width - pipe_width;
-  fprintf(fp, "<path fill=\"url(#grRadial)\" d=\"M%lf,%lf a%lf,%lf 0 0,1 %lf,%lf h%lf a%lf,%lf 0 0,0 %lf,%lf z\"/>\n",
+  fprintf(fp, "<path fill=\"url(#%sRadial)\" d=\"M%lf,%lf a%lf,%lf 0 0,1 %lf,%lf h%lf a%lf,%lf 0 0,0 %lf,%lf z\"/>\n",
+          pipe_color,
           /* M */ x, y + (pipe_width/2), 
           /* a */  elbo_width, elbo_width, -elbo_width, -elbo_width,
           /* h */  pipe_width,
@@ -47,7 +52,8 @@ void gen_elbo_lu(FILE *fp, double x, double y, double pipe_width, double elbo_wi
 void gen_elbo_ld(FILE *fp, double x, double y, double pipe_width, double elbo_width)
 {
   double small_width = elbo_width - pipe_width;
-  fprintf(fp, "<path fill=\"url(#grRadial)\" d=\"M%lf,%lf a%lf,%lf 0 0,0 %lf,%lf h%lf a%lf,%lf 0 0,1 %lf,%lf z\"/>\n",
+  fprintf(fp, "<path fill=\"url(#%sRadial)\" d=\"M%lf,%lf a%lf,%lf 0 0,0 %lf,%lf h%lf a%lf,%lf 0 0,1 %lf,%lf z\"/>\n",
+          pipe_color,
           /* M */ x, y - (pipe_width/2), 
           /* a */  elbo_width, elbo_width, -elbo_width, elbo_width,
           /* h */  pipe_width,
@@ -65,7 +71,8 @@ void gen_v_pipe(FILE *fp, double x, double y1, double y2, double width) {
      y2 = tmp; 
   } 
   fprintf(fp, 
-   "<rect fill=\"url(#grLinearV)\" x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\"/>\n",
+   "<rect fill=\"url(#%sLinearV)\" x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\"/>\n",
+          pipe_color,
           x - (width/2.0), y1, width, y2-y1);
 }
 
@@ -81,7 +88,8 @@ void gen_h_pipe(FILE *fp, double x1, double y, double x2, double width)
      x2 = tmp; 
   } 
   fprintf(fp, 
-   "<rect fill=\"url(#grLinearH)\" x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\"/>\n",
+   "<rect fill=\"url(#%sLinearH)\" x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\"/>\n",
+          pipe_color,
           x1, y - (width / 2.0), x2-x1, width);
 }
 
@@ -114,44 +122,96 @@ const char *simple_pipe_t::get_name(void)
 
 void simple_pipe_t::generate(FILE *svg_fp, FILE *svg_top_of_file_fp, FILE *js_fp, int argc, char **argv)
 {
-  double width = atof(argv[1]);
-  double x1 = atof(argv[2]);
-  double y1 = atof(argv[3]);
+  const char *the_color = argv[1];
+  double width = atof(argv[2]);
+  double x1 = atof(argv[3]);
+  double y1 = atof(argv[4]);
   double x2;
   double y2;
 
+  if (0 == strcasecmp(the_color, "yellow")) 
+  {
+    pipe_color = "yellow";
+    add_svg_library("yellow_gradients.svg");
+  }
+  else if (0 == strcasecmp(the_color, "black")) 
+  {
+    pipe_color = "black";
+    add_svg_library("black_gradients.svg");
+  }
+  else if (0 == strcasecmp(the_color, "orange")) 
+  {
+    pipe_color = "orange";
+    add_svg_library("orange_gradients.svg");
+  }
+  else if (0 == strcasecmp(the_color, "brown")) 
+  {
+    pipe_color = "brown";
+    add_svg_library("brown_gradients.svg");
+  }
+  else if (0 == strcasecmp(the_color, "white")) 
+  {
+    pipe_color = "white";
+    add_svg_library("white_gradients.svg");
+  }
+  else if (0 == strcasecmp(the_color, "red")) 
+  {
+    pipe_color = "red";
+    add_svg_library("red_gradients.svg");
+  }
+  else if (0 == strcasecmp(the_color, "blue")) 
+  {
+    pipe_color = "blue";
+    add_svg_library("blue_gradients.svg");
+  }
+  else if (0 == strcasecmp(the_color, "green")) 
+  {
+    pipe_color = "green";
+    add_svg_library("green_gradients.svg");
+  }
+  else // Anything else, use gray
+  {
+    pipe_color = "gray";
+    add_svg_library("gray_gradients.svg");
+  }
+
+  printf("Pipe color is: %s\n", pipe_color);
+
   fprintf(svg_fp, "<!-- START insert for simple_pipe (%03d) -->\n", n_instance);
-  for (int i=4; i < (argc-1); i+=2)
+  for (int i=5; i < (argc-1); i+=2)
   {
     switch (argv[i][0])
     {
       case 'h':
       case 'H':
         x2 = atof(argv[i+1]);
+        printf("Making Horizontal section to %lf\n", x2);
         y2 = y1;
         if ((i+2) < (argc-1))
           fprintf(svg_fp,  
-         "<circle cx=\"%lf\" cy=\"%lf\" r=\"%lf\" fill=\"url(#grRadial)\"/>\n",
-              x2, y2, width / 2.0);
+         "<circle cx=\"%lf\" cy=\"%lf\" r=\"%lf\" fill=\"url(#%sRadial)\"/>\n",
+              x2, y2, width / 2.0, pipe_color);
         gen_h_pipe(svg_fp, x1, y1,  x2, width);
         break;
       case 'v':
       case 'V':
         y2 = atof(argv[i+1]);
+        printf("Making Vertical section to %lf\n", y2);
         x2 = x1;
         if ((i+2) < (argc-1))
           fprintf(svg_fp,  
-         "<circle cx=\"%lf\" cy=\"%lf\" r=\"%lf\" fill=\"url(#grRadial)\"/>\n",
-              x2, y2, width / 2.0);
+         "<circle cx=\"%lf\" cy=\"%lf\" r=\"%lf\" fill=\"url(#%sRadial)\"/>\n",
+              x2, y2, width / 2.0, pipe_color);
         gen_v_pipe(svg_fp, x1, y1, y2, width);
         break;
+      default:
+        printf("Error, must be either 'h' or 'v' for the direction\n");
     } 
     x1 = x2;
     y1 = y2;
   }
 
   fprintf(svg_fp, "<!--  END insert for simple_pipe (%03d) -->\n", n_instance);
-  add_svg_library("gray_gradients.svg");
   n_instance++;
 }
 

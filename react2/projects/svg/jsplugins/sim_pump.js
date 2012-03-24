@@ -17,9 +17,9 @@ var sim;
 
 function sim_object_t()
 {
-  this.lo_level=90;
-  this.hi_level=260;
-  this.hi_hi_level=300;
+  this.lo_level=89;
+  this.hi_level=270;
+  this.hi_hi_level=325;
   this.rate=0;
   this.up=true;
 
@@ -39,10 +39,10 @@ function sim_object_t()
 
   this.cfg =
   {
-    "LEVEL":{"tag":"LEVEL","description":"NIVEL","eu":"cm","driver":0,"card":0,"channel":2,"eu_lo":0.000000,"eu_hi":500.000000,"raw_lo":32000.000000,"raw_hi":6400.000000,"decimal_places":0,"zero_cutoff":-125.000000,"lo_alarm":0.000000,"lo_caution":0.000000,"hi_caution":370.000000,"hi_alarm":400.000000,"deadband":0.000000,"lo_alarm_enable":false,"lo_caution_enable":false,"hi_caution_enable":true,"hi_alarm_enable":true, "scale_lo":0,"scale_hi":500},
-    "PUMP1_AMP":{"tag":"PUMP1_AMP","description":"BOMBA 1","eu":"amps","driver":0,"card":0,"channel":5,"eu_lo":0.000000,"eu_hi":50.000000,"raw_lo":6400.000000,"raw_hi":32000.000000,"decimal_places":1,"zero_cutoff":-12.500000,"lo_alarm":0.000000,"lo_caution":0.000000,"hi_caution":30.000000,"hi_alarm":35.000000,"deadband":0.000000,"lo_alarm_enable":false,"lo_caution_enable":false,"hi_caution_enable":true,"hi_alarm_enable":true,"scale_lo":0,"scale_hi":50},
-    "PUMP2_AMP":{"tag":"PUMP2_AMP","description":"BOMBA 2","eu":"amps","driver":0,"card":0,"channel":4,"eu_lo":0.000000,"eu_hi":50.000000,"raw_lo":6400.000000,"raw_hi":32000.000000,"decimal_places":1,"zero_cutoff":-12.500000,"lo_alarm":0.000000,"lo_caution":0.000000,"hi_caution":30.000000,"hi_alarm":35.000000,"deadband":0.000000,"lo_alarm_enable":false,"lo_caution_enable":false,"hi_caution_enable":true,"hi_alarm_enable":true,"scale_lo":0,"scale_hi":50},
-    "PUMP3_AMP":{"tag":"PUMP3_AMP","description":"BOMBA 3","eu":"amps","driver":0,"card":0,"channel":3,"eu_lo":0.000000,"eu_hi":50.000000,"raw_lo":6400.000000,"raw_hi":32000.000000,"decimal_places":1,"zero_cutoff":-12.500000,"lo_alarm":0.000000,"lo_caution":0.000000,"hi_caution":30.000000,"hi_alarm":35.000000,"deadband":0.000000,"lo_alarm_enable":false,"lo_caution_enable":false,"hi_caution_enable":true,"hi_alarm_enable":true,"scale_lo":0,"scale_hi":50},
+    "LEVEL":{"tag":"LEVEL","description":"NIVEL","eu":"cm","driver":0,"card":0,"channel":2,"eu_lo":0.000000,"eu_hi":500.000000,"raw_lo":32000.000000,"raw_hi":6400.000000,"decimal_places":0,"zero_cutoff":-125.000000,"lo_alarm":15.0,"lo_caution":44.0,"hi_caution":300.0,"hi_alarm":380.0,"deadband":0.0,"lo_alarm_enable":true,"lo_caution_enable":true,"hi_caution_enable":true,"hi_alarm_enable":true, "scale_lo":0,"scale_hi":450},
+    "PUMP1_AMP":{"tag":"PUMP1_AMP","description":"BOMBA 1","eu":"amps","driver":0,"card":0,"channel":5,"eu_lo":0.000000,"eu_hi":50.000000,"raw_lo":6400.000000,"raw_hi":32000.000000,"decimal_places":1,"zero_cutoff":-12.500000,"lo_alarm":0.000000,"lo_caution":0.000000,"hi_caution":30.000000,"hi_alarm":35.000000,"deadband":0.000000,"lo_alarm_enable":false,"lo_caution_enable":false,"hi_caution_enable":true,"hi_alarm_enable":true,"scale_lo":0,"scale_hi":40},
+    "PUMP2_AMP":{"tag":"PUMP2_AMP","description":"BOMBA 2","eu":"amps","driver":0,"card":0,"channel":4,"eu_lo":0.000000,"eu_hi":50.000000,"raw_lo":6400.000000,"raw_hi":32000.000000,"decimal_places":1,"zero_cutoff":-12.500000,"lo_alarm":0.000000,"lo_caution":0.000000,"hi_caution":30.000000,"hi_alarm":35.000000,"deadband":0.000000,"lo_alarm_enable":false,"lo_caution_enable":false,"hi_caution_enable":true,"hi_alarm_enable":true,"scale_lo":0,"scale_hi":40},
+    "PUMP3_AMP":{"tag":"PUMP3_AMP","description":"BOMBA 3","eu":"amps","driver":0,"card":0,"channel":3,"eu_lo":0.000000,"eu_hi":50.000000,"raw_lo":6400.000000,"raw_hi":32000.000000,"decimal_places":1,"zero_cutoff":-12.500000,"lo_alarm":0.000000,"lo_caution":0.000000,"hi_caution":30.000000,"hi_alarm":35.000000,"deadband":0.000000,"lo_alarm_enable":false,"lo_caution_enable":false,"hi_caution_enable":true,"hi_alarm_enable":true,"scale_lo":0,"scale_hi":40},
     "PUMP1_ON": {"tag":"PUMP1_ON","description":"Bomba 1 ON","driver":0,"card":0,"channel":8, "lo_desc":"Off","hi_desc":"ON", "alarm_state":"NONE","shutdown_state":"NONE","invert_pv":false},
     "PUMP2_ON":{"tag":"PUMP2_ON","description":"Bomba 1 ON","driver":0,"card":0,"channel":9, "lo_desc":"Off","hi_desc":"ON", "alarm_state":"NONE","shutdown_state":"NONE","invert_pv":false},
     "PUMP3_ON":{"tag":"PUMP3_ON","description":"Bomba 1 ON","driver":0,"card":0,"channel":10, "lo_desc":"Off","hi_desc":"ON", "alarm_state":"NONE","shutdown_state":"NONE","invert_pv":false},
@@ -156,6 +156,7 @@ sim_object_t.prototype.get_pv=sim_object_get_pv_f;
       {
         this.pv.PUMP3_AMP= (0 +((Math.random()-0.5)*0.6));
       }
+      this.rate = this.rate * 1.5;
       this.pv.LEVEL+=this.rate*0.1;
       this.pv.LEVEL= ((this.pv.LEVEL+((Math.random()-0.5)*0.8)));
     }

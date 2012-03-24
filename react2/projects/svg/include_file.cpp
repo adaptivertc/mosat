@@ -2,14 +2,17 @@
 
 #include <stdio.h>
 
-void include_file(FILE *fp, const char *fname)
+void include_file(FILE *fp, const char *dirname, const char *fname)
 {
-  printf("//Including file: %s\n", fname);
-  FILE *fp_include = fopen(fname, "r");
+//'int asprintf(char **strp, const char *fmt, ...);
+  char *thepath;
+  asprintf(&thepath, "%s/%s", dirname, fname);
+  printf("//Including file: %s\n", thepath);
+  FILE *fp_include = fopen(thepath, "r");
   if (fp_include == NULL)
   {
-    perror(fname);
-    fprintf(fp, "\n<!-- Can not open file for include: %s -->\n\n", fname);
+    perror(thepath);
+    fprintf(stderr, "Can not open file for include: %s\n", thepath);
     return;
   }
   char line[200];

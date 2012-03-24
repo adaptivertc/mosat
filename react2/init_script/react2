@@ -1,7 +1,8 @@
+#! /bin/sh
 ### BEGIN INIT INFO
 # Provides:          react2 
-# Required-Start:    postgresql networking
-# Required-Stop:     postgresql networking
+# Required-Start:    networking
+# Required-Stop:     networking
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
 # Short-Description: This is react2 a control engine 
@@ -11,7 +12,7 @@
 #
 # react2               This init.d script is used to start react2.
 #                       It basically just calls react2.
-#                      This is a work in progress, it is NOT ready yet.
+#                      This is still a work in progress . . . 
 
 
 # Using the lsb functions to perform the operations.
@@ -21,7 +22,11 @@ NAME=react2
 # Daemon name, where is the actual executable
 DAEMON=/home/react2/react2
 # pid file for the daemon
-PIDFILE=/var/run/react.pid
+PIDFILE=/var/run/react2.pid
+# Starting directory (current directory when process is started)
+DIRNAME=/home/react2
+# user name to run daemon as (can include group seperated by ':')
+USERNAME=react2
 
 # If the daemon is not there, then exit.
 test -x $DAEMON || exit 5
@@ -40,7 +45,7 @@ case $1 in
   log_daemon_msg "Starting the process" "$NAME"
   # Start the daemon with the help of start-stop-daemon
   # Log the message appropriately
-  if start-stop-daemon --start --quiet --oknodo --pidfile $PIDFILE --exec $DAEMON ; then
+  if start-stop-daemon --start --quiet --oknodo --pidfile $PIDFILE --exec $DAEMON --chuid $USERNAME --chdir DIRNAME; then
    log_end_msg 0
   else
    log_end_msg 1
@@ -61,7 +66,7 @@ case $1 in
   ;;
  restart)
   # Restart the daemon.
-  $0 stop && sleep 2 && $0 start
+  $0 stop && sleep 4 && $0 start
   ;;
  status)
   # Check the status of the process.

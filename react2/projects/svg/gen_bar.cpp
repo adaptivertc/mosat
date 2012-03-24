@@ -457,7 +457,7 @@ void gen_example_script(FILE *fp, double bar_x, double bar_y, double bar_height,
   gen_bar_object(fp, bar_x, bar_y, bar_height);
   fprintf(fp, "\n");
 
-  include_file(fp, "scales.js");
+  include_file(fp, ".", "scales.js");
   
   fprintf(fp, "    function onResponse()\n");
   fprintf(fp, "    {\n");

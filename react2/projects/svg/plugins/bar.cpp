@@ -26,8 +26,9 @@ const char *bar_t::get_name(void)
 
 void bar_t::generate(FILE *svg_fp, FILE *svg_top_of_file_fp, FILE *js_fp, int argc, char **argv)
 {
+  const char *bar_color = "blue";
   const char *tag = argv[1];
-  const char *color = argv[2];
+  const char *the_color = argv[2];
   double x = atof(argv[3]);
   double y = atof(argv[4]);
   double height = atof(argv[5]);
@@ -37,15 +38,73 @@ void bar_t::generate(FILE *svg_fp, FILE *svg_top_of_file_fp, FILE *js_fp, int ar
   double cy = y + (height/2.0);
   double stroke_width = height / 100.0;
 
+  if (0 == strcasecmp(the_color, "yellow")) 
+  {
+    bar_color = "yellow";
+    add_svg_library("yellow_gradients.svg");
+  }
+  else if (0 == strcasecmp(the_color, "black")) 
+  {
+    bar_color = "black";
+    add_svg_library("black_gradients.svg");
+  }
+  else if (0 == strcasecmp(the_color, "orange")) 
+  {
+    bar_color = "orange";
+    add_svg_library("orange_gradients.svg");
+  }
+  else if (0 == strcasecmp(the_color, "brown")) 
+  {
+    bar_color = "brown";
+    add_svg_library("brown_gradients.svg");
+  }
+  else if (0 == strcasecmp(the_color, "white")) 
+  {
+    bar_color = "gray"; // Can NOT be white, no contrast with above bar
+    add_svg_library("gray_gradients.svg");
+  }
+  else if (0 == strcasecmp(the_color, "red")) 
+  {
+    bar_color = "red";
+    add_svg_library("red_gradients.svg");
+  }
+  else if (0 == strcasecmp(the_color, "blue")) 
+  {
+    bar_color = "blue";
+    add_svg_library("blue_gradients.svg");
+  }
+  else if (0 == strcasecmp(the_color, "green")) 
+  {
+    bar_color = "green";
+    add_svg_library("green_gradients.svg");
+  }
+  else if (0 == strcasecmp(the_color, "gray")) 
+  {
+    bar_color = "gray";
+    add_svg_library("gray_gradients.svg");
+  }
+  else if (0 == strcasecmp(the_color, "grey")) 
+  {
+    bar_color = "gray";
+    add_svg_library("gray_gradients.svg");
+  }
+  else // Anything else, use blue 
+  {
+    bar_color = "blue";
+    add_svg_library("blue_gradients.svg");
+  }
+  add_svg_library("white_gradients.svg");
+
   
   fprintf(svg_fp, "<!--  START insert for bar (%03d) -->\n", n_instance);
   fprintf(js_fp, "// --  START insert for bar (%03d)\n", n_instance);
 
 //----------
-  fprintf(svg_fp, "  <rect fill=\"url(#grBarGrey)\" x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\" stroke=\"none\" stroke-width=\"0\"/>\n",
+  fprintf(svg_fp, "  <rect fill=\"url(#whiteLinearV)\" x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\" stroke=\"none\" stroke-width=\"0\"/>\n",
                          x, y, width, height);
-  fprintf(svg_fp, "  <rect fill=\"url(#grBarBlue)\" id=\"bar_%03d\" x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\" stroke=\"none\" stroke-width=\"0\" transform=\"rotate(180 %lf %lf)\"/>\n",
-                         n_instance, x, y, width, height, x + (width * 0.5), y + (height * 0.5));
+  fprintf(svg_fp, "  <rect fill=\"url(#%sLinearV)\" id=\"bar_%03d\" x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\" stroke=\"none\" stroke-width=\"0\" transform=\"rotate(180 %lf %lf)\"/>\n",
+                         bar_color,
+                         n_instance, x, y, width, height, cx, cy);
   fprintf(svg_fp, "  <rect x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\" fill=\"none\" stroke=\"#000000\" stroke-width=\"%lf\" />\n",
                          x, y, width, height, stroke_width);
 
@@ -69,7 +128,7 @@ void bar_t::generate(FILE *svg_fp, FILE *svg_top_of_file_fp, FILE *js_fp, int ar
   fprintf(js_fp, "// --  END insert for bar (%03d)\n", n_instance);
   add_js_library("scales.js");
   add_js_library("bar.js");
-  add_svg_library("bar_lib.svg");
+  //add_svg_library("bar_lib.svg");
   add_animation_object(tag, js_object_name);
 
   n_instance++;
