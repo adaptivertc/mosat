@@ -61,36 +61,159 @@ void gen_elbo_ld(FILE *fp, double x, double y, double pipe_width, double elbo_wi
 }
   
 /*******************************************/
+static bool last_HR = true;
+static bool last_VU = true;
+static bool last_V = true;
+static bool first = true;
 
-void gen_v_pipe(FILE *fp, double x, double y1, double y2, double width) {
+void gen_butt_end(FILE *fp, double width, double butt_width, double x2, double y2)
+{
+  printf("butt end - width: %lf, bwidth: %lf, x2: %lf, y2: %lf\n",
+         width, butt_width, x2, y2);
+  if (last_V && last_VU)
+  {
+    // draw the butt end up
+    printf("butt up\n");
+  }
+  else if (last_V && !last_VU)
+  {
+    // draw the butt end down 
+    printf("butt down\n");
+  }
+  else if (!last_V && last_HR)
+  {
+    // draw the butt end right 
+    printf("butt right\n");
+    fprintf(fp, 
+    "<polygon fill=\"url(#%sLinearH)\" points=\"%lf,%lf %lf,%lf %lf,%lf\"/>\n",
+          pipe_color, x2, y2 - (width/2.0), x2, y2 + (width/2.0), x2 + (butt_width/2.0), y2);
+  }
+  else if (!last_V && !last_HR)
+  {
+    printf("butt left\n");
+    // draw the butt end left 
+  }
+  
+}
+
+/*******************************************/
+
+void gen_v_pipe(FILE *fp, double x, double y1, double y2, double width) 
+{
+  double x1 = x - (width / 2.0);
+  double x2 = x + (width / 2.0);
+
+  
+  last_V = true;
   if(y1 > y2)
   {
-     double tmp;
-     tmp = y1;
-     y1 = y2;
-     y2 = tmp; 
+    double tmp;
+    tmp = y1;
+    y1 = y2;
+    y2 = tmp; 
+    last_VU = true;
   } 
-  fprintf(fp, 
-   "<rect fill=\"url(#%sLinearV)\" x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\"/>\n",
-          pipe_color,
-          x - (width/2.0), y1, width, y2-y1);
+  else
+  {
+    last_VU = false;
+  }
+
+  printf("V - x1: %lf, y1: %lf, x2: %lf, y2: %lf\n", x1, y1, x2, y2);
+
+  if (first)
+  {
+    first = false;
+    fprintf(fp, 
+     "<rect fill=\"url(#%sLinearV)\" x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\"/>\n",
+          pipe_color, x - (width/2.0), y1, width, y2-y1);
+  }
+  else if (last_HR && last_VU)
+  {
+    // case last was to the right, next is up 
+    fprintf(fp, 
+    "<polygon fill=\"url(#%sLinearV)\" points=\"%lf,%lf %lf,%lf %lf,%lf %lf,%lf %lf,%lf\"/>\n",
+          pipe_color, x, y2, x2, y2, x2, y1, x1, y1, x1, y2 - (width * 0.5));
+  }
+  else if (!last_HR && last_VU)
+  {
+    // case last was to the left, next is up 
+    fprintf(fp, 
+    "<polygon fill=\"url(#%sLinearV)\" points=\"%lf,%lf %lf,%lf %lf,%lf %lf,%lf %lf,%lf\"/>\n",
+          pipe_color, x, y2, x1, y2, x1, y1, x2, y1, x2, y2 - (width * 0.5));
+  }
+  else if (last_HR && !last_VU)
+  {
+    // case last was to the right, next is down
+    fprintf(fp, 
+    "<polygon fill=\"url(#%sLinearV)\" points=\"%lf,%lf %lf,%lf %lf,%lf %lf,%lf %lf,%lf\"/>\n",
+          pipe_color, x, y1, x2, y1, x2, y2, x1, y2, x1, y1 + (width * 0.5));
+  }
+  else if (!last_HR && !last_VU)
+  {
+    // case last was to the left, next is down
+    fprintf(fp, 
+    "<polygon fill=\"url(#%sLinearV)\" points=\"%lf,%lf %lf,%lf %lf,%lf %lf,%lf %lf,%lf\"/>\n",
+          pipe_color, x, y1, x1, y1, x1, y2, x2, y2, x2, y1 + (width * 0.5));
+  }
 }
 
 /*******************************************/
 
 void gen_h_pipe(FILE *fp, double x1, double y, double x2, double width)
 {
+  double y1 = y - (width / 2.0);
+  double y2 = y + (width / 2.0);
+
+  last_V = false;
   if(x1 > x2)
   {
-     double tmp;
-     tmp = x1;
-     x1 = x2;
-     x2 = tmp; 
+    double tmp;
+    tmp = x1;
+    x1 = x2;
+    x2 = tmp; 
+    last_HR = false; 
   } 
-  fprintf(fp, 
-   "<rect fill=\"url(#%sLinearH)\" x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\"/>\n",
-          pipe_color,
-          x1, y - (width / 2.0), x2-x1, width);
+  else
+  {
+    last_HR = true; 
+  }
+  printf("H - x1: %lf, y1: %lf, x2: %lf, y2: %lf\n", x1, y1, x2, y2);
+
+  if (first)
+  {
+    first = false;
+    fprintf(fp, 
+     "<rect fill=\"url(#%sLinearH)\" x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\"/>\n",
+          pipe_color, x1, y - (width / 2.0), x2-x1, width);
+  }
+  else if (last_HR && last_VU)
+  {
+    // case last was up, next is right 
+    fprintf(fp, 
+   "<polygon fill=\"url(#%sLinearH)\" points=\"%lf,%lf %lf,%lf %lf,%lf %lf,%lf %lf,%lf\"/>\n",
+          pipe_color, x1, y1, x2 , y1, x2, y2, x1 + (width * 0.5), y2, x1, y);
+  }
+  else if (!last_HR && last_VU)
+  {
+    // case last was up, next is left 
+    fprintf(fp, 
+   "<polygon fill=\"url(#%sLinearH)\" points=\"%lf,%lf %lf,%lf %lf,%lf %lf,%lf %lf,%lf\"/>\n",
+          pipe_color, x2, y1, x1 , y1, x1, y2, x2 - (width * 0.5), y2, x2, y);
+  }
+  else if (last_HR && !last_VU)
+  {
+    // case last was down, next is right 
+    fprintf(fp, 
+    "<polygon fill=\"url(#%sLinearH)\" points=\"%lf,%lf %lf,%lf %lf,%lf %lf,%lf %lf,%lf\"/>\n",
+          pipe_color, x1, y2, x2 , y2, x2, y1, x1 + (width * 0.5), y1, x1, y);
+  }
+  else if (!last_HR && !last_VU)
+  {
+    // case last was down, next is left 
+    fprintf(fp, 
+    "<polygon fill=\"url(#%sLinearH)\" points=\"%lf,%lf %lf,%lf %lf,%lf %lf,%lf %lf,%lf\"/>\n",
+          pipe_color, x2, y2, x1 , y2, x1, y1, x2 - (width * 0.5), y1, x2, y);
+  }
 }
 
 /*******************************************/
@@ -128,6 +251,7 @@ void simple_pipe_t::generate(FILE *svg_fp, FILE *svg_top_of_file_fp, FILE *js_fp
   double y1 = atof(argv[4]);
   double x2;
   double y2;
+  double butt_width;
 
   if (0 == strcasecmp(the_color, "yellow")) 
   {
@@ -176,6 +300,7 @@ void simple_pipe_t::generate(FILE *svg_fp, FILE *svg_top_of_file_fp, FILE *js_fp
   }
 
   printf("Pipe color is: %s\n", pipe_color);
+  first = true;
 
   fprintf(svg_fp, "<!-- START insert for simple_pipe (%03d) -->\n", n_instance);
   for (int i=5; i < (argc-1); i+=2)
@@ -187,10 +312,12 @@ void simple_pipe_t::generate(FILE *svg_fp, FILE *svg_top_of_file_fp, FILE *js_fp
         x2 = atof(argv[i+1]);
         printf("Making Horizontal section to %lf\n", x2);
         y2 = y1;
-        if ((i+2) < (argc-1))
+        if (((i+2) < (argc-1)) && (argv[i+2][0] != 'b') && (argv[i+2][0] != 'B'))
+        {
           fprintf(svg_fp,  
          "<circle cx=\"%lf\" cy=\"%lf\" r=\"%lf\" fill=\"url(#%sRadial)\"/>\n",
               x2, y2, width / 2.0, pipe_color);
+        }
         gen_h_pipe(svg_fp, x1, y1,  x2, width);
         break;
       case 'v':
@@ -198,14 +325,23 @@ void simple_pipe_t::generate(FILE *svg_fp, FILE *svg_top_of_file_fp, FILE *js_fp
         y2 = atof(argv[i+1]);
         printf("Making Vertical section to %lf\n", y2);
         x2 = x1;
-        if ((i+2) < (argc-1))
+        if (((i+2) < (argc-1)) && (argv[i+2][0] != 'b') && (argv[i+2][0] != 'B'))
+        {
           fprintf(svg_fp,  
          "<circle cx=\"%lf\" cy=\"%lf\" r=\"%lf\" fill=\"url(#%sRadial)\"/>\n",
               x2, y2, width / 2.0, pipe_color);
+        }
         gen_v_pipe(svg_fp, x1, y1, y2, width);
         break;
+      case 'b':
+      case 'B':
+        printf("Making piece to butt against a pipe %lf, %lf\n", x2, y2);
+        butt_width = atof(argv[i+1]);
+        gen_butt_end(svg_fp, width, butt_width, x2, y2);
+        break;
       default:
-        printf("Error, must be either 'h' or 'v' for the direction\n");
+        printf("Error: %s, must be either 'h' or 'v' or 'b' for the direction\n", argv[i]);
+        break;
     } 
     x1 = x2;
     y1 = y2;

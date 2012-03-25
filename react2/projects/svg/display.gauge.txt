@@ -1,7 +1,7 @@
 svg_header|Round Gauge|0|0|300|150|
 background|thistle|
 imasa_logo|0|0|24|
-bar|level|green|36|5|125|
+bar|level|red|36|5|125|
 gauge|pump1_amp|darkorange|76|1|73|
 gauge|pump2_amp|darkorange|151|1|73|
 gauge|pump3_amp|darkorange|226|1|73|
