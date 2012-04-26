@@ -74,11 +74,17 @@ void gen_butt_end(FILE *fp, double width, double butt_width, double x2, double y
   {
     // draw the butt end up
     printf("butt up\n");
+    fprintf(fp, 
+    "<polygon fill=\"url(#%sLinearV)\" points=\"%lf,%lf %lf,%lf %lf,%lf\"/>\n",
+          pipe_color, x2 - (width/2.0), y2, x2 + (width/2.0), y2, x2, y2 - (butt_width/2.0));
   }
   else if (last_V && !last_VU)
   {
     // draw the butt end down 
     printf("butt down\n");
+    fprintf(fp, 
+    "<polygon fill=\"url(#%sLinearV)\" points=\"%lf,%lf %lf,%lf %lf,%lf\"/>\n",
+          pipe_color, x2 - (width/2.0), y2, x2 + (width/2.0), y2, x2, y2 + (butt_width/2.0));
   }
   else if (!last_V && last_HR)
   {
@@ -90,8 +96,11 @@ void gen_butt_end(FILE *fp, double width, double butt_width, double x2, double y
   }
   else if (!last_V && !last_HR)
   {
-    printf("butt left\n");
     // draw the butt end left 
+    printf("butt left\n");
+    fprintf(fp, 
+    "<polygon fill=\"url(#%sLinearH)\" points=\"%lf,%lf %lf,%lf %lf,%lf\"/>\n",
+          pipe_color, x2, y2 - (width/2.0), x2, y2 + (width/2.0), x2 - (butt_width/2.0), y2);
   }
   
 }

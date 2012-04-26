@@ -26,11 +26,12 @@ const char *gauge_t::get_name(void)
 
 void gauge_t::generate(FILE *svg_fp, FILE *svg_top_of_file_fp, FILE *js_fp, int argc, char **argv)
 {
-  const char *tag = argv[1];
-  const char *color = argv[2];
-  double x = atof(argv[3]);
-  double y = atof(argv[4]);
-  double width = atof(argv[5]);
+  int gtype = atol(argv[1]);
+  const char *tag = argv[2];
+  const char *color = argv[3];
+  double x = atof(argv[4]);
+  double y = atof(argv[5]);
+  double width = atof(argv[6]);
   //double width = height * 0.2;
   //double font_size = height * 0.1;
   //double cx = x + (width/2.0);
@@ -49,84 +50,90 @@ void gauge_t::generate(FILE *svg_fp, FILE *svg_top_of_file_fp, FILE *js_fp, int 
   fprintf(js_fp, "var %s = new gauge_t(\"gauge_needle_%03d\", \"gauge_pv_%03d\", \"gauge_eu_%03d\", %lf, %lf, %lf);\n", 
            js_object_name, n_instance, n_instance, n_instance, x, y, width); 
 
-  fprintf(svg_fp, "<rect x=\"%lf\" y=\"%lf\" rx=\"%lf\" ry=\"%lf\" width=\"%lf\" height=\"%lf\"\n",
+  if (gtype == 1)
+  {
+    fprintf(svg_fp, "<rect x=\"%lf\" y=\"%lf\" rx=\"%lf\" ry=\"%lf\" width=\"%lf\" height=\"%lf\"\n",
                x, y, width * (1.0/15.0), width * (1.0/15.0), width, width);
-  fprintf(svg_fp, "style=\"fill:#2F4F4F;stroke:black;stroke-width:%lf;opacity:1.0\"/>\n", width *(2.0/150));
+    fprintf(svg_fp, "style=\"fill:rgb(54,60,60);stroke:black;stroke-width:%lf;opacity:1.0\"/>\n", width *(2.0/150));
+  }
 
   fprintf(svg_fp, "<circle cx=\"%lf\" cy=\"%lf\" r=\"%lf\" fill=\"white\"/>\n", 
              cx, cy, width * (70.0/150.0));
-
-
-  /***
-  fprintf(svg_fp, "<path fill=\"none\" stroke=\"yellow\" stroke-width=\"5.000000\"\n");
-  fprintf(svg_fp, "  d=\"M118.388164,23.292000 A67.500000,67.500000 0 0,1 141.474523,63.278748\"/>\n");
-
-  fprintf(svg_fp, "<path fill=\"none\" stroke=\"red\" stroke-width=\"5.000000\"\n");
-  fprintf(svg_fp, "   d=\"M141.474523,63.278748 A67.500000,67.500000 0 0,1 122.729708,122.729708\"/>\n");
-***/
-
-
   fprintf(svg_fp, "  <circle cx=\"%lf\" cy=\"%lf\" r=\"%lf\" fill=\"cornsilk\"\n", 
                           cx, cy, width * (65.0/150.0));
   fprintf(svg_fp, "         style=\"stroke:rgb(30,30,30);stroke-width:%lf\"/>\n", width / 150.0);
 
-  double screw_cx = width * 0.1;
-  double screw_cy = width * 0.1; 
-  double screw_x1 = width * (13.0/150.0);
-  double screw_y1 = width * 0.1;
-  double screw_x2 = width * (17.0/150.0);
-  double screw_y2 = width * 0.1;
 
-  double screw_r = width * (3.0/150.0);
-  double screw_stroke_width = width * (1.2/150.0);
+  if (gtype != 1)
+  {
+    fprintf(svg_fp, 
+     "<circle cx=\"%lf\" cy=\"%lf\" r=\"%lf\" fill=\"none\""
+     " stroke-width=\"%lf\" stroke = \"black\"/>\n", 
+     //" stroke-width=\"%lf\" stroke = \"black\" filter=\"url(#filter1)\"/>\n", 
+       cx, cy, width * (72.0/150.0), width * 4/150);
+  }
+  else
+  {
+    double screw_cx = width * 0.1;
+    double screw_cy = width * 0.1; 
+    double screw_x1 = width * (13.0/150.0);
+    double screw_y1 = width * 0.1;
+    double screw_x2 = width * (17.0/150.0);
+    double screw_y2 = width * 0.1;
 
-  fprintf(svg_fp, "  <circle cx=\"%lf\" cy=\"%lf\" r=\"%lf\" stroke=\"none\" stroke-width=\"0\" fill=\"black\"/>\n",
+    double screw_r = width * (3.0/150.0);
+    double screw_stroke_width = width * (1.2/150.0);
+
+    fprintf(svg_fp, "  <circle cx=\"%lf\" cy=\"%lf\" r=\"%lf\" stroke=\"none\" stroke-width=\"0\" fill=\"black\"/>\n",
                   x + screw_cx, y + screw_cy, screw_r);
-  fprintf(svg_fp, "  <line x1=\"%lf\" y1=\"%lf\" x2=\"%lf\" y2=\"%lf\" transform=\"rotate(20 %lf %lf)\"\n", 
+    fprintf(svg_fp, "  <line x1=\"%lf\" y1=\"%lf\" x2=\"%lf\" y2=\"%lf\" transform=\"rotate(20 %lf %lf)\"\n", 
+                      x + screw_x1, y + screw_y1, 
+                      x + screw_x2, y + screw_y2, x + 
+                      screw_cx, y + screw_cy);
+    fprintf(svg_fp, "      style=\"stroke:rgb(64,65,65);stroke-width:%lf\"/>\n", screw_stroke_width);
+    fprintf(svg_fp, "  <line x1=\"%lf\" y1=\"%lf\" x2=\"%lf\" y2=\"%lf\" transform=\"rotate(110 %lf %lf)\"\n",
                       x + screw_x1, y + screw_y1, x + screw_x2, y + screw_y2, x + screw_cx, y + screw_cy);
-  fprintf(svg_fp, "      style=\"stroke:rgb(64,65,65);stroke-width:%lf\"/>\n", screw_stroke_width);
-  fprintf(svg_fp, "  <line x1=\"%lf\" y1=\"%lf\" x2=\"%lf\" y2=\"%lf\" transform=\"rotate(110 %lf %lf)\"\n",
-                      x + screw_x1, y + screw_y1, x + screw_x2, y + screw_y2, x + screw_cx, y + screw_cy);
-  fprintf(svg_fp, "      style=\"stroke:rgb(64,65,65);stroke-width:%lf\"/>\n", screw_stroke_width);
+    fprintf(svg_fp, "      style=\"stroke:rgb(64,65,65);stroke-width:%lf\"/>\n", screw_stroke_width);
 
-  screw_cx = width - screw_cx;
-  screw_x1 = width - screw_x1;
-  screw_x2 = width - screw_x2;
+    screw_cx = width - screw_cx;
+    screw_x1 = width - screw_x1;
+    screw_x2 = width - screw_x2;
 
-  fprintf(svg_fp, "  <circle cx=\"%lf\" cy=\"%lf\" r=\"%lf\" stroke=\"none\" stroke-width=\"0\" fill=\"black\"/>\n",
+    fprintf(svg_fp, "  <circle cx=\"%lf\" cy=\"%lf\" r=\"%lf\" stroke=\"none\" stroke-width=\"0\" fill=\"black\"/>\n",
                   x + screw_cx, y + screw_cy, screw_r);
-  fprintf(svg_fp, "  <line x1=\"%lf\" y1=\"%lf\" x2=\"%lf\" y2=\"%lf\" transform=\"rotate(-10 %lf %lf)\"\n", 
+    fprintf(svg_fp, "  <line x1=\"%lf\" y1=\"%lf\" x2=\"%lf\" y2=\"%lf\" transform=\"rotate(-10 %lf %lf)\"\n", 
                       x + screw_x1, y + screw_y1, x + screw_x2, y + screw_y2, x + screw_cx, y + screw_cy);
-  fprintf(svg_fp, "      style=\"stroke:rgb(64,65,65);stroke-width:%lf\"/>\n", screw_stroke_width);
-  fprintf(svg_fp, "  <line x1=\"%lf\" y1=\"%lf\" x2=\"%lf\" y2=\"%lf\" transform=\"rotate(80 %lf %lf)\"\n",
+    fprintf(svg_fp, "      style=\"stroke:rgb(64,65,65);stroke-width:%lf\"/>\n", screw_stroke_width);
+    fprintf(svg_fp, "  <line x1=\"%lf\" y1=\"%lf\" x2=\"%lf\" y2=\"%lf\" transform=\"rotate(80 %lf %lf)\"\n",
                       x + screw_x1, y + screw_y1, x + screw_x2, y + screw_y2, x + screw_cx, y + screw_cy);
-  fprintf(svg_fp, "      style=\"stroke:rgb(64,65,65);stroke-width:%lf\"/>\n", screw_stroke_width);
+    fprintf(svg_fp, "      style=\"stroke:rgb(64,65,65);stroke-width:%lf\"/>\n", screw_stroke_width);
 
-  screw_cy = width - screw_cy;
-  screw_y1 = width - screw_y1;
-  screw_y2 = width - screw_y2;
+    screw_cy = width - screw_cy;
+    screw_y1 = width - screw_y1;
+    screw_y2 = width - screw_y2;
 
-  fprintf(svg_fp, "  <circle cx=\"%lf\" cy=\"%lf\" r=\"%lf\" stroke=\"none\" stroke-width=\"0\" fill=\"black\"/>\n",
+    fprintf(svg_fp, "  <circle cx=\"%lf\" cy=\"%lf\" r=\"%lf\" stroke=\"none\" stroke-width=\"0\" fill=\"black\"/>\n",
                   x + screw_cx, y + screw_cy, screw_r);
-  fprintf(svg_fp, "  <line x1=\"%lf\" y1=\"%lf\" x2=\"%lf\" y2=\"%lf\" transform=\"rotate(17 %lf %lf)\"\n", 
+    fprintf(svg_fp, "  <line x1=\"%lf\" y1=\"%lf\" x2=\"%lf\" y2=\"%lf\" transform=\"rotate(17 %lf %lf)\"\n", 
                       x + screw_x1, y + screw_y1, x + screw_x2, y + screw_y2, x + screw_cx, y + screw_cy);
-  fprintf(svg_fp, "      style=\"stroke:rgb(64,65,65);stroke-width:%lf\"/>\n", screw_stroke_width);
-  fprintf(svg_fp, "  <line x1=\"%lf\" y1=\"%lf\" x2=\"%lf\" y2=\"%lf\" transform=\"rotate(107 %lf %lf)\"\n",
+    fprintf(svg_fp, "      style=\"stroke:rgb(64,65,65);stroke-width:%lf\"/>\n", screw_stroke_width);
+    fprintf(svg_fp, "  <line x1=\"%lf\" y1=\"%lf\" x2=\"%lf\" y2=\"%lf\" transform=\"rotate(107 %lf %lf)\"\n",
                       x + screw_x1, y + screw_y1, x + screw_x2, y + screw_y2, x + screw_cx, y + screw_cy);
-  fprintf(svg_fp, "      style=\"stroke:rgb(64,65,65);stroke-width:%lf\"/>\n", screw_stroke_width);
+    fprintf(svg_fp, "      style=\"stroke:rgb(64,65,65);stroke-width:%lf\"/>\n", screw_stroke_width);
 
-  screw_cx = width - screw_cx;
-  screw_x1 = width - screw_x1;
-  screw_x2 = width - screw_x2;
+    screw_cx = width - screw_cx;
+    screw_x1 = width - screw_x1;
+    screw_x2 = width - screw_x2;
 
-  fprintf(svg_fp, "  <circle cx=\"%lf\" cy=\"%lf\" r=\"%lf\" stroke=\"none\" stroke-width=\"0\" fill=\"black\"/>\n",
+    fprintf(svg_fp, "  <circle cx=\"%lf\" cy=\"%lf\" r=\"%lf\" stroke=\"none\" stroke-width=\"0\" fill=\"black\"/>\n",
                   x + screw_cx, y + screw_cy, screw_r);
-  fprintf(svg_fp, "  <line x1=\"%lf\" y1=\"%lf\" x2=\"%lf\" y2=\"%lf\" transform=\"rotate(3 %lf %lf)\"\n", 
+    fprintf(svg_fp, "  <line x1=\"%lf\" y1=\"%lf\" x2=\"%lf\" y2=\"%lf\" transform=\"rotate(3 %lf %lf)\"\n", 
                       x + screw_x1, y + screw_y1, x + screw_x2, y + screw_y2, x + screw_cx, y + screw_cy);
-  fprintf(svg_fp, "      style=\"stroke:rgb(64,65,65);stroke-width:%lf\"/>\n", screw_stroke_width);
-  fprintf(svg_fp, "  <line x1=\"%lf\" y1=\"%lf\" x2=\"%lf\" y2=\"%lf\" transform=\"rotate(93 %lf %lf)\"\n",
+    fprintf(svg_fp, "      style=\"stroke:rgb(64,65,65);stroke-width:%lf\"/>\n", screw_stroke_width);
+    fprintf(svg_fp, "  <line x1=\"%lf\" y1=\"%lf\" x2=\"%lf\" y2=\"%lf\" transform=\"rotate(93 %lf %lf)\"\n",
                       x + screw_x1, y + screw_y1, x + screw_x2, y + screw_y2, x + screw_cx, y + screw_cy);
-  fprintf(svg_fp, "      style=\"stroke:rgb(64,65,65);stroke-width:%lf\"/>\n", screw_stroke_width);
+    fprintf(svg_fp, "      style=\"stroke:rgb(64,65,65);stroke-width:%lf\"/>\n", screw_stroke_width);
+  }
 
   char needle_d[200];
   double needle_r = width * (6.0/150.0);
@@ -170,6 +177,7 @@ void gauge_t::generate(FILE *svg_fp, FILE *svg_top_of_file_fp, FILE *js_fp, int 
 
   fprintf(svg_fp, "<!--  END insert for gauge (%03d) -->\n", n_instance);
   fprintf(js_fp, "// --  END insert for gauge (%03d)\n", n_instance);
+  //add_svg_library("filter1.svg");
   add_js_library("scales.js");
   add_js_library("gauge.js");
   add_animation_object(tag, js_object_name);

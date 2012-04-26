@@ -59,3 +59,11 @@ The final content of the output SVG file is created in the following order:
 
 9) Then end of SVG: </svg>
 
+
+Tips
+
+See this definition of a drop shadow:
+
+http://oskamp.dyndns.org/SiemensClock/SVG/
+
+
