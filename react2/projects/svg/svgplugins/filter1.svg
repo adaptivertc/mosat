@@ -1,0 +1,16 @@
+<defs>
+<filter id="filter1" filterUnits="userSpaceOnUse">
+  <feColorMatrix type="matrix" in="SourceAlpha" result="lightened"
+       values="0   0   0   0   0
+               0   0   0   0   0
+               0   0   0   0   0
+               0   0   0 0.6   0"/>
+  <feGaussianBlur in="lightened" stdDeviation="3" result="blurred"/>
+  <feMorphology operator="erode" in="blurred" radius="2" result="eroded"/>
+  <feOffset in="eroded" dx="4" dy="2" result="moved"/>
+  <feMerge>
+    <feMergeNode in="moved"/>
+    <feMergeNode in="SourceGraphic"/>
+  </feMerge>
+</filter>
+</defs>
