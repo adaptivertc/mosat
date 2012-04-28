@@ -47,7 +47,7 @@ void simple_panel_t::generate(FILE *svg_fp, FILE *svg_top_of_file_fp, FILE *js_f
   char js_object_name[30];
   char js_pv_name[30];
   snprintf(js_object_name, sizeof(js_object_name), "simple_panel_obj_%03d", n_instance);
-  snprintf(js_pv_name, sizeof(js_object_name), "simple_panel_pv_obj_%03d", n_instance);
+  snprintf(js_pv_name, sizeof(js_pv_name), "simple_panel_pv_obj_%03d", n_instance);
 
   fprintf(js_fp, "var %s = new simple_panel_t(\"simple_panel_%03d\", \"simple_panel_pv_%03d\", \"%s\", \"%s\");\n", js_object_name, n_instance, n_instance, on_color, off_color); 
 

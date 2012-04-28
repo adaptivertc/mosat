@@ -35,7 +35,7 @@ void switch_t::generate(FILE *svg_fp, FILE *svg_top_of_file_fp, FILE *js_fp, int
   double font_size = width * 0.6;
   double scale_factor = width / 100;
   double cx = x1 + (width / 2.0);
-  double cy = y1 + (60.0 * scale_factor);
+  double cy = y1 + (65.0 * scale_factor);
 
   char js_object_name[30];
   char js_group_name[30];
@@ -58,41 +58,39 @@ void switch_t::generate(FILE *svg_fp, FILE *svg_top_of_file_fp, FILE *js_fp, int
 
 //  <rect id="rect_001" x="0" y="0" rx="3" ry="3" width="100" height="105" fill="lightgray" stroke="darkgray" stroke-width="1"/>
 
-
-  //fprintf(svg_fp, "<rect  id=\"%s\" x=\"2\" y=\"2\" rx=\"4\" ry=\"4\" width=\"40\" height=\"15\" fill=\"red\" stroke=\"black\" stroke-width=\"1\"/>\n", 
   fprintf(svg_fp, "<rect  id=\"%s\" x=\"%lf\" y=\"%lf\" rx=\"%lf\" ry=\"%lf\" width=\"%lf\" height=\"%lf\" fill=\"red\" stroke=\"black\" stroke-width=\"%lf\"/>\n", 
     js_off_name, x1 + (2.0 * scale_factor), y1 + (2.0 * scale_factor), 
-    4.0 * scale_factor, 4.0 * scale_factor, 40.0 * scale_factor, 15.0 * scale_factor, scale_factor);
-  //fprintf(svg_fp, "<text id=\"textxxx_001\" x=\"21\" y=\"12.5\" font-size=\"10\" fill=\"black\" text-anchor=\"middle\">Off</text>\n");
+    4.0 * scale_factor, 4.0 * scale_factor, 48.0 * scale_factor, 20.0 * scale_factor, scale_factor);
   fprintf(svg_fp, "<text id=\"textxxx_001\" x=\"%lf\" y=\"%lf\" font-size=\"%lf\" fill=\"black\" text-anchor=\"middle\">Off</text>\n",
-     x1 + 21.0 * scale_factor, y1 + 12.5 * scale_factor, 10.0 * scale_factor);
-  //fprintf(svg_fp, "<rect  id=\"%s\" x=\"58\" y=\"2\"  rx=\"4\" ry=\"4\" width=\"40\" height=\"15\" fill=\"gray\" stroke=\"black\" stroke-width=\"1\"/>\n", js_on_name);
+     x1 + 25.0 * scale_factor, y1 + 18.6 * scale_factor, 18.0 * scale_factor);
+
   fprintf(svg_fp, "<rect  id=\"%s\" x=\"%lf\" y=\"%lf\"  rx=\"%lf\" ry=\"%lf\" width=\"%lf\" height=\"%lf\" fill=\"gray\" stroke=\"black\" stroke-width=\"%lf\"/>\n", 
-    js_on_name, x1 + (58.0 * scale_factor), y1 + (2.0 * scale_factor), 
-    4.0 * scale_factor, 4.0 * scale_factor, 40.0 * scale_factor, 15.0 * scale_factor, scale_factor);
+    js_on_name, x1 + (52.0 * scale_factor), y1 + (2.0 * scale_factor), 
+    4.0 * scale_factor, 4.0 * scale_factor, 48.0 * scale_factor, 20.0 * scale_factor, scale_factor);
   fprintf(svg_fp, "<text id=\"textxx_002\" x=\"%lf\" y=\"%lf\" font-size=\"%lf\" fill=\"black\" text-anchor=\"middle\">On</text>\n",
-     x1 + 79.0 * scale_factor, y1 + 12.5 * scale_factor, 10.0 * scale_factor);
+     x1 + 75.0 * scale_factor, y1 + 18.6 * scale_factor, 18.0 * scale_factor);
+
+
   fprintf(svg_fp, "<circle cx=\"%lf\" cy=\"%lf\" r=\"%lf\" stroke=\"darkgray\" stroke-width=\"1\" fill=\"gray\"/>\n",
      cx, cy, 40.0 * scale_factor);
   fprintf(svg_fp, "<circle cx=\"%lf\" cy=\"%lf\" r=\"%lf\" stroke=\"none\" fill=\"white\"/>\n",
      cx, cy, 38.0 * scale_factor);
   fprintf(svg_fp, "<circle cx=\"%lf\" cy=\"%lf\" r=\"%lf\" stroke=\"none\" fill=\"url(#grayRadial)\"/>\n",
      cx, cy, 37.0 * scale_factor);
+
   fprintf(svg_fp, "<g id=\"%s\" transform=\"rotate(-45 %lf,%lf)\">\n", js_group_name, cx, cy);
   fprintf(svg_fp, "  <circle id=\"c1\" cx=\"%lf\" cy=\"%lf\" r=\"%lf\" stroke=\"none\" fill=\"url(#grayLinearV)\"/>\n",
      cx, cy, 30.0 * scale_factor);
   fprintf(svg_fp, "  <rect id=\"r1\" x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\" rx=\"%lf\" ry=\"%lf\" fill=\"url(#grayLinearX)\" stroke=\"none\"/>\n", 
-        x1 + (45.0 * scale_factor), y1 + (16.0 * scale_factor), 10.0 * scale_factor, 
+        x1 + (45.0 * scale_factor), y1 + (21.0 * scale_factor), 10.0 * scale_factor, 
            87.0 * scale_factor, 4.0 * scale_factor, 4.0 * scale_factor);
   fprintf(svg_fp, "  <circle id=\"p1\" cx=\"%lf\" cy=\"%lf\" r=\"%lf\" stroke=\"none\" fill=\"white\"/>\n",
-                 cx, y1 + (22.0 * scale_factor), 2.0 * scale_factor);
+                 cx, y1 + (27.0 * scale_factor), 3.0 * scale_factor);
   fprintf(svg_fp, "</g>\n");
-  fprintf(svg_fp, "<rect id=\"rect_001\" x=\"%lf\"  y=\"%lf\" width=\"%lf\" height=\"%lf\" onclick=\"%s()\" visibility=\"hidden\" pointer-events=\"all\"/>\n", 
+  fprintf(svg_fp, "<rect id=\"rect_001\" x=\"%lf\"  y=\"%lf\" width=\"%lf\" height=\"%lf\" onclick=\"%s()\" visibility=\"hidden\" pointer-events=\"all\" onmouseover=\"this.style.cursor='pointer';\"/>\n", 
           x1, y1, 42.0 * scale_factor, 40.0 * scale_factor, js_click1_name);
-  fprintf(svg_fp, "<rect id=\"rect_001\" x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\" onclick=\"%s()\" visibility=\"hidden\" pointer-events=\"all\"/>\n", 
+  fprintf(svg_fp, "<rect id=\"rect_001\" x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\" onclick=\"%s()\" visibility=\"hidden\" pointer-events=\"all\" onmouseover=\"this.style.cursor='pointer';\"/>\n", 
           x1 + (58.0 * scale_factor), y1, (42.0 * scale_factor), 40.0 * scale_factor, js_click2_name);
-
-
 
   /***********************/
   

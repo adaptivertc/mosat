@@ -474,11 +474,13 @@ static void do_gen(const char *fname)
 
   if (run_mode == RT_REACT_MODE)
   {
+    printf("Generating connection to REACT . . . \n");
     gen_ajax_animation(js_fp);
   }
   else
   {
     add_js_library("sim_pump.js");
+    printf("Generating simulator . . . \n");
     gen_simulation(js_fp);
   }
 
