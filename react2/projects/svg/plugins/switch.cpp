@@ -75,13 +75,13 @@ void switch_t::generate(FILE *svg_fp, FILE *svg_top_of_file_fp, FILE *js_fp, int
      cx, cy, 40.0 * scale_factor);
   fprintf(svg_fp, "<circle cx=\"%lf\" cy=\"%lf\" r=\"%lf\" stroke=\"none\" fill=\"white\"/>\n",
      cx, cy, 38.0 * scale_factor);
-  fprintf(svg_fp, "<circle cx=\"%lf\" cy=\"%lf\" r=\"%lf\" stroke=\"none\" fill=\"url(#grayRadial)\"/>\n",
+  fprintf(svg_fp, "<circle cx=\"%lf\" cy=\"%lf\" r=\"%lf\" stroke=\"none\" fill=\"url(#grayRadialSwitch)\"/>\n",
      cx, cy, 37.0 * scale_factor);
 
   fprintf(svg_fp, "<g id=\"%s\" transform=\"rotate(-45 %lf,%lf)\">\n", js_group_name, cx, cy);
-  fprintf(svg_fp, "  <circle id=\"c1\" cx=\"%lf\" cy=\"%lf\" r=\"%lf\" stroke=\"none\" fill=\"url(#grayLinearV)\"/>\n",
+  fprintf(svg_fp, "  <circle id=\"c1\" cx=\"%lf\" cy=\"%lf\" r=\"%lf\" stroke=\"none\" fill=\"url(#grayLinearSwitch1)\"/>\n",
      cx, cy, 30.0 * scale_factor);
-  fprintf(svg_fp, "  <rect id=\"r1\" x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\" rx=\"%lf\" ry=\"%lf\" fill=\"url(#grayLinearX)\" stroke=\"none\"/>\n", 
+  fprintf(svg_fp, "  <rect id=\"r1\" x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\" rx=\"%lf\" ry=\"%lf\" fill=\"url(#grayLinearSwitch2)\" stroke=\"none\"/>\n", 
         x1 + (45.0 * scale_factor), y1 + (21.0 * scale_factor), 10.0 * scale_factor, 
            87.0 * scale_factor, 4.0 * scale_factor, 4.0 * scale_factor);
   fprintf(svg_fp, "  <circle id=\"p1\" cx=\"%lf\" cy=\"%lf\" r=\"%lf\" stroke=\"none\" fill=\"white\"/>\n",
