@@ -28,7 +28,7 @@ panel|8|38|46|29|0.3|
 only_text|Crystylizer Mode|black|27|45|5|middle|
 switch|PUMP1_ON|lime|red|12|48|17|
 panel|8|68|22|56|0.3|
-text|19|73|5|black|middle|Cryst. 1xx|Selectyy|
+text|19|73|5|black|middle|Cryst. 1|Select|
 switch|PUMP1_ON|lime|red|10|80|16|
 only_text|Product|black|19|102|5|middle|
 switch|PUMP1_ON|lime|red|10|104|16|
