@@ -29,15 +29,26 @@ void pump_t::generate(FILE *svg_fp, FILE *svg_top_of_file_fp, FILE *js_fp, int a
   const char *tag = argv[1];
   const char *on_color = argv[2];
   const char *off_color = argv[3];
-  double x1 = atof(argv[4]);
-  double y1 = atof(argv[5]);
+//  double x1 = atof(argv[4]);
+//  double y1 = atof(argv[5]);
+// new
+  double cx = atof(argv[4]);
+  double cy = atof(argv[5]);
+//
   double width = atof(argv[6]);
   int type = atoi(argv[7]);
   int angle = atoi(argv[8]);
   double scale_factor = width / 100.0;
-  double cx = x1 + (width / 2.0);
-  double cy = y1 + (width / 2.0);
+//  double cx = x1 + (width / 2.0);
+//  double cy = y1 + (width / 2.0);
+// new
+  double x1 = cx - (width / 2.0);
+  double y1 = cy - (width / 2.0);
+//
   double x2 = x1 + width;
+  double y2 = y1 + width;
+
+
 
 //tag|on_color|off_collor|x1|y1|width|type(1-2)|rotation(0,90,180,270)|
 
@@ -53,11 +64,17 @@ void pump_t::generate(FILE *svg_fp, FILE *svg_top_of_file_fp, FILE *js_fp, int a
   if (angle == 0) str[0] = '\0';
   else snprintf(str, sizeof(str), "transform=\"rotate(%d %lf,%lf)\"", angle, cx, cy);
 
+  
   fprintf(svg_fp, "<!--  START insert for pump (%03d) -->\n", n_instance);
+
+  
+  fprintf(svg_fp, "<g  id=\"%s\" fill=\"%s\" stroke=\"black\" stroke-width=\"%lf\">\n",
+        js_group_name, on_color, 0.5 * scale_factor);
+  fprintf(svg_fp, "<polygon points=\"%lf,%lf %lf,%lf %lf,%lf\" />\n",
+             cx, cy, x1, y2 + (5.0 * scale_factor), x2, y2 + (5 * scale_factor) );
   if (type == 1)
   { 
-    fprintf(svg_fp, "<path id=\"%s\" fill=\"%s\" stroke=\"black\" stroke-width=\"%lf\"\n",
-               js_group_name, on_color, 0.5 * scale_factor);
+    fprintf(svg_fp, "<path \n");
     fprintf(svg_fp, "%s", str);
     fprintf(svg_fp, "  d=\"M%lf,%lf A%lf,%lf 0 1,0 %lf,%lf L%lf,%lf L%lf,%lf Z\"/>\n",
             x1, cy, 50.0 * scale_factor, 50.0 * scale_factor, 
@@ -67,8 +84,7 @@ void pump_t::generate(FILE *svg_fp, FILE *svg_top_of_file_fp, FILE *js_fp, int a
   }
   else if (type == 2)
   {
-    fprintf(svg_fp, "<path id=\"%s\" fill=\"%s\" stroke=\"black\" stroke-width=\"%lf\"\n", 
-               js_group_name, on_color, 0.5 * scale_factor);
+    fprintf(svg_fp, "<path \n");
     fprintf(svg_fp, "%s", str);
     fprintf(svg_fp, "  d=\"M%lf,%lf A%lf,%lf 0 1,1 %lf,%lf L%lf,%lf L%lf,%lf Z\"/>\n",
             x2, cy, 50.0 * scale_factor, 50.0 * scale_factor, 
@@ -77,6 +93,7 @@ void pump_t::generate(FILE *svg_fp, FILE *svg_top_of_file_fp, FILE *js_fp, int a
             x2, y1 - (10.0 * scale_factor));
   }
 
+  fprintf(svg_fp, "</g>\n");
   fprintf(svg_fp, "<circle cx=\"%lf\" cy=\"%lf\" r=\"%lf\" stroke=\"black\" stroke-width=\"%lf\" fill=\"none\"/>\n",
             cx, cy, 15.0 * scale_factor, 0.5 * scale_factor);
 

@@ -29,14 +29,19 @@ void motor_t::generate(FILE *svg_fp, FILE *svg_top_of_file_fp, FILE *js_fp, int 
   const char *tag = argv[1];
   const char *on_color = argv[2];
   const char *off_color = argv[3];
-  double x1 = atof(argv[4]);
-  double y1 = atof(argv[5]);
+  //double x1 = atof(argv[4]);
+  //double y1 = atof(argv[5]);
+  double cx = atof(argv[4]);
+  double cy = atof(argv[5]);
   double width = atof(argv[6]);
   int angle = atoi(argv[7]);
   double scale_factor = width / 100.0;
   double height = 54.0 * scale_factor;
-  double cx = x1 + (width / 2.0);
-  double cy = y1 + (height / 2.0);
+
+  //double cx = x1 + (width / 2.0);
+  //double cy = y1 + (height / 2.0);
+  double x1 = cx;
+  double y1 = cy - (height / 2.0);
 
 //motor|tag|on_color|off_collor|x1|y1|width|rotation(0,90,180,270)|
 
@@ -53,18 +58,18 @@ void motor_t::generate(FILE *svg_fp, FILE *svg_top_of_file_fp, FILE *js_fp, int 
   fprintf(js_fp, "// --  START insert for motor (%03d)\n", n_instance);
 
   fprintf(svg_fp, "<g  %s >\n", str);
-  fprintf(svg_fp, "<rect id=\"rect_001\" x=\"%lf\" y=\"%lf\" rx=\"%lf\" ry=\"%lf\" width=\"%lf\" height=\"%lf\" fill=\"gray\" stroke=\"black\" stroke-width=\"%lf\"/>\n",
-       x1, y1, 5.0 * scale_factor, 5.0 * scale_factor, width, height, 0.6 * scale_factor);
+  fprintf(svg_fp, "<rect id=\"rect_001\" x=\"%lf\" y=\"%lf\" rx=\"%lf\" ry=\"%lf\" width=\"%lf\" height=\"%lf\" fill=\"%s\" stroke=\"black\" stroke-width=\"%lf\"/>\n",
+       x1, y1, 5.0 * scale_factor, 8.0 * scale_factor, width, height, on_color, 0.6 * scale_factor);
   double fin_x = x1 + 20 * scale_factor; 
   double fin_width = 75.0 * scale_factor;
-  double fin_height = 2.0 * scale_factor;
+  double fin_height = 3.0 * scale_factor;
   double fin_rx = 1.5 * scale_factor;
   double fin_stroke_width = 0.5 * scale_factor;
-  for (int i=0; i < 11; i++)
+  for (int i=0; i < 6; i++)
   {
-    double fin_y = y1 + (((i * 5.0) + 1.0) * scale_factor);
+    double fin_y = y1 + (((i * 10.0) + 1.0) * scale_factor);
     fprintf(svg_fp, "  <rect x=\"%lf\" y=\"%lf\" rx=\"%lf\" ry=\"%lf\" width=\"%lf\" height=\"%lf\"\n"
-         "        fill=\"darkgray\" stroke=\"black\" stroke-width=\"%lf\"/>\n", 
+         "        fill=\"black\" stroke=\"black\" stroke-width=\"%lf\"/>\n", 
       fin_x, fin_y, fin_rx, fin_rx, fin_width, fin_height, fin_stroke_width);
   }
   fprintf(svg_fp, "<line x1=\"%lf\" y1=\"%lf\" x2=\"%lf\" y2=\"%lf\" stroke=\"black\" stroke-width=\"%lf\"/>\n",
