@@ -233,7 +233,7 @@ class simple_pipe_t : public gen_plugin_base_t
 {
 public:
   const char *get_name(void); 
-  void generate(FILE *svg_fp, FILE *svg_top_of_file_fp, FILE *js_fp, int argc, char **argv);
+  void generate(plugin_data_t d, int argc, char **argv);
 };
 
 /*******************************************/
@@ -252,7 +252,7 @@ const char *simple_pipe_t::get_name(void)
 
 /*******************************************/
 
-void simple_pipe_t::generate(FILE *svg_fp, FILE *svg_top_of_file_fp, FILE *js_fp, int argc, char **argv)
+void simple_pipe_t::generate(plugin_data_t d, int argc, char **argv)
 {
   const char *the_color = argv[1];
   double width = atof(argv[2]);
@@ -311,7 +311,7 @@ void simple_pipe_t::generate(FILE *svg_fp, FILE *svg_top_of_file_fp, FILE *js_fp
   printf("Pipe color is: %s\n", pipe_color);
   first = true;
 
-  fprintf(svg_fp, "<!-- START insert for simple_pipe (%03d) -->\n", n_instance);
+  fprintf(d.svg_fp, "<!-- START insert for simple_pipe (%03d) -->\n", n_instance);
   for (int i=5; i < (argc-1); i+=2)
   {
     switch (argv[i][0])
@@ -323,11 +323,11 @@ void simple_pipe_t::generate(FILE *svg_fp, FILE *svg_top_of_file_fp, FILE *js_fp
         y2 = y1;
         if (((i+2) < (argc-1)) && (argv[i+2][0] != 'b') && (argv[i+2][0] != 'B'))
         {
-          fprintf(svg_fp,  
+          fprintf(d.svg_fp,  
          "<circle cx=\"%lf\" cy=\"%lf\" r=\"%lf\" fill=\"url(#%sRadial)\"/>\n",
               x2, y2, width / 2.0, pipe_color);
         }
-        gen_h_pipe(svg_fp, x1, y1,  x2, width);
+        gen_h_pipe(d.svg_fp, x1, y1,  x2, width);
         break;
       case 'v':
       case 'V':
@@ -336,17 +336,17 @@ void simple_pipe_t::generate(FILE *svg_fp, FILE *svg_top_of_file_fp, FILE *js_fp
         x2 = x1;
         if (((i+2) < (argc-1)) && (argv[i+2][0] != 'b') && (argv[i+2][0] != 'B'))
         {
-          fprintf(svg_fp,  
+          fprintf(d.svg_fp,  
          "<circle cx=\"%lf\" cy=\"%lf\" r=\"%lf\" fill=\"url(#%sRadial)\"/>\n",
               x2, y2, width / 2.0, pipe_color);
         }
-        gen_v_pipe(svg_fp, x1, y1, y2, width);
+        gen_v_pipe(d.svg_fp, x1, y1, y2, width);
         break;
       case 'b':
       case 'B':
         printf("Making piece to butt against a pipe %lf, %lf\n", x2, y2);
         butt_width = atof(argv[i+1]);
-        gen_butt_end(svg_fp, width, butt_width, x2, y2);
+        gen_butt_end(d.svg_fp, width, butt_width, x2, y2);
         break;
       default:
         printf("Error: %s, must be either 'h' or 'v' or 'b' for the direction\n", argv[i]);
@@ -356,7 +356,7 @@ void simple_pipe_t::generate(FILE *svg_fp, FILE *svg_top_of_file_fp, FILE *js_fp
     y1 = y2;
   }
 
-  fprintf(svg_fp, "<!--  END insert for simple_pipe (%03d) -->\n", n_instance);
+  fprintf(d.svg_fp, "<!--  END insert for simple_pipe (%03d) -->\n", n_instance);
   n_instance++;
 }
 

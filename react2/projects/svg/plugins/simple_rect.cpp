@@ -11,7 +11,7 @@ class simple_rect_t : public gen_plugin_base_t
 {
 public:
   const char *get_name(void); 
-  void generate(FILE *svg_fp, FILE *svg_top_of_file_fp, FILE *js_fp, int argc, char **argv);
+  void generate(plugin_data_t d, int argc, char **argv);
 };
 
 extern "C" gen_plugin_base_t *get_object(void)
@@ -24,7 +24,7 @@ const char *simple_rect_t::get_name(void)
   return "simple_rect";
 }
 
-void simple_rect_t::generate(FILE *svg_fp, FILE *svg_top_of_file_fp, FILE *js_fp, int argc, char **argv)
+void simple_rect_t::generate(plugin_data_t d, int argc, char **argv)
 {
   const char *tag = argv[1];
   const char *color = argv[2];
@@ -38,23 +38,23 @@ void simple_rect_t::generate(FILE *svg_fp, FILE *svg_top_of_file_fp, FILE *js_fp
   double stroke_width = height / 100.0;
 
   
-  fprintf(svg_fp, "<!--  START insert for simple_rect (%03d) -->\n", n_instance);
-  fprintf(js_fp, "// --  START insert for simple_rect (%03d)\n", n_instance);
-  fprintf(svg_fp, "<rect  fill=\"cornsilk\" x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\" stroke=\"black\" stroke-width=\"%lf\"/>\n",
+  fprintf(d.svg_fp, "<!--  START insert for simple_rect (%03d) -->\n", n_instance);
+  fprintf(d.js_fp, "// --  START insert for simple_rect (%03d)\n", n_instance);
+  fprintf(d.svg_fp, "<rect  fill=\"cornsilk\" x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\" stroke=\"black\" stroke-width=\"%lf\"/>\n",
                      x, y, width, height, stroke_width);
-  fprintf(svg_fp, "<rect  id=\"simple_rect_%03d\" fill=\"%s\" x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\" stroke=\"none\" stroke-width=\"0\" transform=\"rotate(180 %lf %lf)\"/>\n",
+  fprintf(d.svg_fp, "<rect  id=\"simple_rect_%03d\" fill=\"%s\" x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\" stroke=\"none\" stroke-width=\"0\" transform=\"rotate(180 %lf %lf)\"/>\n",
                      n_instance, color, (x + stroke_width / 2.0), 
                      y, width-stroke_width, height, cx, cy);
-  fprintf(svg_fp, "<text id=\"simple_rect_pv_%03d\" x=\"%lf\" y=\"%lf\" font-family=\"Verdana\" font-size=\"%lf\" fill=\"black\" text-anchor=\"middle\">0</text>\n",
+  fprintf(d.svg_fp, "<text id=\"simple_rect_pv_%03d\" x=\"%lf\" y=\"%lf\" font-family=\"Verdana\" font-size=\"%lf\" fill=\"black\" text-anchor=\"middle\">0</text>\n",
                      n_instance, cx, y + height + (font_size * 1.1), font_size); 
 
   char js_object_name[30];
   snprintf(js_object_name, sizeof(js_object_name), "simple_rect_obj_%03d", n_instance);
 
-  fprintf(js_fp, "var %s = new simple_rect_t(\"simple_rect_%03d\", \"simple_rect_pv_%03d\", %lf);\n", js_object_name, n_instance, n_instance, height); 
+  fprintf(d.js_fp, "var %s = new simple_rect_t(\"simple_rect_%03d\", \"simple_rect_pv_%03d\", %lf);\n", js_object_name, n_instance, n_instance, height); 
 
-  fprintf(svg_fp, "<!--  END insert for simple_rect (%03d) -->\n", n_instance);
-  fprintf(js_fp, "// --  END insert for simple_rect (%03d)\n", n_instance);
+  fprintf(d.svg_fp, "<!--  END insert for simple_rect (%03d) -->\n", n_instance);
+  fprintf(d.js_fp, "// --  END insert for simple_rect (%03d)\n", n_instance);
   add_js_library("simple_rect.js");
   add_animation_object(tag, js_object_name);
 

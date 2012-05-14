@@ -27,7 +27,8 @@ function bar_draw_alarm(x, y1, y2, color, width)
   shape.setAttribute("y2", y2);
   shape.setAttribute("stroke", color);
   shape.setAttribute("stroke-width", width);
-  document.documentElement.appendChild(shape);
+  //document.documentElement.appendChild(shape);
+  reactmainobj.appendChild(shape);
 }
 
 function bar_init_f(val)
@@ -94,7 +95,8 @@ function bar_init_f(val)
           shape.setAttribute("x2", this.x2+(this.length*0.02));
           shape.setAttribute("y2", tdata.screen_val);
           shape.setAttribute("style", "stroke:black;stroke-width:" + this.stroke_width);
-          document.documentElement.appendChild(shape);
+          reactmainobj.appendChild(shape);
+          //document.documentElement.appendChild(shape);
 
           var text_height = this.length * 0.06; 
           shape = document.createElementNS(svgNS, "text");
@@ -104,7 +106,8 @@ function bar_init_f(val)
           //shape.setAttribute("baseline-shift", "-33%");
           shape.setAttribute("text-anchor", "start");
           shape.textContent=tdata.eu_val.toFixed(this.decimal_places);
-          document.documentElement.appendChild(shape);
+          //document.documentElement.appendChild(shape);
+          reactmainobj.appendChild(shape);
 
         }
         else
@@ -116,7 +119,8 @@ function bar_init_f(val)
           shape.setAttribute("x2", this.x2+(this.length * 0.015));
           shape.setAttribute("y2", tdata.screen_val);
           shape.setAttribute("style", "stroke:black;stroke-width:" + (this.stroke_width * 0.5));
-          document.documentElement.appendChild(shape);
+          reactmainobj.appendChild(shape);
+          //document.documentElement.appendChild(shape);
         }
       }
 

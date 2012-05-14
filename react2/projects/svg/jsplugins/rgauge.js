@@ -185,6 +185,7 @@ function rg_create_blocks_f(start_angle, degrees, n)
     //------------------------------------------
 
     shape = document.createElementNS(svgNS, "line");
+    //shape.appendChild(reactmainobj);
     shape.setAttribute("x1", lx1);
     shape.setAttribute("y1", ly1);
     shape.setAttribute("x2", lx2);
@@ -202,15 +203,19 @@ function rg_create_blocks_f(start_angle, degrees, n)
     {
       shape.setAttribute("stroke", this.rcolor_ok);
     }
-    document.documentElement.appendChild(shape);
+    //document.documentElement.appendChild(shape);
+    reactmainobj.appendChild(shape);
 
     shape = document.createElementNS(svgNS, "polygon");
+    reactmainobj.appendChild(shape);
+    //shape.appendChild(reactmainobj);
     shape.setAttribute("points", x1 + "," + y1 + " " + x2 + "," + y2 + " " + x3 + "," + y3 + " " + x4 + "," + y4);
     shape.setAttribute("stroke-width", this.r / 200);
     shape.setAttribute("stroke", "lightgray");
     shape.setAttribute("fill", "antiquewhite");
     
-    document.documentElement.appendChild(shape);
+    //document.documentElement.appendChild(shape);
+    reactmainobj.appendChild(shape);
     this.shapes[i]=shape;
     a1 += degrees;
     a2 += degrees;

@@ -1,0 +1,15 @@
+
+
+<g id="popup">
+<rect fill="burlywood" x="0" y="0" width="80" height="40" rx="4" ry="4" stroke="black" stroke-width="1"/>
+<text x="40" y="7"  font-size="6" fill="black" text-anchor="middle">Tag: <tspan id="popup_tag">the tag</tspan></text>
+<text x="40" y="18"  font-size="10" fill="black" text-anchor="middle">Mode: Manual</text>
+<rect x="2" y="22" width="24" height="15" rx="4" ry="4" fill="cornsilk" stroke="black" stroke-width="0.5"/>
+<text id="popup_on" x="14" y="32"  font-size="7" fill="black" text-anchor="middle">Open</text>
+<rect x="28" y="22" width="24" height="15" rx="4" ry="4" fill="cornsilk" stroke="black" stroke-width="0.5"/>
+<text id="popup_off" x="40" y="32"  font-size="7" fill="black" text-anchor="middle">Close</text>
+<rect x="54" y="22" width="24" height="15" rx="4" ry="4" fill="cornsilk" stroke="black" stroke-width="0.5"/>
+<text x="66" y="32"  font-size="7" fill="black" text-anchor="middle">Auto</text>
+<rect x="0"  y="0" width="80" height="40" onclick="show_main()" visibility="hidden" pointer-events="all" onmouseover="this.style.cursor='pointer';"/>
+</g>
+

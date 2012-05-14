@@ -55,7 +55,8 @@ function gauge_create_band(angle1, angle2, cx, cy, r1, r2, color)
   var dstr = "M" + x1 + "," + y1 + " A" + r + "," + r + " 0 0,1 " + x2 + "," + y2;
   console.log("dstr: " + dstr);
   shape.setAttribute("d", dstr);
-  document.documentElement.appendChild(shape);
+  //document.documentElement.appendChild(shape);
+  reactmainobj.appendChild(shape);
 }
 
 function gauge_create_text(val, angle, cx, cy, radius, font_size, dec)
@@ -76,7 +77,8 @@ function gauge_create_text(val, angle, cx, cy, radius, font_size, dec)
   shape.setAttribute("baseline-shift", "-33%");
   shape.setAttribute("text-anchor", "middle");
   shape.textContent=delete_trailing_zeros(val.toFixed(dec));
-  document.documentElement.appendChild(shape);
+  //document.documentElement.appendChild(shape);
+  reactmainobj.appendChild(shape);
 }
 
 
@@ -166,7 +168,8 @@ function gauge_init_f(val)
           mystr= "rotate("+ tdata.screen_val + " " + this.cx + " " + this.cy +")";
           console.log(mystr);
           shape.setAttribute("transform", mystr);
-          document.documentElement.appendChild(shape);
+          //document.documentElement.appendChild(shape);
+          reactmainobj.appendChild(shape);
           gauge_create_text(tdata.eu_val, tdata.screen_val, this.cx, this.cy, 
                 this.width * (52.5/150), this.width * (10/150), this.decimal_places)
         }
@@ -182,7 +185,8 @@ function gauge_init_f(val)
           mystr= "rotate("+ tdata.screen_val + " " + this.cx + " " + this.cy +")";
           console.log(mystr);
           shape.setAttribute("transform", mystr);
-          document.documentElement.appendChild(shape);
+          //document.documentElement.appendChild(shape);
+          reactmainobj.appendChild(shape);
         }
       }
 

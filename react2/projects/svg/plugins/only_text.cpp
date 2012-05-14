@@ -11,7 +11,7 @@ class only_text_t : public gen_plugin_base_t
 {
 public:
   const char *get_name(void); 
-  void generate(FILE *svg_fp, FILE *svg_top_of_file_fp, FILE *js_fp, int argc, char **argv);
+  void generate(plugin_data_t d, int argc, char **argv);
 };
 
 extern "C" gen_plugin_base_t *get_object(void)
@@ -24,7 +24,7 @@ const char *only_text_t::get_name(void)
   return "only_text";
 }
 
-void only_text_t::generate(FILE *svg_fp, FILE *svg_top_of_file_fp, FILE *js_fp, int argc, char **argv)
+void only_text_t::generate(plugin_data_t d, int argc, char **argv)
 {
   const char *the_text = argv[1];
   const char *color = argv[2];
@@ -33,10 +33,10 @@ void only_text_t::generate(FILE *svg_fp, FILE *svg_top_of_file_fp, FILE *js_fp, 
   double height = atof(argv[5]);
   const char *anchor = argv[6];
   
-  fprintf(svg_fp, "<!--  START insert for only_text (%03d) -->\n", n_instance);
-  fprintf(svg_fp, "<text x=\"%lf\" y=\"%lf\" font-family=\"Verdana\" font-size=\"%lf\" fill=\"%s\" text-anchor=\"%s\">%s</text>\n",
+  fprintf(d.svg_fp, "<!--  START insert for only_text (%03d) -->\n", n_instance);
+  fprintf(d.svg_fp, "<text x=\"%lf\" y=\"%lf\" font-family=\"Verdana\" font-size=\"%lf\" fill=\"%s\" text-anchor=\"%s\">%s</text>\n",
                      x, y, height, color, anchor, the_text); 
-  fprintf(svg_fp, "<!--  END insert for only_text (%03d) -->\n", n_instance);
+  fprintf(d.svg_fp, "<!--  END insert for only_text (%03d) -->\n", n_instance);
   n_instance++;
 }
 

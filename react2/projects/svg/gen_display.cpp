@@ -42,6 +42,65 @@ NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 static int arg_count[50];
 
 /*********************************/
+void find_a_place_nearby(double *x,double *y, 
+                         double item_x, double item_y, 
+                         double item_width, double item_height)
+{
+  find_a_place_nearby(x, y, 
+                      300, 150, 
+                      item_x, item_y, 
+                      item_width, item_height,
+                      80, 40); 
+}
+
+void find_a_place_nearby(double *x,double *y, 
+                         double screen_width, double screen_height, 
+                         double item_x, double item_y, 
+                         double item_width, double item_height,
+                         double popup_width, double popup_height) 
+{
+  // First try below
+  if ((item_y + item_height + popup_height) <= screen_height) 
+  {
+    *y = item_y + item_height; // put it just below the item
+  }
+  // Now try above
+  else if ((item_y - item_height - popup_height) >= 0.0) 
+  {
+    *y = item_y - popup_height; // put it just above the item
+  }
+  // Ok, if above the mid point, put it as low as possible 
+  else if ((item_y + item_height) < (screen_height / 2.0))
+  {
+    *y = screen_height - popup_height; // put it at the bottom of the screen 
+  }
+  // Otherwise put it all the way at the top 
+  else
+  {
+    *y = 0.0; // put it at the top of the screen
+  }
+  double x1 = (item_x + (item_width / 2.0) - (popup_width / 2.0)); 
+  double x2 = (item_x + (item_width / 2.0) + (popup_width / 2.0)); 
+  // first try centered with the object
+  if ((x1 >= 0.0) && (x2 <= screen_width))
+  {
+    *x = x1; // centered under the item 
+    return;
+  }
+  // If off the screen left, just put it all the way left 
+  else if (x1 < 0.0)
+  {
+     *x = 0.0; // as far left as possible
+     return;
+  }
+  // Ok, it had to be off the screen right, put it all the way right 
+  else
+  {
+    *x = screen_width - popup_width; // as far right as possible
+  }
+}
+
+/***************************************************************/
 
 void add_arg_object(int argn, const char *obj)
 {
@@ -185,6 +244,8 @@ static void gen_simulation(FILE *js_fp)
   //fprintf(js_fp, "  pump_3_timeout();\n");
 
   fprintf(js_fp, "  var interval = setInterval(\"intervalHandler()\", 100);\n");
+  fprintf(js_fp, "  //show_main();\n");
+  fprintf(js_fp, "  show_popup(50,50, 'Extend', 'Retract');\n");
   fprintf(js_fp, "};\n");
   fprintf(js_fp, "\n");
   fprintf(js_fp, "// -- END insert simulation code --\n");
@@ -440,6 +501,12 @@ static void do_gen(const char *fname)
     exit(-1);
   }
 
+  plugin_data_t pdata;
+  pdata.svg_fp = svg_fp; 
+  pdata.js_fp = js_fp; 
+  //pdata.svg_after_header_fp = 
+  pdata.svg_top_of_file_fp = svg_top_of_file_fp;
+
 
   delim_file_t df(500, 50, '|', '#');
   df.print_lines(true);
@@ -469,7 +536,7 @@ static void do_gen(const char *fname)
       exit(-1);
     }
     printf("    Generating %s . . . .\n", argv[0]);
-    obj->generate(svg_fp, svg_top_of_file_fp, js_fp, argc, argv);
+    obj->generate(pdata, argc, argv);
   }
 
   if (run_mode == RT_REACT_MODE)
@@ -529,8 +596,28 @@ static void gen_final_file(const char *fname)
 
   include_file(fp, ".", "_tmp_display.svg");
 
+  fprintf(fp, "</g>\n");
+  include_file(fp, ".", "popup.svg");
+
   fprintf(fp, "<script type=\"text/ecmascript\"><![CDATA[\n");
   fprintf(fp, "const svgNS = \"http://www.w3.org/2000/svg\";\n");
+  fprintf(fp, "var reactmainobj=document.getElementById(\"main_group\");\n");
+  fprintf(fp, "var popupobj=document.getElementById(\"popup\");\n");
+  fprintf(fp, "function show_main()\n");
+  fprintf(fp, "{\n");
+  fprintf(fp, "  reactmainobj.parentNode.appendChild(reactmainobj);\n");
+  fprintf(fp, "}\n");
+  fprintf(fp, "function show_popup(x,y,text_on, text_off, text_tag)\n");
+  fprintf(fp, "{\n");
+  fprintf(fp, "  popupobj.setAttribute(\"transform\", \"translate(\" + x +\",\" + y +\")\");\n");
+  fprintf(fp, "  popupobj.parentNode.appendChild(popupobj);\n");
+  fprintf(fp, "  var onobj=document.getElementById(\"popup_on\");\n");
+  fprintf(fp, "  onobj.textContent=text_on;\n");
+  fprintf(fp, "  var offobj=document.getElementById(\"popup_off\");\n");
+  fprintf(fp, "  offobj.textContent=text_off;\n");
+  fprintf(fp, "  var tagobj=document.getElementById(\"popup_tag\");\n");
+  fprintf(fp, "  tagobj.textContent=text_tag;\n");
+  fprintf(fp, "}\n");
 
   for (int i=0; i < n_js_libs; i++)
   {
@@ -733,7 +820,7 @@ int main(int argc, char *argv[])
       fprintf (stderr, "%s\n", error);
       continue;
     }
-    mi_objs[n_plugins] = (*cofn)();
+    mi_objs[n_plugins] = cofn();
     n_plugins++;
 
   }

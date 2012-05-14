@@ -11,7 +11,7 @@ class triangle_t : public gen_plugin_base_t
 {
 public:
   const char *get_name(void); 
-  void generate(FILE *svg_fp, FILE *svg_top_of_file_fp, FILE *js_fp, int argc, char **argv);
+  void generate(plugin_data_t d, int argc, char **argv);
 };
 
 extern "C" gen_plugin_base_t *get_object(void)
@@ -24,7 +24,7 @@ const char *triangle_t::get_name(void)
   return "triangle";
 }
 
-void triangle_t::generate(FILE *svg_fp, FILE *svg_top_of_file_fp, FILE *js_fp, int argc, char **argv)
+void triangle_t::generate(plugin_data_t d, int argc, char **argv)
 {
   double cx = atof(argv[1]);
   double cy = atof(argv[2]);
@@ -41,12 +41,12 @@ void triangle_t::generate(FILE *svg_fp, FILE *svg_top_of_file_fp, FILE *js_fp, i
   printf("Tringle: %s\n", str);
 
 
-  fprintf(svg_fp, "<!--  START insert for triangle (%03d) -->\n", n_instance);
+  fprintf(d.svg_fp, "<!--  START insert for triangle (%03d) -->\n", n_instance);
 
-  fprintf(svg_fp, "<polygon points=\"%lf,%lf %lf,%lf %lf,%lf \" stroke=\"black\" stroke-width=\"%lf\" fill=\"%s\" %s/>\n",
+  fprintf(d.svg_fp, "<polygon points=\"%lf,%lf %lf,%lf %lf,%lf \" stroke=\"black\" stroke-width=\"%lf\" fill=\"%s\" %s/>\n",
              cx - (width / 2.0), cy, cx + (width / 2.0), cy, cx, cy - height, 0.05 * width, color, str);
 
-  fprintf(svg_fp, "<!--  END insert for triangle (%03d) -->\n", n_instance);
+  fprintf(d.svg_fp, "<!--  END insert for triangle (%03d) -->\n", n_instance);
   n_instance++;
 }
 

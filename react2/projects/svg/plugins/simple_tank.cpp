@@ -70,7 +70,7 @@ class simple_tank_t : public gen_plugin_base_t
 {
 public:
   const char *get_name(void); 
-  void generate(FILE *svg_fp, FILE *svg_top_of_file_fp, FILE *js_fp, int argc, char **argv);
+  void generate(plugin_data_t d, int argc, char **argv);
 };
 
 /**********************************************/
@@ -89,7 +89,7 @@ const char *simple_tank_t::get_name(void)
 
 /**********************************************/
 
-void simple_tank_t::generate(FILE *svg_fp, FILE *svg_top_of_file_fp, FILE *js_fp, int argc, char **argv)
+void simple_tank_t::generate(plugin_data_t d, int argc, char **argv)
 {
   double x = 50;
   double y = 50;
@@ -149,7 +149,7 @@ void simple_tank_t::generate(FILE *svg_fp, FILE *svg_top_of_file_fp, FILE *js_fp
 
 
 
-  fprintf(svg_fp, "<!--  START insert for simple_tank (%03d) -->\n", n_instance);
+  fprintf(d.svg_fp, "<!--  START insert for simple_tank (%03d) -->\n", n_instance);
   if ((argc == 10) && (argv[1][0] == 'c'))
   {
     // /gen_tank c 0 0 300 400 20 50 20
@@ -168,7 +168,7 @@ void simple_tank_t::generate(FILE *svg_fp, FILE *svg_top_of_file_fp, FILE *js_fp
     printf("cap_height = %lf\n", cap_height);
     printf("cone_height = %lf\n", cone_height);
     printf("cone_width = %lf\n", cone_width);
-    gen_cone_tank(svg_fp, x, y, width, height, cap_height, cone_height, cone_width);
+    gen_cone_tank(d.svg_fp, x, y, width, height, cap_height, cone_height, cone_width);
   }
   else if ((argc == 8) && (argv[1][0] == 'p'))
   {
@@ -184,7 +184,7 @@ void simple_tank_t::generate(FILE *svg_fp, FILE *svg_top_of_file_fp, FILE *js_fp
     printf("width = %lf\n", width);
     printf("height = %lf\n", height);
     printf("cap_height = %lf\n", cap_height);
-    gen_pressure_tank(svg_fp, x, y, width, height, cap_height);
+    gen_pressure_tank(d.svg_fp, x, y, width, height, cap_height);
   }
   else
   {
@@ -192,7 +192,7 @@ void simple_tank_t::generate(FILE *svg_fp, FILE *svg_top_of_file_fp, FILE *js_fp
     printf("    |simple_tank|c|0|0|300|400|20|50|20|\n");
     printf("    |simple_tank|p|0|0|300|400|20|\n");
   }
-  fprintf(svg_fp, "<!--  END insert for simple_tank (%03d) -->\n", n_instance);
+  fprintf(d.svg_fp, "<!--  END insert for simple_tank (%03d) -->\n", n_instance);
   //add_svg_library("gray_gradients.svg");
   n_instance++;
 }
