@@ -122,7 +122,7 @@ pci_point_t **pci_point_t::read(int *cnt, const char *home_dir)
     {
       continue;
     }
-    else if ((argc != 21) && (argc != 23))
+    else if (argc != 23)
     {
       logfile->vprint("%s: Wrong number of args, line %d", path, i+1);
       continue;
@@ -176,8 +176,8 @@ pci_point_t **pci_point_t::read(int *cnt, const char *home_dir)
     pci->lo_caution_enable = (argv[18][0] == '1');
     pci->hi_caution_enable = (argv[19][0] == '1');
     pci->hi_alarm_enable = (argv[20][0] == '1');
-    if (argc > 21) pci->scale_lo = atof(argv[21]);
-    if (argc > 22) pci->scale_hi = atof(argv[22]);
+    pci->scale_lo = atof(argv[21]);
+    pci->scale_hi = atof(argv[22]);
 
     pci->init_values();
 

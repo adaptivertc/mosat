@@ -44,22 +44,22 @@ int main(int argc, char *argv[])
     int len = strlen(dent->d_name);
     if (len < 5)
     {
-      //printf("Skipping %s, too short\n", dent->d_name);
+      printf("Skipping %s, too short\n", dent->d_name);
       continue;
     }
     char *ext = dent->d_name + (len - 4); 
 
-    //printf("File name = %s\n", dent->d_name);
-    //printf("ext = %s\n", ext);
+    printf("File name = %s\n", dent->d_name);
+    printf("ext = %s\n", ext);
     if (0 != strcmp(ext, ".cpp"))
     {
       continue;
     }
-    //printf("Processing: %s\n", dent->d_name);
+    printf("Processing: %s\n", dent->d_name);
     char temp[100];
     snprintf(temp, sizeof(temp), "%s", dent->d_name);
     temp[len-4] = '\0';
-    //printf("base name: %s\n", temp);
+    printf("base name: %s\n", temp);
     base[n_base] = strdup(temp);
     n_base++;
   

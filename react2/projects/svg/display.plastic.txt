@@ -1,0 +1,36 @@
+svg_header|Plastic Factory|0|0|300|150|
+background|burlywood|
+bar|AVG_TEMP|blue|36|5|125|
+#rgauge|0|pump1_amp|blue|74|1|73|
+#rgauge|2|pump2_amp|darkorange|151|1|73|
+#rgauge|1|pump3_amp|green|226|1|73|
+#only_text|Pump 1|green|112|85|10|middle|
+#only_text|Pump 2|darkred|187|85|10|middle|
+#only_text|Pump 3|blue|262|85|10|middle|
+
+only_text|Hi Contact|blue|140|8|5|start|
+simple_contact|HI_LEVEL|yellow|gray|130|5|6|
+only_text|Lo Contact|blue|140|23|5|start|
+simple_contact|LO_LEVEL|yellow|gray|130|20|6|
+
+simple_panel|green_do_1|lime|gray|86|109|4|
+simple_panel|yellow_do_1|yellow|gray|96|109|4|
+simple_panel|red_do_1|red|gray|106|109|4|
+
+simple_panel|green_do_2|lime|gray|86|89|4|
+simple_panel|yellow_do_2|yellow|gray|96|89|4|
+simple_panel|red_do_2|red|gray|106|89|4|
+
+only_text|HI|green|86|5|5|middle|
+simple_panel|hi_level|lime|gray|86|10|4|
+only_text|MID|green|96|5|5|middle|
+simple_panel|mid_level|lime|gray|96|10|4|
+only_text|LO|green|106|5|5|middle|
+simple_panel|lo_level|gray|lime|106|10|4|
+
+only_text|Motor|green|86|40|5|middle|
+simple_panel|motor_on|lime|gray|86|50|4|
+only_text|Cold|green|106|40|5|middle|
+simple_panel|valve_1|lime|gray|106|50|4|
+only_text|Suction|green|126|40|5|middle|
+simple_panel|valve_2|lime|gray|126|50|4|

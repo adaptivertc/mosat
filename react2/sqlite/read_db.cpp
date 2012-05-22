@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
   printf("---- Reading database 'ao' -------------\n");
   cbdata.first = false;
   cbdata.n = 0;
-  cbdata.nf = 13;
+  cbdata.nf = 16;
   retval = sqlite3_exec(sqdb, "select * from 'ao';",
              my_callback, &cbdata, &errmsg);
   if (retval != SQLITE_OK)
@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
   printf("---- Reading database 'ai' -------------\n");
   cbdata.first = false;
   cbdata.n = 0;
-  cbdata.nf = 21;
+  cbdata.nf = 23;
   retval = sqlite3_exec(sqdb, "select * from 'ai';",
              my_callback, &cbdata, &errmsg);
   if (retval != SQLITE_OK)
@@ -92,8 +92,28 @@ int main(int argc, char *argv[])
   printf("---- Reading database 'calc' -------------\n");
   cbdata.first = false;
   cbdata.n = 0;
-  cbdata.nf = 14;
+  cbdata.nf = 16;
   retval = sqlite3_exec(sqdb, "select * from 'calc';",
+             my_callback, &cbdata, &errmsg);
+  if (retval != SQLITE_OK)
+  {
+    printf("Can not execute query, error = %d\n", retval);
+    if (errmsg != NULL)
+    {
+      printf("errmsg: %s\n", errmsg);
+      sqlite3_free(errmsg);
+    }
+    sqlite3_close(sqdb);
+    return 0;
+  }
+
+    /*--------*/
+
+  printf("---- Reading database 'valve' -------------\n");
+  cbdata.first = false;
+  cbdata.n = 0;
+  cbdata.nf = 6;
+  retval = sqlite3_exec(sqdb, "select * from 'valve';",
              my_callback, &cbdata, &errmsg);
   if (retval != SQLITE_OK)
   {
@@ -152,7 +172,7 @@ int main(int argc, char *argv[])
   printf("---- Reading database 'di' -------------\n");
   cbdata.first = false;
   cbdata.n = 0;
-  cbdata.nf = 9;
+  cbdata.nf = 10;
   retval = sqlite3_exec(sqdb, "select * from 'di';",
              my_callback, &cbdata, &errmsg);
   if (retval != SQLITE_OK)
@@ -172,7 +192,7 @@ int main(int argc, char *argv[])
   printf("---- Reading database 'pci' -------------\n");
   cbdata.first = false;
   cbdata.n = 0;
-  cbdata.nf = 21;
+  cbdata.nf = 23;
   retval = sqlite3_exec(sqdb, "select * from 'pci';",
              my_callback, &cbdata, &errmsg);
   if (retval != SQLITE_OK)
@@ -212,7 +232,7 @@ int main(int argc, char *argv[])
   printf("---- Reading database 'timer' -------------\n");
   cbdata.first = false;
   cbdata.n = 0;
-  cbdata.nf = 5;
+  cbdata.nf = 7;
   retval = sqlite3_exec(sqdb, "select * from 'timer';",
              my_callback, &cbdata, &errmsg);
   if (retval != SQLITE_OK)
@@ -252,7 +272,7 @@ int main(int argc, char *argv[])
   printf("---- Reading database 'analog_value' -------------\n");
   cbdata.first = false;
   cbdata.n = 0;
-  cbdata.nf = 5;
+  cbdata.nf = 7;
   retval = sqlite3_exec(sqdb, "select * from 'analog_value';",
              my_callback, &cbdata, &errmsg);
   if (retval != SQLITE_OK)
@@ -312,7 +332,7 @@ int main(int argc, char *argv[])
   printf("---- Reading database 'pid' -------------\n");
   cbdata.first = false;
   cbdata.n = 0;
-  cbdata.nf = 17;
+  cbdata.nf = 19;
   retval = sqlite3_exec(sqdb, "select * from 'pid';",
              my_callback, &cbdata, &errmsg);
   if (retval != SQLITE_OK)
@@ -392,7 +412,7 @@ int main(int argc, char *argv[])
   printf("---- Reading database 'do' -------------\n");
   cbdata.first = false;
   cbdata.n = 0;
-  cbdata.nf = 7;
+  cbdata.nf = 8;
   retval = sqlite3_exec(sqdb, "select * from 'do';",
              my_callback, &cbdata, &errmsg);
   if (retval != SQLITE_OK)
@@ -434,6 +454,26 @@ int main(int argc, char *argv[])
   cbdata.n = 0;
   cbdata.nf = 7;
   retval = sqlite3_exec(sqdb, "select * from 'discrete_calc';",
+             my_callback, &cbdata, &errmsg);
+  if (retval != SQLITE_OK)
+  {
+    printf("Can not execute query, error = %d\n", retval);
+    if (errmsg != NULL)
+    {
+      printf("errmsg: %s\n", errmsg);
+      sqlite3_free(errmsg);
+    }
+    sqlite3_close(sqdb);
+    return 0;
+  }
+
+    /*--------*/
+
+  printf("---- Reading database 'pid' -------------\n");
+  cbdata.first = false;
+  cbdata.n = 0;
+  cbdata.nf = 23;
+  retval = sqlite3_exec(sqdb, "select * from 'pid';",
              my_callback, &cbdata, &errmsg);
   if (retval != SQLITE_OK)
   {

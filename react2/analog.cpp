@@ -346,7 +346,7 @@ const char *analog_point_t::get_config_json(void)
 
   if (json_str == NULL)
   {
-     asprintf(&json_str, "{\"tag\":\"%s\",\"description\":\"%s\",\"eu\":\"%s\",decimal_places\":%d,\"zero_cutoff\":%lf,\"scale_lo\":%lf, \"scale_hi\":%lf}",
+     asprintf(&json_str, "{\"tag\":\"%s\",\"description\":\"%s\",\"eu\":\"%s\",\"decimal_places\":%d,\"zero_cutoff\":%lf,\"scale_lo\":%lf, \"scale_hi\":%lf}",
          this->tag,
          this->description,
          this->eu,

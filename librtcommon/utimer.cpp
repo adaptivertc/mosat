@@ -79,6 +79,7 @@ void utimer_t::inc_time(void)
 
 void utimer_t::my_busy_wait()
 {
+  // Probably should NOT use busy wait anymroe . . . . . . 
   struct timespec ts;
   bool done = false;
   while (!done)
@@ -115,6 +116,8 @@ void utimer_t::wait_next(void)
     int retval = clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME,  &next_time, NULL);
     while (retval == -1)
     { 
+      // I have been told that eventually, this timer will NEVER return because of an interrupt
+      // But, I am still checking to be sure . . . . . 
       if (errno == EINTR)
       {
         retval = clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME,  &next_time, NULL);
