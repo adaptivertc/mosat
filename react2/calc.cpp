@@ -141,7 +141,7 @@ calc_point_t **calc_point_t::read(int *cnt, const char *home_dir)
     {
       continue;
     }
-    else if (argc != 14)
+    else if (argc != 16)
     {
       logfile->vprint("calc.dat: Wrong number of args, line %d", i+1);
       continue;

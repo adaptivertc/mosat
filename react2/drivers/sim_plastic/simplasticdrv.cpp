@@ -80,14 +80,6 @@ static double add_rand_noise(double val, double full_scale, double fraction_nois
 
 /**********************************************************************/
 
-static double calc_level_raw(double level_eu)
-{
-  //double pct = level_eu / 500.0;
-  return 32000.0 - ((32000.0 - 6400.0) * (level_eu / 500.0));
-}
-
-/**********************************************************************/
-
 extern "C" io_driver_t *new_simplasticdrv(react_drv_base_t *r, const char *option)
 {
   return new simplasticdrv_t(r);
@@ -113,24 +105,6 @@ simplasticdrv_t::simplasticdrv_t(react_drv_base_t *r)
   memset(ao_data, '\0', sizeof(ao_data));
 
   start = react->get_time();
-  filling = true;
-
-  di_data[P1V_DI_CH] = true;
-  di_data[P2V_DI_CH] = true;
-
-  di_data[P1_DI_CH] = true;
-  ai_data[P1_AI_CH] = 6400.0;
-
-  di_data[P2_DI_CH] = true;
-  ai_data[P2_AI_CH] = 6400.0;
-
-  di_data[P3_DI_CH] = true;
-  ai_data[P3_AI_CH] = 6400.0;
-
-  di_data[LO_LEVEL_CH] = true;
-  di_data[HI_LEVEL_CH] = false;
-
-  di_data[MIXER_DI_CH] = true;
 
   /* plastic */
 
@@ -140,25 +114,11 @@ simplasticdrv_t::simplasticdrv_t(react_drv_base_t *r)
   tank_temperature = START_TEMPERATURE;
   tank_level = START_LEVEL;
 
- /* plastic */
+  ai_data[TANK_TEMPERATURE_CH1] = tank_temperature;
+  ai_data[TANK_TEMPERATURE_CH2] = tank_temperature;
+  /* plastic */
 
-  fill_rate = (HI_SWITCH_CM - LO_SWITCH_CM) / PUMP_OFF_TIME; 
-  plastic_rate = (HI_SWITCH_CM - LO_SWITCH_CM) / PUMP_ON_TIME; 
-  plastic_rate += fill_rate; // fills while plasticing 
-  plastic_rate /= 3.0; // 3 plastics
-
-   // Start the level at the middle.
-  the_level = (HI_SWITCH_CM + LO_SWITCH_CM) / 2.0; 
-  ai_data[LEVEL_CH] = calc_level_raw(add_rand_noise(the_level, 500, 0.015));
-
-  printf("fill rate: %lf, plastic_rate %lf, level %lf\n", 
-       fill_rate, plastic_rate,  the_level);
-  do_data[P1V_DO_CH] = false;
-  do_data[P2V_DO_CH] = false;
-
-  do_data[P1_DO_CH] = false;
-  do_data[P2_DO_CH] = false;
-  do_data[P3_DO_CH] = false;
+  // Start the level at the middle.
 }
 
 /***********************************************************************/
@@ -234,7 +194,7 @@ void simplasticdrv_t::read(void)
     temperature_rate = VALVE_ON_TEMPERATURE_RATE;
   }
   else 
-	 temperature_rate = VALVE_OFF_TEMPERATURE_RATE;
+    temperature_rate = VALVE_OFF_TEMPERATURE_RATE;
 
   if (do_data[SUCCTION_VALVE_DO])
     fill_rate += PUMP_DRAIN_RATE;
@@ -250,110 +210,6 @@ void simplasticdrv_t::read(void)
   ai_data[TANK_TEMPERATURE_CH2] = tank_temperature;
     
   /* plastic */
-
-  int n_plastics = 0;
-  if (do_data[P1_DO_CH]) n_plastics++;
-  if (do_data[P2_DO_CH]) n_plastics++;
-  if (do_data[P3_DO_CH]) n_plastics++;
-
-  // outputs are positive logic, inputs negative logic
-  di_data[P1_DI_CH] = ! do_data[P1_DO_CH];
-  di_data[P2_DI_CH] = ! do_data[P2_DO_CH];
-  di_data[P3_DI_CH] = ! do_data[P3_DO_CH];
-
-  di_data[P1V_DI_CH] = ! do_data[P1V_DO_CH];
-  di_data[P2V_DI_CH] = ! do_data[P2V_DO_CH];
-
-  double level_change_rate = fill_rate - (double(n_plastics) * fill_rate); 
-  double level_change = level_change_rate * elapsed_time;
-
-  the_level += level_change; 
-  the_level = add_rand_noise(the_level, 500, 0.005);
-
-  ai_data[LEVEL_CH] = calc_level_raw(the_level);
-
-
-
-  //printf("%d plastics, lchange %lf, level %lf\n", 
-  //      n_plastics, level_change,  the_level); 
-
-  if (di_data[HI_LEVEL_CH]) // Set the high switch acording to the level
-  {
-    if ( the_level < (HI_SWITCH_CM - SWITCH_DEADBAND)) 
-    {
-      di_data[HI_LEVEL_CH] = false;
-    }
-  }
-  else
-  {
-    if ( the_level > HI_SWITCH_CM) 
-    {
-      di_data[HI_LEVEL_CH] = true;
-    }
-  }
-
-  if (di_data[HI_HI_LEVEL_CH]) // Set the very high switch acording to the level
-  {
-    if ( the_level < (HI_HI_SWITCH_CM - SWITCH_DEADBAND)) 
-    {
-      di_data[HI_HI_LEVEL_CH] = false;
-    }
-  }
-  else
-  {
-    if ( the_level > HI_HI_SWITCH_CM) 
-    {
-      di_data[HI_HI_LEVEL_CH] = true;
-    }
-  }
-
-  if (di_data[LO_LEVEL_CH]) // Set the low switch acording to the level
-  {
-    if ( the_level < (LO_SWITCH_CM - SWITCH_DEADBAND)) 
-    {
-      di_data[LO_LEVEL_CH] = false;
-    }
-  }
-  else
-  {
-    if ( the_level > LO_SWITCH_CM) 
-    {
-      di_data[LO_LEVEL_CH] = true;
-    }
-  }
-
-  if (do_data[P1_DO_CH])
-  {
-    ai_data[P1_AI_CH] = 20480.0;
-    ai_data[P1_AI_CH] = add_rand_noise(ai_data[P1_AI_CH], 25000, 0.015);
-  }
-  else
-  {
-    ai_data[P1_AI_CH] = 6455.0;
-    ai_data[P1_AI_CH] = add_rand_noise(ai_data[P1_AI_CH], 25000, 0.015);
-  }
-
-  if (do_data[P2_DO_CH])
-  {
-    ai_data[P2_AI_CH] = 20492.0;
-    ai_data[P2_AI_CH] = add_rand_noise(ai_data[P2_AI_CH], 25000, 0.015);
-  }
-  else
-  {
-    ai_data[P2_AI_CH] = 6465.0;
-    ai_data[P2_AI_CH] = add_rand_noise(ai_data[P2_AI_CH], 25000, 0.015);
-  }
-
-  if (do_data[P3_DO_CH])
-  {
-    ai_data[P3_AI_CH] = 20451.0;
-    ai_data[P3_AI_CH] = add_rand_noise(ai_data[P3_AI_CH], 25000, 0.015);
-  }
-  else
-  {
-    ai_data[P3_AI_CH] = 6445.0;
-    ai_data[P3_AI_CH] = add_rand_noise(ai_data[P3_AI_CH], 25000, 0.015);
-  }
 
 }
 

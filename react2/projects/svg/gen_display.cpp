@@ -777,7 +777,7 @@ int main(int argc, char *argv[])
   {
     if (dent->d_type != DT_REG)
     {
-      continue;
+      //continue;
     }
 
     int len = strlen(dent->d_name);

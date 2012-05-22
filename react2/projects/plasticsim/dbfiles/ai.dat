@@ -1,6 +1,6 @@
 #avg_temp|Tank Temp 1|degC|0|0|0|0.0|10.0|0.0|10.0|1|-5000.0|0|0|0|0|0|0|0|0|0|
-TEMP_1|Tank Temp 1|degC|0|0|0|0.0|10.0|0.0|10.0|1|-5000.0|0|0|0|0|0|0|0|0|0|
-TEMP_2|Tank Temp 2|degC|0|0|1|0.0|10.0|0.0|10.0|1|-5000.0|0|0|0|0|0|0|0|0|0|
+TEMP_1|Tank Temp 1|degC|0|0|0|0.0|10.0|0.0|10.0|1|-5000.0|0|0|0|0|0|0|0|0|0|0|70|
+TEMP_2|Tank Temp 2|degC|0|0|1|0.0|10.0|0.0|10.0|1|-5000.0|0|0|0|0|0|0|0|0|0|0|70|
 #    Tag
 #    Description
 #    Engineering Units Label
@@ -22,3 +22,5 @@ TEMP_2|Tank Temp 2|degC|0|0|1|0.0|10.0|0.0|10.0|1|-5000.0|0|0|0|0|0|0|0|0|0|
 #    Caution Low Enable
 #    Caution High Enable
 #    Alarm High Enable
+#    Scale Low
+#    Scale High

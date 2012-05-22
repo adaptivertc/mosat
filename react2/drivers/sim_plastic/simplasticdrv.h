@@ -26,40 +26,6 @@ Header file for sim driver.
 
 **************************************************************************/
 
-#define LO_LEVEL_CH 0
-#define HI_LEVEL_CH 1
-#define HI_HI_LEVEL_CH 2
-
-#define P1V_DO_CH 4
-#define P2V_DO_CH 5
-
-#define P1_DO_CH 1
-#define P2_DO_CH 2
-#define P3_DO_CH 3 
-
-#define P1V_DI_CH 6
-#define P2V_DI_CH 7
-
-#define P1_DI_CH 8
-#define P2_DI_CH 9
-#define P3_DI_CH 10 
-
-#define MIXER_DI_CH 5 
-
-#define P1_AI_CH 5
-#define P2_AI_CH 4
-#define P3_AI_CH 3
-
-#define LEVEL_CH 2
-
-#define PUMP_ON_TIME (30.0)
-#define PUMP_OFF_TIME (35.0)
-#define LO_SWITCH_CM (100.0)
-#define HI_SWITCH_CM (275.0)
-#define HI_HI_SWITCH_CM (450.0)
-
-#define SWITCH_DEADBAND (12.0)
-
 /*  plastic */
 
 #define TANK_HI_LEVEL_DI 9
@@ -78,7 +44,7 @@ Header file for sim driver.
 #define TANK_HI_LEVEL_CM (27.0)
 #define TANK_LO_LEVEL_CM (24.0)
 
-#define START_TEMPERATURE (50.0)
+#define START_TEMPERATURE (55.0)
 #define START_LEVEL (25.0)
 
 #define FILTER1_CHANGE_TIME (60.0)
