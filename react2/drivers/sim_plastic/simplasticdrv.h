@@ -58,7 +58,7 @@ Header file for sim driver.
 
 #define TANK_TEMPERATURE_CH1 0
 #define TANK_TEMPERATURE_CH2 1
-
+#define TANK_LEVEL_CH 2
 
 class simplasticdrv_t : public io_driver_t
 {

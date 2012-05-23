@@ -208,6 +208,7 @@ void simplasticdrv_t::read(void)
 
   ai_data[TANK_TEMPERATURE_CH1] = tank_temperature;
   ai_data[TANK_TEMPERATURE_CH2] = tank_temperature;
+  ai_data[TANK_LEVEL_CH] = tank_level;
     
   /* plastic */
 
