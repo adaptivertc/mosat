@@ -1,3 +1,7 @@
+# React2 driver so file 
+# Function name that loads the driver
+# Auxiliary so file that may require the driver
+# Parameter(s) to that driver 
 ./drivers/modbusdrv/libreactmodbusdrv.so|new_reactmodbus||/dev/ttyUSB0:57600:1:1|
 #./drivers/simple_ascii_new/libsimple_ascii_drv.so|new_simple_ascii||/dev/ttyUSB0|
 #./drivers/simple_ascii/libsimple_ascii_drv.so|new_simple_ascii||/dev/ttyUSB1|
