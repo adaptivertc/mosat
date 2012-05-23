@@ -26,7 +26,7 @@ const char *blades_t::get_name(void)
 
 void blades_t::generate(plugin_data_t d, int argc, char **argv)
 {
-  const char *tag = argv[1];
+  //const char *tag = argv[1];
   double x1 = atof(argv[2]);
   double y1 = atof(argv[3]);
   double height = atof(argv[4]);

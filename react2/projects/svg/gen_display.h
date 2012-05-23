@@ -18,11 +18,13 @@ void add_js_library(const char *file_name);
 void add_svg_library(const char *file_name);
 void add_animation_object(const char *the_tag, const char *the_js_object);
 void set_viewbox(double x1, double y1, double x2, double y2);
+
 void find_a_place_nearby(double *x,double *y,
                          double screen_width, double screen_height,
                          double item_x, double item_y,
                          double item_width, double item_height,
                          double popup_width, double popup_height);
+
 void find_a_place_nearby(double *x,double *y,
                          double item_x, double item_y,
                          double item_width, double item_height);

@@ -244,8 +244,10 @@ static void gen_simulation(FILE *js_fp)
   //fprintf(js_fp, "  pump_3_timeout();\n");
 
   fprintf(js_fp, "  var interval = setInterval(\"intervalHandler()\", 100);\n");
+  /***
   fprintf(js_fp, "  //show_main();\n");
-  fprintf(js_fp, "  show_popup(50,50, 'Extend', 'Retract');\n");
+  fprintf(js_fp, "  //show_popup(50,50, 'Extend', 'Retract');\n");
+  ***/
   fprintf(js_fp, "};\n");
   fprintf(js_fp, "\n");
   fprintf(js_fp, "// -- END insert simulation code --\n");
@@ -597,10 +599,13 @@ static void gen_final_file(const char *fname)
   include_file(fp, ".", "_tmp_display.svg");
 
   fprintf(fp, "</g>\n");
+  /**
   include_file(fp, ".", "popup.svg");
+  **/
 
   fprintf(fp, "<script type=\"text/ecmascript\"><![CDATA[\n");
   fprintf(fp, "const svgNS = \"http://www.w3.org/2000/svg\";\n");
+  /***
   fprintf(fp, "var reactmainobj=document.getElementById(\"main_group\");\n");
   fprintf(fp, "var popupobj=document.getElementById(\"popup\");\n");
   fprintf(fp, "function show_main()\n");
@@ -618,6 +623,7 @@ static void gen_final_file(const char *fname)
   fprintf(fp, "  var tagobj=document.getElementById(\"popup_tag\");\n");
   fprintf(fp, "  tagobj.textContent=text_tag;\n");
   fprintf(fp, "}\n");
+  ***/
 
   for (int i=0; i < n_js_libs; i++)
   {

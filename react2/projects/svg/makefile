@@ -8,7 +8,7 @@ export CPATH=../../../include/
 RTCOMMON=../../../librtcommon/librtcommon.a
 
 
-all: so_files gen_points gen_bar gen_tank gen_display dtest.svg 
+all: so_files gen_points gen_bar gen_tank gen_display
 
 
 so_files: gen_so_makefile
@@ -37,4 +37,4 @@ install:
 	sudo cp ai.svg /var/www
 
 clean:
-	rm -rv gen_points gen_bar gen_tank gen_so_makefile ./plugins/*.so gen_display dtest.svg
+	rm -rv gen_points gen_bar gen_tank gen_so_makefile ./plugins/*.so gen_display

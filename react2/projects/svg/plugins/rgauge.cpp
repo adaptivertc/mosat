@@ -26,7 +26,7 @@ const char *rgauge_t::get_name(void)
 
 void rgauge_t::generate(plugin_data_t d, int argc, char **argv)
 {
-  int gtype = atol(argv[1]);
+  //int gtype = atol(argv[1]);
   const char *tag = argv[2];
   const char *rcolor = argv[3];
   double x = atof(argv[4]);

@@ -26,7 +26,7 @@ const char *heatex_t::get_name(void)
 
 void heatex_t::generate(plugin_data_t d, int argc, char **argv)
 {
-  const char *tag = argv[1];
+  //const char *tag = argv[1];
   double x1 = atof(argv[2]);
   double y1 = atof(argv[3]);
   double width = atof(argv[4]);
@@ -35,7 +35,7 @@ void heatex_t::generate(plugin_data_t d, int argc, char **argv)
 
   double x2 = x1 + width;
   double y2 = y1 + (width * (5.0/4.0));
-  double height = y2 - y1;
+  //double height = y2 - y1;
 
   double cx = (x1 + x2) / 2.0;
   double cy = (y1 + y2) / 2.0;

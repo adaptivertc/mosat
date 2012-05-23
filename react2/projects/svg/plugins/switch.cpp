@@ -32,7 +32,7 @@ void switch_t::generate(plugin_data_t d, int argc, char **argv)
   double x1 = atof(argv[4]);
   double y1 = atof(argv[5]);
   double width = atof(argv[6]);
-  double font_size = width * 0.6;
+  //double font_size = width * 0.6;
   double scale_factor = width / 100;
   double cx = x1 + (width / 2.0);
   double cy = y1 + (65.0 * scale_factor);
