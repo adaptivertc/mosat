@@ -605,8 +605,8 @@ static void gen_final_file(const char *fname)
 
   fprintf(fp, "<script type=\"text/ecmascript\"><![CDATA[\n");
   fprintf(fp, "const svgNS = \"http://www.w3.org/2000/svg\";\n");
-  /***
   fprintf(fp, "var reactmainobj=document.getElementById(\"main_group\");\n");
+  /***
   fprintf(fp, "var popupobj=document.getElementById(\"popup\");\n");
   fprintf(fp, "function show_main()\n");
   fprintf(fp, "{\n");

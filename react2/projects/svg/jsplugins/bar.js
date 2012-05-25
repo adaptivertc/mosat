@@ -76,13 +76,16 @@ function bar_init_f(val)
         }
       }
 
+      console.log("Starting tics");
       var sinfo = new ScaleInfo();
       var tdata = new TicData();
       var shape;
       sinfo.print();
+      console.log("Starting tics2:");
       sinfo.calc(this.max,this.y2,this.y1);
       sinfo.print();
       sinfo.reset_tic();
+      console.log("Starting tics3:");
       while(sinfo.next_tic(tdata))
       {
         var mystr;
