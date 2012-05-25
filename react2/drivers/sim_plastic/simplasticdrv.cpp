@@ -107,6 +107,15 @@ simplasticdrv_t::simplasticdrv_t(react_drv_base_t *r)
   start = react->get_time();
 
   /* plastic */
+    f1_stateinfo.enter_time = start; 
+    f1_stateinfo.wait_time = 60;
+    f1_stateinfo.last_direction = false;  // UP
+    f1_stateinfo.state = F1_WAITING_TO_CHANGE;
+    f2_stateinfo.enter_time = start; 
+    f2_stateinfo.wait_time = 120;
+    f2_stateinfo.last_direction = false;  // UP
+    f2_stateinfo.state = F1_WAITING_TO_CHANGE;
+    motor_on = false;
 
   di_data[TANK_HI_LEVEL_DI] = false;
   di_data[TANK_HI_LEVEL_DI] = true;
@@ -166,6 +175,111 @@ void simplasticdrv_t::close(void)
 
 /***********************************************************************/
 
+/***********************************************************************/
+void simplasticdrv_t::state_machine_filter_1(double now)
+{
+  double time_in_state = now - f1_stateinfo.enter_time; 
+  switch (f1_stateinfo.state) {
+	case F1_WAITING_TO_CHANGE : if ( time_in_state > f1_stateinfo.wait_time && !motor_on ) 
+                                       { 
+								 motor_on = true;
+                                         f1_stateinfo.wait_time = 2;  
+                                         f1_stateinfo.state = F1_MOTOR_ON;
+								 f1_stateinfo.enter_time = now;
+                                       }  
+                                     break;
+ 	case F1_MOTOR_ON: if ( time_in_state > f1_stateinfo.wait_time) 
+                             { 
+                                f1_stateinfo.wait_time = 5;  
+                                f1_stateinfo.state = F1_OPEN_VALVE;
+			        f1_stateinfo.enter_time = now;
+                                if ( f1_stateinfo.last_direction )
+				    di_data[F1_UP_CH] = true;
+                                else
+                                    di_data[F1_DN_CH] = true;
+                                /* Open the Up or the down valve */
+                             }  
+                             break;
+ 	case F1_OPEN_VALVE: if ( time_in_state > f1_stateinfo.wait_time) 
+                             { 
+                                f1_stateinfo.wait_time = 2;  
+                                f1_stateinfo.state = F1_CLOSE_VALVE;
+				f1_stateinfo.enter_time = now;
+                                if ( f1_stateinfo.last_direction )
+				    di_data[F1_UP_CH] = false;
+                                else
+                                    di_data[F1_DN_CH] = false;
+                                f1_stateinfo.last_direction = !f1_stateinfo.last_direction;
+                                 /* cLOSE  the Up or Down valve */
+                             }  
+                             break;
+ 	case F1_CLOSE_VALVE: if ( time_in_state > f1_stateinfo.wait_time) 
+                             { 
+						  motor_on = false;
+                                f1_stateinfo.wait_time = 60;   // TODO: Random time
+			                                       // 60 +/- 10 
+                                f1_stateinfo.state = F1_WAITING_TO_CHANGE;
+						  f1_stateinfo.enter_time = now;
+                             }  
+                             break;
+                                  
+ 
+	}
+}
+
+/***********************************************************************/
+
+/***********************************************************************/
+void simplasticdrv_t::state_machine_filter_2(double now)
+{
+  double time_in_state = now - f2_stateinfo.enter_time; 
+  switch (f2_stateinfo.state) {
+	case F1_WAITING_TO_CHANGE : if ( time_in_state > f2_stateinfo.wait_time && !motor_on ) 
+                                       { 
+								 motor_on = true;
+                                         f2_stateinfo.wait_time = 2;  
+                                         f2_stateinfo.state = F1_MOTOR_ON;
+								 f2_stateinfo.enter_time = now;
+                                       }  
+                                     break;
+ 	case F1_MOTOR_ON: if ( time_in_state > f2_stateinfo.wait_time) 
+                             { 
+                                f2_stateinfo.wait_time = 5;  
+                                f2_stateinfo.state = F1_OPEN_VALVE;
+			        f2_stateinfo.enter_time = now;
+                                if ( f2_stateinfo.last_direction )
+				    di_data[F2_UP_CH] = true;
+                                else
+                                    di_data[F2_DN_CH] = true;
+                                /* Open the Up or the down valve */
+                             }  
+                             break;
+ 	case F1_OPEN_VALVE: if ( time_in_state > f2_stateinfo.wait_time) 
+                             { 
+                                f2_stateinfo.wait_time = 2;  
+                                f2_stateinfo.state = F1_CLOSE_VALVE;
+				f2_stateinfo.enter_time = now;
+                                if ( f2_stateinfo.last_direction )
+				    di_data[F2_UP_CH] = false;
+                                else
+                                    di_data[F2_DN_CH] = false;
+                                f2_stateinfo.last_direction = !f2_stateinfo.last_direction;
+                                 /* cLOSE  the Up or Down valve */
+                             }  
+                             break;
+ 	case F1_CLOSE_VALVE: if ( time_in_state > f2_stateinfo.wait_time) 
+                             { 
+						  motor_on = false;
+                                f2_stateinfo.wait_time = 120;   // TODO: Random time
+			                                       // 60 +/- 10 
+                                f2_stateinfo.state = F1_WAITING_TO_CHANGE;
+						  f2_stateinfo.enter_time = now;
+                             }  
+                             break;
+                                  
+ 
+	}
+}
 bool simplasticdrv_t::get_di(int aChannel)
 {
   if ((aChannel < 0) || (aChannel > 31))
@@ -209,6 +323,10 @@ void simplasticdrv_t::read(void)
   ai_data[TANK_TEMPERATURE_CH1] = tank_temperature;
   ai_data[TANK_TEMPERATURE_CH2] = tank_temperature;
   ai_data[TANK_LEVEL_CH] = tank_level;
+
+  state_machine_filter_1(now);
+  state_machine_filter_2(now);
+  di_data[MOTOR_CH] = motor_on;
     
   /* plastic */
 

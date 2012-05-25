@@ -34,12 +34,12 @@ Header file for sim driver.
 #define COLD_WATER_VALVE_DO 8
 #define SUCCTION_VALVE_DO 9
 
-#define FILTER1_CHANGE_DI_UP 0
-#define FILTER1_CHANGE_DI_DOWN 1
-#define FILTER2_CHANGE_DI_UP 2
-#define FILTER2_CHANGE_DI_DOWN 3
+#define F1_UP_CH 0
+#define F1_DN_CH 1
+#define F2_UP_CH 2
+#define F2_DN_CH 3
 
-#define HIDRAULIC_MOTOR_DI 6
+#define MOTOR_CH 6
 
 #define TANK_HI_LEVEL_CM (27.0)
 #define TANK_LO_LEVEL_CM (24.0)
@@ -59,6 +59,27 @@ Header file for sim driver.
 #define TANK_TEMPERATURE_CH1 0
 #define TANK_TEMPERATURE_CH2 1
 #define TANK_LEVEL_CH 2
+
+#define F1_WAITING_TO_CHANGE 0
+#define F1_MOTOR_ON 1 
+#define F1_OPEN_VALVE 2 
+#define F1_CLOSE_VALVE 3
+#define F1_MOTOR_OFF 4
+
+struct f1_stateinfo_t {
+    double enter_time; 
+    double wait_time;
+    bool last_direction; 
+    int state;
+};
+
+struct f2_stateinfo_t {
+    double enter_time; 
+    double wait_time;
+    bool last_direction; 
+    int state;
+};
+
 
 class simplasticdrv_t : public io_driver_t
 {
@@ -80,6 +101,9 @@ public:
 
   double tank_temperature; 
   double tank_level;
+  f1_stateinfo_t f1_stateinfo;
+  f2_stateinfo_t f2_stateinfo;
+  bool motor_on;
 
   simplasticdrv_t(react_drv_base_t *r);
   void read(void);
@@ -88,5 +112,8 @@ public:
   void send_do(int channel, bool val);
   void send_ao(int channel, double val);
   void close(void);
+  void state_machine_filter_1(double now);
+  void state_machine_filter_2(double now); 
+
 };
 
