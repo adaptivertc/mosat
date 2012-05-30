@@ -38,3 +38,4 @@ install:
 
 clean:
 	rm -rv gen_points gen_bar gen_tank gen_so_makefile ./plugins/*.so gen_display
+

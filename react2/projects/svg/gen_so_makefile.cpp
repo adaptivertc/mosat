@@ -65,6 +65,7 @@ int main(int argc, char *argv[])
   
   }
   fprintf(fp, "\nexport CPATH=../\n\n");
+  fprintf(fp, ".PHONY: clean all\n\n"); 
   fprintf(fp, "all: ");
   for (int i=0; i < n_base; i++)
   {
@@ -75,9 +76,17 @@ int main(int argc, char *argv[])
   for (int i=0; i < n_base; i++)
   {
     fprintf(fp, "%s.so: %s.cpp\n", base[i], base[i]); 
-    fprintf(fp, "\t g++ -Wall -shared -o %s.so %s.cpp\n\n", base[i], base[i]); 
+    fprintf(fp, "\t g++ -fPIC -Wall -shared -o %s.so %s.cpp\n\n", base[i], base[i]); 
   }
 
+  fprintf(fp, "\n\n");
+  fprintf(fp, "clean:\n");
+  fprintf(fp, "\trm -fv ");
+  for (int i=0; i < n_base; i++)
+  {
+    fprintf(fp, " %s.so", base[i]); 
+  }
+  fprintf(fp, "\n\n");
   fclose(fp);
   return 0;
 }               
