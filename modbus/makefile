@@ -7,7 +7,7 @@ RTMODBUS=./librtmodbus.a
 
 INCLUDES = hp2mod.h  hprtu.h  modio.h  modsim.h  mtype.h  trace.h evlog.h
 
-CPP=g++ -fpic
+CPP=g++ -fPIC
 
 %.o:	%.cpp $(INCLUDES)
 	$(CPP) -c -o $@ -Wall $<
@@ -23,7 +23,7 @@ myconnect:	myconnect.o
 librtmodbus.so: trace.o modsim.o trace.h swap.o modtcpip_client.o\
                 modtcpip.o hexascii.o rtmodbus.o modio.o \
                 evlog.o rt_serial.o rt_mod_serial_client.o rt_modbus_utility.o $(INCLUDES)
-	g++ -o librtmodbus.so -shared modsim.o trace.o swap.o \
+	g++ -fPIC -o librtmodbus.so -shared modsim.o trace.o swap.o \
 		 modtcpip.o hexascii.o rtmodbus.o modio.o modtcpip_client.o \
 		evlog.o rt_serial.o rt_mod_serial_client.o rt_modbus_utility.o
 

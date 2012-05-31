@@ -3,7 +3,7 @@ export CPATH=../include
 
 OBJS=  arg.o common.o safestr.o utimer.o memfail.o  numbered_file.o ap_config.o separator.o rt_system_log.o log_functions.o split_array.o rt_json.o
 
-CC=g++
+CC=g++ -fPIC
 
 %.o:    %.cpp $(INCLUDES)
 	$(CC) -c -fpic -o $@ -Wall $<
@@ -11,7 +11,7 @@ CC=g++
 all: librtcommon.so librtcommon.a 
 
 librtcommon.so: $(OBJS) 
-	g++  -shared -o librtcommon.so $(OBJS) 
+	g++  -fPIC -shared -o librtcommon.so $(OBJS) 
 
 librtcommon.a: $(OBJS) 
 	  ar r librtcommon.a $(OBJS) 
