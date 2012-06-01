@@ -28,7 +28,7 @@ DRIVERDIRS = drivers/sim drivers/modbusdrv drivers/shmdrv drivers/sim_pump drive
 
 DRIVERDIRS2 = drivers/sim_tina drivers/dallas_1wire drivers/sim_ac drivers/process drivers/simple_ascii drivers/simple_ascii_new 
 
-PROJECTDIRS = projects/atemajac_pumps  projects/imasa  projects/silos projects/mod_apache projects/svg
+PROJECTDIRS = projects/silos projects/mod_apache projects/svg
 
 CDEBUG =
 
