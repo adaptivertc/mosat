@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
   struct timeval mytv;
   struct timespec myts;
   struct timeval times[10000];
-  utimer_status_t s[10000];
+  //utimer_status_t s[10000];
   long max = 100;
   long updates_per_second = 2000;
   long interval = 1000000 / updates_per_second;
@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
   utimer_t utimer;
   utimer.set_interval(interval);
   utimer.set_start_time();
-  s[0] = utimer.get_status();
+  //s[0] = utimer.get_status();
   gettimeofday(&mytv, NULL);
   times[0] = mytv;
   //printf("time: %ld, %6ld\n", mytv.tv_sec, mytv.tv_usec);

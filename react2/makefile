@@ -84,7 +84,7 @@ p9111ai.o: p9111ai.c
 	$(CPP) -c $(CFLAGS) -I../../../include p9111ai.c
 
 dbpoint_util.so: analog.cpp discrete.cpp
-	$(CPP) -fpic -o dbpoint_util.so -shared analog.cpp discrete.cpp 
+	$(CPP) -fPIC -o dbpoint_util.so -shared analog.cpp discrete.cpp 
 
 gen:	generate_script.cpp 
 	$(CPP) -o gen  generate_script.cpp $(RTCOMMON)
@@ -144,10 +144,10 @@ exprtest:       error.h exp.h error.cpp eval.cpp expr.cpp exprlist.cpp exprtree.
 	$(CPP) -o exprtest error.cpp eval.cpp expr.cpp exprlist.cpp exprtree.cpp point.cpp treetst.cpp
 
 ai.so:	ai.cpp
-	$(CPP) -shared -fpic -o ai.so ai.cpp
+	$(CPP) -shared -fPIC -o ai.so ai.cpp
 
 script_trigger.so:	script_trigger.cpp
-	$(CPP) -shared -fpic -o script_trigger.so script_trigger.cpp
+	$(CPP) -shared -fPIC -o script_trigger.so script_trigger.cpp
 
 gen_php:	gen_php.cpp
 	$(CPP) -g  -o gen_php gen_php.cpp $(RTCOMMON)

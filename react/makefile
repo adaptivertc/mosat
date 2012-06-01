@@ -34,7 +34,7 @@ CFLAGS = -Wall
 
 LDFLAGS =
 
-CPP = g++  $(CFLAGS)
+CPP = g++  -fPIC $(CFLAGS)
 
 
 MAKE = make
@@ -55,7 +55,7 @@ react:	$(INCLUDES) $(OBJS) dbpoint_util.so
 	$(CPP) $(LDFLAGS) -rdynamic -o $@ $(OBJS) -lrt $(LIBS)
 
 rtshmmain: rtshmmain.o ldiodriver.o reactshmio.o logfile.o reactshmio.h $(INCLUDES)
-	$(CPP) -rdynamic -o rtshmmain rtshmmain.o ldiodriver.o reactshmio.o logfile.o -ldl $(RTCOMMON)
+	$(CPP) -rdynamic -o rtshmmain rtshmmain.o ldiodriver.o reactshmio.o logfile.o -ldl $(RTCOMMON) -lrt
 
 $(OBJS):	$(INCLUDES)
 
@@ -77,7 +77,7 @@ p9111ai.o: p9111ai.c
 	$(CPP) -c $(CFLAGS) -I../../../include p9111ai.c
 
 dbpoint_util.so: analog.cpp discrete.cpp
-	$(CPP) -fpic -o dbpoint_util.so -shared analog.cpp discrete.cpp 
+	$(CPP) -o dbpoint_util.so -shared analog.cpp discrete.cpp 
 
 gen:	generate_script.cpp 
 	$(CPP) -o gen  generate_script.cpp $(RTCOMMON)
@@ -99,7 +99,7 @@ gencase:	gen_script.cpp gen_script.h
 	$(CPP) -c gen_case.cpp 
 
 utest:	utest.cpp
-	$(CPP) -o utest utest.cpp $(RTCOMMON) 
+	$(CPP) -o utest utest.cpp $(RTCOMMON) -lrt
 	
 ct:	conio.cpp conio.h coniotest.cpp
 	$(CPP) -o ct coniotest.cpp conio.cpp
@@ -137,10 +137,10 @@ exprtest:       error.h exp.h error.cpp eval.cpp expr.cpp exprlist.cpp exprtree.
 	$(CPP) -o exprtest error.cpp eval.cpp expr.cpp exprlist.cpp exprtree.cpp point.cpp treetst.cpp
 
 ai.so:	ai.cpp
-	$(CPP) -shared -fpic -o ai.so ai.cpp
+	$(CPP) -shared -o ai.so ai.cpp
 
 script_trigger.so:	script_trigger.cpp
-	$(CPP) -shared -fpic -o script_trigger.so script_trigger.cpp
+	$(CPP) -shared -o script_trigger.so script_trigger.cpp
 
 gen_php:	gen_php.cpp
 	$(CPP) -g  -o gen_php gen_php.cpp $(RTCOMMON)

@@ -511,10 +511,10 @@ int main(int argc, char *argv[])
       if (!free_running_mode)
       {
         utimer.wait_next();
-        if (utimer.late_time() > 1.0)
-        {
-          utimer.set_start_time();
-        }
+        //if (utimer.late_time() > 1.0)
+        //{
+        //  utimer.set_start_time();
+        //}
       }
       double now = (double) i / 1.0;
      

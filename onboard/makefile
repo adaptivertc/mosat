@@ -3,7 +3,7 @@ export CPATH=../include
 
 CC=g++ -g
 
-CPP=g++ -g
+CPP=g++ -g -lrt
 
 INCLUDES= d2x24.h frtimer.h odo_mode.h onboard.h peekpoke.h profile_reader.h rt_serial.h sim_reader.h\
 	 spd_algo_DC.h spd_algo.h spd_algo_RD.h spd_algo_VV.h spd_comm.h spd_display.h tsarm.h ts_keypad.h
@@ -34,12 +34,12 @@ sim_CBTC:	sim_CBTC.o spd_display.o spd_comm.o spd_select.o spd_algo_DC.o spd_alg
 onboard_4x40:	onboard.o spd_display_4x40.o spd_comm.o spd_select.o spd_algo_DC.o spd_algo_RD.o spd_algo_VV.o \
 		profile_reader.o  sim_reader.o alg_compare.o $(INCLUDES)
 	g++ -g -o onboard_4x40 -lncurses onboard.o spd_display_4x40.o spd_comm.o spd_select.o sim_reader.o alg_compare.o \
-			spd_algo_DC.o spd_algo_RD.o  spd_algo_VV.o profile_reader.o -lpthread $(RTMODBUS) $(RTCOMMON)
+			spd_algo_DC.o spd_algo_RD.o  spd_algo_VV.o profile_reader.o -lpthread $(RTMODBUS) $(RTCOMMON) -lrt
 
 drive:	onboard.o spd_display.o spd_comm_drive.o spd_select.o spd_algo_DC.o spd_algo_RD.o spd_algo_VV.o \
 		profile_reader.o  sim_reader.o alg_compare.o $(INCLUDES)
 	g++ -g -o drive -lncurses onboard.o spd_display.o spd_comm_drive.o spd_select.o sim_reader.o alg_compare.o \
-			spd_algo_DC.o spd_algo_RD.o  spd_algo_VV.o profile_reader.o $(RTMODBUS) $(RTCOMMON)
+			spd_algo_DC.o spd_algo_RD.o  spd_algo_VV.o profile_reader.o $(RTMODBUS) $(RTCOMMON) -lrt
 
 onboard_2x24:	onboard.o spd_display_2x24.o spd_comm.o d2x24_curses.o spd_select.o sim_reader.o \
 		spd_algo_DC.o spd_algo_RD.o  spd_algo_VV.o profile_reader.o alg_compare.o $(INCLUDES)

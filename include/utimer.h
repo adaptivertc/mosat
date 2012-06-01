@@ -53,6 +53,8 @@ public:
   //struct timeval elapsed_time(void);
   void set_busy_wait(bool v) {busy_wait = v;};
   void set_interval(struct timespec ts) {interval.tv_sec = ts.tv_sec; interval.tv_nsec = ts.tv_nsec;};
+  void set_interval(int usecs) {interval.tv_sec = usecs/1000000; 
+                                interval.tv_nsec = (usecs%1000000)*1000;};
   void set_start_time(void);
   // void print_status(void);
   //utimer_status_t get_status(void);

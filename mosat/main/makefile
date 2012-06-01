@@ -15,11 +15,11 @@ all:	$(ALL)
 
 ppc_record: ppc_record.o train_detect.o evlog.o train_detect.h ppc_logger.o ppc_logger.h event_detect.o
 	g++ -o ppc_record -lpthread ppc_record.o evlog.o train_detect.o \
-		ppc_logger.o event_detect.o $(RTCOMMON) 
+		ppc_logger.o event_detect.o $(RTCOMMON) -lrt
 
 remote_record: remote_record.o train_detect.o evlog.o train_detect.h o_evlog.o
 	g++ -o remote_record -lpthread remote_record.o \
-	   o_evlog.o evlog.o train_detect.o  $(RTCOMMON) 
+	   o_evlog.o evlog.o train_detect.o  $(RTCOMMON) -lrt 
 
 ntt:	timetable.cpp rf.cpp n_ractual.cpp
 	g++ -o ntt -Wall -lrt timetable.cpp rf.cpp n_ractual.cpp $(RTCOMMON)
