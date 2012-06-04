@@ -14,6 +14,8 @@ static gen_plugin_base_t *get_plugin(const char *type);
 static const int RT_SIM_MODE = 0;
 static const int RT_REACT_MODE = 1;
 static int run_mode = RT_SIM_MODE;
+static const char *sim_file="sim_pump.js";
+
 
 /*********************************/
 
@@ -225,9 +227,11 @@ static void gen_simulation(FILE *js_fp)
   fprintf(js_fp, "}\n");
   fprintf(js_fp, "\n");
 
+  fprintf(js_fp, "var sim_now=0.0;\n");
   fprintf(js_fp, "function intervalHandler()\n");
   fprintf(js_fp, "{\n");
-  fprintf(js_fp, "  sim.update();\n");
+  fprintf(js_fp, "  sim_now+=0.1\n");
+  fprintf(js_fp, "  sim.update(sim_now);\n");
   fprintf(js_fp, "  update_objects();\n");
   fprintf(js_fp, "}\n");
   fprintf(js_fp, "\n");
@@ -548,7 +552,8 @@ static void do_gen(const char *fname)
   }
   else
   {
-    add_js_library("sim_pump.js");
+    //add_js_library("sim_pump.js");
+    add_js_library(sim_file);
     printf("Generating simulator . . . \n");
     gen_simulation(js_fp);
   }
@@ -719,6 +724,21 @@ int main(int argc, char *argv[])
       {
         print_help();
         printf("For -d option, you MUST specify the directory, %d, %d\n", argc, current_arg);
+        exit(1);
+      }
+    }
+    else if (0 == strcmp(argv[current_arg], "-sim_file"))
+    {
+      if (argc > (current_arg + 1))
+      {
+        current_arg++;
+        sim_file = argv[current_arg];
+        run_mode = RT_SIM_MODE;
+      }
+      else
+      {
+        print_help();
+        printf("For -sim_file option, you MUST specify the javascript sim file name, %d, %d\n", argc, current_arg);
         exit(1);
       }
     }
