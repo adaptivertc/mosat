@@ -3,8 +3,8 @@ background|burlywood|
 imasa_logo|0|0|24|
 bar|level|blue|36|5|125|
 rgauge|0|pump1_amp|blue|74|1|73|
-rgauge|2|pump2_amp|darkorange|151|1|73|
-rgauge|1|pump3_amp|green|226|1|73|
+gauge|2|pump2_amp|darkorange|151|1|73|
+gauge|1|pump3_amp|green|226|1|73|
 only_text|Pump 1|green|112|85|10|middle|
 only_text|Pump 2|darkred|187|85|10|middle|
 only_text|Pump 3|blue|262|85|10|middle|

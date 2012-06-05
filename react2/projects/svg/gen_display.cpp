@@ -265,7 +265,7 @@ static void gen_ajax_animation(FILE *js_fp)
   if (n_objs > 0)
   {
     fprintf(js_fp, 
-    "var react_update_hrf = \"http://\" + location.hostname + \"/helloworld/tag?");
+    "var react_update_hrf = \"http://\" + location.hostname + \"/react/tag?");
     for (int i=0; i < n_objs; i++)
     {
       fprintf(js_fp, "%s%s", i==0?"":"+", tags[i]);
@@ -304,8 +304,8 @@ static void gen_ajax_animation(FILE *js_fp)
       fprintf(js_fp, "]"); 
     }
     fprintf(js_fp, ");\n"); 
-    fprintf(js_fp, "var arg_update_hrf = \"http://\" + location.hostname + \"/helloworld/tag\" + location.search;\n");
-    fprintf(js_fp, "var arg_config_hrf = \"http://\" + location.hostname + \"/helloworld/config?\";\n");
+    fprintf(js_fp, "var arg_update_hrf = \"http://\" + location.hostname + \"/react/tag\" + location.search;\n");
+    fprintf(js_fp, "var arg_config_hrf = \"http://\" + location.hostname + \"/react/config?\";\n");
     fprintf(js_fp, "var arg_update_xReq;\n");
     fprintf(js_fp, "var arg_config_xReq;\n");
     fprintf(js_fp, "var arg_tags;\n"); 
@@ -316,7 +316,7 @@ static void gen_ajax_animation(FILE *js_fp)
   if (n_objs > 0)
   {
     fprintf(js_fp, 
-     "var react_config_hrf = \"http://\" + location.hostname + \"/helloworld/config?\";\n");
+     "var react_config_hrf = \"http://\" + location.hostname + \"/react/config?\";\n");
     fprintf(js_fp, "var update_xReq;\n");
     fprintf(js_fp, "var config_xReq;\n");
     fprintf(js_fp, "var n_cfg = 0;\n");
