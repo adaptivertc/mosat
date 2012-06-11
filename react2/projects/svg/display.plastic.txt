@@ -1,6 +1,6 @@
 svg_header|Plastic Factory|0|0|300|150|
 background|burlywood|
-bar|TEMP_1|blue|36|5|125|
+bar|TEMP_1|red|36|5|125|
 bar|LEVEL|blue|200|5|125|
 #rgauge|0|pump1_amp|blue|74|1|73|
 #rgauge|2|pump2_amp|darkorange|151|1|73|

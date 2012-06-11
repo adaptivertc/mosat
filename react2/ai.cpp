@@ -153,7 +153,7 @@ const char *ai_point_t::get_config_json(void)
 
   if (json_str == NULL)
   {
-     asprintf(&json_str, "{\"tag\":\"%s\",\"description\":\"%s\",\"eu\":\"%s\",\"driver\":%d,\"card\":%d,\"channel\":%d,\"eu_lo\":%lf,\"eu_hi\":%lf,\"raw_lo\":%lf,\"raw_hi\":%lf,\"decimal_places\":%d,\"zero_cutoff\":%lf,\"lo_alarm\":%lf,\"lo_caution\":%lf,\"hi_caution\":%lf,\"hi_alarm\":%lf,\"deadband\":%lf,\"lo_alarm_enable\":%s,\"lo_caution_enable\":%s,\"hi_caution_enable\":%s,\"hi_alarm_enable\":%s,\"scale_lo\":%lf, \"scale_hi\":%lf}",
+     asprintf(&json_str, "{\"tag\":\"%s\",\"description\":\"%s\",\"eu\":\"%s\",\"driver\":%d,\"card\":%d,\"channel\":%d,\"eu_lo\":%lf,\"eu_hi\":%lf,\"raw_lo\":%lf,\"raw_hi\":%lf,\"decimal_places\":%d,\"zero_cutoff\":%lf,\"lo_alarm\":%lf,\"lo_caution\":%lf,\"hi_caution\":%lf,\"hi_alarm\":%lf,\"deadband\":%lf,\"lo_alarm_enable\":%s,\"lo_caution_enable\":%s,\"hi_caution_enable\":%s,\"hi_alarm_enable\":%s,\"scale_lo\":%lf,\"scale_hi\":%lf}",
          this->tag, 
          this->description, 
          this->eu, 

@@ -1,5 +1,5 @@
 LogHome|./log/
 HtmlHome|./html/
 TemplateHome|./template/
-SampleRate|1|
+SampleRate|5|
 SMS_ENABLED|0|

@@ -16097,3 +16097,19 @@ Waiting for a connection!!
 In serve_cl(), sock_fd = 32, n = 2
 In react_t::serve_client(), sock_fd = 32, n = 2
 >>>>>>> .r499
+file opened
+In wait_conn()
+In react_t::wait_connections()
+Waiting for a connection!!
+New connection: 4
+Waiting for a connection!!
+In serve_cl(), sock_fd = 4, n = 1
+In react_t::serve_client(), sock_fd = 4, n = 1
+NOT a database point: TEMP_1
+New connection: 38
+Waiting for a connection!!
+In serve_cl(), sock_fd = 38, n = 2
+In react_t::serve_client(), sock_fd = 38, n = 2
+NOT a database point: TEMP_1
+NOT a database point: TEMP_1
+NOT a database point: TEMP_1

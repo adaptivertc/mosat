@@ -473,7 +473,7 @@ static void gen_ajax_animation(FILE *js_fp)
     fprintf(js_fp, "    arg_config_xReq.send(null);\n");
     fprintf(js_fp, "  }\n");
   }
-  fprintf(js_fp, "  var interval = setInterval(\"intervalHandler()\", 1000);\n");
+  fprintf(js_fp, "  var interval = setInterval(\"intervalHandler()\", 200);\n");
   fprintf(js_fp, "};\n");
   fprintf(js_fp, "\n");
   fprintf(js_fp, "// -- END insert AJAX animation code --\n");

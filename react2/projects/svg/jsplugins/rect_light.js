@@ -29,13 +29,13 @@ function rect_light_update_f(pv)
   {
     this.panel_obj.setAttribute("fill", this.on_color);
     if (this.pv_obj != null)
-    	this.pv_obj.textContent = this.lo_desc; 
+    	this.pv_obj.textContent = this.hi_desc; 
   }
   else 
   {
     this.panel_obj.setAttribute("fill", this.off_color);
     if (this.pv_obj != null)
-    	this.pv_obj.textContent = this.hi_desc; 
+    	this.pv_obj.textContent = this.lo_desc; 
   }
 }
 rect_light_t.prototype.update=rect_light_update_f;

@@ -91,7 +91,7 @@ const char *di_point_t::get_config_json(void)
   point_lock_t l(&this->point_lock, tag);
   if (json_str == NULL)
   {
-     asprintf(&json_str, "{\"tag\":\"%s\",\"description\":\"%s\",\"driver\":%d,\"card\":%d,\"channel\":%d, \"lo_desc\":\"%s\",\"hi_desc\":\"%s\", \"alarm_state\":\"%s\",\"shutdown_state\":\"%s\"}",
+     asprintf(&json_str, "{\"tag\":\"%s\",\"description\":\"%s\",\"driver\":%d,\"card\":%d,\"channel\":%d, \"lo_desc\":\"%s\",\"hi_desc\":\"%s\",\"alarm_state\":\"%s\",\"shutdown_state\":\"%s\"}",
          this->tag,
          this->description,
          this->driver,
