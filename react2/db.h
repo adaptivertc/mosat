@@ -129,8 +129,8 @@ public:
   int num_discrete_val;
   dcalc_point_t **d_calcs;
   int num_d_calc;
-  dcalc_t **dcalcs;
-  int num_dcalc;
+  //dcalc_t **dcalcs;
+  //int num_dcalc;
   int_t **ints;
   int num_int;
   pid_point_t **pid_points;

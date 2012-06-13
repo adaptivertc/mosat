@@ -197,33 +197,17 @@ void file_logger_t::stop(void)
 
 /*********************************************************************/
 
-void split_array(char *str, char *argv[],int  max)
-{
-
-} 
-
-/********************************************************************/
-
-int parse_json_array(char *json_string, char *argv[], int max)
-{
-  // Crude, very crude, no error checking, no skipping strings, etc.
-  // Works ONLY for no comnmas in strings, everything well formed.
-  ltrim(json_string);
-  rtrim(json_string);
-  if (json_string[0] == '[') json_string++;
-  int len = strlen(json_string);
-  if (json_string[len-1] == ']') json_string[len-1] = '\0';
-  ltrim(json_string);
-  rtrim(json_string);
-  return get_delim_args(json_string, argv, ',', max);
-}
-
-/*********************************************************************/
-
 void file_logger_t::init_values(void)
 {
+  char tmp[500];
   int argc;
-  char *argv[25];
+  char *argv[50];
+
+  rtrim(tags);
+  ltrim(tags);
+  safe_strcpy(tmp, (const char*) tags, sizeof(tmp));
+  argc = get_delim_args(tmp, argv, ',', 25);
+  this->num_points = argc;
 
   collecting = true;
   instantaneous_fp = rt_open_day_history_file(base_name, ".txt", ap_config.get_config("LogHome"), NULL);
@@ -236,10 +220,6 @@ void file_logger_t::init_values(void)
   {
     logfile->vprint("collection is on for %s\n", tag);
   }
-
- logfile->vprint("Parsing json string: %s\n", json_string);
-  argc = parse_json_array(json_string, argv, 25);
-  num_points = argc;
 
   analog_points = new analog_point_t *[num_points + 1];
 
@@ -287,91 +267,3 @@ void file_logger_t::init_values(void)
 }
 
 /*********************************************************************/
-
-file_logger_t **file_logger_t::read(int *cnt, const char *home_dir)
-{
-  int max_points = 50;
-  file_logger_t **logger_points =
-	(file_logger_t **) malloc((max_points + 1) * sizeof(file_logger_t*));
-  MALLOC_CHECK(logger_points);
-
-  *cnt = 0;
-  int count = 0;
-
-  char path[200];
-  safe_strcpy(path, home_dir, sizeof(path));
-  safe_strcat(path, "/dbfiles/file_logger.dat", sizeof(path));
-  FILE *fp = fopen(path, "r");
-  if (fp == NULL)
-  {
-    logfile->perror(path);
-    logfile->vprint("Can't open: %s\n", path);
-    return NULL;
-  }
-  char line[300];
-
-  for (int i=0; NULL != fgets(line, sizeof(line), fp); i++)
-  {
-    char tmp[300];
-    int argc;
-    char *argv[25];
-    ltrim(line);
-    rtrim(line);
-
-    safe_strcpy(tmp, (const char*) line, sizeof(tmp));
-    argc = get_delim_args(tmp, argv, '|', 25);
-    if (argc == 0)
-    {
-      continue;
-    }
-    else if (argv[0][0] == '#')
-    {
-      continue;
-    }
-    else if (argc < FL_MIN_ARGS)
-    {
-      logfile->vprint("%s: Wrong number of args (minimum %d), line %d\n", path, FL_MIN_ARGS, i+1);
-      continue;
-    }
-
-    logfile->vprint("%s\n", line);
-    file_logger_t *p = new file_logger_t;
-
-    safe_strcpy(p->tag, (const char*) argv[0], sizeof(p->tag));
-    safe_strcpy(p->description, (const char*) argv[1], sizeof(p->description));
-    safe_strcpy(p->base_name, (const char*) argv[2], sizeof(p->base_name));
-    p->sample_interval = atol(argv[3]);
-    p->n_days_of_history = atol(argv[4]);
-
-    p->instantaneous_enable = (argv[5][0] == '1');
-    p->hour_enable = (argv[6][0] == '1');
-    p->day_enable = (argv[7][0] == '1');
-    p->week_enable = (argv[8][0] == '1');
-    p->month_enable = (argv[9][0] == '1');
-
-    safe_strcpy(p->json_string, (const char*) argv[10], sizeof(p->json_string));
-
-    p->init_values();
-
-    logger_points[count] = p;
-    count++;
-    if (count >= max_points)
-    {
-      max_points += 25;
-      logger_points = (file_logger_t **) realloc(logger_points,
-		  max_points * sizeof(file_logger_t*));
-      MALLOC_CHECK(logger_points);
-    }
-  }
-
-  *cnt = count;
-  if (count == 0)
-  {
-    free(logger_points);
-    return NULL;
-  }
-  return logger_points;
-}
-
-/*************************************************************************/
-

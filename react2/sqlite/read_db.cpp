@@ -409,26 +409,6 @@ int main(int argc, char *argv[])
 
     /*--------*/
 
-  printf("---- Reading database 'dcalc' -------------\n");
-  cbdata.first = false;
-  cbdata.n = 0;
-  cbdata.nf = 7;
-  retval = sqlite3_exec(sqdb, "select * from 'dcalc';",
-             my_callback, &cbdata, &errmsg);
-  if (retval != SQLITE_OK)
-  {
-    printf("Can not execute query, error = %d\n", retval);
-    if (errmsg != NULL)
-    {
-      printf("errmsg: %s\n", errmsg);
-      sqlite3_free(errmsg);
-    }
-    sqlite3_close(sqdb);
-    return 0;
-  }
-
-    /*--------*/
-
   printf("---- Reading database 'calc' -------------\n");
   cbdata.first = false;
   cbdata.n = 0;

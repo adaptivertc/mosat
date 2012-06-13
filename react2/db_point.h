@@ -306,7 +306,6 @@ public:
   void set_conversion(void);
   point_type_t point_type(void) {return ANALOG_INPUT;};
   static ai_point_t **read(int *cnt, const char * home_dir);
-  static db_point_t *read_one(int argc, char *argv[], char *err, int esz);
   static ai_point_t *create_one(int argc, char *argv[], char *err, int esz);
   //static ai_point_t **read(int *cnt, char *home_dir);
   void init_values(void);
@@ -341,7 +340,6 @@ public:
   void sendit(double val);
   void update(void);
   point_type_t point_type(void) {return ANALOG_OUTPUT;};
-  static ao_point_t *read_one(int argc, char *argv[], char *err, int esz);
   static ao_point_t **read(int *cnt, const char * home_dir);
   static ao_point_t *create_one(int argc, char *argv[], char *err, int esz);
   void init_values(void);
@@ -446,6 +444,8 @@ class discrete_update_point_t : public discrete_point_t
 public:
   discrete_value_t shutdown_state;
   discrete_value_t alarm_state;
+  char shutdown_state_str[5];
+  char alarm_state_str[5];
   void check_alarms(void);
   discrete_update_point_t(void);
 };
@@ -465,25 +465,6 @@ public:
   point_type_t point_type(void) {return DISCRETE_INPUT;};
   static di_point_t **read(int *cnt, const char * home_dir);
   static di_point_t *create_one(int argc, char *argv[], char *err, int esz);
-  void init_values(void);
-};
-
-class dcalc_t : public discrete_update_point_t
-{
-public:
-  bool pv_last;
-  int update_time_stamp;
-  int last_update_time_stamp;
-  //char calc[200];
-  char json_string[100];
-  int n_dpoints;
-  discrete_point_t *dpoints[30];
-public:
-  void update(void);
-  bool eval_expr(void);
-  point_type_t point_type(void) {return DCALC_POINT;};
-  static dcalc_t **read(int *cnt, const char * home_dir);
-  static dcalc_t *create_one(int argc, char *argv[], char *err, int esz);
   void init_values(void);
 };
 
@@ -540,11 +521,10 @@ class calc_point_t : public analog_update_point_t
 public:
   void init_values(void);
   analog_expr_t expression;
-  char *expr_string;
+  char expr_string[300];
   void update(void);
   void parse_expr(void);
   point_type_t point_type(void) {return CALC_POINT;};
-  static calc_point_t *read_one(int argc, char *argv[], char *err, int esz);
   static calc_point_t **read(int *cnt, const char * home_dir);
   static calc_point_t *create_one(int argc, char *argv[], char *err, int esz);
 };
@@ -554,7 +534,7 @@ class dcalc_point_t : public discrete_update_point_t
 public:
   void init_values(void);
   discrete_expr_t expression;
-  char *expr_string;
+  char expr_string[300];
   void evaluate(void);
   void parse_expr(void);
   point_type_t point_type(void) {return DCALC_POINT;};
@@ -575,6 +555,7 @@ public:
   bool collecting;
   int count;
   double **data;
+  char tags[200];
   void update(void);
 /*#SCRIPT_FUNCTION#*/
   void start(void);
@@ -607,7 +588,7 @@ public:
   bool month_enable;
   FILE *instantaneous_fp;
   FILE *hour_fp;
-  char json_string[100];
+  char tags[200];
   void update(void);
 /*#SCRIPT_FUNCTION#*/
   void start(void);
@@ -653,7 +634,7 @@ public:
   char base_name[50];
   int num_points;
   bool log_hour_totals;
-  char json_string[200];
+  char tags[300];
   discrete_point_t **discrete_points;
   bool *log_rising;
   bool *log_falling;
@@ -686,7 +667,7 @@ private:
   bool collecting;
   int count;
   float **data;
-  char json_string[100];
+  char tags[300];
 public:
   void update(void){};
 /*#SCRIPT_FUNCTION#*/
@@ -743,7 +724,6 @@ public:
 /*#SCRIPT_FUNCTION#*/
   void set(double aval) {pv = aval;};
   point_type_t point_type(void) {return ANALOG_VALUE_POINT;};
-  static analog_value_point_t *read_one(int argc, char *argv[], char *err, int esz);
   static analog_value_point_t **read(int *cnt, const char * home_dir);
   static analog_value_point_t *create_one(int argc, char *argv[], char *err, int esz);
 };
@@ -758,7 +738,6 @@ public:
 /*#SCRIPT_FUNCTION#*/
   void set(bool aval) {pv = aval;};
   point_type_t point_type(void) {return DISCRETE_VALUE_POINT;};
-  static discrete_value_point_t *read_one(int argc, char *argv[], char *err, int esz);
   static discrete_value_point_t **read(int *cnt, const char * home_dir);
   static discrete_value_point_t *create_one(int argc, char *argv[], char *err, int esz);
   void init_values(void);
@@ -774,7 +753,6 @@ public:
 /*#SCRIPT_FUNCTION#*/
   void set(int aval) {pv = aval;};
   point_type_t point_type(void) {return DISCRETE_VALUE_POINT;};
-  static int_value_point_t *read_one(int argc, char *argv[], char *err, int esz);
   static int_value_point_t **read(int *cnt, const char * home_dir);
   static int_value_point_t *create_one(int argc, char *argv[], char *err, int esz);
   void init_values(void);
@@ -805,7 +783,6 @@ public:
   void start(void);
   void update(void);
   point_type_t point_type(void) {return TIMER_POINT;};
-  static timer_point_t *read_one(int argc, char *argv[], char *err, int esz);
   static timer_point_t **read(int *cnt, const char * home_dir);
   static timer_point_t *create_one(int argc, char *argv[], char *err, int esz);
   void init_values(void);
@@ -1068,8 +1045,6 @@ class script_trigger_t : public discrete_point_t
   bool last_state;
 
 public:
-  static db_point_t *read_one(int argc, char *argv[], char *err, int esz);
-
   point_type_t point_type(void) {return SCRIPT_TRIGGER;};
 
   void update(void);

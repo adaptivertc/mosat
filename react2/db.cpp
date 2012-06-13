@@ -173,10 +173,12 @@ void react_t::print_all_points(void)
   {
     logfile->vprint("DiscreteCalc: %s\n", d_calcs[i]->get_tag());
   }
+  /**
   for (int i=0; i < num_dcalc; i++)
   {
     logfile->vprint("DCalc: %s\n", dcalcs[i]->get_tag());
   }
+  **/
   for (int i=0; i < num_timer; i++)
   {
     logfile->vprint("Timer: %s\n", timers[i]->get_tag());
@@ -441,10 +443,12 @@ void react_t::read_inputs(void)
     d_calcs[i]->update();
     d_calcs[i]->evaluate();
   }
+  /**
   for (int i=0; i < num_dcalc; i++)
   {
     dcalcs[i]->update();
   }
+  **/
   taa[j].stop();
 
   for (int i=0; i < num_timer; i++)
@@ -650,8 +654,8 @@ react_t::react_t()
   di_points = NULL;
   num_do = 0;
   do_points = NULL;
-  num_dcalc = 0;
-  dcalcs = NULL;
+  //num_dcalc = 0;
+  //dcalcs = NULL;
   num_timer = 0;
   timers = NULL;
   num_analog_val = 0;
@@ -980,12 +984,14 @@ void react_t::read_all_points(const char *a_home_dir)
   }
   logfile->vprint("%d discrete calcs read\n", num_d_calc);
 
+  /**
   logfile->vprint("Reading dcalc ........\n");
   dcalcs = dcalc_t::read(&num_dcalc, a_home_dir);
   for (int i=0; i < num_dcalc; i++)
   {
     index_db_point(dcalcs[i]);
   }
+  **/
 
   logfile->vprint("Reading timer ........\n");
   timers = timer_point_t::read(&num_timer, a_home_dir);
@@ -1208,6 +1214,7 @@ void react_t::fill_shared_memory(void)
                    sizeof(dinfo.ddata[k].description));
     k++;
   }
+  /**
   for (int i=0; i < num_dcalc; i++)
   {
     safe_strcpy(dinfo.ddata[k].tag, dcalcs[i]->get_tag(),
@@ -1216,6 +1223,7 @@ void react_t::fill_shared_memory(void)
                    sizeof(dinfo.ddata[k].description));
     k++;
   }
+  **/
 }
 
 /**********************************************************************/
@@ -1254,6 +1262,7 @@ void react_t::update_shared_memory(void)
     dinfo.ddata[k].state = do_points[i]->get_point_state();
     k++;
   }
+  /**
   for (int i=0; i < num_dcalc; i++)
   {
     safe_strcpy(dinfo.ddata[k].pv, dcalcs[i]->pv_string,
@@ -1261,6 +1270,7 @@ void react_t::update_shared_memory(void)
     dinfo.ddata[k].state = dcalcs[i]->get_point_state();
     k++;
   }
+  **/
 }
 
 /**********************************************************************/
@@ -1271,7 +1281,7 @@ void react_t::init_shared_memory(void)
   int shmsize = sizeof(display_info_t) + (sizeof(display_info_t) % 8);
   int analog_offset = shmsize;
   int n_analog = num_ai + num_ao;
-  int n_discrete = num_di + num_do + num_dcalc;
+  int n_discrete = num_di + num_do;// + num_dcalc;
   shmsize +=
         (n_analog * sizeof(analog_display_data_t)) +
        ((n_analog * sizeof(analog_display_data_t)) % 8);

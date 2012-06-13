@@ -1,77 +1,68 @@
-Thu Oct 13 12:46:29 2011
-React PID: 26298
+Wed Jun 13 16:48:57 2012
+React PID: 13097
 SampleRate set to: 0.200000
-Loading db point factory from: ./ai.so
-Reading AI ........
-PUMP3_AMP|BOMBA 3|amps|0|0|3|0.0|50.0|6400|32000|3|-12.50|0|0|0|0|0|0|0|0|0|
-PUMP2_AMP|BOMBA 2|amps|0|0|4|0.0|50.0|6400|32000|3|-12.50|0|0|0|0|0|0|0|0|0|
-PUMP1_AMP|BOMBA 1|amps|0|0|5|0.0|50.0|6400|32000|3|-12.50|0|0|0|0|0|0|0|0|0|
-LEVEL|NIVEL|cm|0|0|2|500.0|0.0|6400|32000|1|-5000.0|0|0|0|0|0|0|0|0|0|
-HUM_1|Relative Humidity 1|%|0|0|1|0.0|100.0|0.0|100.0|1|0.0|0|0|0|0|0|0|0|0|0|
-HUM_2|Relative Humidity 2|%|0|0|3|0.0|100.0|0.0|100.0|1|0.0|0|0|0|0|0|0|0|0|0|
-Temp|Temperature|%|0|0|5|0.0|100.0|0.0|100.0|1|0.0|0|0|0|0|0|0|0|0|0|
-minutes|Minutes from Midnight|min|0|0|12|0.0|100.0|0.0|100.0|1|0.0|0|0|0|0|0|0|0|0|0|
+Reading ai ........
+PUMP3_AMP|BOMBA 3|amps|0|0|3|0.0|50.0|6400|32000|3|-12.50|0|0|0|0|0|0|0|0|0|0|50|
+PUMP2_AMP|BOMBA 2|amps|0|0|4|0.0|50.0|6400|32000|3|-12.50|0|0|0|0|0|0|0|0|0|0|50|
+PUMP1_AMP|BOMBA 1|amps|0|0|5|0.0|50.0|6400|32000|3|-12.50|0|0|0|0|0|0|0|0|0|0|50|
+LEVEL|NIVEL|cm|0|0|2|500.0|0.0|6400|32000|1|-5000.0|0|0|0|0|0|0|0|0|0|0|500|
+HUM_1|Relative Humidity 1|%|0|0|1|0.0|100.0|0.0|100.0|1|0.0|0|0|0|0|0|0|0|0|0|0|100|
+HUM_2|Relative Humidity 2|%|0|0|3|0.0|100.0|0.0|100.0|1|0.0|0|0|0|0|0|0|0|0|0|0|100|
+Temp|Temperature|%|0|0|5|0.0|100.0|0.0|100.0|1|0.0|0|0|0|0|0|0|0|0|0|0|50|
+minutes|Minutes from Midnight|min|0|0|12|0.0|100.0|0.0|100.0|1|0.0|0|0|0|0|0|0|0|0|0|0|1000|
 Reading ao ........
-AO_0|Motor Control|%|0|0|0|0|10|0|10|1|0|500|
-AO_8|Motor Control|%|0|0|8|0|10|0|10|1|0|500|
-AO_16|Motor Control|%|0|0|16|0|10|0|10|1|0|500|
-AO_24|Motor Control|%|0|0|24|0|10|0|10|1|0|500|
-AO_32|Motor Control|%|0|0|32|0|10|0|10|1|0|500|
+AO_0|Motor Control|%|0|0|0|0|10|0|10|1|0|500|0|100|
+AO_8|Motor Control|%|0|0|8|0|10|0|10|1|0|500|0|100|
+AO_16|Motor Control|%|0|0|16|0|10|0|10|1|0|500|0|100|
+AO_24|Motor Control|%|0|0|24|0|10|0|10|1|0|500|0|100|
+AO_32|Motor Control|%|0|0|32|0|10|0|10|1|0|500|0|100|
 Reading di ........
-LO_LEVEL|Nivel Bajo|0|0|0|BELOW|ABOVE|H|N|
-HI_LEVEL|Nivel Alto|0|0|1|BELOW|ABOVE|H|N|
-HI_HI_LEVEL|Nivel Muy Alto|0|0|2|BELOW|ABOVE|H|N|
-ULT_SON_ALM|Nivel Muy Alto|0|0|3|OK|ALARM|H|N|
-CFE_SUPPLY|Falla de alimentacion CFE|0|0|4|ALARM|OK|H|N|
-MIXER|Mescladora ON|0|0|5|ON|OFF|H|N|
-VPUMP2_ON|Bomba V2 ON|0|0|6|ON|OFF|H|N|
-VPUMP1_ON|Bomba V1 ON|0|0|7|ON|OFF|H|N|
-PUMP1_ON|Bomba 1 ON|0|0|8|ON|OFF|H|N|
-PUMP2_ON|Bomba 2 ON|0|0|9|ON|OFF|H|N|
-PUMP3_ON|Bomba 3 ON|0|0|10|ON|OFF|H|N|
-COM_FAILED|Communications Failed|0|0|16|ON|OFF|N|N|
-MOD_ID_1_OK|Mod error 1|0|0|81|OK|FAIL|N|N|
-MOD_ID_2_OK|Mod error 1|0|0|82|OK|FAIL|N|N|
-MOD_ID_3_OK|Mod error 1|0|0|83|OK|FAIL|N|N|
-MOD_ID_4_OK|Mod error 1|0|0|84|OK|FAIL|N|N|
-MOD_ID_5_OK|Mod error 1|0|0|85|OK|FAIL|N|N|
+LO_LEVEL|Nivel Bajo|0|0|0|BELOW|ABOVE|H|N|0|
+HI_LEVEL|Nivel Alto|0|0|1|BELOW|ABOVE|H|N|0|
+HI_HI_LEVEL|Nivel Muy Alto|0|0|2|BELOW|ABOVE|H|N|0|
+ULT_SON_ALM|Nivel Muy Alto|0|0|3|OK|ALARM|H|N|0|
+CFE_SUPPLY|Falla de alimentacion CFE|0|0|4|ALARM|OK|H|N|0|
+MIXER|Mescladora ON|0|0|5|ON|OFF|H|N|0|
+VPUMP2_ON|Bomba V2 ON|0|0|6|ON|OFF|H|N|0|
+VPUMP1_ON|Bomba V1 ON|0|0|7|ON|OFF|H|N|0|
+PUMP1_ON|Bomba 1 ON|0|0|8|ON|OFF|H|N|0|
+PUMP2_ON|Bomba 2 ON|0|0|9|ON|OFF|H|N|0|
+PUMP3_ON|Bomba 3 ON|0|0|10|ON|OFF|H|N|0|
+COM_FAILED|Communications Failed|0|0|16|ON|OFF|N|N|0|
+MOD_ID_1_OK|Mod error 1|0|0|81|OK|FAIL|N|N|0|
+MOD_ID_2_OK|Mod error 1|0|0|82|OK|FAIL|N|N|0|
+MOD_ID_3_OK|Mod error 1|0|0|83|OK|FAIL|N|N|0|
+MOD_ID_4_OK|Mod error 1|0|0|84|OK|FAIL|N|N|0|
+MOD_ID_5_OK|Mod error 1|0|0|85|OK|FAIL|N|N|0|
 Reading do ........
-DO_0|Bomba 1|0|0|0|Off|On|
-DO_8|Bomba 2|0|0|8|Off|On|
-DO_16|Bomba 3|0|0|16|Off|On|
-DO_24|Bomba 3|0|0|24|Off|On|
-DO_32|VBomba 1|0|0|32|Off|On|
-DO|VBomba 2|0|0|8|Off|On|
-XPUMP1_DO|Bomba 1|0|0|1|Off|On|
-XPUMP2_DO|Bomba 2|0|0|3|Off|On|
-XPUMP3_DO|Bomba 3|0|0|5|Off|On|
-XVPUMP1_DO|VBomba 1|0|0|7|Off|On|
-XVPUMP2_DO|VBomba 2|0|0|9|Off|On|
-YPUMP1_DO|Bomba 1|0|0|12|Off|On|
-YPUMP2_DO|Bomba 2|0|0|13|Off|On|
-YPUMP3_DO|Bomba 3|0|0|14|Off|On|
-YVPUMP1_DO|VBomba 1|0|0|15|Off|On|
+DO_0|Bomba 1|0|0|0|Off|On|0|
+DO_8|Bomba 2|0|0|8|Off|On|0|
+DO_16|Bomba 3|0|0|16|Off|On|0|
+DO_24|Bomba 3|0|0|24|Off|On|0|
+DO_32|VBomba 1|0|0|32|Off|On|0|
+DO|VBomba 2|0|0|8|Off|On|0|
+XPUMP1_DO|Bomba 1|0|0|1|Off|On|0|
+XPUMP2_DO|Bomba 2|0|0|3|Off|On|0|
+XPUMP3_DO|Bomba 3|0|0|5|Off|On|0|
+XVPUMP1_DO|VBomba 1|0|0|7|Off|On|0|
+XVPUMP2_DO|VBomba 2|0|0|9|Off|On|0|
+YPUMP1_DO|Bomba 1|0|0|12|Off|On|0|
+YPUMP2_DO|Bomba 2|0|0|13|Off|On|0|
+YPUMP3_DO|Bomba 3|0|0|14|Off|On|0|
+YVPUMP1_DO|VBomba 1|0|0|15|Off|On|0|
 Reading pci ........
-PCI|Pulse Count 1|RPM|0|0|0|0.0083333333|20|65535|60.0|5|0|10|20|80|90|5|1|1|1|1|
-PCI[0].tag = 'PCI'
+PCI|Pulse Count 1|RPM|0|0|0|0.0083333333|20|65535|60.0|5|0|10|20|80|90|5|1|1|1|1|0|200|
 Reading calc ........
-CALC1|Calculation 1|Dogs|TEMP_COLD_AC1 + (2.0 * exp(1.0))|1|10|20|80|90|5|0|0|0|0|
-Expression: TEMP_COLD_AC1 + (2.0 * exp(1.0))
+CALC1|Calculation 1|Dogs|TEMP_COLD_AC1 + (2.0 * exp(1.0))|1|10|20|80|90|5|0|0|0|0|0|100|
 Reading discrete calc ........
 Dcalc1|Discrete Calc 1|(TEMP_COLD_AC1 < 0.0) or (TEMP_HOT_AC1 > 200)|Alarm|ok|N|N|
-Expression: (TEMP_COLD_AC1 < 0.0) or (TEMP_HOT_AC1 > 200)
 1 discrete calcs read
-Reading dcalc ........
-HaveAlarm|One Alarm is active|Normal|Alarm|H|N|[di01,di02,di03,di04,di05,di06,di07,di08,di09,di10,di11,di12]|
-Discrete points: Bad discrete point: [di01,di02,di03,di04,di05,di06,di07,di08,di09,di1
-
 Reading timer ........
-Timer1|My Timer|sec|1|T|
-
+Timer1|My Timer|sec|1|T|0|100|
 num_timer = 1
 Reading analog values ........
-aval1|analog val 1|dogs|1|0.0|
-aval2|analog val 2|cats|1|0.0|
+aval1|analog val 1|dogs|1|0.0|0|100|
+aval2|analog val 2|cats|1|0.0|0|100|
 num analog values = 2
 Reading discrete values ........
 dval1|discrete val 1|Lo|Hi|T|
@@ -82,33 +73,34 @@ STATE1|State of inputs|LO_LEVEL|HI_LEVEL|HI_HI_LEVEL|
 Discrete points: LO_LEVEL HI_LEVEL HI_HI_LEVEL 
 tag: STATE1
 Reading pid ........
-pid1|My PID point|RPM|1|500.0|0.0|0.2|0.8|0.05|AI0|AO0|0.0|0.0|0.0|0|0|0|
 pid1 - bad TAGNAME: AI0
 pid1 - bad TAGNAME: AO0
+pid1|My PID point|RPM|1|500.0|0.0|0.2|0.8|0.05|AI0|AO0|0.0|0.0|0.0|0|0|0|0|100|
+Reading remote pid ........
 Reading pump ........
-PUMP1|First Pump|PUMP1_ON|PUMP1_AMP|LEVEL|10|30|1.0|
 PUMP1: Min: 10.000000, Max 30.000000, Delay 1.000000
-PUMP2|Second Pump|PUMP2_ON|PUMP2_AMP|LEVEL|10|30|1.0|
+PUMP1|First Pump|PUMP1_ON|PUMP1_AMP|LEVEL|10|30|1.0|
 PUMP2: Min: 10.000000, Max 30.000000, Delay 1.000000
-PUMP3|Third Pump|PUMP3_ON|PUMP3_AMP|LEVEL|10|30|1.0|
+PUMP2|Second Pump|PUMP2_ON|PUMP2_AMP|LEVEL|10|30|1.0|
 PUMP3: Min: 10.000000, Max 30.000000, Delay 1.000000
+PUMP3|Third Pump|PUMP3_ON|PUMP3_AMP|LEVEL|10|30|1.0|
 Reading ac ........
-AC1|First AC Unit|TEMP_COLD_AC1|TEMP_HOT_AC1|ON_AC1|SHUTOFF_AC1|90|
 AC1 - bad analog input point: TEMP_COLD_AC1
 AC1 - bad analog input point: TEMP_HOT_AC1
 AC1 - bad discrete input point: ON_AC1
 AC1 - bad discrete output point: SHUTOFF_AC1
+AC1|First AC Unit|TEMP_COLD_AC1|TEMP_HOT_AC1|ON_AC1|SHUTOFF_AC1|90|
 Reading level ........
 LEVEL1|Level Point Atemajac|LO_LEVEL|HI_LEVEL|LEVEL|3.0|
 Reading data ........
-Data1|My Data|dout1|25|[PUMP1_AMP,PUMP2_AMP,PUMP3_AMP,LEVEL]|
 MaxSamples = 5 MaxTime = 25
-Bad analog point: [PUMP1_AMP,PUMP2_AMP,PUMP3_AMP,LEVEL]
 allocating space for  5 samples
+allocating space for  5 samples
+allocating space for  5 samples
+allocating space for  5 samples
+Data1|My Data|dout1|25|PUMP1_AMP,PUMP2_AMP,PUMP3_AMP,LEVEL|
 Reading file logger ........
-silo_logger_1|My temp logger|silo_logger|300|5|1|1|0|0|0|[HUM_1,HUM_2,TEMP,MINUTES]|
 collection is on for silo_logger_1
-Parsing json string: [HUM_1,HUM_2,TEMP,MINUTES]
 Tag = HUM_1
 analog point 0: HUM_1
 Tag = HUM_2
@@ -117,45 +109,53 @@ Tag = TEMP
 analog point 2: TEMP
 Tag = MINUTES
 analog point 3: MINUTES
+silo_logger_1|My temp logger|silo_logger|300|5|1|1|0|0|0|HUM_1,HUM_2,TEMP,MINUTES|
 Reading web logger ........
 .//dbfiles/web_logger.dat: No such file or directory
 Can't open: .//dbfiles/web_logger.dat
 Reading discrete logger ........
-Line: dlogger_1|My dlogger|silo_d_logger|1|[["PUMP1_ON","B"],["PUMP2_ON","B"],["LO_LEVEL","F"],["HI_HI_LEVEL","R"],["HI_LEVEL","B"]]|
-.//dbfiles/discrete_logger.dat: Wrong number of args (minimum 5), line 1
-Line: #dlogger_1|My dlogger|silo_d_logger|1|[{PUMP1_ON:B},{PUMP2_ON:B},{LO_LEVEL:F},{HI_HI_LEVEL:R},{HI_LEVEL:B}]|
-Line: #dlogger_1|My dlogger|dlogger|1|PUMP1_ON|B|PUMP2_ON|B|LO_LEVEL|F|HI_HI_LEVEL|R|HI_LEVEL|B|
-Line: #    Tag
-Line: #    Description
-Line: #    Base File Name (actual name is base + YYYYMMDD) (can include path)
-Line: #    Log hour totals? (T/F)
-Line: #    Tag 1
-Line: #    Log Rising, Falling, or Both? (R/F/B)
-Line: #    Tag 2
-Line: #    Log Rising, Falling, or Both? (R/F/B)
-Line: #    . . . .
-Line: #    Tag N
-Line: #    Log Rising, Falling, or Both? (R/F/B)
+Logging hour totals
+collection is on for dlogger_1
+tags: PUMP1_ON,B,PUMP2_ON,B,LO_LEVEL,F,HI_HI_LEVEL,R,HI_LEVEL,B
+tags: PUMP1_ON,B,PUMP2_ON,B,LO_LEVEL,F,HI_HI_LEVEL,R,HI_LEVEL,B
+tag[0]: PUMP1_ON
+type[0]: B
+discrete point [0]: PUMP1_ON, both rising and falling
+tag[1]: PUMP2_ON
+type[1]: B
+discrete point [1]: PUMP2_ON, both rising and falling
+tag[2]: LO_LEVEL
+type[2]: F
+discrete point [2]: LO_LEVEL, falling only
+tag[3]: HI_HI_LEVEL
+type[3]: R
+discrete point [3]: HI_HI_LEVEL, rising only
+tag[4]: HI_LEVEL
+type[4]: B
+discrete point [4]: HI_LEVEL, both rising and falling
+dlogger_1|My dlogger|silo_d_logger|1|PUMP1_ON,B,PUMP2_ON,B,LO_LEVEL,F,HI_HI_LEVEL,R,HI_LEVEL,B|
 Reading scan ........
-scan1|My Scan|sout1|10|[AO0,AI0,AI1]|
-Bad analog point: [AO0,AI0,AI1]
+scan1|My Scan|sout1|10|AO0,AI0,AI1|
 Reading web points ........
-general_web|general|1.0|general.html|general.html|
     Adding Discrete value: MOD_ID_1_OK,  strings: NO Yes!!
     Adding Discrete value: MOD_ID_2_OK,  strings: NO Yes!!
     Adding Discrete value: MOD_ID_3_OK,  strings: NO Yes!!
     Adding Discrete value: MOD_ID_4_OK,  strings: NO Yes!!
     Adding Discrete value: MOD_ID_5_OK,  strings: NO Yes!!
+general_web|general|1.0|general.html|general.html|
 Parsing 1 Analog Expressions ......
 CALC1 Parsing "TEMP_COLD_AC1 + (2.0 * exp(1.0))"
 Analog Calc CALC1: Bad Expression: "TEMP_COLD_AC1 + (2.0 * exp(1.0))", Point does not exist: TEMP_COLD_AC1
 Parsing 1 Discrete Expressions ......
+Dcalc1 Parsing Expression: (TEMP_COLD_AC1 < 0.0) or (TEMP_HOT_AC1 > 200)
 Discrete calc Dcalc1: Bad Expression: (TEMP_COLD_AC1 < 0.0) or (TEMP_HOT_AC1 > 200)
+Creating thread to wait on connections . . . 
 -- Reading background scripts: .//dbfiles/background.dat
 Loading iodrivers from: .//dbfiles/drivers.dat
-./drivers/modbusdrv/libreactmodbusdrv.so|new_reactmodbus||/dev/ttyUSB0:57600:1:1|
-Loading iodriver from: ./drivers/modbusdrv/libreactmodbusdrv.so
-Class factory function is: new_reactmodbus
-Creating new reactmodbus iodriver
----- initializing modbus /dev/ttyUSB0:57600:1:1 ---------------------------
-Using ip passed to driver: /dev/ttyUSB0:57600:1:1
+./drivers/sim_pump_low/libsimpumpdrv.so|new_simpumpdrv|||
+Loading iodriver from: ./drivers/sim_pump_low/libsimpumpdrv.so
+In react_t::wait_connections()
+react_t::wait_connections(), bind error: 
+Class factory function is: new_simpumpdrv
+Wed Jun 13 16:48:57 2012
+No foreground script executing, use "kill -1 13097" or <CTRL-C> to stop

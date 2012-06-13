@@ -29,6 +29,8 @@ struct gen_names_t
   const char *obj_type;
   const char *field_file_name;
   const char *data_file_name;
+  const char *base_name;
+  const char *relative_name;
   db_field_t *dbfs[500];
   int nf;
 };
@@ -529,6 +531,7 @@ void gen_create_one_field_to_obj(FILE *fp_out, db_field_t *dbf, int argn)
       fprintf(fp_out, "  snprintf(objp->%s, sizeof(objp->%s), \"%%s\", argv[%d]);\n", dbf->name, dbf->name, argn);
       break;
     case RT_SELECT:
+      fprintf(fp_out, "  snprintf(objp->%s, sizeof(objp->%s), \"%%s\", argv[%d]);\n", dbf->name, dbf->name, argn);
       break;
     case RT_ARRAY:
       break;
@@ -569,13 +572,13 @@ void gen_create_read_file_to_obj(FILE *fp_out, gen_names_t *gnames)
   //fprintf(fp_out, " safe_strcpy(path, home_dir, sizeof(path));\n");
   //fprintf(fp_out, " safe_strcat(path, \"/dbfiles/%s\", sizeof(path));\n",
    //   gnames->data_file_name);
-  fprintf(fp_out, " snprintf(path, sizeof(path), \"%%s/%s\", home_dir);\n", gnames->data_file_name);
+  fprintf(fp_out, " snprintf(path, sizeof(path), \"%%s/%s\", home_dir);\n", gnames->relative_name);
 
   fprintf(fp_out, " FILE *fp = fopen(path, \"r\");\n");
   fprintf(fp_out, " if (fp == NULL)\n");
   fprintf(fp_out, " {\n");
   fprintf(fp_out, "   logfile->perror(path);\n");
-  fprintf(fp_out, "   logfile->vprint(\"Can't open %%s\", path);\n");
+  fprintf(fp_out, "   logfile->vprint(\"Can't open %%s\\n\", path);\n");
   fprintf(fp_out, "   return NULL;\n");
   fprintf(fp_out, " }\n");
 
@@ -663,6 +666,8 @@ void gen_create_fields_to_obj(FILE *fp_out, gen_names_t *gnames)
   {
     gen_create_one_field_to_obj(fp_out, gnames->dbfs[i], i);
   }
+
+  fprintf(fp_out, "  objp->init_values();\n");
   fprintf(fp_out, "  return objp;\n");
   fprintf(fp_out, "}\n");
 }
@@ -911,8 +916,10 @@ int main(int argc, char *argv[])
   DIR *dir;
   struct dirent *dent;
   char base_name[100];
+  char relative_name[100];
   char config_name[100];
   char dat_name[100];
+  char base_dat_name[100];
   struct gen_names_t gnames;
 
   if (argc < 2)
@@ -947,7 +954,7 @@ int main(int argc, char *argv[])
     exit(0);
   }
 
-  const char *out_obj = "out_obj.cpp";
+  const char *out_obj = "read_fns.cpp";
   FILE *fp_out_obj = fopen(out_obj, "w");
   if (fp_out_obj == NULL)
   {
@@ -981,6 +988,7 @@ int main(int argc, char *argv[])
                     dir_name, dent->d_name);
       snprintf(base_name, sizeof(base_name), "%s", dent->d_name);
       base_name[len-7] = '\0';
+      snprintf(relative_name, sizeof(relative_name), "/dbfiles/%s.dat", base_name);
       snprintf(dat_name, sizeof(dat_name), "%s/%s.dat", 
                     dir_name, base_name);
       printf("%s\n", base_name); 
@@ -988,6 +996,8 @@ int main(int argc, char *argv[])
       printf("%s\n", dat_name); 
       gnames.field_file_name = config_name;
       gnames.data_file_name = dat_name;
+      gnames.base_name = base_name;
+      gnames.relative_name = relative_name;
       gen_for_one_config(fp_out, fp_main, &gnames);
       printf("Calling gen_create_fields_to_obj()\n"); 
       gen_create_fields_to_obj(fp_out_obj, &gnames);

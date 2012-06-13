@@ -172,179 +172,83 @@ void pump_point_t::update(void)
   
 }
 
-/***************************/
-
-pump_point_t *pump_point_t::create_one(int argc, char *argv[], char *err, int esz)
-{
-  pump_point_t *objp;
-  objp = new pump_point_t;
-  if (objp == NULL)
-  {
-    perror("new pump_point_t");
-    return NULL;
-  }
-  safe_strcpy(objp->tag, (const char*) argv[0], sizeof(objp->tag));
-  safe_strcpy(objp->description, (const char*) argv[1], sizeof(objp->description));
-  safe_strcpy(objp->pump_on_tag, (const char*) argv[2], sizeof(objp->pump_on_tag));
-  safe_strcpy(objp->amps_tag, (const char*) argv[3], sizeof(objp->amps_tag));
-  safe_strcpy(objp->level_tag, (const char*) argv[4], sizeof(objp->level_tag));
-  objp->min_amps = atof(argv[5]);
-  objp->max_amps = atof(argv[6]);
-  objp->delay = atof(argv[7]);
-  return objp;
-}
-
 /********************************************************************/
 
 void pump_point_t::init_values(void)
 {
+  db_point_t *db_point;
+  rtrim(this->pump_on_tag);
+  db_point = db->get_db_point(this->pump_on_tag);
+  printf("tagb = %s, db_point = %p\n", this->pump_on_tag, db_point); 
+  if ((db_point == NULL) || (db_point->point_type() != DISCRETE_INPUT))
+  {
+    this->di_point = NULL;
+    logfile->vprint("%s - bad discrete input point: %s\n", this->tag, this->pump_on_tag);
+  }
+  else
+  {
+    this->di_point = (di_point_t *) db_point;
+  }
+
+  rtrim(this->amps_tag);
+  db_point = db->get_db_point(this->amps_tag);
+  if ((db_point == NULL) || (db_point->point_type() != ANALOG_INPUT))
+  {
+    this->ai_point = NULL;
+    logfile->vprint("%s - bad analog input point (amps): %s\n", this->tag, this->amps_tag);
+  }
+  else
+  {
+    this->ai_point = (ai_point_t *) db_point;
+  }
+
+  rtrim(this->level_tag);
+  db_point = db->get_db_point(this->level_tag);
+  if ((db_point == NULL) || (db_point->point_type() != ANALOG_INPUT))
+  {
+    this->ai_point = NULL;
+    logfile->vprint("%s - bad analog input point (level): %s\n", this->tag, this->level_tag);
+  }
+  else
+  {
+    this->level_ai_point = (ai_point_t *) db_point;
+  }
+
+  logfile->vprint("%s: Min: %lf, Max %lf, Delay %lf\n", 
+         this->tag, this->min_amps, this->max_amps, this->delay);
+
+  this->last_state_at_change = true;
+  this->last_change_time = time(NULL);
+  this->last_current = 0.0;
+  this->change_started = false;
+  this->this_hour = this->this_day = time(NULL);
+  this->hour_total_amps = 0.0;
+  this->hour_num_on_readings = 0;
+  this->hour_num_off_reading = 0;
+  this->day_total_amps = 0.0;
+  this->day_num_on_readings = 0;
+  this->day_num_off_reading = 0;
+
+  const char *html_home = ap_config.get_config("htmlhome");
+  if (html_home == NULL)
+  {
+    logfile->vprint("Warning: htmlhome variable not set\n");
+    snprintf(plog_home, sizeof(plog_home), "./log/");
+  }
+  else
+  {
+    snprintf(plog_home, sizeof(plog_home), "%s/", html_home);
+  }
+
+  if (pump_fp == NULL)
+  {
+    pump_fp = rt_open_day_history_file(NULL, "_log.txt", plog_home, NULL);
+  }
+
+  char tbuf[50];
+  snprintf(tbuf, sizeof(tbuf), "_%s.txt", this->tag);
+  this->history_fp = rt_open_day_history_file(NULL, tbuf, plog_home, NULL);
 }
 
 /********************************************************************/
-
-pump_point_t **pump_point_t::read(int *cnt, const char *home_dir)
-{
-  /* Read the pump point from the database. */
-  db_point_t *db_point;
-
-  int max_points = 20;
-  pump_point_t **pump_points =
-	(pump_point_t **) malloc(max_points * sizeof(pump_point_t*));
-  MALLOC_CHECK(pump_points);
-
-  int count = 0;
-
-
-  char path[200];
-  safe_strcpy(path, home_dir, sizeof(path));
-  safe_strcat(path, "/dbfiles/pump.dat", sizeof(path));
-  FILE *fp = fopen(path, "r");
-  if (fp == NULL)
-  {
-    logfile->perror(path);
-    logfile->vprint("Can't open %s\n", path);
-    *cnt = 0;
-    return NULL;
-  }
-  char line[300];
-
-//const char *html_home = ap_config.get_config("htmlhome");
-
-  for (int i=0; NULL != fgets(line, sizeof(line), fp); i++)
-  {
-    char tmp[300];
-    int argc;
-    char *argv[25];
-    ltrim(line);
-    rtrim(line);
-
-    safe_strcpy(tmp, (const char*)line, sizeof(tmp));
-    argc = get_delim_args(tmp, argv, '|', 25);
-    if (argc == 0)
-    {
-      continue;
-    }
-    else if (argv[0][0] == '#')
-    {
-      continue;
-    }
-    else if (argc != 8)
-    {
-      logfile->vprint("%s: Wrong number of args, line %d\n", path, i+1);
-      continue;
-    }
-    logfile->vprint("%s\n", line);
-
-    char err[20];
-    pump_point_t *pmp = pump_point_t::create_one(argc, argv, err, sizeof(err));
-
-    rtrim(pmp->pump_on_tag);
-
-    db_point = db->get_db_point(pmp->pump_on_tag);
-    printf("tagb = %s, db_point = %p\n", pmp->pump_on_tag, db_point); 
-    if ((db_point == NULL) || (db_point->point_type() != DISCRETE_INPUT))
-    {
-      pmp->di_point = NULL;
-      logfile->vprint("%s - bad discrete input point: %s\n", pmp->tag, pmp->pump_on_tag);
-    }
-    else
-    {
-      pmp->di_point = (di_point_t *) db_point;
-    }
-
-    rtrim(pmp->amps_tag);
-    db_point = db->get_db_point(pmp->amps_tag);
-    if ((db_point == NULL) || (db_point->point_type() != ANALOG_INPUT))
-    {
-      pmp->ai_point = NULL;
-      logfile->vprint("%s - bad analog input point (amps): %s\n", pmp->tag, pmp->amps_tag);
-    }
-    else
-    {
-      pmp->ai_point = (ai_point_t *) db_point;
-    }
-
-    rtrim(pmp->level_tag);
-    db_point = db->get_db_point(pmp->level_tag);
-    if ((db_point == NULL) || (db_point->point_type() != ANALOG_INPUT))
-    {
-      pmp->ai_point = NULL;
-      logfile->vprint("%s - bad analog input point (level): %s\n", pmp->tag, pmp->level_tag);
-    }
-    else
-    {
-      pmp->level_ai_point = (ai_point_t *) db_point;
-    }
-
-    logfile->vprint("%s: Min: %lf, Max %lf, Delay %lf\n", 
-           pmp->tag, pmp->min_amps, pmp->max_amps, pmp->delay);
-
-    pmp->last_state_at_change = true;
-    pmp->last_change_time = time(NULL);
-    pmp->last_current = 0.0;
-    pmp->change_started = false;
-    pmp->this_hour = pmp->this_day = time(NULL);
-    pmp->hour_total_amps = 0.0;
-    pmp->hour_num_on_readings = 0;
-    pmp->hour_num_off_reading = 0;
-    pmp->day_total_amps = 0.0;
-    pmp->day_num_on_readings = 0;
-    pmp->day_num_off_reading = 0;
-
-    const char *html_home = ap_config.get_config("htmlhome");
-    if (html_home == NULL)
-    {
-      logfile->vprint("Warning: htmlhome variable not set\n");
-      snprintf(plog_home, sizeof(plog_home), "./log/");
-    }
-    else
-    {
-      snprintf(plog_home, sizeof(plog_home), "%s/", html_home);
-    }
-
-    if (pump_fp == NULL)
-    {
-      pump_fp = rt_open_day_history_file(NULL, "_log.txt", plog_home, NULL);
-    }
-
-    char tbuf[50];
-    snprintf(tbuf, sizeof(tbuf), "_%s.txt", pmp->tag);
-    pmp->history_fp = rt_open_day_history_file(NULL, tbuf, plog_home, NULL);
-    
-    pump_points[count] = pmp;
-    count++;
-    if (count >= max_points)
-    {
-      max_points += 10;
-      pump_points = (pump_point_t **) realloc(pump_points,
-	       max_points * sizeof(pump_point_t*));
-      MALLOC_CHECK(pump_points);
-    }
-  }
-
-  *cnt = count;
-  return pump_points;
-}
-
-/******************************************************************/
 

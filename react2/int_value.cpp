@@ -40,7 +40,7 @@ Member functions for int value points.
 
 /************************************************************************/
 
-int_value_point_t *int_value_point_t::read_one(int argc, char *argv[], char *err, int esz)
+int_value_point_t *int_value_point_t::create_one(int argc, char *argv[], char *err, int esz)
 {
   if (argc != 3)
   {
@@ -126,7 +126,7 @@ int_value_point_t **int_value_point_t::read(int *cnt, const char *home_dir)
     }
 
     char errbuf[100];
-    int_values[count] = int_value_point_t::read_one(argc, argv, errbuf, sizeof(errbuf));
+    int_values[count] = int_value_point_t::create_one(argc, argv, errbuf, sizeof(errbuf));
     if (int_values[count] == NULL)
     {
       logfile->vprint("%s:%d %s\n", path, i+1, errbuf);

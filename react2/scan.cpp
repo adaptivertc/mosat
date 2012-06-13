@@ -103,128 +103,44 @@ void scan_point_t::scan(void)
 
 void scan_point_t::init_values(void)
 {
+  char tmp[500];
+  int argc;
+  char *argv[50];
+
+  rtrim(tags);
+  ltrim(tags);
+  safe_strcpy(tmp, (const char*) tags, sizeof(tmp));
+  argc = get_delim_args(tmp, argv, ',', 25);
+  this->num_points = argc;
+
+  this->analog_points = new analog_point_t *[this->num_points];
+  //(analog_point_t **) malloc(this->num_points * sizeof(analog_point_t*));
+  this->data = new float *[this->num_points];
+  // Ok, the first is for the time of each scan.
+  this->data[0] = new float[this->max_samples];
+  MALLOC_CHECK(this->data);
+
+  for (int j=4; j < argc; j++)
+  {
+    char temp_tag[50];
+    db_point_t *db_point;
+    safe_strcpy(temp_tag, (const char *) argv[j], sizeof(temp_tag));
+    rtrim(temp_tag);
+    db_point = db->get_db_point(temp_tag);
+    if ((db_point == NULL) || (db_point->pv_type() != ANALOG_VALUE))
+    {
+      this->analog_points[j-4] = NULL;
+      logfile->vprint("Bad analog point: %s\n", temp_tag);
+    }
+    else
+    {
+      this->analog_points[j-4] = (analog_point_t *) db_point;
+    }
+    this->data[j-3] = new float[this->max_samples];
+    MALLOC_CHECK(this->data[j-3]);
+  }
+  this->count = 0;
+  this->pv = false;
 }
 
 /**********************************************************************/
-
-scan_point_t **scan_point_t::read(int *cnt, const char *home_dir)
-{
-  int max_points = 50;
-  scan_point_t **scan_points =
-	(scan_point_t **) malloc(max_points * sizeof(scan_point_t*));
-  MALLOC_CHECK(scan_points);
-
-  *cnt = 0;
-  int count = 0;
-
-  char path[200];
-  safe_strcpy(path, home_dir, sizeof(path));
-  safe_strcat(path, "/dbfiles/scan.dat", sizeof(path));
-  FILE *fp = fopen(path, "r");
-  if (fp == NULL)
-  {
-    logfile->perror(path);
-    logfile->vprint("Can't open: %s\n", path);
-    return NULL;
-  }
-  char line[300];
-
-  for (int i=0; NULL != fgets(line, sizeof(line), fp); i++)
-  {
-    char tmp[300];
-    int argc;
-    char *argv[25];
-    //DI1|Discrete Input 1|0|0|1|HI|LO|N|N|
-    ltrim(line);
-    rtrim(line);
-
-    safe_strcpy(tmp, (const char *) line, sizeof(tmp));
-    argc = get_delim_args(tmp, argv, '|', 25);
-    if (argc == 0)
-    {
-      continue;
-    }
-    else if (argv[0][0] == '#')
-    {
-      continue;
-    }
-    else if (argc < 5)
-    {
-      logfile->vprint("%s: Wrong number of args, line %d", path, i+1);
-      continue;
-    }
-
-    logfile->vprint("%s\n", line);
-    scan_point_t *p = new scan_point_t;
-
-    /*****
-    Tag
-    Description
-    File Name
-    Max Time
-    Tag 1
-    Tag 2
-    . . .
-    Tag N
-    ******/
-
-    safe_strcpy(p->tag, (const char *) argv[0], sizeof(p->tag));
-    safe_strcpy(p->description, (const char *) argv[1], sizeof(p->description));
-    safe_strcpy(p->file_name, (const char *) argv[2], sizeof(p->file_name));
-    p->max_samples = atol(argv[3]);
-    p->num_points = argc - 4;
-
-    p->analog_points = new analog_point_t *[p->num_points];
-    //(analog_point_t **) malloc(p->num_points * sizeof(analog_point_t*));
-    p->data = new float *[p->num_points];
-    // Ok, the first is for the time of each scan.
-    p->data[0] = new float[p->max_samples];
-    MALLOC_CHECK(p->data);
-
-    for (int j=4; j < argc; j++)
-    {
-      char temp_tag[50];
-      db_point_t *db_point;
-      safe_strcpy(temp_tag, (const char *) argv[j], sizeof(temp_tag));
-      rtrim(temp_tag);
-      db_point = db->get_db_point(temp_tag);
-      if ((db_point == NULL) || (db_point->pv_type() != ANALOG_VALUE))
-      {
-        p->analog_points[j-4] = NULL;
-        logfile->vprint("Bad analog point: %s\n", temp_tag);
-      }
-      else
-      {
-        p->analog_points[j-4] = (analog_point_t *) db_point;
-      }
-      p->data[j-3] = new float[p->max_samples];
-      MALLOC_CHECK(p->data[j-3]);
-    }
-
-
-    p->count = 0;
-    p->pv = false;
-
-    scan_points[count] = p;
-    count++;
-    if (count >= max_points)
-    {
-      max_points += 25;
-      scan_points = (scan_point_t **) realloc(scan_points,
-		  max_points * sizeof(scan_point_t*));
-      MALLOC_CHECK(scan_points);
-    }
-  }
-
-  if (count == 0)
-  {
-    free(scan_points);
-    return NULL;
-  }
-  *cnt = count;
-  return scan_points;
-
-}
-
-/*************************************************************************/
-

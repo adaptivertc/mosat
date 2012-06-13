@@ -306,146 +306,97 @@ double ac_point_t::get_cold_average(void)
 /********************************************************************/
 void ac_point_t::init_values(void)
 {
-}
-
-/********************************************************************/
-
-ac_point_t **ac_point_t::read(int *cnt, const char *home_dir)
-{
-  /* Read the ac point from the database. */
-  db_point_t *db_point;
-
-  int max_points = 20;
-  ac_point_t **ac_points =
-	(ac_point_t **) malloc(max_points * sizeof(ac_point_t*));
-  MALLOC_CHECK(ac_points);
-
-  int count = 0;
-
-  char path[200];
-  safe_strcpy(path, home_dir, sizeof(path));
-  safe_strcat(path, "/dbfiles/ac.dat", sizeof(path));
-  FILE *fp = fopen(path, "r");
-  if (fp == NULL)
-  {
-    logfile->perror(path);
-    logfile->vprint("Can't open %s\n", path);
-    *cnt = 0;
-    return NULL;
-  }
-  char line[300];
-
-  for (int i=0; NULL != fgets(line, sizeof(line), fp); i++)
-  {
-    char tmp[300];
-    int argc;
-    char *argv[25];
-    ltrim(line);
-    rtrim(line);
-
-    safe_strcpy(tmp, (const char*)line, sizeof(tmp));
-    argc = get_delim_args(tmp, argv, '|', 25);
-    if (argc == 0)
-    {
-      continue;
-    }
-    else if (argv[0][0] == '#')
-    {
-      continue;
-    }
-    else if (argc != 7)
-    {
-      logfile->vprint("%s: Wrong number of args, line %d\n", path, i+1);
-      continue;
-    }
-    logfile->vprint("%s\n", line);
-    ac_point_t *ac = new ac_point_t;
-
-    safe_strcpy(ac->tag, (const char*) argv[0], sizeof(ac->tag));
-    safe_strcpy(ac->description, (const char*) argv[1], sizeof(ac->description));
-
+/**
+string|Tag|tag|25|
+string|Description|description|50|
+string|Cold Temperature (AI)|cold_temp_tag|25|
+string|Hot Temperature (AI)|hot_temp_tag|25|
+string|AC Unit is On (DI)|unit_running_tag|25|
+string|Diaable (shut off) AC Unit (DO)|unit_disable_tag|25|
+double|Delay before checking performance|delay|
+ **/
+    db_point_t *db_point;
     char temp_tag[30];
 
-    safe_strcpy(temp_tag, (const char*) argv[2], sizeof(temp_tag));
+    safe_strcpy(temp_tag, (const char*) cold_temp_tag, sizeof(temp_tag));
     rtrim(temp_tag);
     db_point = db->get_db_point(temp_tag);
     if ((db_point == NULL) || (db_point->point_type() != ANALOG_INPUT))
     {
-      ac->cold_temp_point = NULL;
-      logfile->vprint("%s - bad analog input point: %s\n", ac->tag, temp_tag);
+      this->cold_temp_point = NULL;
+      logfile->vprint("%s - bad analog input point: %s\n", this->tag, temp_tag);
     }
     else
     {
-      ac->cold_temp_point = (ai_point_t *) db_point;
+      this->cold_temp_point = (ai_point_t *) db_point;
     }
 
-    safe_strcpy(temp_tag, (const char*) argv[3], sizeof(temp_tag));
+    safe_strcpy(temp_tag, (const char*) hot_temp_tag, sizeof(temp_tag));
     rtrim(temp_tag);
     db_point = db->get_db_point(temp_tag);
     if ((db_point == NULL) || (db_point->point_type() != ANALOG_INPUT))
     {
-      ac->hot_temp_point = NULL;
-      logfile->vprint("%s - bad analog input point: %s\n", ac->tag, temp_tag);
+      this->hot_temp_point = NULL;
+      logfile->vprint("%s - bad analog input point: %s\n", this->tag, temp_tag);
     }
     else
     {
-      ac->hot_temp_point = (ai_point_t *) db_point;
+      this->hot_temp_point = (ai_point_t *) db_point;
     }
 
-    safe_strcpy(temp_tag, (const char*) argv[4], sizeof(temp_tag));
+    safe_strcpy(temp_tag, (const char*) unit_running_tag, sizeof(temp_tag));
     rtrim(temp_tag);
     db_point = db->get_db_point(temp_tag);
     if ((db_point == NULL) || (db_point->point_type() != DISCRETE_INPUT))
     {
-      ac->unit_running_point = NULL;
-      logfile->vprint("%s - bad discrete input point: %s\n", ac->tag, temp_tag);
+      this->unit_running_point = NULL;
+      logfile->vprint("%s - bad discrete input point: %s\n", this->tag, temp_tag);
     }
     else
     {
-      ac->unit_running_point = (di_point_t *) db_point;
+      this->unit_running_point = (di_point_t *) db_point;
     }
 
-    safe_strcpy(temp_tag, (const char*) argv[5], sizeof(temp_tag));
+    safe_strcpy(temp_tag, (const char*) unit_disable_tag, sizeof(temp_tag));
     rtrim(temp_tag);
     db_point = db->get_db_point(temp_tag);
     if ((db_point == NULL) || (db_point->point_type() != DISCRETE_OUTPUT))
     {
-      ac->unit_disable_point = NULL;
-      logfile->vprint("%s - bad discrete output point: %s\n", ac->tag, temp_tag);
+      this->unit_disable_point = NULL;
+      logfile->vprint("%s - bad discrete output point: %s\n", this->tag, temp_tag);
     }
     else
     {
-      ac->unit_disable_point = (do_point_t *) db_point;
+      this->unit_disable_point = (do_point_t *) db_point;
     }
-    ac->delay = atof(argv[6]);
 
-    ac->last_state_at_change = true;
-    ac->last_change_time = time(NULL);
-    ac->last_current = 0.0;
-    ac->change_started = false;
-    ac->this_hour = ac->this_day = time(NULL);
+    this->last_state_at_change = true;
+    this->last_change_time = time(NULL);
+    this->last_current = 0.0;
+    this->change_started = false;
+    this->this_hour = this->this_day = time(NULL);
 
-    ac->hour_num_on_readings = 0;
-    ac->hour_num_off_readings = 0;
-    ac->hour_num_temp_readings = 0;
+    this->hour_num_on_readings = 0;
+    this->hour_num_off_readings = 0;
+    this->hour_num_temp_readings = 0;
 
-    ac->hour_total_cold = 0.0;
-    ac->hour_total_hot = 0.0;
+    this->hour_total_cold = 0.0;
+    this->hour_total_hot = 0.0;
 
-    ac->day_num_on_readings = 0;
-    ac->day_num_off_readings = 0;
-    ac->day_num_temp_readings = 0;
+    this->day_num_on_readings = 0;
+    this->day_num_off_readings = 0;
+    this->day_num_temp_readings = 0;
 
-    ac->day_total_cold = 0.0;
-    ac->day_total_hot = 0.0;
+    this->day_total_cold = 0.0;
+    this->day_total_hot = 0.0;
 
-    ac->cold_detected = false;
-    ac->cold_alarm = false;
-    ac->cold_detect_time = 0;
+    this->cold_detected = false;
+    this->cold_alarm = false;
+    this->cold_detect_time = 0;
 
-    ac->small_diference_dectected = false;
-    ac->diff_alarm = false;
-    ac->small_difference_detect_time = 0;
+    this->small_diference_dectected = false;
+    this->diff_alarm = false;
+    this->small_difference_detect_time = 0;
 
     const char *html_home = ap_config.get_config("htmlhome");
     if (html_home == NULL)
@@ -464,23 +415,8 @@ ac_point_t **ac_point_t::read(int *cnt, const char *home_dir)
     }
 
     char tbuf[50];
-    snprintf(tbuf, sizeof(tbuf), "_%s.txt", ac->tag);
-    ac->history_fp = rt_open_day_history_file(NULL, tbuf, ac_log_home, NULL);
-    
-    ac_points[count] = ac;
-    count++;
-    if (count >= max_points)
-    {
-      max_points += 10;
-      ac_points = (ac_point_t **) realloc(ac_points,
-	       max_points * sizeof(ac_point_t*));
-      MALLOC_CHECK(ac_points);
-    }
-  }
-
-  *cnt = count;
-  return ac_points;
+    snprintf(tbuf, sizeof(tbuf), "_%s.txt", this->tag);
+    this->history_fp = rt_open_day_history_file(NULL, tbuf, ac_log_home, NULL);
 }
-
 /******************************************************************/
 

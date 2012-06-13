@@ -113,144 +113,81 @@ void level_point_t::update(void)
 
 void level_point_t::init_values(void)
 {
+/**
+table|Level|level|level_point_t|
+separator|Basic Configuration|
+string|Tag|tag|25|
+string|Description|description|50|
+string|DI Tag High|di_hi_tag|25|
+string|DI Tag Low|di_lo_tag|25|
+string|AI Tag Level|level_tag|25|
+double|Volume Low to High|volume_lo_hi|
+**/
+
+  char temp_tag[30];
+  db_point_t *db_point;
+
+  safe_strcpy(temp_tag, (const char*) this->di_lo_tag, sizeof(temp_tag));
+  rtrim(temp_tag);
+  db_point = db->get_db_point(temp_tag);
+  if ((db_point == NULL) || (db_point->point_type() != DISCRETE_INPUT))
+  {
+    this->di_lo = NULL;
+    logfile->vprint("%s - bad discrete input point: %s\n", this->tag, temp_tag);
+  }
+  else
+  {
+    this->di_lo = (di_point_t *) db_point;
+  }
+
+  safe_strcpy(temp_tag, (const char*) this->di_hi_tag, sizeof(temp_tag));
+  rtrim(temp_tag);
+  db_point = db->get_db_point(temp_tag);
+  if ((db_point == NULL) || (db_point->point_type() != DISCRETE_INPUT))
+  {
+    this->di_hi = NULL;
+    logfile->vprint("%s - bad discrete input point: %s\n", this->tag, temp_tag);
+  }
+  else
+  {
+    this->di_hi = (di_point_t *) db_point;
+  }
+
+  safe_strcpy(temp_tag, (const char*) level_tag, sizeof(temp_tag));
+  rtrim(temp_tag);
+  db_point = db->get_db_point(temp_tag);
+  if ((db_point == NULL) || (db_point->point_type() != ANALOG_INPUT))
+  {
+    this->level_point = NULL;
+    logfile->vprint("%s - bad analog input point: %s\n", this->tag, temp_tag);
+  }
+  else
+  {
+    this->level_point = (ai_point_t *) db_point;
+  }
+
+  this->total_hour_fill_rates = 0.0;
+  this->total_hour_samples = 0;
+  this->total_day_fill_rates = 0.0;
+  this->total_day_samples = 0;
+  this->pumping = true;
+  this->this_hour = this->this_day = time(NULL);
+  this->time_at_bottom = time(NULL);
+
+  const char *html_home = ap_config.get_config("htmlhome");
+  if (html_home == NULL)
+  {
+    logfile->vprint("Warning: htmlhome variable not set\n");
+    snprintf(plog_home, sizeof(plog_home), "./log/");
+  }
+  else
+  {
+    snprintf(plog_home, sizeof(plog_home), "%s/atemajac/", html_home);
+  }
+
+  this->level_fp = rt_open_day_history_file(NULL, "_agua.txt", plog_home, NULL);
+
 }
 
 /********************************************************************/
-
-level_point_t **level_point_t::read(int *cnt, const char *home_dir)
-{
-  /* Read the level point from the database. */
-  db_point_t *db_point;
-
-  int max_points = 20;
-  level_point_t **level_points =
-	(level_point_t **) malloc(max_points * sizeof(level_point_t*));
-  MALLOC_CHECK(level_points);
-
-  int count = 0;
-
-  char path[200];
-  safe_strcpy(path, home_dir, sizeof(path));
-  safe_strcat(path, "/dbfiles/level.dat", sizeof(path));
-  FILE *fp = fopen(path, "r");
-  if (fp == NULL)
-  {
-    logfile->perror(path);
-    logfile->vprint("Can't open %s\n", path);
-    *cnt = 0;
-    return NULL;
-  }
-  char line[300];
-
-//const char *html_home = ap_config.get_config("htmlhome");
-
-  for (int i=0; NULL != fgets(line, sizeof(line), fp); i++)
-  {
-    char tmp[300];
-    int argc;
-    char *argv[25];
-    ltrim(line);
-    rtrim(line);
-
-    safe_strcpy(tmp, (const char*)line, sizeof(tmp));
-    argc = get_delim_args(tmp, argv, '|', 25);
-    if (argc == 0)
-    {
-      continue;
-    }
-    else if (argv[0][0] == '#')
-    {
-      continue;
-    }
-    else if (argc != 6)
-    {
-      logfile->vprint("%s: Wrong number of args, line %d\n", path, i+1);
-      continue;
-    }
-    logfile->vprint("%s\n", line);
-    level_point_t *lvl = new level_point_t;
-
-    safe_strcpy(lvl->tag, (const char*) argv[0], sizeof(lvl->tag));
-    safe_strcpy(lvl->description, (const char*) argv[1], sizeof(lvl->description));
-
-    char temp_tag[30];
-
-    safe_strcpy(temp_tag, (const char*) argv[2], sizeof(temp_tag));
-    rtrim(temp_tag);
-    db_point = db->get_db_point(temp_tag);
-    if ((db_point == NULL) || (db_point->point_type() != DISCRETE_INPUT))
-    {
-      lvl->di_lo = NULL;
-      logfile->vprint("%s - bad discrete input point: %s\n", lvl->tag, temp_tag);
-    }
-    else
-    {
-      lvl->di_lo = (di_point_t *) db_point;
-    }
-
-    safe_strcpy(temp_tag, (const char*) argv[3], sizeof(temp_tag));
-    rtrim(temp_tag);
-    db_point = db->get_db_point(temp_tag);
-    if ((db_point == NULL) || (db_point->point_type() != DISCRETE_INPUT))
-    {
-      lvl->di_hi = NULL;
-      logfile->vprint("%s - bad discrete input point: %s\n", lvl->tag, temp_tag);
-    }
-    else
-    {
-      lvl->di_hi = (di_point_t *) db_point;
-    }
-
-    safe_strcpy(temp_tag, (const char*) argv[4], sizeof(temp_tag));
-    rtrim(temp_tag);
-    db_point = db->get_db_point(temp_tag);
-    if ((db_point == NULL) || (db_point->point_type() != ANALOG_INPUT))
-    {
-      lvl->level_point = NULL;
-      logfile->vprint("%s - bad analog input point: %s\n", lvl->tag, temp_tag);
-    }
-    else
-    {
-      lvl->level_point = (ai_point_t *) db_point;
-    }
-
-    lvl->volume_lo_hi = atof(argv[5]);
-
-    lvl->total_hour_fill_rates = 0.0;
-    lvl->total_hour_samples = 0;
-    lvl->total_day_fill_rates = 0.0;
-    lvl->total_day_samples = 0;
-    lvl->pumping = true;
-    lvl->this_hour = lvl->this_day = time(NULL);
-    lvl->time_at_bottom = time(NULL);
- 
-    const char *html_home = ap_config.get_config("htmlhome");
-    if (html_home == NULL)
-    {
-      logfile->vprint("Warning: htmlhome variable not set\n");
-      snprintf(plog_home, sizeof(plog_home), "./log/");
-    }
-    else
-    {
-      snprintf(plog_home, sizeof(plog_home), "%s/atemajac/", html_home);
-    }
-
-    lvl->level_fp = rt_open_day_history_file(NULL, "_agua.txt", plog_home, NULL);
-
-    level_points[count] = lvl;
-    count++;
-    if (count >= max_points)
-    {
-      max_points += 10;
-      level_points = (level_point_t **) realloc(level_points,
-	       max_points * sizeof(level_point_t*));
-      MALLOC_CHECK(level_points);
-    }
-  }
-
-  *cnt = count;
-  return level_points;
-}
-
-/******************************************************************/
 

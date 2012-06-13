@@ -5,7 +5,7 @@ RTCOMMON=../../librtcommon/librtcommon.a
 
 CPP=g++ -g -Wall
 
-all: main gen_sqlite react_def.db read_dat insert_scripts read_script out_obj.o
+all: main gen_sqlite react_def.db read_dat insert_scripts read_script read_fns.o
 
 main: main.cpp 
 	$(CPP) -o main -lsqlite3 main.cpp
@@ -13,7 +13,7 @@ main: main.cpp
 gen_sqlite: gen_sqlite.cpp
 	$(CPP) -o gen_sqlite gen_sqlite.cpp $(RTCOMMON) 
 
-outmain.cpp write_one_fns.cpp out_obj.cpp: gen_sqlite
+outmain.cpp write_one_fns.cpp read_fns.cpp: gen_sqlite
 	./gen_sqlite ../dbfiles/
 
 read_dat: read_dat.cpp
@@ -32,8 +32,8 @@ read_script: read_script.cpp
 gen_react_db: write_one_fns.cpp outmain.cpp insert_from_dat.cpp
 	$(CPP) -o gen_react_db write_one_fns.cpp outmain.cpp insert_from_dat.cpp -lsqlite3 $(RTCOMMON)
 
-out_obj.o: out_obj.cpp
-	$(CPP) -c -o out_obj.o out_obj.cpp
+read_fns.o: read_fns.cpp
+	$(CPP) -c -o read_fns.o read_fns.cpp
 
 clean: 
-	rm -fv main gen_sqlite out_di out_ai out_di.cpp out_ai.cpp read_dat react_def.db write_one_fns.cpp outmain.cpp out_obj.cpp insert_scripts read_script gen_react_db
+	rm -fv main gen_sqlite out_di out_ai out_di.cpp out_ai.cpp read_dat react_def.db write_one_fns.cpp outmain.cpp read_fns.cpp insert_scripts read_script gen_react_db
