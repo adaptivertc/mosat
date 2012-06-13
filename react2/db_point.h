@@ -305,6 +305,7 @@ public:
   void set_conversion(double rl, double rh, double eul, double euh);
   void set_conversion(void);
   point_type_t point_type(void) {return ANALOG_INPUT;};
+  static ai_point_t **read(int *cnt, const char * home_dir);
   static db_point_t *read_one(int argc, char *argv[], char *err, int esz);
   static ai_point_t *create_one(int argc, char *argv[], char *err, int esz);
   //static ai_point_t **read(int *cnt, char *home_dir);
@@ -970,7 +971,7 @@ public:
   point_type_t point_type(void) {return LEVEL_POINT;};
   void update(void);
   static level_point_t **read(int *cnt, const char * home_dir);
-  level_point_t *create_one(int argc, char *argv[], char *err, int esz);
+  static level_point_t *create_one(int argc, char *argv[], char *err, int esz);
   void init_values(void);
 };
 

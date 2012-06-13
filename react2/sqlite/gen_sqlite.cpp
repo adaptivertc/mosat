@@ -261,7 +261,8 @@ void gen_read_dat(FILE *fp_out, gen_names_t *gnames)
   fprintf(fp_out, "    int argc;\n");
   fprintf(fp_out, "    char *argv[25];\n");
   fprintf(fp_out, "    char tmp[300];\n");
-  fprintf(fp_out, "    safe_strcpy(tmp, line, sizeof(tmp));\n");
+  //fprintf(fp_out, "    safe_strcpy(tmp, line, sizeof(tmp));\n");
+  fprintf(fp_out, "    snprintf(tmp, sizeof(tmp), \"%%s\", line);\n");
   fprintf(fp_out, "    argc = get_delim_args(tmp, argv, '|', 25);\n");
   fprintf(fp_out, "    if (argc == 0)\n");
   fprintf(fp_out, "    {\n");
@@ -504,6 +505,7 @@ void  gen_field_header(FILE *fp_out, const char *exe_name)
   fprintf(fp_out, "#include \"rtcommon.h\"\n");
   fprintf(fp_out, "#include \"arg.h\"\n");
   fprintf(fp_out, "#include \"db_point.h\"\n");
+  fprintf(fp_out, "#include \"logfile.h\"\n");
 }
 
 /**********************************************************************/
@@ -524,7 +526,7 @@ void gen_create_one_field_to_obj(FILE *fp_out, db_field_t *dbf, int argn)
       fprintf(fp_out, "             (argv[%d][0] == 't');\n", argn);
       break;
     case RT_STRING:
-      fprintf(fp_out, "  safe_strcpy(objp->%s, (const char*) argv[%d], sizeof(objp->%s));\n", dbf->name, argn, dbf->name);
+      fprintf(fp_out, "  snprintf(objp->%s, sizeof(objp->%s), \"%%s\", argv[%d]);\n", dbf->name, dbf->name, argn);
       break;
     case RT_SELECT:
       break;
@@ -547,7 +549,93 @@ struct db_field_t
 */
 
 /**********************************************************************/
+void gen_create_read_file_to_obj(FILE *fp_out, gen_names_t *gnames)
+{
+  //ao_point_t **ao_point_t::read(int *cnt, const char *home_dir)
+  fprintf(fp_out, "%s **%s::read(int *cnt, const char *home_dir)\n", 
+       gnames->obj_type, gnames->obj_type);
+  fprintf(fp_out, "{\n");
+  fprintf(fp_out, " int max_points = 100;\n");
+  fprintf(fp_out, " %s **dbps =\n",
+       gnames->obj_type);
+  fprintf(fp_out, " (%s **) malloc(max_points * sizeof(%s*));\n",
+       gnames->obj_type, gnames->obj_type);
+  fprintf(fp_out, " MALLOC_CHECK(dbps);\n");
+  fprintf(fp_out, " *cnt = 0;\n");
+  fprintf(fp_out, " int count = 0;\n");
 
+
+  fprintf(fp_out, " char path[500];\n");
+  //fprintf(fp_out, " safe_strcpy(path, home_dir, sizeof(path));\n");
+  //fprintf(fp_out, " safe_strcat(path, \"/dbfiles/%s\", sizeof(path));\n",
+   //   gnames->data_file_name);
+  fprintf(fp_out, " snprintf(path, sizeof(path), \"%%s/%s\", home_dir);\n", gnames->data_file_name);
+
+  fprintf(fp_out, " FILE *fp = fopen(path, \"r\");\n");
+  fprintf(fp_out, " if (fp == NULL)\n");
+  fprintf(fp_out, " {\n");
+  fprintf(fp_out, "   logfile->perror(path);\n");
+  fprintf(fp_out, "   logfile->vprint(\"Can't open %%s\", path);\n");
+  fprintf(fp_out, "   return NULL;\n");
+  fprintf(fp_out, " }\n");
+
+  fprintf(fp_out, " char line[500];\n");
+  fprintf(fp_out, " for (int i=0; NULL != fgets(line, sizeof(line), fp); i++)\n");
+  fprintf(fp_out, " {\n");
+  fprintf(fp_out, "   char tmp[500];\n");
+  fprintf(fp_out, "   int argc;\n");
+  fprintf(fp_out, "   char *argv[50];\n");
+  fprintf(fp_out, "   ltrim(line);\n");
+  fprintf(fp_out, "   rtrim(line);\n");
+  //fprintf(fp_out, "   safe_strcpy(tmp, (const char*) line, sizeof(tmp));\n");
+  fprintf(fp_out, "   snprintf(tmp, sizeof(tmp), \"%%s\", line);\n");
+  fprintf(fp_out, "   argc = get_delim_args(tmp, argv, '|', 50);\n");
+  fprintf(fp_out, "   if (argc == 0)\n");
+  fprintf(fp_out, "   {\n");
+  fprintf(fp_out, "     continue;\n");
+  fprintf(fp_out, "   }\n");
+  fprintf(fp_out, "   else if (argv[0][0] == '#')\n");
+  fprintf(fp_out, "   {\n");
+  fprintf(fp_out, "     continue;\n");
+  fprintf(fp_out, "   }\n");
+
+  fprintf(fp_out, "   if (count >= max_points)\n");
+  fprintf(fp_out, "   {\n");
+  fprintf(fp_out, "     max_points += 50;\n");
+  fprintf(fp_out, "     int new_size = max_points * sizeof(%s*);\n",
+       gnames->obj_type);
+  fprintf(fp_out, "     logfile->vprint(\"Reallocating: new size = %%d\\n\", new_size);\n");
+  fprintf(fp_out, "     dbps = (%s **) realloc(dbps, new_size);\n",
+       gnames->obj_type);
+  fprintf(fp_out, "     MALLOC_CHECK(dbps);\n");
+  fprintf(fp_out, "   }\n");
+
+  fprintf(fp_out, "   char errbuf[100];\n");
+  fprintf(fp_out, "   dbps[count] = %s::create_one(argc, argv, errbuf, sizeof(errbuf));\n",
+       gnames->obj_type);
+  fprintf(fp_out, "   if (dbps[count] == NULL)\n");
+  fprintf(fp_out, "   {\n");
+  fprintf(fp_out, "     logfile->vprint(\"%%s:%%d\\n\", path, i+1);\n");
+  fprintf(fp_out, "     logfile->vprint(\"%%s\\n\", errbuf);\n");
+  fprintf(fp_out, "     continue;\n");
+  fprintf(fp_out, "   }\n");
+  fprintf(fp_out, "   logfile->vprint(\"%%s\\n\", line);\n");
+  fprintf(fp_out, "   count++;\n");
+
+  fprintf(fp_out, " }\n");
+
+  fprintf(fp_out, " if (count == 0)\n");
+  fprintf(fp_out, " {\n");
+  fprintf(fp_out, "   free(dbps);\n");
+  fprintf(fp_out, "   return NULL;\n");
+  fprintf(fp_out, " }\n");
+  fprintf(fp_out, " *cnt = count;\n");
+  fprintf(fp_out, " return dbps;\n");
+
+  fprintf(fp_out, "}\n");
+}
+
+/**********************************************************************/
 void gen_create_fields_to_obj(FILE *fp_out, gen_names_t *gnames)
 {
   fprintf(fp_out, "\n\n/***************************/\n\n");
@@ -561,9 +649,15 @@ void gen_create_fields_to_obj(FILE *fp_out, gen_names_t *gnames)
   fprintf(fp_out, "  if (objp == NULL)\n");
   fprintf(fp_out, "  {\n");
   fprintf(fp_out, "    perror(\"new %s\");\n", gnames->obj_type);
+  fprintf(fp_out, "    snprintf(err, esz, \"call to 'new' failed\");\n");
   fprintf(fp_out, "    return NULL;\n");
   fprintf(fp_out, "  }\n");
   
+  fprintf(fp_out, "  if (argc != %d)\n", gnames->nf);
+  fprintf(fp_out, "  {\n");
+  fprintf(fp_out, "    snprintf(err, esz, \"Wrong number of args for %s: %%d, should be %d\", argc);\n", gnames->table_name, gnames->nf);
+  fprintf(fp_out, "    return NULL;\n");
+  fprintf(fp_out, "  }\n");
 
   for (int i=0; i < gnames->nf; i++)
   {
@@ -897,6 +991,9 @@ int main(int argc, char *argv[])
       gen_for_one_config(fp_out, fp_main, &gnames);
       printf("Calling gen_create_fields_to_obj()\n"); 
       gen_create_fields_to_obj(fp_out_obj, &gnames);
+      printf("Calling gen_create_read_files_to_obj()\n"); 
+      //gen_create_read_file_to_obj(stderr, &gnames);
+      gen_create_read_file_to_obj(fp_out_obj, &gnames);
       gen_read_one_db(fp_read_db, &gnames);
     }
     dent = readdir(dir);
