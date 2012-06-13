@@ -5,5 +5,3 @@
  sys.wait(00:15)
  sys.wait_until("not lo_level", 10:00)
  sys.loop()
-
-

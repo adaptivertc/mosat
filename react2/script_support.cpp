@@ -266,6 +266,11 @@ bool parse_function_call(char *str, int *argc, char *argv[], int max,
 
   ltrim(str);
   rtrim(str);
+  if (strlen(str) == 0)
+  {
+    error[0] = '\0';
+    return false;
+  }
   tag = str;
   //int n;
   //n = strcspn(str, "(),.");

@@ -38,6 +38,7 @@ Code for the analog input member functions.
 #include "db.h"
 #include "arg.h"
 
+/***
 class ai_point_factory_t : public db_point_factory_t
 {
 public:
@@ -59,15 +60,18 @@ public:
   virtual bool has_discrete_val() {return false;};
   virtual bool has_int_val() {return false;};
 };
+**/
 
-/*************************************************************************/
+/********************************************************************/
 
+/**
 extern "C" db_point_factory_t *get_db_factory(react_base_t *r)
 {
   return new ai_point_factory_t;
 }
+**/
 
-/*************************************************************************/
+/*********************************************************************/
 
 void ai_point_t::update(double new_raw_value)
 {
@@ -324,4 +328,118 @@ ai_point_t **ai_point_t::read(int *cnt, const char *home_dir)
 }
 
 ************************************************************************/
+
+ai_point_t *ai_point_t::create_one(int argc, char *argv[], char *err, int esz)
+{
+  ai_point_t *objp;
+  objp = new ai_point_t;
+  if (objp == NULL)
+  {
+    perror("new ai_point_t");
+    snprintf(err, esz, "call to 'new' failed");
+    return NULL;
+  }
+  if (argc != 23)
+  {
+    snprintf(err, esz, "Wrong number of args for ai: %d, should be 23", argc);
+    return NULL;
+  }
+  snprintf(objp->tag, sizeof(objp->tag), "%s", argv[0]);
+  snprintf(objp->description, sizeof(objp->description), "%s", argv[1]);
+  snprintf(objp->eu, sizeof(objp->eu), "%s", argv[2]);
+  objp->driver = atoi(argv[3]);
+  objp->card = atoi(argv[4]);
+  objp->channel = atoi(argv[5]);
+  objp->eu_lo = atof(argv[6]);
+  objp->eu_hi = atof(argv[7]);
+  objp->raw_lo = atof(argv[8]);
+  objp->raw_hi = atof(argv[9]);
+  objp->decimal_places = atoi(argv[10]);
+  objp->zero_cutoff = atof(argv[11]);
+  objp->lo_alarm = atof(argv[12]);
+  objp->lo_caution = atof(argv[13]);
+  objp->hi_caution = atof(argv[14]);
+  objp->hi_alarm = atof(argv[15]);
+  objp->deadband = atof(argv[16]);
+  objp->lo_alarm_enable = (argv[17][0] == '1') ||
+             (argv[17][0] == 'T') ||
+             (argv[17][0] == 't');
+  objp->lo_caution_enable = (argv[18][0] == '1') ||
+             (argv[18][0] == 'T') ||
+             (argv[18][0] == 't');
+  objp->hi_caution_enable = (argv[19][0] == '1') ||
+             (argv[19][0] == 'T') ||
+             (argv[19][0] == 't');
+  objp->hi_alarm_enable = (argv[20][0] == '1') ||
+             (argv[20][0] == 'T') ||
+             (argv[20][0] == 't');
+  objp->scale_lo = atof(argv[21]);
+  objp->scale_hi = atof(argv[22]);
+  return objp;
+}
+ai_point_t **ai_point_t::read(int *cnt, const char *home_dir)
+{
+ int max_points = 100;
+ ai_point_t **dbps =
+ (ai_point_t **) malloc(max_points * sizeof(ai_point_t*));
+ MALLOC_CHECK(dbps);
+ *cnt = 0;
+ int count = 0;
+ char path[500];
+ snprintf(path, sizeof(path), "%s/dbfiles/ai.dat", home_dir);
+ FILE *fp = fopen(path, "r");
+ if (fp == NULL)
+ {
+   logfile->perror(path);
+   logfile->vprint("Can't open %s", path);
+   return NULL;
+ }
+ char line[500];
+ for (int i=0; NULL != fgets(line, sizeof(line), fp); i++)
+ {
+   char tmp[500];
+   int argc;
+   char *argv[50];
+   ltrim(line);
+   rtrim(line);
+   snprintf(tmp, sizeof(tmp), "%s", line);
+   argc = get_delim_args(tmp, argv, '|', 50);
+   if (argc == 0)
+   {
+     continue;
+   }
+   else if (argv[0][0] == '#')
+   {
+     continue;
+   }
+   if (count >= max_points)
+   {
+     max_points += 50;
+     int new_size = max_points * sizeof(ai_point_t*);
+     logfile->vprint("Reallocating: new size = %d\n", new_size);
+     dbps = (ai_point_t **) realloc(dbps, new_size);
+     MALLOC_CHECK(dbps);
+   }
+   char errbuf[100];
+   dbps[count] = ai_point_t::create_one(argc, argv, errbuf, sizeof(errbuf));
+   if (dbps[count] == NULL)
+   {
+     logfile->vprint("%s:%d\n", path, i+1);
+     logfile->vprint("%s\n", errbuf);
+     continue;
+   }
+   logfile->vprint("%s\n", line);
+   count++;
+ }
+ if (count == 0)
+ {
+   free(dbps);
+   return NULL;
+ }
+ *cnt = count;
+ return dbps;
+}
+
+
+/***************************/
 

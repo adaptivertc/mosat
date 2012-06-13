@@ -898,7 +898,7 @@ void react_t::read_factory_points(const char *a_home_dir)
     {
       exit(0);
     }
-    ai_points = read_one_point_type(factory, a_home_dir, &num_ai);
+    //ai_points = read_one_point_type(factory, a_home_dir, &num_ai);
   }
 }
 
@@ -908,7 +908,10 @@ void react_t::read_all_points(const char *a_home_dir)
 {
   /* Read all database points from disk. */
 
-  this->read_factory_points(a_home_dir);
+  /* Take it out for now to make it work for all types
+    this->read_factory_points(a_home_dir);
+  */
+
   //db_point_factory_t *aif = new ai_point_factory_t;
   /**
   db_point_factory_t *aif = load_db_point("./ai.so");
@@ -919,6 +922,8 @@ void react_t::read_all_points(const char *a_home_dir)
 
   ai_points = read_one_point_type(aif, a_home_dir, &num_ai);
   ***/
+  logfile->vprint("Reading ai ........\n");
+  ai_points = ai_point_t::read(&num_ai, a_home_dir);
   for (int i=0; i < num_ai; i++)
   {
     index_db_point(ai_points[i]);

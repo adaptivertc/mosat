@@ -109,7 +109,7 @@ private:
 
 public:
   bool global_alarm_disable;
-  db_point_t **ai_points;
+  ai_point_t **ai_points;
   int num_ai;
   pci_point_t **pci_points;
   int num_pci;
