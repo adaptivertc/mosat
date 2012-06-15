@@ -108,7 +108,7 @@ void file_logger_t::update(void)
   //fprintf(instantaneous_fp, "data:");
   if (!collecting)
   {
-    logfile->vprint(" **** NOT collecting\n");
+    logfile->vprint("  **** NOT collecting\n");
     return;
   }
   time_t now = time(NULL);
@@ -218,7 +218,7 @@ void file_logger_t::init_values(void)
   } 
   if (collecting)
   {
-    logfile->vprint("collection is on for %s\n", tag);
+    logfile->vprint("  collection is on for %s\n", tag);
   }
 
   analog_points = new analog_point_t *[num_points + 1];
@@ -231,18 +231,18 @@ void file_logger_t::init_values(void)
     ltrim(temp_tag);
     rtrim(temp_tag);
     strip_quotes(temp_tag);
-    logfile->vprint("Tag = %s\n", temp_tag);
+    logfile->vprint("  Tag = %s\n", temp_tag);
     db_point = db->get_db_point(temp_tag);
     if ((db_point == NULL) || (db_point->pv_type() != ANALOG_VALUE))
     {
       analog_points[j] = NULL;
-      logfile->vprint("Bad analog point: %s\n", temp_tag);
+      logfile->vprint("  Bad analog point: %s\n", temp_tag);
     }
     else
     {
       analog_points[j] = (analog_point_t *) db_point;
     }
-    logfile->vprint("analog point %d: %s\n", j, temp_tag);
+    logfile->vprint("  analog point[%d]: %s\n", j, temp_tag);
   }
   last_log_time = time(NULL);
   n_hour_samples = 0;

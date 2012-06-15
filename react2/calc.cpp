@@ -72,7 +72,7 @@ void calc_point_t::parse_expr(void)
     expression.expr[0].token_type = FLOAT_VAL;
     expression.expr[0].val.float_val = 0.0;
     expression.expr[1].token_type = END_EXPR;
-    logfile->vprint("Analog Calc %s: Bad Expression: \"%s\", %s\n",
+    logfile->vprint("  Analog Calc %s: Bad Expression: \"%s\", %s\n",
           tag, expr_string, rtexperror.str());
   }
 }

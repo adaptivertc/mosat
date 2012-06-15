@@ -705,6 +705,7 @@ protected:
   double ramp_increment;
   double ramp_value;
   int ramp_counter;
+  virtual void spt_change_hook(void){};
 public:
   void set_ramp(double val, double ramp_time);
   void update_ramp(void);
@@ -794,7 +795,8 @@ class remote_pid_t : public control_point_t
 private:
 	/* configuration */
   tag_t ai_tag; // to monitor the process value (PV)
-  tag_t ao_tag; // to send the setpoint (SP)
+  tag_t ao_tag; // to send the open loop value (MV)
+  tag_t spt_tag; // to send the setpoint (SP)
   tag_t enable_tag; // to enable / disable control (if available)
   tag_t p_tag; // to send the proportional gain (if available)
   tag_t i_tag; // to send the integral time (if available)
@@ -802,10 +804,12 @@ private:
   double p_gain;
   double i_time;
   double d_time;
+  ao_point_t *spt_point;
   do_point_t *enable_point;
   ao_point_t *p_point;
   ao_point_t *i_point;
   ao_point_t *d_point;
+  void spt_change_hook(void);
 public:
 /*#SCRIPT_FUNCTION#*/
   void change_setpoint(double val, double ramp_time);
@@ -817,9 +821,10 @@ public:
   void start_control(void);
 /*#SCRIPT_FUNCTION#*/
   void stop_control(void);
+/*#SCRIPT_FUNCTION#*/
+  void send_gains(double p, double i, double d);
 
   void get_gains(double *p, double *i, double *d);
-  void send_gains(double p, double i, double d);
   point_type_t point_type(void) {return REMOTE_PID;};
 
   void update(void);

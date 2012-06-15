@@ -57,7 +57,9 @@ void control_point_t::set_ramp(double val, double ramp_time)
   }
   else
   {
+    ramp_is_on = false;
     setpoint = val;
+    spt_change_hook();
   }
   pv = setpoint;
 }
@@ -68,13 +70,15 @@ void control_point_t::update_ramp(void)
 {
   if (ramp_is_on)
   {
-    pv = setpoint += ramp_increment;
+    setpoint += ramp_increment;
+    pv = setpoint;
     ramp_counter--;
     if (ramp_counter <= 0)
     {
       pv = setpoint = ramp_value;
       ramp_is_on = false;
     }
+    spt_change_hook();
     //printf("Ramp up: %lf\n", (double) pv);
   }
 }

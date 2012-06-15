@@ -125,40 +125,29 @@ void data_point_t::init_values(void)
   this->num_points = argc;
 
   this->max_samples = int(this->max_time * db->get_sample_rate());
-  logfile->vprint("MaxSamples = %d MaxTime = %d\n", this->max_samples, this->max_time);
+  logfile->vprint("  MaxSamples = %d MaxTime = %d\n", this->max_samples, this->max_time);
   this->analog_points = new analog_point_t *[this->num_points + 1];
-  printf("File: %s, Line %d\n", __FILE__, __LINE__);
   this->data = new double *[this->num_points + 1];
 
   for (int i=0; i < argc; i++)
   {
     rtrim(argv[i]);
     ltrim(argv[i]);
-    printf("File: %s, Line %d\n", __FILE__, __LINE__);
     db_point_t *db_point;
-    printf("File: %s, Line %d\n", __FILE__, __LINE__);
-    printf("File: %s, Line %d\n", __FILE__, __LINE__);
     db_point = db->get_db_point(argv[i]);
-    printf("File: %s, Line %d\n", __FILE__, __LINE__);
     if ((db_point == NULL) || (db_point->pv_type() != ANALOG_VALUE))
     {
-      printf("File: %s, Line %d\n", __FILE__, __LINE__);
       this->analog_points[i] = NULL;
-      logfile->vprint("Bad analog point: %s\n", argv[i]);
+      logfile->vprint("%s - Bad analog point: %s\n", this->tag, argv[i]);
     }
     else
     {
-      printf("File: %s, Line %d\n", __FILE__, __LINE__);
       this->analog_points[i] = (analog_point_t *) db_point;
     }
-    logfile->vprint("allocating space for  %d samples\n", this->max_samples);
-    printf("File: %s, Line %d\n", __FILE__, __LINE__);
+    logfile->vprint("  %s - allocating space for  %d samples for tag %s\n", this->tag, this->max_samples, argv[i]);
     this->data[i] = new double[this->max_samples + 1];
-    printf("File: %s, Line %d\n", __FILE__, __LINE__);
     MALLOC_CHECK(this->data[i]);
-    printf("File: %s, Line %d\n", __FILE__, __LINE__);
   }
-  printf("File: %s, Line %d\n", __FILE__, __LINE__);
   this->collecting = false;
   this->count = 0;
 }

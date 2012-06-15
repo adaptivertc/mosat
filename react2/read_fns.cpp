@@ -88,6 +88,7 @@ ao_point_t **ao_point_t::read(int *cnt, const char *home_dir)
      dbps = (ao_point_t **) realloc(dbps, new_size);
      MALLOC_CHECK(dbps);
    }
+   logfile->vprint("%s\n", line);
    char errbuf[100];
    dbps[count] = ao_point_t::create_one(argc, argv, errbuf, sizeof(errbuf));
    if (dbps[count] == NULL)
@@ -96,7 +97,6 @@ ao_point_t **ao_point_t::read(int *cnt, const char *home_dir)
      logfile->vprint("%s\n", errbuf);
      continue;
    }
-   logfile->vprint("%s\n", line);
    count++;
  }
  if (count == 0)
@@ -177,6 +177,7 @@ scan_point_t **scan_point_t::read(int *cnt, const char *home_dir)
      dbps = (scan_point_t **) realloc(dbps, new_size);
      MALLOC_CHECK(dbps);
    }
+   logfile->vprint("%s\n", line);
    char errbuf[100];
    dbps[count] = scan_point_t::create_one(argc, argv, errbuf, sizeof(errbuf));
    if (dbps[count] == NULL)
@@ -185,7 +186,6 @@ scan_point_t **scan_point_t::read(int *cnt, const char *home_dir)
      logfile->vprint("%s\n", errbuf);
      continue;
    }
-   logfile->vprint("%s\n", line);
    count++;
  }
  if (count == 0)
@@ -269,6 +269,7 @@ pump_point_t **pump_point_t::read(int *cnt, const char *home_dir)
      dbps = (pump_point_t **) realloc(dbps, new_size);
      MALLOC_CHECK(dbps);
    }
+   logfile->vprint("%s\n", line);
    char errbuf[100];
    dbps[count] = pump_point_t::create_one(argc, argv, errbuf, sizeof(errbuf));
    if (dbps[count] == NULL)
@@ -277,7 +278,6 @@ pump_point_t **pump_point_t::read(int *cnt, const char *home_dir)
      logfile->vprint("%s\n", errbuf);
      continue;
    }
-   logfile->vprint("%s\n", line);
    count++;
  }
  if (count == 0)
@@ -360,6 +360,7 @@ discrete_value_point_t **discrete_value_point_t::read(int *cnt, const char *home
      dbps = (discrete_value_point_t **) realloc(dbps, new_size);
      MALLOC_CHECK(dbps);
    }
+   logfile->vprint("%s\n", line);
    char errbuf[100];
    dbps[count] = discrete_value_point_t::create_one(argc, argv, errbuf, sizeof(errbuf));
    if (dbps[count] == NULL)
@@ -368,7 +369,6 @@ discrete_value_point_t **discrete_value_point_t::read(int *cnt, const char *home
      logfile->vprint("%s\n", errbuf);
      continue;
    }
-   logfile->vprint("%s\n", line);
    count++;
  }
  if (count == 0)
@@ -469,6 +469,7 @@ pid_point_t **pid_point_t::read(int *cnt, const char *home_dir)
      dbps = (pid_point_t **) realloc(dbps, new_size);
      MALLOC_CHECK(dbps);
    }
+   logfile->vprint("%s\n", line);
    char errbuf[100];
    dbps[count] = pid_point_t::create_one(argc, argv, errbuf, sizeof(errbuf));
    if (dbps[count] == NULL)
@@ -477,7 +478,6 @@ pid_point_t **pid_point_t::read(int *cnt, const char *home_dir)
      logfile->vprint("%s\n", errbuf);
      continue;
    }
-   logfile->vprint("%s\n", line);
    count++;
  }
  if (count == 0)
@@ -560,6 +560,7 @@ dcalc_point_t **dcalc_point_t::read(int *cnt, const char *home_dir)
      dbps = (dcalc_point_t **) realloc(dbps, new_size);
      MALLOC_CHECK(dbps);
    }
+   logfile->vprint("%s\n", line);
    char errbuf[100];
    dbps[count] = dcalc_point_t::create_one(argc, argv, errbuf, sizeof(errbuf));
    if (dbps[count] == NULL)
@@ -568,7 +569,6 @@ dcalc_point_t **dcalc_point_t::read(int *cnt, const char *home_dir)
      logfile->vprint("%s\n", errbuf);
      continue;
    }
-   logfile->vprint("%s\n", line);
    count++;
  }
  if (count == 0)
@@ -653,6 +653,7 @@ timer_point_t **timer_point_t::read(int *cnt, const char *home_dir)
      dbps = (timer_point_t **) realloc(dbps, new_size);
      MALLOC_CHECK(dbps);
    }
+   logfile->vprint("%s\n", line);
    char errbuf[100];
    dbps[count] = timer_point_t::create_one(argc, argv, errbuf, sizeof(errbuf));
    if (dbps[count] == NULL)
@@ -661,7 +662,6 @@ timer_point_t **timer_point_t::read(int *cnt, const char *home_dir)
      logfile->vprint("%s\n", errbuf);
      continue;
    }
-   logfile->vprint("%s\n", line);
    count++;
  }
  if (count == 0)
@@ -747,6 +747,7 @@ do_point_t **do_point_t::read(int *cnt, const char *home_dir)
      dbps = (do_point_t **) realloc(dbps, new_size);
      MALLOC_CHECK(dbps);
    }
+   logfile->vprint("%s\n", line);
    char errbuf[100];
    dbps[count] = do_point_t::create_one(argc, argv, errbuf, sizeof(errbuf));
    if (dbps[count] == NULL)
@@ -755,7 +756,6 @@ do_point_t **do_point_t::read(int *cnt, const char *home_dir)
      logfile->vprint("%s\n", errbuf);
      continue;
    }
-   logfile->vprint("%s\n", line);
    count++;
  }
  if (count == 0)
@@ -836,6 +836,7 @@ web_point_t **web_point_t::read(int *cnt, const char *home_dir)
      dbps = (web_point_t **) realloc(dbps, new_size);
      MALLOC_CHECK(dbps);
    }
+   logfile->vprint("%s\n", line);
    char errbuf[100];
    dbps[count] = web_point_t::create_one(argc, argv, errbuf, sizeof(errbuf));
    if (dbps[count] == NULL)
@@ -844,7 +845,6 @@ web_point_t **web_point_t::read(int *cnt, const char *home_dir)
      logfile->vprint("%s\n", errbuf);
      continue;
    }
-   logfile->vprint("%s\n", line);
    count++;
  }
  if (count == 0)
@@ -925,6 +925,7 @@ data_point_t **data_point_t::read(int *cnt, const char *home_dir)
      dbps = (data_point_t **) realloc(dbps, new_size);
      MALLOC_CHECK(dbps);
    }
+   logfile->vprint("%s\n", line);
    char errbuf[100];
    dbps[count] = data_point_t::create_one(argc, argv, errbuf, sizeof(errbuf));
    if (dbps[count] == NULL)
@@ -933,7 +934,6 @@ data_point_t **data_point_t::read(int *cnt, const char *home_dir)
      logfile->vprint("%s\n", errbuf);
      continue;
    }
-   logfile->vprint("%s\n", line);
    count++;
  }
  if (count == 0)
@@ -1016,6 +1016,7 @@ discrete_logger_t **discrete_logger_t::read(int *cnt, const char *home_dir)
      dbps = (discrete_logger_t **) realloc(dbps, new_size);
      MALLOC_CHECK(dbps);
    }
+   logfile->vprint("%s\n", line);
    char errbuf[100];
    dbps[count] = discrete_logger_t::create_one(argc, argv, errbuf, sizeof(errbuf));
    if (dbps[count] == NULL)
@@ -1024,7 +1025,6 @@ discrete_logger_t **discrete_logger_t::read(int *cnt, const char *home_dir)
      logfile->vprint("%s\n", errbuf);
      continue;
    }
-   logfile->vprint("%s\n", line);
    count++;
  }
  if (count == 0)
@@ -1049,9 +1049,9 @@ remote_pid_t *remote_pid_t::create_one(int argc, char *argv[], char *err, int es
     snprintf(err, esz, "call to 'new' failed");
     return NULL;
   }
-  if (argc != 23)
+  if (argc != 24)
   {
-    snprintf(err, esz, "Wrong number of args for remote_pid: %d, should be 23", argc);
+    snprintf(err, esz, "Wrong number of args for remote_pid: %d, should be 24", argc);
     return NULL;
   }
   snprintf(objp->tag, sizeof(objp->tag), "%s", argv[0]);
@@ -1065,24 +1065,25 @@ remote_pid_t *remote_pid_t::create_one(int argc, char *argv[], char *err, int es
   objp->d_time = atof(argv[8]);
   snprintf(objp->ai_tag, sizeof(objp->ai_tag), "%s", argv[9]);
   snprintf(objp->ao_tag, sizeof(objp->ao_tag), "%s", argv[10]);
-  snprintf(objp->enable_tag, sizeof(objp->enable_tag), "%s", argv[11]);
-  snprintf(objp->p_tag, sizeof(objp->p_tag), "%s", argv[12]);
-  snprintf(objp->i_tag, sizeof(objp->i_tag), "%s", argv[13]);
-  snprintf(objp->d_tag, sizeof(objp->d_tag), "%s", argv[14]);
-  objp->deviation_alarm = atof(argv[15]);
-  objp->deviation_caution = atof(argv[16]);
-  objp->deviation_delay = atof(argv[17]);
-  objp->dev_alarm_enable = (argv[18][0] == '1') ||
-             (argv[18][0] == 'T') ||
-             (argv[18][0] == 't');
-  objp->dev_alarm_shutdown = (argv[19][0] == '1') ||
+  snprintf(objp->spt_tag, sizeof(objp->spt_tag), "%s", argv[11]);
+  snprintf(objp->enable_tag, sizeof(objp->enable_tag), "%s", argv[12]);
+  snprintf(objp->p_tag, sizeof(objp->p_tag), "%s", argv[13]);
+  snprintf(objp->i_tag, sizeof(objp->i_tag), "%s", argv[14]);
+  snprintf(objp->d_tag, sizeof(objp->d_tag), "%s", argv[15]);
+  objp->deviation_alarm = atof(argv[16]);
+  objp->deviation_caution = atof(argv[17]);
+  objp->deviation_delay = atof(argv[18]);
+  objp->dev_alarm_enable = (argv[19][0] == '1') ||
              (argv[19][0] == 'T') ||
              (argv[19][0] == 't');
-  objp->dev_caution_enable = (argv[20][0] == '1') ||
+  objp->dev_alarm_shutdown = (argv[20][0] == '1') ||
              (argv[20][0] == 'T') ||
              (argv[20][0] == 't');
-  objp->scale_lo = atof(argv[21]);
-  objp->scale_hi = atof(argv[22]);
+  objp->dev_caution_enable = (argv[21][0] == '1') ||
+             (argv[21][0] == 'T') ||
+             (argv[21][0] == 't');
+  objp->scale_lo = atof(argv[22]);
+  objp->scale_hi = atof(argv[23]);
   objp->init_values();
   return objp;
 }
@@ -1129,6 +1130,7 @@ remote_pid_t **remote_pid_t::read(int *cnt, const char *home_dir)
      dbps = (remote_pid_t **) realloc(dbps, new_size);
      MALLOC_CHECK(dbps);
    }
+   logfile->vprint("%s\n", line);
    char errbuf[100];
    dbps[count] = remote_pid_t::create_one(argc, argv, errbuf, sizeof(errbuf));
    if (dbps[count] == NULL)
@@ -1137,7 +1139,6 @@ remote_pid_t **remote_pid_t::read(int *cnt, const char *home_dir)
      logfile->vprint("%s\n", errbuf);
      continue;
    }
-   logfile->vprint("%s\n", line);
    count++;
  }
  if (count == 0)
@@ -1219,6 +1220,7 @@ valve_point_t **valve_point_t::read(int *cnt, const char *home_dir)
      dbps = (valve_point_t **) realloc(dbps, new_size);
      MALLOC_CHECK(dbps);
    }
+   logfile->vprint("%s\n", line);
    char errbuf[100];
    dbps[count] = valve_point_t::create_one(argc, argv, errbuf, sizeof(errbuf));
    if (dbps[count] == NULL)
@@ -1227,7 +1229,6 @@ valve_point_t **valve_point_t::read(int *cnt, const char *home_dir)
      logfile->vprint("%s\n", errbuf);
      continue;
    }
-   logfile->vprint("%s\n", line);
    count++;
  }
  if (count == 0)
@@ -1310,6 +1311,7 @@ ac_point_t **ac_point_t::read(int *cnt, const char *home_dir)
      dbps = (ac_point_t **) realloc(dbps, new_size);
      MALLOC_CHECK(dbps);
    }
+   logfile->vprint("%s\n", line);
    char errbuf[100];
    dbps[count] = ac_point_t::create_one(argc, argv, errbuf, sizeof(errbuf));
    if (dbps[count] == NULL)
@@ -1318,7 +1320,6 @@ ac_point_t **ac_point_t::read(int *cnt, const char *home_dir)
      logfile->vprint("%s\n", errbuf);
      continue;
    }
-   logfile->vprint("%s\n", line);
    count++;
  }
  if (count == 0)
@@ -1425,6 +1426,7 @@ ai_point_t **ai_point_t::read(int *cnt, const char *home_dir)
      dbps = (ai_point_t **) realloc(dbps, new_size);
      MALLOC_CHECK(dbps);
    }
+   logfile->vprint("%s\n", line);
    char errbuf[100];
    dbps[count] = ai_point_t::create_one(argc, argv, errbuf, sizeof(errbuf));
    if (dbps[count] == NULL)
@@ -1433,7 +1435,6 @@ ai_point_t **ai_point_t::read(int *cnt, const char *home_dir)
      logfile->vprint("%s\n", errbuf);
      continue;
    }
-   logfile->vprint("%s\n", line);
    count++;
  }
  if (count == 0)
@@ -1521,6 +1522,7 @@ di_point_t **di_point_t::read(int *cnt, const char *home_dir)
      dbps = (di_point_t **) realloc(dbps, new_size);
      MALLOC_CHECK(dbps);
    }
+   logfile->vprint("%s\n", line);
    char errbuf[100];
    dbps[count] = di_point_t::create_one(argc, argv, errbuf, sizeof(errbuf));
    if (dbps[count] == NULL)
@@ -1529,7 +1531,6 @@ di_point_t **di_point_t::read(int *cnt, const char *home_dir)
      logfile->vprint("%s\n", errbuf);
      continue;
    }
-   logfile->vprint("%s\n", line);
    count++;
  }
  if (count == 0)
@@ -1612,6 +1613,7 @@ analog_value_point_t **analog_value_point_t::read(int *cnt, const char *home_dir
      dbps = (analog_value_point_t **) realloc(dbps, new_size);
      MALLOC_CHECK(dbps);
    }
+   logfile->vprint("%s\n", line);
    char errbuf[100];
    dbps[count] = analog_value_point_t::create_one(argc, argv, errbuf, sizeof(errbuf));
    if (dbps[count] == NULL)
@@ -1620,7 +1622,6 @@ analog_value_point_t **analog_value_point_t::read(int *cnt, const char *home_dir
      logfile->vprint("%s\n", errbuf);
      continue;
    }
-   logfile->vprint("%s\n", line);
    count++;
  }
  if (count == 0)
@@ -1727,6 +1728,7 @@ pci_point_t **pci_point_t::read(int *cnt, const char *home_dir)
      dbps = (pci_point_t **) realloc(dbps, new_size);
      MALLOC_CHECK(dbps);
    }
+   logfile->vprint("%s\n", line);
    char errbuf[100];
    dbps[count] = pci_point_t::create_one(argc, argv, errbuf, sizeof(errbuf));
    if (dbps[count] == NULL)
@@ -1735,7 +1737,6 @@ pci_point_t **pci_point_t::read(int *cnt, const char *home_dir)
      logfile->vprint("%s\n", errbuf);
      continue;
    }
-   logfile->vprint("%s\n", line);
    count++;
  }
  if (count == 0)
@@ -1835,6 +1836,7 @@ calc_point_t **calc_point_t::read(int *cnt, const char *home_dir)
      dbps = (calc_point_t **) realloc(dbps, new_size);
      MALLOC_CHECK(dbps);
    }
+   logfile->vprint("%s\n", line);
    char errbuf[100];
    dbps[count] = calc_point_t::create_one(argc, argv, errbuf, sizeof(errbuf));
    if (dbps[count] == NULL)
@@ -1843,7 +1845,6 @@ calc_point_t **calc_point_t::read(int *cnt, const char *home_dir)
      logfile->vprint("%s\n", errbuf);
      continue;
    }
-   logfile->vprint("%s\n", line);
    count++;
  }
  if (count == 0)
@@ -1940,6 +1941,7 @@ file_logger_t **file_logger_t::read(int *cnt, const char *home_dir)
      dbps = (file_logger_t **) realloc(dbps, new_size);
      MALLOC_CHECK(dbps);
    }
+   logfile->vprint("%s\n", line);
    char errbuf[100];
    dbps[count] = file_logger_t::create_one(argc, argv, errbuf, sizeof(errbuf));
    if (dbps[count] == NULL)
@@ -1948,7 +1950,6 @@ file_logger_t **file_logger_t::read(int *cnt, const char *home_dir)
      logfile->vprint("%s\n", errbuf);
      continue;
    }
-   logfile->vprint("%s\n", line);
    count++;
  }
  if (count == 0)
@@ -2030,6 +2031,7 @@ level_point_t **level_point_t::read(int *cnt, const char *home_dir)
      dbps = (level_point_t **) realloc(dbps, new_size);
      MALLOC_CHECK(dbps);
    }
+   logfile->vprint("%s\n", line);
    char errbuf[100];
    dbps[count] = level_point_t::create_one(argc, argv, errbuf, sizeof(errbuf));
    if (dbps[count] == NULL)
@@ -2038,7 +2040,6 @@ level_point_t **level_point_t::read(int *cnt, const char *home_dir)
      logfile->vprint("%s\n", errbuf);
      continue;
    }
-   logfile->vprint("%s\n", line);
    count++;
  }
  if (count == 0)

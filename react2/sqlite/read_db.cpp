@@ -272,7 +272,7 @@ int main(int argc, char *argv[])
   printf("---- Reading database 'remote_pid' -------------\n");
   cbdata.first = false;
   cbdata.n = 0;
-  cbdata.nf = 23;
+  cbdata.nf = 24;
   retval = sqlite3_exec(sqdb, "select * from 'remote_pid';",
              my_callback, &cbdata, &errmsg);
   if (retval != SQLITE_OK)

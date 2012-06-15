@@ -613,6 +613,7 @@ void gen_create_read_file_to_obj(FILE *fp_out, gen_names_t *gnames)
   fprintf(fp_out, "     MALLOC_CHECK(dbps);\n");
   fprintf(fp_out, "   }\n");
 
+  fprintf(fp_out, "   logfile->vprint(\"%%s\\n\", line);\n");
   fprintf(fp_out, "   char errbuf[100];\n");
   fprintf(fp_out, "   dbps[count] = %s::create_one(argc, argv, errbuf, sizeof(errbuf));\n",
        gnames->obj_type);
@@ -622,7 +623,6 @@ void gen_create_read_file_to_obj(FILE *fp_out, gen_names_t *gnames)
   fprintf(fp_out, "     logfile->vprint(\"%%s\\n\", errbuf);\n");
   fprintf(fp_out, "     continue;\n");
   fprintf(fp_out, "   }\n");
-  fprintf(fp_out, "   logfile->vprint(\"%%s\\n\", line);\n");
   fprintf(fp_out, "   count++;\n");
 
   fprintf(fp_out, " }\n");

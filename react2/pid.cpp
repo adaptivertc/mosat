@@ -176,7 +176,7 @@ void pid_point_t::init_values(void)
 
   if (db_point == NULL)
   {
-    logfile->vprint("%s - bad TAGNAME: %s\n", tag, ai_tag);
+    logfile->vprint("  %s - bad TAGNAME: %s\n", tag, ai_tag);
     ai_point = NULL;
   }
   else
@@ -184,7 +184,7 @@ void pid_point_t::init_values(void)
     ai_point = dynamic_cast <analog_point_t *> (db_point);
     if (ai_point == NULL)
     {
-      logfile->vprint("%s - bad analog input point: %s\n", tag, ai_tag);
+      logfile->vprint("  %s - bad analog input point: %s\n", tag, ai_tag);
     }
   }
 
@@ -194,7 +194,7 @@ void pid_point_t::init_values(void)
 
   if (db_point == NULL)
   {
-    logfile->vprint("%s - bad TAGNAME: %s\n", tag, ao_tag);
+    logfile->vprint("  %s - bad TAGNAME: %s\n", tag, ao_tag);
     ao_point = NULL;
   }
   else
@@ -202,7 +202,7 @@ void pid_point_t::init_values(void)
     ao_point = dynamic_cast <ao_point_t *> (db_point);
     if (ao_point == NULL)
     {
-      logfile->vprint("%s - bad analog output point: %s\n", tag, ao_tag);
+      logfile->vprint("  %s - bad analog output point: %s\n", tag, ao_tag);
     }
   }
 

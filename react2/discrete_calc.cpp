@@ -54,6 +54,8 @@ void dcalc_point_t::init_values()
 	this->alarm_state = DISCRETE_NONE;
 	break;
       default:
+        logfile->vprint("  %s Bad value for alarm state: %s\n", 
+                  tag, alarm_state_str);
 	this->alarm_state = DISCRETE_NONE;
 	break;
   }
@@ -73,6 +75,8 @@ void dcalc_point_t::init_values()
 	break;
       default:
 	this->shutdown_state = DISCRETE_NONE;
+        logfile->vprint("  %s Bad value for shutdown state: %s\n", 
+                  tag, shutdown_state_str);
 	break;
   }
 }
@@ -87,7 +91,7 @@ void dcalc_point_t::parse_expr(void)
   expression.expr = make_expr(expr_string);
   if (expression.expr == NULL)
   {
-    logfile->vprint("Discrete calc %s: Bad Expression: %s\n", tag, expr_string);
+    logfile->vprint("  Discrete calc %s: Bad Expression: %s\n", tag, expr_string);
     expression.expr = new expr_op_t[2];
     expression.expr[0].token_type = LOGICAL_VAL;
     expression.expr[0].val.logical_val = 0;

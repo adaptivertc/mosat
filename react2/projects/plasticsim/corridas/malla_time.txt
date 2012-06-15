@@ -1,4 +1,4 @@
-time_1.send(60)
-time_2.send(120)
+time_1.set(60)
+time_2.set(120)
 sys.wait(59:59)
 sys.loop()

@@ -81,6 +81,8 @@ void di_point_t::init_values(void)
 	break;
       default:
 	this->alarm_state = DISCRETE_NONE;
+        logfile->vprint("  %s Bad value for alarm state: %s\n", 
+                  tag, alarm_state_str);
 	break;
   }
   switch (this->shutdown_state_str[0])
@@ -99,6 +101,8 @@ void di_point_t::init_values(void)
 	break;
       default:
 	this->shutdown_state = DISCRETE_NONE;
+        logfile->vprint("  %s Bad value for shutdown state: %s\n", 
+                  tag, shutdown_state_str);
 	break;
   }
 }

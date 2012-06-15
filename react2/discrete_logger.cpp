@@ -49,7 +49,7 @@ void discrete_logger_t::update(void)
   //fprintf(instantaneous_fp, "data:");
   if (!collecting)
   {
-    logfile->vprint(" **** NOT collecting\n");
+    logfile->vprint("  **** NOT collecting\n");
     return;
   }
   time_t now = time(NULL);
@@ -163,7 +163,7 @@ void discrete_logger_t::update(void)
 
 void discrete_logger_t::init_values(void)
 { 
-  if (this->log_hour_totals) logfile->vprint("Logging hour totals\n");
+  if (this->log_hour_totals) logfile->vprint("  Logging hour totals\n");
   this->collecting = true;
 
   this->instantaneous_fp = rt_open_day_history_file(this->base_name, ".txt", ap_config.get_config("LogHome"), NULL);
@@ -186,24 +186,24 @@ void discrete_logger_t::init_values(void)
 
   if (this->collecting)
   {
-    logfile->vprint("collection is on for %s\n", this->get_tag());
+    logfile->vprint("  Collection is on for %s\n", this->get_tag());
   }
 
   char tmp[500];
   int argc;
   char *argv[50];
 
-  logfile->vprint("tags: %s\n", tags);
   rtrim(tags);
   ltrim(tags);
   safe_strcpy(tmp, (const char*) tags, sizeof(tmp));
-  logfile->vprint("tags: %s\n", tmp);
+  logfile->vprint("  Tags: %s\n", tmp);
   argc = get_delim_args(tmp, argv, ',', 25);
 
   if ((argc % 2) != 0)
   {
-    logfile->vprint("%s: There must be an even number of extra parameters - each with tag, and log type (rise, fall, or both (RFB))\n", this->get_tag());
-    logfile->vprint("    There %d extra parameters\n", argc);
+    logfile->vprint("  %s: There must be an even number of tag/type parameters - each group of two with first tag, then log type (RFB)\n", this->get_tag());
+    logfile->vprint("      R-Rising, F-Falling, B-Both\n");
+    logfile->vprint("      There were %d tag/type parameters\n", argc);
   }
   this->num_points = argc/2;
   this->discrete_points = new discrete_point_t *[this->num_points + 1];
@@ -220,8 +220,8 @@ void discrete_logger_t::init_values(void)
     int p1 = i * 2;
     int p2 = (i * 2) + 1;
 
-    logfile->vprint("tag[%d]: %s\n", i, argv[p1]);
-    logfile->vprint("type[%d]: %s\n", i, argv[p2]);
+    logfile->vprint("  tag[%d]: %s\n", i, argv[p1]);
+    logfile->vprint("  type[%d]: %s\n", i, argv[p2]);
     char temp_tag[50];
     db_point_t *db_point;
     safe_strcpy(temp_tag, (const char*) argv[p1], sizeof(temp_tag));
@@ -230,13 +230,13 @@ void discrete_logger_t::init_values(void)
     if ((db_point == NULL) || (db_point->pv_type() != DISCRETE_VALUE))
     {
       this->discrete_points[i] = NULL;
-      logfile->vprint("Bad discrete point: %s\n", temp_tag);
+      logfile->vprint("  Bad discrete point: %s\n", temp_tag);
     }
     else
     {
       this->discrete_points[i] = (discrete_point_t *) db_point;
     }
-    logfile->vprint("discrete point [%d]: %s, ", i, temp_tag);
+    logfile->vprint("  discrete point [%d]: %s, ", i, temp_tag);
     this->last_discrete_vals[i] = false;
     this->last_detect[i] = time(NULL); 
     this->n_day_detects[i] = 0;
@@ -245,25 +245,25 @@ void discrete_logger_t::init_values(void)
     {
       case 'R':
       case 'r':
-        logfile->vprint("rising only\n");
+        logfile->vprint("  rising only\n");
         this->log_rising[i] = true;
         this->log_falling[i] = false;
         break;
       case 'F':
       case 'f':
-        logfile->vprint("falling only\n");
+        logfile->vprint("  falling only\n");
         this->log_rising[i] = false;
         this->log_falling[i] = true;
         break;
       case 'B':
       case 'b':
-        logfile->vprint("both rising and falling\n");
+        logfile->vprint("  both rising and falling\n");
         this->log_rising[i] = true;
         this->log_falling[i] = true;
         break;
       default:
-        logfile->vprint("******* Error %s: discrete %d, bad param: '%s' log type must be R, F, or B (rising, falling, or both)\n", this->get_tag(), i, argv[p2]); 
-        logfile->vprint("defaulting to both rising and falling\n");
+        logfile->vprint("  **** Error %s: discrete %d, bad param: '%s' log type must be R, F, or B (rising, falling, or both)\n", this->get_tag(), i, argv[p2]); 
+        logfile->vprint("       defaulting to both rising and falling\n");
         this->log_rising[i] = true;
         this->log_falling[i] = true;
         break;
