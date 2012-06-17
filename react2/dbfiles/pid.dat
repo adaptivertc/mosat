@@ -5,8 +5,8 @@ pid1|My PID point|RPM|1|500.0|0.0|0.2|0.8|0.05|AI0|AO0|0.0|0.0|0.0|0|0|0|0|100|
 # description
 # eu
 # decimal
-# setpoint_limit_hi
 # setpoint_limit_lo
+# setpoint_limit_hi
 # p_gain 
 # i_time
 # d_time

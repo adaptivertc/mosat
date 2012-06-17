@@ -210,5 +210,8 @@ public:
 
 extern react_base_t *db;
 extern bool signal_recieved;
+int read_fns_start_hook(const char *path);
+void read_fns_end_hook(void);
+
 
 #endif

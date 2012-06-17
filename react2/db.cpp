@@ -926,6 +926,12 @@ void react_t::read_all_points(const char *a_home_dir)
 
   ai_points = read_one_point_type(aif, a_home_dir, &num_ai);
   ***/
+  if (0 != read_fns_start_hook(a_home_dir))
+  {
+    logfile->vprint("Error initalizing read functions, exiting  ........\n");
+    exit(0);
+  }
+
   logfile->vprint("Reading ai ........\n");
   ai_points = ai_point_t::read(&num_ai, a_home_dir);
   for (int i=0; i < num_ai; i++)
@@ -1113,6 +1119,7 @@ void react_t::read_all_points(const char *a_home_dir)
   {
     d_calcs[i]->parse_expr();
   }
+  read_fns_end_hook();
 #ifdef __REACT_SHM__
   this->init_shared_memory();
   this->fill_shared_memory();

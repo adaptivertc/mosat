@@ -57,9 +57,9 @@ drivers2:
 project:
 	for i in $(PROJECTDIRS); do cd "$$i"; $(MAKE); cd ../..; done
 
-react2:	$(INCLUDES) $(OBJS) dbpoint_util.so read_fns.cpp
+react2:	$(INCLUDES) $(OBJS) dbpoint_util.so read_fns.cpp create_fns.cpp
 	echo \"`svn info | grep -i revision`\" > revision_number
-	$(CPP) $(LDFLAGS) -rdynamic -o $@ $(OBJS) -lrt $(LIBS) read_fns.cpp 
+	$(CPP) $(LDFLAGS) -rdynamic -o $@ $(OBJS) -lrt $(LIBS) read_fns.cpp create_fns.cpp -lsqlite3
 
 rtshmmain: rtshmmain.o ldiodriver.o reactshmio.o logfile.o reactshmio.h $(INCLUDES)
 	$(CPP) -rdynamic -o rtshmmain rtshmmain.o ldiodriver.o reactshmio.o logfile.o -ldl -lrt $(RTCOMMON)

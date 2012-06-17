@@ -5,8 +5,8 @@
 # description
 # eu
 # decimal
-# setpoint_limit_hi
 # setpoint_limit_lo
+# setpoint_limit_hi
 # p_gain 
 # i_time
 # d_time
