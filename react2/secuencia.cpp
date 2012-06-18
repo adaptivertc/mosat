@@ -182,7 +182,7 @@ secuencia_step_t *secuencia_t::new_script_type(char *str,
   int argc;
   char line[500];
   safe_strcpy(line, (const char*) str, sizeof(line));
-  logfile->vprint("%s\n", line);
+  //logfile->vprint("%s\n", line);
   if (!parse_function_call(str, &argc, argv, 25, error, esize))
   {
     return NULL;
