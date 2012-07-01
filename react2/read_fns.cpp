@@ -1097,6 +1097,7 @@ pci_point_t **pci_point_t::read(int *cnt, const char *home_dir)
    ltrim(line);
    rtrim(line);
    snprintf(tmp, sizeof(tmp), "%s", line);
+   printf("tmp\n");
    argc = get_delim_args(tmp, argv, '|', 50);
    if (argc == 0)
    {

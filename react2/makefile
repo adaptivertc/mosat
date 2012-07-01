@@ -59,10 +59,10 @@ project:
 
 react2:	$(INCLUDES) $(OBJS) dbpoint_util.so read_fns.cpp create_fns.cpp
 	echo \"`svn info | grep -i revision`\" > revision_number
-	$(CPP) $(LDFLAGS) -rdynamic -o $@ $(OBJS) -lrt $(LIBS) read_fns.cpp create_fns.cpp -lsqlite3
+	$(CPP) $(LDFLAGS) -rdynamic -o $@ $(OBJS) $(LIBS) read_fns.cpp create_fns.cpp -lsqlite3 -lrt
 
 rtshmmain: rtshmmain.o ldiodriver.o reactshmio.o logfile.o reactshmio.h $(INCLUDES)
-	$(CPP) -rdynamic -o rtshmmain rtshmmain.o ldiodriver.o reactshmio.o logfile.o -ldl -lrt $(RTCOMMON)
+	$(CPP) -rdynamic -o rtshmmain rtshmmain.o ldiodriver.o reactshmio.o logfile.o $(RTCOMMON) -lrt -ldl
 
 $(OBJS):	$(INCLUDES)
 

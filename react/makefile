@@ -52,7 +52,7 @@ drivers2:
 
 react:	$(INCLUDES) $(OBJS) dbpoint_util.so
 	echo \"`svn info | grep Revision`\" > revision_number
-	$(CPP) $(LDFLAGS) -rdynamic -o $@ $(OBJS) -lrt $(LIBS)
+	$(CPP) $(LDFLAGS) -rdynamic -o $@ $(OBJS) $(LIBS) -lrt
 
 rtshmmain: rtshmmain.o ldiodriver.o reactshmio.o logfile.o reactshmio.h $(INCLUDES)
 	$(CPP) -rdynamic -o rtshmmain rtshmmain.o ldiodriver.o reactshmio.o logfile.o -ldl $(RTCOMMON) -lrt
