@@ -155,6 +155,10 @@ int get_delim_args(char *line, char *argv[], char delimeter, int max_args)
   int i;
   char *p;
 
+  if (strlen(line) == 0)
+  {
+    return 0; 
+  }
   p = line + (strlen(line) - 1);
   // Here we trim white space off of the end of the string, but do not trim
   // delimeters that might also be white space, such as a tab. 
