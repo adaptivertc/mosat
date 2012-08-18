@@ -154,7 +154,7 @@ int main(int argc, char *argv[])
   signal(SIGSEGV, my_sighandler);
   signal(SIGINT, my_sighandler);
   signal(SIGINT, my_sighandler);
-  signal(SIGIO , my_sighandler);
+  signal(SIGIO ,  SIG_IGN);
 
   //printf("%s:%d\n", __FILE__, __LINE__);
   bool execute_script = true;

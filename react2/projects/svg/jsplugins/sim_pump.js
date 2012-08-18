@@ -34,12 +34,18 @@ function sim_object_t()
     "PUMP3_ON":true,
     "HI_HI_LEVEL":false,
     "HI_LEVEL":false,
-    "LO_LEVEL":true
+    "LO_LEVEL":true,
+    "KW":0,
+    "KWH":134528.291,
+    "KWHM":104.823
   }
 
   this.cfg =
   {
     "LEVEL":{"tag":"LEVEL","description":"NIVEL","eu":"cm","driver":0,"card":0,"channel":2,"eu_lo":0.000000,"eu_hi":500.000000,"raw_lo":32000.000000,"raw_hi":6400.000000,"decimal_places":0,"zero_cutoff":-125.000000,"lo_alarm":15.0,"lo_caution":44.0,"hi_caution":300.0,"hi_alarm":380.0,"deadband":0.0,"lo_alarm_enable":true,"lo_caution_enable":true,"hi_caution_enable":true,"hi_alarm_enable":true, "scale_lo":0,"scale_hi":450},
+    "KW":{"tag":"KW","description":"KW","eu":"kW","driver":0,"card":0,"channel":2,"eu_lo":0.000000,"eu_hi":100.000000,"raw_lo":32000.000000,"raw_hi":6400.000000,"decimal_places":1,"zero_cutoff":-125.000000,"lo_alarm":15.0,"lo_caution":44.0,"hi_caution":80.0,"hi_alarm":90.0,"deadband":0.0,"lo_alarm_enable":false,"lo_caution_enable":false,"hi_caution_enable":true,"hi_alarm_enable":false, "scale_lo":0,"scale_hi":100},
+    "KWH":{"tag":"KWH","description":"KWH","eu":"kWh","driver":0,"card":0,"channel":2,"eu_lo":0.000000,"eu_hi":100.000000,"raw_lo":32000.000000,"raw_hi":6400.000000,"decimal_places":5,"zero_cutoff":-125.000000,"lo_alarm":15.0,"lo_caution":44.0,"hi_caution":80.0,"hi_alarm":90.0,"deadband":0.0,"lo_alarm_enable":false,"lo_caution_enable":false,"hi_caution_enable":false,"hi_alarm_enable":false, "scale_lo":0,"scale_hi":10000000},
+    "KWHM":{"tag":"KWHM","description":"KWHM","eu":"kWh","driver":0,"card":0,"channel":2,"eu_lo":0.000000,"eu_hi":100.000000,"raw_lo":32000.000000,"raw_hi":6400.000000,"decimal_places":5,"zero_cutoff":-125.000000,"lo_alarm":15.0,"lo_caution":44.0,"hi_caution":80.0,"hi_alarm":90.0,"deadband":0.0,"lo_alarm_enable":false,"lo_caution_enable":false,"hi_caution_enable":false,"hi_alarm_enable":false, "scale_lo":0,"scale_hi":10000000},
     "PUMP1_AMP":{"tag":"PUMP1_AMP","description":"BOMBA 1","eu":"amps","driver":0,"card":0,"channel":5,"eu_lo":0.000000,"eu_hi":50.000000,"raw_lo":6400.000000,"raw_hi":32000.000000,"decimal_places":1,"zero_cutoff":-12.500000,"lo_alarm":0.000000,"lo_caution":0.000000,"hi_caution":30.000000,"hi_alarm":35.000000,"deadband":0.000000,"lo_alarm_enable":false,"lo_caution_enable":false,"hi_caution_enable":true,"hi_alarm_enable":true,"scale_lo":0,"scale_hi":40},
     "PUMP2_AMP":{"tag":"PUMP2_AMP","description":"BOMBA 2","eu":"amps","driver":0,"card":0,"channel":4,"eu_lo":0.000000,"eu_hi":50.000000,"raw_lo":6400.000000,"raw_hi":32000.000000,"decimal_places":1,"zero_cutoff":-12.500000,"lo_alarm":0.000000,"lo_caution":0.000000,"hi_caution":30.000000,"hi_alarm":35.000000,"deadband":0.000000,"lo_alarm_enable":false,"lo_caution_enable":false,"hi_caution_enable":true,"hi_alarm_enable":true,"scale_lo":0,"scale_hi":40},
     "PUMP3_AMP":{"tag":"PUMP3_AMP","description":"BOMBA 3","eu":"amps","driver":0,"card":0,"channel":3,"eu_lo":0.000000,"eu_hi":50.000000,"raw_lo":6400.000000,"raw_hi":32000.000000,"decimal_places":1,"zero_cutoff":-12.500000,"lo_alarm":0.000000,"lo_caution":0.000000,"hi_caution":30.000000,"hi_alarm":35.000000,"deadband":0.000000,"lo_alarm_enable":false,"lo_caution_enable":false,"hi_caution_enable":true,"hi_alarm_enable":true,"scale_lo":0,"scale_hi":40},
@@ -150,15 +156,18 @@ sim_object_t.prototype.get_pv=sim_object_get_pv_f;
       if (!this.pv.PUMP3_ON)
       {
         this.rate -= 6.0;
-        this.pv.PUMP3_AMP= (27 +((Math.random()-0.5)*0.6));
+        this.pv.PUMP3_AMP = (27 +((Math.random()-0.5)*0.6));
       }
       else
       {
-        this.pv.PUMP3_AMP= (0 +((Math.random()-0.5)*0.6));
+        this.pv.PUMP3_AMP = (0 +((Math.random()-0.5)*0.6));
       }
       this.rate = this.rate * 1.5;
-      this.pv.LEVEL+=this.rate*0.1;
-      this.pv.LEVEL= ((this.pv.LEVEL+((Math.random()-0.5)*0.8)));
+      this.pv.LEVEL +=this.rate*0.1;
+      this.pv.LEVEL = ((this.pv.LEVEL+((Math.random()-0.5)*0.8)));
+      this.pv.KW = this.pv.LEVEL/3.2;
+      this.pv.KWH += this.pv.KW / (3600 * 10); 
+      this.pv.KWHM += this.pv.KW / (3600 * 10); 
     }
     sim_object_t.prototype.update=sim_object_update_f;
 

@@ -87,6 +87,14 @@ static int react_handler(request_rec* r)
   {
     return DECLINED ;   /* none of our business */
   }
+  /****
+  if ( r->method_number == M_PUT ) 
+  {
+  }
+  else if ( r->method_number == M_POST ) 
+  {
+  }
+  else ****/ 
   if ( r->method_number != M_GET ) 
   {
     return HTTP_METHOD_NOT_ALLOWED ;  /* Reject other methods */

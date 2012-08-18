@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
   for (int i=1; true; i++)
   {
     printf("I am the dad!\n");
-    printf("Ok, I will  sleep waiting for a sucker to connect on %d\n", MYPORT);
+    printf("modsim: waiting for clients to connect on %d\n", MYPORT);
     new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &sin_size);
     if (new_fd < 0)
     {

@@ -1,5 +1,5 @@
-Sun Jun 17 10:35:00 2012
-React PID: 4533
+Sat Jul 28 15:30:30 2012
+React PID: 3598
 SampleRate set to: 0.200000
 Delimited text file start hook: ./
 Reading ai ........
@@ -166,9 +166,11 @@ Dcalc1 Parsing Expression: (TEMP_COLD_AC1 < 0.0) or (TEMP_HOT_AC1 > 200)
 Delimited text file end hook
 Creating thread to wait on connections . . . 
 -- Reading background scripts: .//dbfiles/background.dat
+In react_t::wait_connections()
 Loading iodrivers from: .//dbfiles/drivers.dat
+react_t::wait_connections(), All OK, waiting for connections
 ./drivers/sim_pump_low/libsimpumpdrv.so|new_simpumpdrv|||
 Loading iodriver from: ./drivers/sim_pump_low/libsimpumpdrv.so
 Class factory function is: new_simpumpdrv
-Sun Jun 17 10:35:01 2012
-No foreground script executing, use "kill -1 4533" or <CTRL-C> to stop
+Sat Jul 28 15:30:30 2012
+No foreground script executing, use "kill -1 3598" or <CTRL-C> to stop

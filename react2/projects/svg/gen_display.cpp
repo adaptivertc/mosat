@@ -14,6 +14,7 @@ static gen_plugin_base_t *get_plugin(const char *type);
 static const int RT_SIM_MODE = 0;
 static const int RT_REACT_MODE = 1;
 static int run_mode = RT_SIM_MODE;
+static bool popup_on = false;
 static const char *sim_file="sim_pump.js";
 
 
@@ -248,10 +249,13 @@ static void gen_simulation(FILE *js_fp)
   //fprintf(js_fp, "  pump_3_timeout();\n");
 
   fprintf(js_fp, "  var interval = setInterval(\"intervalHandler()\", 100);\n");
-  /***
-  fprintf(js_fp, "  //show_main();\n");
-  fprintf(js_fp, "  //show_popup(50,50, 'Extend', 'Retract');\n");
-  ***/
+
+  if (popup_on)
+  {
+    fprintf(js_fp, "  show_main();\n");
+    fprintf(js_fp, "  show_popup(50,50, 'Extend', 'Retract');\n");
+  }
+
   fprintf(js_fp, "};\n");
   fprintf(js_fp, "\n");
   fprintf(js_fp, "// -- END insert simulation code --\n");
@@ -604,31 +608,35 @@ static void gen_final_file(const char *fname)
   include_file(fp, ".", "_tmp_display.svg");
 
   fprintf(fp, "</g>\n");
-  /**
-  include_file(fp, ".", "popup.svg");
-  **/
+  if (popup_on)
+  {
+
+    include_file(fp, ".", "popup.svg");
+  }
 
   fprintf(fp, "<script type=\"text/ecmascript\"><![CDATA[\n");
   fprintf(fp, "const svgNS = \"http://www.w3.org/2000/svg\";\n");
   fprintf(fp, "var reactmainobj=document.getElementById(\"main_group\");\n");
-  /***
-  fprintf(fp, "var popupobj=document.getElementById(\"popup\");\n");
-  fprintf(fp, "function show_main()\n");
-  fprintf(fp, "{\n");
-  fprintf(fp, "  reactmainobj.parentNode.appendChild(reactmainobj);\n");
-  fprintf(fp, "}\n");
-  fprintf(fp, "function show_popup(x,y,text_on, text_off, text_tag)\n");
-  fprintf(fp, "{\n");
-  fprintf(fp, "  popupobj.setAttribute(\"transform\", \"translate(\" + x +\",\" + y +\")\");\n");
-  fprintf(fp, "  popupobj.parentNode.appendChild(popupobj);\n");
-  fprintf(fp, "  var onobj=document.getElementById(\"popup_on\");\n");
-  fprintf(fp, "  onobj.textContent=text_on;\n");
-  fprintf(fp, "  var offobj=document.getElementById(\"popup_off\");\n");
-  fprintf(fp, "  offobj.textContent=text_off;\n");
-  fprintf(fp, "  var tagobj=document.getElementById(\"popup_tag\");\n");
-  fprintf(fp, "  tagobj.textContent=text_tag;\n");
-  fprintf(fp, "}\n");
-  ***/
+
+  if (popup_on)
+  {
+    fprintf(fp, "var popupobj=document.getElementById(\"popup\");\n");
+    fprintf(fp, "function show_main()\n");
+    fprintf(fp, "{\n");
+    fprintf(fp, "  reactmainobj.parentNode.appendChild(reactmainobj);\n");
+    fprintf(fp, "}\n");
+    fprintf(fp, "function show_popup(x,y,text_on, text_off, text_tag)\n");
+    fprintf(fp, "{\n");
+    fprintf(fp, "  popupobj.setAttribute(\"transform\", \"translate(\" + x +\",\" + y +\")\");\n");
+    fprintf(fp, "  popupobj.parentNode.appendChild(popupobj);\n");
+    fprintf(fp, "  var onobj=document.getElementById(\"popup_on\");\n");
+    fprintf(fp, "  onobj.textContent=text_on;\n");
+    fprintf(fp, "  var offobj=document.getElementById(\"popup_off\");\n");
+    fprintf(fp, "  offobj.textContent=text_off;\n");
+    fprintf(fp, "  var tagobj=document.getElementById(\"popup_tag\");\n");
+    fprintf(fp, "  tagobj.textContent=text_tag;\n");
+    fprintf(fp, "}\n");
+  }
 
   for (int i=0; i < n_js_libs; i++)
   {
@@ -683,6 +691,10 @@ void print_help()
   printf("           REACT (via Apache)  for configuration and point value information\n");
   printf("  -sim     option tells gen_display to generate a simulator\n");
   printf("           for configuration and point value information\n");
+  printf("             default sim file is: sim_pump.js\n");
+  printf("  -sim_file same as -sim but, with the sim file specified in \n");
+  printf("            the next argument\n");
+  printf("  -popup   option enables popups for valves, pumps, etc.\n");
   printf("\n");
 }
 
@@ -703,6 +715,8 @@ int main(int argc, char *argv[])
   const char *dir_name = "./plugins/";
   const char *config_name = "display.txt"; 
   const char *output_name = "dtest.svg"; 
+  popup_on = false;
+
   for (int current_arg=1; current_arg < argc; current_arg++)
   {
     if (0 == strcmp(argv[current_arg], "-react"))
@@ -712,6 +726,10 @@ int main(int argc, char *argv[])
     else if (0 == strcmp(argv[current_arg], "-sim"))
     {
       run_mode = RT_SIM_MODE;
+    }
+    else if (0 == strcmp(argv[current_arg], "-popup"))
+    {
+      popup_on = true;
     }
     else if (0 == strcmp(argv[current_arg], "-d"))
     {
@@ -886,10 +904,10 @@ int main(int argc, char *argv[])
 
   gen_final_file(output_name);
 
-  char cmd[300];
-  snprintf(cmd, sizeof(cmd), "sudo cp %s /var/www/", output_name); 
-  printf("%s\n", cmd);
-  system(cmd);
+  //char cmd[300];
+  //snprintf(cmd, sizeof(cmd), "sudo cp %s /var/www/", output_name); 
+  //printf("%s\n", cmd);
+  //system(cmd);
 
   // Ok, borrar todos de los objetos para ver que funciona los destructores.
   for (i=0; i < n_plugins; i++)

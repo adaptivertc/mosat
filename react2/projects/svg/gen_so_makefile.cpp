@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
     n_base++;
   
   }
-  fprintf(fp, "\nexport CPATH=../\n\n");
+  fprintf(fp, "\nexport CPATH=../:../../../../include/\n\n");
   fprintf(fp, ".PHONY: clean all\n\n"); 
   fprintf(fp, "all: ");
   for (int i=0; i < n_base; i++)
@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
 
   for (int i=0; i < n_base; i++)
   {
-    fprintf(fp, "%s.so: %s.cpp\n", base[i], base[i]); 
+    fprintf(fp, "%s.so: %s.cpp ../gen_display.h\n", base[i], base[i]); 
     fprintf(fp, "\t g++ -fPIC -Wall -shared -o %s.so %s.cpp\n\n", base[i], base[i]); 
   }
 

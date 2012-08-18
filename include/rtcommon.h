@@ -106,6 +106,8 @@ public:
   void log_error(const char *message);
 };
 
+double add_rand_noise(double val, double full_scale, double fraction_noise);
+
 extern rt_system_log_t sys_log;
 
 #endif
