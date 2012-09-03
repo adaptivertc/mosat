@@ -45,9 +45,9 @@ ap_config_t ap_config(',');
 class my_notify_t : public sim_ev_notify_t
 {
 public:
-  void trigger_arrival(int section, time_t now);
-  void trigger_departure(int section, time_t now);
-  void trigger_crossing(int the_section, int the_sensor, time_t now);
+  void trigger_arrival(unsigned section, time_t now);
+  void trigger_departure(unsigned section, time_t now);
+  void trigger_crossing(unsigned the_section, unsigned the_sensor, time_t now);
 };
 
 
@@ -55,7 +55,7 @@ static int qid;
 
 /********************************************************/
 
-void my_notify_t::trigger_crossing(int the_section, int the_sensor, time_t now)
+void my_notify_t::trigger_crossing(unsigned the_section, unsigned the_sensor, time_t now)
 {
   char buf[30];
   struct tm mytm;
@@ -81,7 +81,7 @@ void my_notify_t::trigger_crossing(int the_section, int the_sensor, time_t now)
 
 /********************************************************/
 
-void my_notify_t::trigger_arrival(int section, time_t now)
+void my_notify_t::trigger_arrival(unsigned section, time_t now)
 {
   char buf[30];
   struct tm mytm;
@@ -106,7 +106,7 @@ void my_notify_t::trigger_arrival(int section, time_t now)
 
 /********************************************************/
 
-void my_notify_t::trigger_departure(int section, time_t now)
+void my_notify_t::trigger_departure(unsigned section, time_t now)
 {
   char buf[30];
   struct tm mytm;
@@ -228,11 +228,11 @@ int main(int argc, char *argv[])
   create_sim_queue();
 
   time_t now;
-  time_t start;
+  //time_t start;
   class my_notify_t my_notify;
   class train_sim_t sim(&my_notify);
   now = sim.read_day();
-  start = now;
+  //start = now;
 
   const char *sections_file = ap_config.get_config("SECTIONS_FILE");
   if (sections_file == NULL)

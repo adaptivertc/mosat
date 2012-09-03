@@ -168,7 +168,7 @@ char * rt_json_get_number(char *buf, char *argv[], int max_argv, int *actual_arg
 {
   // This assmues that any leading spaces have been removed.
   char *p = buf;
-  bool is_int = true;
+  //bool is_int = true;
   int state = 0;
   bool end_found = false;
   bool error_found = false;
@@ -211,7 +211,7 @@ char * rt_json_get_number(char *buf, char *argv[], int max_argv, int *actual_arg
         if (*p == '.')
         {
           p++;
-          is_int = false;
+          //is_int = false;
           state = 4;
           break;
         }
@@ -270,7 +270,7 @@ char * rt_json_get_number(char *buf, char *argv[], int max_argv, int *actual_arg
         printf("State = 6, char = '%c'\n", *p);
         if ((*p == 'E') || (*p == 'e'))
         {
-          is_int = false;
+          //is_int = false;
           p++;
           state = 7;
           break;

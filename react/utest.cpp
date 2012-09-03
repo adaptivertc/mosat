@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
 {
   // a main for testing
   struct timeval mytv;
-  struct timespec myts;
+  //struct timespec myts;
   struct timeval times[10000];
   //utimer_status_t s[10000];
   long max = 100;
@@ -55,8 +55,8 @@ int main(int argc, char *argv[])
     times[i+1] = mytv;
     //printf("elapsed time: %ld, %ld\n", mytv.tv_sec, mytv.tv_usec);
     //long dif = usec_timer_dif(tv2);
-    myts.tv_sec = 0;
-    myts.tv_nsec = 1;
+    //myts.tv_sec = 0;
+    //myts.tv_nsec = 1;
     //nanosleep(&myts, NULL);
   }
   double total = 0;

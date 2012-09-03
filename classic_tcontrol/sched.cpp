@@ -124,8 +124,8 @@ void scheduler_t::read_schedule(void)
   }
   char line[300];
 
-  int n = 0;
-  double total_time = 0;
+  //int n = 0;
+  //double total_time = 0;
   for (int i=0; NULL != fgets(line, sizeof(line), fp); i++)
   {
     char tmp[300];

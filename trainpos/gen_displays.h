@@ -7,7 +7,7 @@ struct display_info_t // For reading the display info from a file
   char square[80];
   char square_unexpected[80];
   char html_out[80];
-  int n_sections;
+  unsigned n_sections;
   int x1;
   int x2;
   int y1;
@@ -19,12 +19,12 @@ struct display_info_t // For reading the display info from a file
 
 class display_reader_t
 {
-  int n_displays;
+  unsigned n_displays;
   display_info_t *displays[20];
 public:
   display_reader_t(void);
-  int get_n_displays(void) {return n_displays;};
-  const display_info_t *get_display_data(int n);
+  unsigned get_n_displays(void) {return n_displays;};
+  const display_info_t *get_display_data(unsigned n);
   void read_file(const char *fname);
 };
 
@@ -46,8 +46,8 @@ private:
   int y1;
   int y2;
   int total_x_pixels;
-  int n_sections;
-  int n_squares;
+  unsigned n_sections;
+  unsigned n_squares;
   int return_start;
 public:
   display_dist_t(int a_x1, int a_x2, int a_y1, int a_y2, int n_sections);

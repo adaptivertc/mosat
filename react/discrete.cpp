@@ -66,6 +66,15 @@ void discrete_point_t::display_pv(void)
 
   if (display_is_on /* && screen_refresh_is_on()*/)
   {
+    if (pv)
+    {
+      pv_string = hi_desc;
+    }
+    else
+    {
+      pv_string = lo_desc;
+    }
+    /****
     switch (pv)
     {
       case DISCRETE_HI:
@@ -83,6 +92,7 @@ void discrete_point_t::display_pv(void)
 	pv_string = "ERROR";
 	break;
     }
+    ***/
     //printf("%s:%s,", tag, pv_string);
     /***
     //textattr((flash_on) ? (pv_attr | (1 << 7)) : pv_attr);

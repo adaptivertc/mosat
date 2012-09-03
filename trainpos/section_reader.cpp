@@ -16,14 +16,14 @@ section_reader_t sections;
 
 /********************************************************/
 
-int section_reader_t::get_n_sections(void)
+unsigned section_reader_t::get_n_sections(void)
 {
   return n_sections;
 } 
 
 /********************************************************/
 
-int section_reader_t::get_n_sensors(int section_number)
+unsigned section_reader_t::get_n_sensors(unsigned section_number)
 {
   if ((section_number < 0) || (section_number >= n_sections))
   {
@@ -36,7 +36,7 @@ int section_reader_t::get_n_sensors(int section_number)
 
 /********************************************************/
 
-int section_reader_t::get_section_time(int section_number)
+int section_reader_t::get_section_time(unsigned section_number)
 {
   if ((section_number < 0) || (section_number >= n_sections))
   {
@@ -49,8 +49,8 @@ int section_reader_t::get_section_time(int section_number)
 
 /********************************************************/
 
-int section_reader_t::get_sensor_loc(int section_number, 
-                                               int sensor_number)
+unsigned section_reader_t::get_sensor_loc(unsigned section_number, 
+                                               unsigned sensor_number)
 {
   if ((section_number < 0) || (section_number >= n_sections))
   {
@@ -70,7 +70,7 @@ int section_reader_t::get_sensor_loc(int section_number,
 
 /********************************************************/
 
-int section_reader_t::get_dwell_time(int section_number)
+int section_reader_t::get_dwell_time(unsigned section_number)
 {
   if ((section_number < 0) || (section_number >= n_sections))
   {
@@ -83,7 +83,7 @@ int section_reader_t::get_dwell_time(int section_number)
 
 /********************************************************/
 
-int section_reader_t::get_departure_sensor_loc(int section_number)
+unsigned section_reader_t::get_departure_sensor_loc(unsigned section_number)
 {
   if ((section_number < 0) || (section_number >= n_sections))
   {
@@ -96,7 +96,7 @@ int section_reader_t::get_departure_sensor_loc(int section_number)
 
 /********************************************************/
 
-int section_reader_t::get_arival_sensor_loc(int section_number)
+unsigned section_reader_t::get_arival_sensor_loc(unsigned section_number)
 {
   if ((section_number < 0) || (section_number >= n_sections))
   {
@@ -104,13 +104,13 @@ int section_reader_t::get_arival_sensor_loc(int section_number)
        __FILE__, __LINE__, section_number);
     exit(1);
   }
-  int n_sensors = sections[section_number].n_sensors;
+  unsigned n_sensors = sections[section_number].n_sensors;
   return sections[section_number].sensor_location[n_sensors-1];
 }
 
 /********************************************************/
 
-int section_reader_t::get_time_to_start(int section_number)
+int section_reader_t::get_time_to_start(unsigned section_number)
 {
   if ((section_number < 0) || (section_number >= n_sections))
   {
@@ -123,7 +123,7 @@ int section_reader_t::get_time_to_start(int section_number)
 
 /********************************************************/
 
-const char *section_reader_t::get_station_name(int section_number)
+const char *section_reader_t::get_station_name(unsigned section_number)
 {
   if ((section_number < 0) || (section_number >= n_sections))
   {
@@ -136,7 +136,7 @@ const char *section_reader_t::get_station_name(int section_number)
 
 /********************************************************/
 
-const tsecdata_t *section_reader_t::get_section_data(int section_number)
+const tsecdata_t *section_reader_t::get_section_data(unsigned section_number)
 {
   if ((section_number < 0) || (section_number >= n_sections))
   {
@@ -152,7 +152,7 @@ const tsecdata_t *section_reader_t::get_section_data(int section_number)
 
 void section_reader_t::read_section_file(void)
 {
-  int max = TP_MAX_SECTIONS;
+  unsigned max = TP_MAX_SECTIONS;
 
   const char *sections_file = ap_config.get_config("SECTIONS_FILE");
   if (sections_file == NULL)
@@ -174,7 +174,7 @@ void section_reader_t::read_section_file(void)
     exit(1);
   }
 
-  int n_lines = 0;
+  unsigned n_lines = 0;
   int total_time = 0;
   for (int i=0; NULL != fgets(line, sizeof(line), fp); i++)
   {
@@ -212,7 +212,7 @@ void section_reader_t::read_section_file(void)
       n_lines, 
       sections[n_lines].time_to_start, 
       sections[n_lines].section_time); 
-    for (int i=0; i <  sections[n_lines].n_sensors; i++) 
+    for (unsigned i=0; i <  sections[n_lines].n_sensors; i++) 
     { 
       if (i != 0) printf(", ");
       printf("%d", sections[n_lines].sensor_location[i]); 

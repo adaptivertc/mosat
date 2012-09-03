@@ -101,6 +101,7 @@ bool jl_sec_colection::setSecKey(int keys[], int n_keys)
     {
         section_col[i].sec_key=keys[i]; 
     }
+    return true;
 }
 /*************************************************************************/
 bool jl_sec_colection::isBusy(int section)
@@ -309,7 +310,8 @@ void jl_sec_colection::setEntrys(int entry_sections[], int entry_keys[], int num
      if(num_entrys>getSize())
      {
         
-            sprintf(msg,"The number of entry points is bigger than the number of sections",num_entrys,getSize());
+            sprintf(msg,"The number of entry points is bigger than the number of sections %d %d",
+                 num_entrys,getSize());
             throw msg;
      }
      for(int i=0;i<num_entrys;i++)

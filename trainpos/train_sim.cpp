@@ -209,7 +209,7 @@ void train_sim_t::update(time_t now)
     }
   }
 
-  for (int i=0; i < n_trains; i++)
+  for (unsigned i=0; i < n_trains; i++)
   {
     this->update_train(i, now);
     //this->xupdate_train(i, now);
@@ -268,7 +268,7 @@ void train_sim_t::add_train(time_t now)
 
 /********************************************************/
 
-void train_sim_t::xupdate_train(int n, time_t now)
+void train_sim_t::xupdate_train(unsigned n, time_t now)
 {
   if (now >= trains[n].next_crossing)
   {
@@ -333,7 +333,7 @@ void train_sim_t::xupdate_train(int n, time_t now)
 
 /********************************************************/
 
-void train_sim_t::update_train(int n, time_t now)
+void train_sim_t::update_train(unsigned n, time_t now)
 {
   if (trains[n].departure_triggered)
   {

@@ -124,7 +124,7 @@ void exit_clean_up(void)
 
 void print_help()
 {
-  printf("Usage: react [-d <home-directory>] [-x] [sequence-name]\n\n");
+  printf("Usage: react2 [-d <home-directory>] [-x] [sequence-name]\n\n");
   printf("Run the react control engine\n\n");
   printf("  -d   use an alternate directory for the react home directory.\n");
   printf("       The -d command must be followed by a home directory.\n");
@@ -132,10 +132,15 @@ void print_help()
   printf("       the current directory. React reads files from two\n");
   printf("       directories under the home directory:\n");
   printf("            dbfiles and corridas.\n");
-  printf("  -x   option tells react to not execute a sequence by default\n");
+  printf("  -x   do NOT execute a sequence by default\n");
   printf("       if you do not use the -x option, you must specify a sequence\n");
+  printf("  -v --version prints the svn revision number and exits\n");
+  printf("  -ns do NOT print to the screen\n");
+  printf("  -nk do NOT not check the keyboard\n");
+  printf("  -bw use busy wait\n");
   printf("\n");
 }
+
 
 /*****************************************************************/
 
@@ -180,9 +185,9 @@ int main(int argc, char *argv[])
       // Don't print to the screen
       print_to_screen = false;
     }
-    else if (0 == strcmp(argv[current_arg], "-r") || (0 == strcmp(argv[current_arg], "--revision")))
+    else if (0 == strcmp(argv[current_arg], "-v") || (0 == strcmp(argv[current_arg], "--version")))
     {
-      printf( "%s\n", 
+      printf( "react2, %s\n", 
             #include "revision_number"
             );
       exit(0);

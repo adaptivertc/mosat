@@ -44,15 +44,15 @@ struct message_t
 class control_object_t
 {
 public:
-  int read_counter(void){};
-  int reset_counter(void){};
-  bool read_prox_sensor(void){};
+  int read_counter(void){return 0;};
+  int reset_counter(void){return 0;};
+  bool read_prox_sensor(void){return false;};
   void set_stoplight_and_brake(bool is_on){};
   void send_to_next_neighbor(short mtype){};
   void send_to_last_neighbor(short mtype){};
   void send_to_central(short mtype){};
   void alarm_detected(short type, const char *msg){};
-  message_t *get_message(void){};
+  message_t *get_message(void){return NULL;};
 };
 
 #define TRAIN_CROSSED_SENSOR (1)

@@ -9,8 +9,8 @@
 struct sim_msg_t
 {
   int type;
-  int section;
-  int sensor;
+  unsigned section;
+  unsigned sensor;
 };
 
 struct q_sim_msg_t

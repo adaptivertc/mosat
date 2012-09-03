@@ -53,6 +53,15 @@ void do_point_t::send_it(bool val)
 
   db->send_do(driver, card, channel, val);
   pv = val ? DISCRETE_HI: DISCRETE_LO;
+  if (pv)
+  {
+    pv_string = hi_desc;
+  }
+  else
+  {
+    pv_string = lo_desc;
+  }
+  /***
   switch (pv)
   {
     case DISCRETE_HI:
@@ -72,6 +81,7 @@ void do_point_t::send_it(bool val)
       pv_string = "*******";
       break;
   }
+  **/
   display_pv();
 }
 

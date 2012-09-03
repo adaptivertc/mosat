@@ -3,7 +3,7 @@ export CPATH=../include
 
 OBJS=  arg.o common.o safestr.o utimer.o memfail.o  numbered_file.o ap_config.o separator.o rt_system_log.o log_functions.o split_array.o rt_json.o random_tools.o
 
-CPP=g++ -fPIC
+CPP=g++ -fPIC -Wall -Werror
 
 %.o:    %.cpp $(INCLUDES)
 	$(CPP) -c -o $@ -Wall $<

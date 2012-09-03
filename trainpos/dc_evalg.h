@@ -23,9 +23,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class display_alg_t : public event_alg_t
 {
 private:
-  int train_number;
-  int n_trains;
-  int n_sections;
+  unsigned train_number;
+  unsigned n_trains;
+  unsigned n_sections;
   time_t when_last_train_entered;
 
   train_data_t trains[50];
@@ -33,7 +33,7 @@ private:
   //section_reader_t sections;
   time_table_t time_table;
   gen_displays_t gen_displays;
-  void update_train(time_t ts, int n);
+  void update_train(unsigned int n, time_t now);
 
   alarm_entry_t actual_alarms[RT_MAX_ALARMS]; 
   alarm_entry_t alarm_history[RT_MAX_ALARMS]; 
@@ -43,8 +43,8 @@ public:
   void read_sections(const char *fname);
   void update(time_t time);
   void process_event(crossing_event_t ev);
-  void process_departure(int section, time_t now);
-  void process_arival(int section, time_t now);
+  void process_departure(unsigned section, time_t now);
+  void process_arival(unsigned section, time_t now);
   void process_arrival(crossing_event_t ev);
   //void gen_display(time_t now);
   //void gen_html(time_t now);

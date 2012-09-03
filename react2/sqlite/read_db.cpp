@@ -49,91 +49,11 @@ int main(int argc, char *argv[])
 
     /*--------*/
 
-  printf("---- Reading database 'ao' -------------\n");
+  printf("---- Reading database 'remote_pid' -------------\n");
   cbdata.first = false;
   cbdata.n = 0;
-  cbdata.nf = 15;
-  retval = sqlite3_exec(sqdb, "select * from 'ao';",
-             my_callback, &cbdata, &errmsg);
-  if (retval != SQLITE_OK)
-  {
-    printf("Can not execute query, error = %d\n", retval);
-    if (errmsg != NULL)
-    {
-      printf("errmsg: %s\n", errmsg);
-      sqlite3_free(errmsg);
-    }
-    sqlite3_close(sqdb);
-    return 0;
-  }
-
-    /*--------*/
-
-  printf("---- Reading database 'scan' -------------\n");
-  cbdata.first = false;
-  cbdata.n = 0;
-  cbdata.nf = 5;
-  retval = sqlite3_exec(sqdb, "select * from 'scan';",
-             my_callback, &cbdata, &errmsg);
-  if (retval != SQLITE_OK)
-  {
-    printf("Can not execute query, error = %d\n", retval);
-    if (errmsg != NULL)
-    {
-      printf("errmsg: %s\n", errmsg);
-      sqlite3_free(errmsg);
-    }
-    sqlite3_close(sqdb);
-    return 0;
-  }
-
-    /*--------*/
-
-  printf("---- Reading database 'pump' -------------\n");
-  cbdata.first = false;
-  cbdata.n = 0;
-  cbdata.nf = 8;
-  retval = sqlite3_exec(sqdb, "select * from 'pump';",
-             my_callback, &cbdata, &errmsg);
-  if (retval != SQLITE_OK)
-  {
-    printf("Can not execute query, error = %d\n", retval);
-    if (errmsg != NULL)
-    {
-      printf("errmsg: %s\n", errmsg);
-      sqlite3_free(errmsg);
-    }
-    sqlite3_close(sqdb);
-    return 0;
-  }
-
-    /*--------*/
-
-  printf("---- Reading database 'discrete_value' -------------\n");
-  cbdata.first = false;
-  cbdata.n = 0;
-  cbdata.nf = 5;
-  retval = sqlite3_exec(sqdb, "select * from 'discrete_value';",
-             my_callback, &cbdata, &errmsg);
-  if (retval != SQLITE_OK)
-  {
-    printf("Can not execute query, error = %d\n", retval);
-    if (errmsg != NULL)
-    {
-      printf("errmsg: %s\n", errmsg);
-      sqlite3_free(errmsg);
-    }
-    sqlite3_close(sqdb);
-    return 0;
-  }
-
-    /*--------*/
-
-  printf("---- Reading database 'pid' -------------\n");
-  cbdata.first = false;
-  cbdata.n = 0;
-  cbdata.nf = 19;
-  retval = sqlite3_exec(sqdb, "select * from 'pid';",
+  cbdata.nf = 24;
+  retval = sqlite3_exec(sqdb, "select * from 'remote_pid';",
              my_callback, &cbdata, &errmsg);
   if (retval != SQLITE_OK)
   {
@@ -169,11 +89,91 @@ int main(int argc, char *argv[])
 
     /*--------*/
 
-  printf("---- Reading database 'timer' -------------\n");
+  printf("---- Reading database 'pump' -------------\n");
+  cbdata.first = false;
+  cbdata.n = 0;
+  cbdata.nf = 8;
+  retval = sqlite3_exec(sqdb, "select * from 'pump';",
+             my_callback, &cbdata, &errmsg);
+  if (retval != SQLITE_OK)
+  {
+    printf("Can not execute query, error = %d\n", retval);
+    if (errmsg != NULL)
+    {
+      printf("errmsg: %s\n", errmsg);
+      sqlite3_free(errmsg);
+    }
+    sqlite3_close(sqdb);
+    return 0;
+  }
+
+    /*--------*/
+
+  printf("---- Reading database 'ac' -------------\n");
   cbdata.first = false;
   cbdata.n = 0;
   cbdata.nf = 7;
-  retval = sqlite3_exec(sqdb, "select * from 'timer';",
+  retval = sqlite3_exec(sqdb, "select * from 'ac';",
+             my_callback, &cbdata, &errmsg);
+  if (retval != SQLITE_OK)
+  {
+    printf("Can not execute query, error = %d\n", retval);
+    if (errmsg != NULL)
+    {
+      printf("errmsg: %s\n", errmsg);
+      sqlite3_free(errmsg);
+    }
+    sqlite3_close(sqdb);
+    return 0;
+  }
+
+    /*--------*/
+
+  printf("---- Reading database 'level' -------------\n");
+  cbdata.first = false;
+  cbdata.n = 0;
+  cbdata.nf = 6;
+  retval = sqlite3_exec(sqdb, "select * from 'level';",
+             my_callback, &cbdata, &errmsg);
+  if (retval != SQLITE_OK)
+  {
+    printf("Can not execute query, error = %d\n", retval);
+    if (errmsg != NULL)
+    {
+      printf("errmsg: %s\n", errmsg);
+      sqlite3_free(errmsg);
+    }
+    sqlite3_close(sqdb);
+    return 0;
+  }
+
+    /*--------*/
+
+  printf("---- Reading database 'pid' -------------\n");
+  cbdata.first = false;
+  cbdata.n = 0;
+  cbdata.nf = 19;
+  retval = sqlite3_exec(sqdb, "select * from 'pid';",
+             my_callback, &cbdata, &errmsg);
+  if (retval != SQLITE_OK)
+  {
+    printf("Can not execute query, error = %d\n", retval);
+    if (errmsg != NULL)
+    {
+      printf("errmsg: %s\n", errmsg);
+      sqlite3_free(errmsg);
+    }
+    sqlite3_close(sqdb);
+    return 0;
+  }
+
+    /*--------*/
+
+  printf("---- Reading database 'ao' -------------\n");
+  cbdata.first = false;
+  cbdata.n = 0;
+  cbdata.nf = 15;
+  retval = sqlite3_exec(sqdb, "select * from 'ao';",
              my_callback, &cbdata, &errmsg);
   if (retval != SQLITE_OK)
   {
@@ -229,171 +229,11 @@ int main(int argc, char *argv[])
 
     /*--------*/
 
-  printf("---- Reading database 'data' -------------\n");
-  cbdata.first = false;
-  cbdata.n = 0;
-  cbdata.nf = 5;
-  retval = sqlite3_exec(sqdb, "select * from 'data';",
-             my_callback, &cbdata, &errmsg);
-  if (retval != SQLITE_OK)
-  {
-    printf("Can not execute query, error = %d\n", retval);
-    if (errmsg != NULL)
-    {
-      printf("errmsg: %s\n", errmsg);
-      sqlite3_free(errmsg);
-    }
-    sqlite3_close(sqdb);
-    return 0;
-  }
-
-    /*--------*/
-
-  printf("---- Reading database 'discrete_logger' -------------\n");
-  cbdata.first = false;
-  cbdata.n = 0;
-  cbdata.nf = 5;
-  retval = sqlite3_exec(sqdb, "select * from 'discrete_logger';",
-             my_callback, &cbdata, &errmsg);
-  if (retval != SQLITE_OK)
-  {
-    printf("Can not execute query, error = %d\n", retval);
-    if (errmsg != NULL)
-    {
-      printf("errmsg: %s\n", errmsg);
-      sqlite3_free(errmsg);
-    }
-    sqlite3_close(sqdb);
-    return 0;
-  }
-
-    /*--------*/
-
-  printf("---- Reading database 'remote_pid' -------------\n");
-  cbdata.first = false;
-  cbdata.n = 0;
-  cbdata.nf = 24;
-  retval = sqlite3_exec(sqdb, "select * from 'remote_pid';",
-             my_callback, &cbdata, &errmsg);
-  if (retval != SQLITE_OK)
-  {
-    printf("Can not execute query, error = %d\n", retval);
-    if (errmsg != NULL)
-    {
-      printf("errmsg: %s\n", errmsg);
-      sqlite3_free(errmsg);
-    }
-    sqlite3_close(sqdb);
-    return 0;
-  }
-
-    /*--------*/
-
-  printf("---- Reading database 'valve' -------------\n");
-  cbdata.first = false;
-  cbdata.n = 0;
-  cbdata.nf = 6;
-  retval = sqlite3_exec(sqdb, "select * from 'valve';",
-             my_callback, &cbdata, &errmsg);
-  if (retval != SQLITE_OK)
-  {
-    printf("Can not execute query, error = %d\n", retval);
-    if (errmsg != NULL)
-    {
-      printf("errmsg: %s\n", errmsg);
-      sqlite3_free(errmsg);
-    }
-    sqlite3_close(sqdb);
-    return 0;
-  }
-
-    /*--------*/
-
-  printf("---- Reading database 'ac' -------------\n");
-  cbdata.first = false;
-  cbdata.n = 0;
-  cbdata.nf = 7;
-  retval = sqlite3_exec(sqdb, "select * from 'ac';",
-             my_callback, &cbdata, &errmsg);
-  if (retval != SQLITE_OK)
-  {
-    printf("Can not execute query, error = %d\n", retval);
-    if (errmsg != NULL)
-    {
-      printf("errmsg: %s\n", errmsg);
-      sqlite3_free(errmsg);
-    }
-    sqlite3_close(sqdb);
-    return 0;
-  }
-
-    /*--------*/
-
   printf("---- Reading database 'ai' -------------\n");
   cbdata.first = false;
   cbdata.n = 0;
   cbdata.nf = 23;
   retval = sqlite3_exec(sqdb, "select * from 'ai';",
-             my_callback, &cbdata, &errmsg);
-  if (retval != SQLITE_OK)
-  {
-    printf("Can not execute query, error = %d\n", retval);
-    if (errmsg != NULL)
-    {
-      printf("errmsg: %s\n", errmsg);
-      sqlite3_free(errmsg);
-    }
-    sqlite3_close(sqdb);
-    return 0;
-  }
-
-    /*--------*/
-
-  printf("---- Reading database 'di' -------------\n");
-  cbdata.first = false;
-  cbdata.n = 0;
-  cbdata.nf = 10;
-  retval = sqlite3_exec(sqdb, "select * from 'di';",
-             my_callback, &cbdata, &errmsg);
-  if (retval != SQLITE_OK)
-  {
-    printf("Can not execute query, error = %d\n", retval);
-    if (errmsg != NULL)
-    {
-      printf("errmsg: %s\n", errmsg);
-      sqlite3_free(errmsg);
-    }
-    sqlite3_close(sqdb);
-    return 0;
-  }
-
-    /*--------*/
-
-  printf("---- Reading database 'analog_value' -------------\n");
-  cbdata.first = false;
-  cbdata.n = 0;
-  cbdata.nf = 7;
-  retval = sqlite3_exec(sqdb, "select * from 'analog_value';",
-             my_callback, &cbdata, &errmsg);
-  if (retval != SQLITE_OK)
-  {
-    printf("Can not execute query, error = %d\n", retval);
-    if (errmsg != NULL)
-    {
-      printf("errmsg: %s\n", errmsg);
-      sqlite3_free(errmsg);
-    }
-    sqlite3_close(sqdb);
-    return 0;
-  }
-
-    /*--------*/
-
-  printf("---- Reading database 'pci' -------------\n");
-  cbdata.first = false;
-  cbdata.n = 0;
-  cbdata.nf = 23;
-  retval = sqlite3_exec(sqdb, "select * from 'pci';",
              my_callback, &cbdata, &errmsg);
   if (retval != SQLITE_OK)
   {
@@ -429,11 +269,11 @@ int main(int argc, char *argv[])
 
     /*--------*/
 
-  printf("---- Reading database 'file_logger' -------------\n");
+  printf("---- Reading database 'discrete_value' -------------\n");
   cbdata.first = false;
   cbdata.n = 0;
-  cbdata.nf = 11;
-  retval = sqlite3_exec(sqdb, "select * from 'file_logger';",
+  cbdata.nf = 5;
+  retval = sqlite3_exec(sqdb, "select * from 'discrete_value';",
              my_callback, &cbdata, &errmsg);
   if (retval != SQLITE_OK)
   {
@@ -449,11 +289,171 @@ int main(int argc, char *argv[])
 
     /*--------*/
 
-  printf("---- Reading database 'level' -------------\n");
+  printf("---- Reading database 'analog_value' -------------\n");
+  cbdata.first = false;
+  cbdata.n = 0;
+  cbdata.nf = 7;
+  retval = sqlite3_exec(sqdb, "select * from 'analog_value';",
+             my_callback, &cbdata, &errmsg);
+  if (retval != SQLITE_OK)
+  {
+    printf("Can not execute query, error = %d\n", retval);
+    if (errmsg != NULL)
+    {
+      printf("errmsg: %s\n", errmsg);
+      sqlite3_free(errmsg);
+    }
+    sqlite3_close(sqdb);
+    return 0;
+  }
+
+    /*--------*/
+
+  printf("---- Reading database 'valve' -------------\n");
   cbdata.first = false;
   cbdata.n = 0;
   cbdata.nf = 6;
-  retval = sqlite3_exec(sqdb, "select * from 'level';",
+  retval = sqlite3_exec(sqdb, "select * from 'valve';",
+             my_callback, &cbdata, &errmsg);
+  if (retval != SQLITE_OK)
+  {
+    printf("Can not execute query, error = %d\n", retval);
+    if (errmsg != NULL)
+    {
+      printf("errmsg: %s\n", errmsg);
+      sqlite3_free(errmsg);
+    }
+    sqlite3_close(sqdb);
+    return 0;
+  }
+
+    /*--------*/
+
+  printf("---- Reading database 'scan' -------------\n");
+  cbdata.first = false;
+  cbdata.n = 0;
+  cbdata.nf = 5;
+  retval = sqlite3_exec(sqdb, "select * from 'scan';",
+             my_callback, &cbdata, &errmsg);
+  if (retval != SQLITE_OK)
+  {
+    printf("Can not execute query, error = %d\n", retval);
+    if (errmsg != NULL)
+    {
+      printf("errmsg: %s\n", errmsg);
+      sqlite3_free(errmsg);
+    }
+    sqlite3_close(sqdb);
+    return 0;
+  }
+
+    /*--------*/
+
+  printf("---- Reading database 'pci' -------------\n");
+  cbdata.first = false;
+  cbdata.n = 0;
+  cbdata.nf = 23;
+  retval = sqlite3_exec(sqdb, "select * from 'pci';",
+             my_callback, &cbdata, &errmsg);
+  if (retval != SQLITE_OK)
+  {
+    printf("Can not execute query, error = %d\n", retval);
+    if (errmsg != NULL)
+    {
+      printf("errmsg: %s\n", errmsg);
+      sqlite3_free(errmsg);
+    }
+    sqlite3_close(sqdb);
+    return 0;
+  }
+
+    /*--------*/
+
+  printf("---- Reading database 'discrete_logger' -------------\n");
+  cbdata.first = false;
+  cbdata.n = 0;
+  cbdata.nf = 5;
+  retval = sqlite3_exec(sqdb, "select * from 'discrete_logger';",
+             my_callback, &cbdata, &errmsg);
+  if (retval != SQLITE_OK)
+  {
+    printf("Can not execute query, error = %d\n", retval);
+    if (errmsg != NULL)
+    {
+      printf("errmsg: %s\n", errmsg);
+      sqlite3_free(errmsg);
+    }
+    sqlite3_close(sqdb);
+    return 0;
+  }
+
+    /*--------*/
+
+  printf("---- Reading database 'data' -------------\n");
+  cbdata.first = false;
+  cbdata.n = 0;
+  cbdata.nf = 5;
+  retval = sqlite3_exec(sqdb, "select * from 'data';",
+             my_callback, &cbdata, &errmsg);
+  if (retval != SQLITE_OK)
+  {
+    printf("Can not execute query, error = %d\n", retval);
+    if (errmsg != NULL)
+    {
+      printf("errmsg: %s\n", errmsg);
+      sqlite3_free(errmsg);
+    }
+    sqlite3_close(sqdb);
+    return 0;
+  }
+
+    /*--------*/
+
+  printf("---- Reading database 'timer' -------------\n");
+  cbdata.first = false;
+  cbdata.n = 0;
+  cbdata.nf = 7;
+  retval = sqlite3_exec(sqdb, "select * from 'timer';",
+             my_callback, &cbdata, &errmsg);
+  if (retval != SQLITE_OK)
+  {
+    printf("Can not execute query, error = %d\n", retval);
+    if (errmsg != NULL)
+    {
+      printf("errmsg: %s\n", errmsg);
+      sqlite3_free(errmsg);
+    }
+    sqlite3_close(sqdb);
+    return 0;
+  }
+
+    /*--------*/
+
+  printf("---- Reading database 'di' -------------\n");
+  cbdata.first = false;
+  cbdata.n = 0;
+  cbdata.nf = 10;
+  retval = sqlite3_exec(sqdb, "select * from 'di';",
+             my_callback, &cbdata, &errmsg);
+  if (retval != SQLITE_OK)
+  {
+    printf("Can not execute query, error = %d\n", retval);
+    if (errmsg != NULL)
+    {
+      printf("errmsg: %s\n", errmsg);
+      sqlite3_free(errmsg);
+    }
+    sqlite3_close(sqdb);
+    return 0;
+  }
+
+    /*--------*/
+
+  printf("---- Reading database 'file_logger' -------------\n");
+  cbdata.first = false;
+  cbdata.n = 0;
+  cbdata.nf = 11;
+  retval = sqlite3_exec(sqdb, "select * from 'file_logger';",
              my_callback, &cbdata, &errmsg);
   if (retval != SQLITE_OK)
   {

@@ -42,7 +42,7 @@ static char plog_home[200];
 void level_point_t::update(void)
 {
   /* Update the given level point. */
-  double current_level;
+  //double current_level;
   bool lo_state;
   bool hi_state;
   time_t now;
@@ -54,7 +54,7 @@ void level_point_t::update(void)
   }
 
   now = time(NULL);
-  current_level = level_point->get_pv();
+  //current_level = level_point->get_pv();
   lo_state = di_lo->get_pv();
   hi_state = di_hi->get_pv();
   

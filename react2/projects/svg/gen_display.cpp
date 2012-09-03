@@ -656,8 +656,9 @@ static void gen_final_file(const char *fname)
 
 /********************************/
 
+#define MAX_PLUGINS (100)
 int n_plugins = 0;
-gen_plugin_base_t *mi_objs[100];
+gen_plugin_base_t *mi_objs[MAX_PLUGINS];
 
 static gen_plugin_base_t *get_plugin(const char *type)
 {
@@ -846,7 +847,7 @@ int main(int argc, char *argv[])
 
     printf("Opening plugin[%d]: %s\n", n_plugins + 1,  sofile);
 
-    if (n_plugins > 99) 
+    if (n_plugins > (MAX_PLUGINS - 1)) 
     {
       printf("Maximum number of plugins exceeded!!!, stopping\n");
       break;

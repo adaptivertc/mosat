@@ -21,7 +21,7 @@ display_reader_t::display_reader_t(void)
 
 /********************************************************/
 
-const display_info_t *display_reader_t::get_display_data(int n)
+const display_info_t *display_reader_t::get_display_data(unsigned n)
 {
   if (n >= n_displays)
   {

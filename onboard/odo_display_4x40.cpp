@@ -84,6 +84,7 @@ void *check_for_keys(void *param)
       key_hit = buf[n-1];
     }
   }
+  return NULL; // should never get here
 }
 
 /***************************************************************/
@@ -179,9 +180,9 @@ int odo_wait_key(const char *msg)
 void odo_init_screen()
 {
   char buf[10];
-  unsigned char buf2[10]; 
-  unsigned char buf3[10]; 
-  char buf4[10]; 
+  //unsigned char buf2[10]; 
+  //unsigned char buf3[10]; 
+  //char buf4[10]; 
 
   if (serial_fd1 != -1)
   {
@@ -216,6 +217,7 @@ void odo_init_screen()
   buf[1] = '6'; // Read Version Number. 
   write(serial_fd1, buf, 2);
 
+  /***
   buf2[0] = 0xFE;  
   buf2[1] = 0x7C; // horizontal bar graph. 
   buf2[2] = 8;
@@ -233,6 +235,7 @@ void odo_init_screen()
   buf4[2] = 8 + 23;
   buf4[3] = 4;
   buf4[4] = 1;
+  ***/
 
   buf[0] = 0xFE;  // goto xy
   buf[1] = 0x47;

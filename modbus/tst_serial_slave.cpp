@@ -9,7 +9,7 @@
 int main(int argc, char *argv[])
 {
    int device;
-   int i, j;
+   //int i, j;
 
    char dev_name[60];
    if (argc > 1)
@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
    /*** Read ***/
    write(device, "x", 1);
    char read_data[100];
-   int total_read = 0;
+   //int total_read = 0;
    int count = 0;
    while (1)
    {

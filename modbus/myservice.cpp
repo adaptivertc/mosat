@@ -78,7 +78,7 @@ int main(int argc, char *argv[])
 
   sin_size = sizeof(struct sockaddr_in);
   react_trace.set_level(0);
-  int child_n;
+  //int child_n;
   for (int i=1; true; i++)
   {
     printf("I am the dad!\n");
@@ -89,7 +89,7 @@ int main(int argc, char *argv[])
       perror("error on accept");
       exit(0);
     }
-    child_n = i;
+    //child_n = i;
     int retval;
     pthread_t thr;
     retval = pthread_create(&thr, NULL, service_client, &new_fd);

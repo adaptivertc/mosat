@@ -169,7 +169,7 @@ bool parseTimeString(const char* szWord)
 {
   unsigned currentState = 0;
   for (unsigned ss = 0; szWord[ss]; ss++)
-    currentState = g_TimeParserTransitionFunction[szWord[ss]][currentState];
+    currentState = g_TimeParserTransitionFunction[(unsigned)szWord[ss]][currentState];
   return 9 == currentState || 10 == currentState ? true : false;
 }
 
@@ -569,7 +569,7 @@ TPRC_ENUM ri_cfReader::loadConfigFile(const char* szPath)
 {
   m_Logger << INDENT << "Entering ri_cfReader::loadConfigFile...\n";
   m_Logger.increaseIndent();
-  long fSize;
+  unsigned long fSize;
   size_t nOfChars;
   TPRC_ENUM rCode;
   FILE* pConfigFile;

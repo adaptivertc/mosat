@@ -3,7 +3,7 @@
 class train_calculator_t
 {
 private:
-  int n_trains;
+  unsigned n_trains;
   time_t time_now;
   train_data_t *td;
 public:

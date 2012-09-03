@@ -442,11 +442,13 @@ void my_alg_notify_object_t::permit_section_entry(int s, int key)
 
 
 
+  /***
   bool last_setting = true;
   for (int i=0; i < n_algs; i++)
   {
     if (!alg_light_settings[s][i]) last_setting = false;
   }
+  ***/
  
   alg_light_settings[s][n] = true;
   green_light(stop_light_loc_y[s][n], stop_light_loc_x[s]);
@@ -598,7 +600,7 @@ void init_substations(void)
 {
   double sub[] = {0, 853, 3282, 5230, 7507, 9032, 11018, 12855, 14135, 15421};
 
-  for (int i=0; i < (sizeof(sub) / sizeof(sub[0])); i++)
+  for (unsigned i=0; i < (sizeof(sub) / sizeof(sub[0])); i++)
   {
     int x = get_x(sub[i]) + 2;
     int y = n_algs + 4;
@@ -1062,8 +1064,8 @@ int main(int argc, char *argv[])
 
   FILE *fpn = fopen("run.txt", "w");
   estop_active = false;
-  bool fast = false;
-  bool vfast = false;
+  //bool fast = false;
+  //bool vfast = false;
   bool libre = false;
   int speedup = 1;
   for (int i=0; i < 1000000; i++)
@@ -1079,23 +1081,23 @@ int main(int argc, char *argv[])
     }
     else if (ch == 's')
     {
-      fast = false;
-      vfast = false;
+      //fast = false;
+      //vfast = false;
       libre = false;
       speedup = 1;
     }
     else if (ch == 'f')
     {
-      fast = true;
-      vfast = false;
+      //fast = true;
+      //vfast = false;
       libre = false;
       speedup = 10;
     }
     else if (ch == 'v')
     {
       libre = false;
-      fast = false;
-      vfast = true;
+      //fast = false;
+      //vfast = true;
       speedup = 50;
     }
     else if ((ch >= '1') && (ch <= '9'))
@@ -1106,8 +1108,8 @@ int main(int argc, char *argv[])
     else if (ch == 'l')
     {
       libre = true;
-      fast = false;
-      vfast = false;
+      //fast = false;
+      //vfast = false;
     }
     else if (ch == 'i')
     {

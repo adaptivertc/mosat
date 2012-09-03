@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
 {
    const char *dev_name;
    int device;
-   int j;
+   //int j;
 
    /**
    Mbm_trame trame;
@@ -42,8 +42,8 @@ int main(int argc, char *argv[])
 
 
    /*** Write ***/
-   char write_data;
-   write_data = 'x';
+   //char write_data;
+   //write_data = 'x';
 
    while (1)
    {
@@ -75,9 +75,9 @@ int main(int argc, char *argv[])
          break;
        }
      }
+     /***
      unsigned short analog_values[8];
      char *p = read_data;
-     /***
      for (j=0; j < 8; j++)
      {
        analog_values[j] = atol(p);

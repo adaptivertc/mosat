@@ -43,13 +43,13 @@ bool time_table_t::is_a_match(time_t scheduled_time, time_t actual_time)
 
 const char *time_table_t::match_departure(time_t actual_departure_time)
 {
-  int found = false;
+  //int found = false;
   int count = 0;
   for (int i=(next_match); i < n_departures; i++)
   {
     if (is_a_match(this->times[i], actual_departure_time))
     {
-       found = true;
+       //found = true;
        this->matched[i] = true;
        if (count > 0) 
        {

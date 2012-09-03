@@ -149,14 +149,14 @@ static bool _ones = false;
 
 void ModSerialSim::read_input_table(uint8 *buf)
 {
-    uint16 tmp;
+    //uint16 tmp;
     _mycount++;
     if (_mycount > 15)
     {
        _mycount = 0;
        _ones = !_ones;
     }
-    if (_ones) tmp = 0xFFFF; else tmp = 0x0000;
+    //if (_ones) tmp = 0xFFFF; else tmp = 0x0000;
 
   int n = modio->get_buffer(buf + 2, 6);
   if (n != 6)

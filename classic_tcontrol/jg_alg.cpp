@@ -128,10 +128,11 @@ void jl_algorithm_t::initial_state(int train_locations[], int n_locations)
     tcount=n_locations;
     for(i=0; i< jlsecs->getSize(); i++)
     {
-        int back,next,nextnext;
-        back=get_prior(i);
+        //int back,next,nextnext;
+        int next;
+        //back=get_prior(i);
         next=get_next(i);
-        nextnext=get_next(next);
+        /*nextnext=*/get_next(next);
         if(jlsecs->isBusy(i)&&!jlsecs->isBusy(next))
         {
             allowSecEntry(next);

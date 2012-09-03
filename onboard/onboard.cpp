@@ -248,7 +248,7 @@ int main(int argc, char *argv[])
   const char *config_file = "onboard_config.txt";
 
   sim_mode = false;
-  bool pick_mode = false;
+  //bool pick_mode = false;
   bool free_running_mode = false;
   int current_arg;
   bool create_profiles = false;
@@ -270,7 +270,7 @@ int main(int argc, char *argv[])
     else if (0 == strcasecmp(argv[current_arg], "-p"))
     {
       printf("Setting pick mode . . \n");
-      pick_mode = true;
+      //pick_mode = true;
     } 
     else if (0 == strcasecmp(argv[current_arg], "-l"))
     {

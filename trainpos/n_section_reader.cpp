@@ -14,14 +14,14 @@
 
 /********************************************************/
 
-int section_reader_t::get_n_sections(void)
+unsigned section_reader_t::get_n_sections(void)
 {
   return n_sections;
 } 
 
 /********************************************************/
 
-int section_reader_t::get_n_sensors(int section_number)
+unsigned section_reader_t::get_n_sensors(unsigned section_number)
 {
   if ((section_number < 0) || (section_number >= n_sections))
   {
@@ -34,7 +34,7 @@ int section_reader_t::get_n_sensors(int section_number)
 
 /********************************************************/
 
-int section_reader_t::get_section_time(int section_number)
+int section_reader_t::get_section_time(unsigned section_number)
 {
   if ((section_number < 0) || (section_number >= n_sections))
   {
@@ -47,8 +47,8 @@ int section_reader_t::get_section_time(int section_number)
 
 /********************************************************/
 
-int section_reader_t::get_sensor_loc(int section_number, 
-                                               int sensor_number)
+unsigned section_reader_t::get_sensor_loc(unsigned section_number, 
+                                               unsigned sensor_number)
 {
   if ((section_number < 0) || (section_number >= n_sections))
   {
@@ -67,7 +67,7 @@ int section_reader_t::get_sensor_loc(int section_number,
 }
 
 /********************************************************/
-int section_reader_t::get_departure_sensor_loc(int section_number)
+unsigned section_reader_t::get_departure_sensor_loc(unsigned section_number)
 {
   if ((section_number < 0) || (section_number >= n_sections))
   {
@@ -80,7 +80,7 @@ int section_reader_t::get_departure_sensor_loc(int section_number)
 
 /********************************************************/
 
-int section_reader_t::get_arival_sensor_loc(int section_number)
+unsigned section_reader_t::get_arival_sensor_loc(unsigned section_number)
 {
   if ((section_number < 0) || (section_number >= n_sections))
   {
@@ -88,13 +88,13 @@ int section_reader_t::get_arival_sensor_loc(int section_number)
        __FILE__, __LINE__, section_number);
     exit(1);
   }
-  int n_sensors = sections[section_number].n_sensors;
+  unsigned n_sensors = sections[section_number].n_sensors;
   return sections[section_number].sensor_location[n_sensors-1];
 }
 
 /********************************************************/
 
-int section_reader_t::get_time_to_start(int section_number)
+int section_reader_t::get_time_to_start(unsigned section_number)
 {
   if ((section_number < 0) || (section_number >= n_sections))
   {
@@ -107,7 +107,7 @@ int section_reader_t::get_time_to_start(int section_number)
 
 /********************************************************/
 
-const char *section_reader_t::get_station_name(int section_number)
+const char *section_reader_t::get_station_name(unsigned section_number)
 {
   if ((section_number < 0) || (section_number >= n_sections))
   {
@@ -120,7 +120,7 @@ const char *section_reader_t::get_station_name(int section_number)
 
 /********************************************************/
 
-const tsecdata_t *section_reader_t::get_section_data(int section_number)
+const tsecdata_t *section_reader_t::get_section_data(unsigned section_number)
 {
   if ((section_number < 0) || (section_number >= n_sections))
   {
@@ -136,7 +136,7 @@ const tsecdata_t *section_reader_t::get_section_data(int section_number)
 
 void section_reader_t::read_section_file(void)
 {
-  int max = TP_MAX_SECTIONS;
+  unsigned max = TP_MAX_SECTIONS;
   this->n_global_sensors = 0;
 
   const char *sections_file = ap_config.get_config("SECTIONS_FILE");
@@ -247,7 +247,7 @@ void section_reader_t::read_section_file(void)
 
 /*********************************************************/
 
-int section_reader_t::get_sensor_loc(int global_sensor_number)
+unsigned section_reader_t::get_sensor_loc(unsigned global_sensor_number)
 {
   if ((global_sensor_number < 0) || (global_sensor_number >= n_global_sensors))
   {
@@ -260,7 +260,7 @@ int section_reader_t::get_sensor_loc(int global_sensor_number)
 
 /*********************************************************/
 
-int section_reader_t::get_dwell_time(int section_number)
+int section_reader_t::get_dwell_time(unsigned section_number)
 {
   if ((section_number < 0) || (section_number >= n_sections))
   {
@@ -273,7 +273,7 @@ int section_reader_t::get_dwell_time(int section_number)
 
 /*********************************************************/
 
-const sensor_info_t *section_reader_t::get_sensor_info(int global_sensor_number)
+const sensor_info_t *section_reader_t::get_sensor_info(unsigned global_sensor_number)
 {
   if ((global_sensor_number < 0) || (global_sensor_number >= n_global_sensors))
   {
@@ -286,7 +286,7 @@ const sensor_info_t *section_reader_t::get_sensor_info(int global_sensor_number)
 
 /*********************************************************/
 
-int section_reader_t::get_n_global_sensors(void)
+unsigned section_reader_t::get_n_global_sensors(void)
 {
   return n_global_sensors;
 }

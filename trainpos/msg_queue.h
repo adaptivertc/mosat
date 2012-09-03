@@ -6,9 +6,9 @@
 struct crossing_event_t
 {
   time_t time_stamp;
-  int section;
+  unsigned section;
   bool departure;
-  int sensor;
+  unsigned sensor;
   bool update;
   bool skip;
 };

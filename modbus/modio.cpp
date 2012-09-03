@@ -338,7 +338,7 @@ int MODSerial::read_ai(uint16 start_address, int n_to_read, uint16 *vals)
     vals[i] = 0;
   }
 
-  for (int i=0; i < (sizeof(reply) / sizeof(reply[0])); i++)
+  for (unsigned i=0; i < (sizeof(reply) / sizeof(reply[0])); i++)
   {
     reply[i] = 0;
   }
@@ -577,7 +577,7 @@ int  MODSerial::write_multiple_regs(uint16 start_reg, int n, uint16 *vals)
   react_trace.dprintf(0, "write multiple regs: Start = %d, Num = %d", 
               int(start_reg), n);
   //uint8 msg[8];
-  int msg_size = 6 + 2 * n; 
+  //int msg_size = 6 + 2 * n; 
   uint8 msg[512];
   uint8 reply[512];
   msg[0] = address;
@@ -598,7 +598,7 @@ int  MODSerial::write_multiple_regs(uint16 start_reg, int n, uint16 *vals)
     p += 2;
   }
 
-  int n_sent = send(msg, (2 * n) + 7);
+  //int n_sent = send(msg, (2 * n) + 7);
 
   int n_recv = receive(reply, sizeof(reply));
   if (n_recv != 6)
@@ -646,7 +646,7 @@ int  MODSerial::send_multiple_dos(uint16 start_do, int n, uint8 *vals)
     }
   }
 
-  int n_sent = send(msg, data_bytes + 7);
+  //int n_sent = send(msg, data_bytes + 7);
 
   int n_recv = receive(reply, sizeof(reply));
   if (n_recv != 6)

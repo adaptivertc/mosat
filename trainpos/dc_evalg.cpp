@@ -82,7 +82,7 @@ void display_alg_t::add_train(time_t time_now, const char *train_id)
 
 /*********************************************************/
 
-void display_alg_t::update_train(time_t time_now, int n)
+void display_alg_t::update_train(unsigned n, time_t time_now)
 {
   double fr;
   int section = trains[n].section;
@@ -143,20 +143,20 @@ void display_alg_t::update(time_t time_now)
     }
   }
 
-  for (int i=0; i < n_trains; i++)
+  for (unsigned i=0; i < n_trains; i++)
   {
-    update_train(time_now, i);
+    update_train(i, time_now);
   }
   gen_displays.gen(time_now, trains, calcs, n_trains);
 }
 
 /*********************************************************/
 
-void display_alg_t::process_departure(int section, time_t now)
+void display_alg_t::process_departure(unsigned section, time_t now)
 {
   bool found = false;
   int tn = 0;
-  for (int i=0; i < n_trains; i++)
+  for (unsigned i=0; i < n_trains; i++)
   {
     if (trains[i].section == section)
     {
@@ -181,11 +181,11 @@ void display_alg_t::process_departure(int section, time_t now)
 
 /*********************************************************/
 
-void display_alg_t::process_arival(int section, time_t now)
+void display_alg_t::process_arival(unsigned section, time_t now)
 {
   bool found = false;
   int tn = 0;
-  for (int i=0; i < n_trains; i++)
+  for (unsigned i=0; i < n_trains; i++)
   {
     if (trains[i].section == (section-1))
     {

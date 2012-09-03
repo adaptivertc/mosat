@@ -1292,7 +1292,7 @@ static mqd_t mq_fd = (mqd_t) -1;
  **/
 
 static const char *wr_msg_name = "/home/artc";
-static int wr_msg_id;
+//static int wr_msg_id;
 
 
 
