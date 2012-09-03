@@ -45,27 +45,28 @@ Contains code for input/output drivers.
 
 /***********************************************************************/
 
+/***
 static double add_rand_noise(double val, double full_scale, double fraction_noise)
 {
   double rand_mult = (((double) random() / (double) RAND_MAX) 
         * 2.0 * fraction_noise) - fraction_noise;
   return val + (full_scale * rand_mult);
 }
+***/
 
 /**********************************************************************/
 
+/***
 static double calc_temp_raw(double temp_eu)
 {
   //return 10.0 * (temp_eu / 100.0);
   return temp_eu;
 }
-
-/**********************************************************************/
-
 static double calc_level_raw(double level_eu)
 {
   return 10.0 * (level_eu / 38.0);
 }
+***/
 
 /**********************************************************************/
 

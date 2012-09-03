@@ -32,7 +32,7 @@ PROJECTDIRS = projects/silos projects/mod_apache projects/svg
 
 CDEBUG =
 
-CFLAGS = -Wall 
+CFLAGS = -Wall -Werror
 #CFLAGS = -Wall -Wextra -Wold-style-cast
 #CFLAGS=-Wall -Wstrict-prototypes -O2
 
@@ -49,10 +49,14 @@ all: react2 integrate rconsole reactcgi rdrivers drivers2 rtshmmain ai.so projec
 	$(CPP) -c  -o $@ $<
 
 rdrivers:
-	for i in $(DRIVERDIRS); do cd "$$i"; $(MAKE); cd ../..; done
+	for i in $(DRIVERDIRS); do make -C $$i; done
+
+#	for i in $(DRIVERDIRS); do cd "$$i"; $(MAKE); cd ../..; done
 
 drivers2: 
-	for i in $(DRIVERDIRS2); do cd "$$i"; $(MAKE); cd ../..; done
+	for i in $(DRIVERDIRS2); do make -C $$i; done
+
+#	for i in $(DRIVERDIRS2); do cd "$$i"; $(MAKE); cd ../..; done
 
 project:
 	for i in $(PROJECTDIRS); do cd "$$i"; $(MAKE); cd ../..; done
@@ -155,9 +159,13 @@ gen_php:	gen_php.cpp
 clean:
 	rm -fv *.o *.so react2 rconsole rdisplay reactcgi gen utest integrate
 	rm -fv rtshmmain gen_case.cpp gen_script.cpp gen_script.h gen_php
-	for i in $(DRIVERDIRS); do cd "$$i"; $(MAKE) clean; cd ../..; done
-	for i in $(DRIVERDIRS2); do cd "$$i"; $(MAKE) clean; cd ../..; done
-	for i in $(PROJECTDIRS); do cd "$$i"; $(MAKE) clean; cd ../..; done
+	for i in $(DRIVERDIRS);  do make -C $$i clean; done
+	for i in $(DRIVERDIRS2); do  make -C $$i clean; done
+	for i in $(PROJECTDIRS); do  make -C $$i clean; done
+
+#	for i in $(DRIVERDIRS); do cd "$$i"; $(MAKE) clean; cd ../..; done
+#	for i in $(DRIVERDIRS2); do cd "$$i"; $(MAKE) clean; cd ../..; done
+#	for i in $(PROJECTDIRS); do cd "$$i"; $(MAKE) clean; cd ../..; done
 
 
 install:

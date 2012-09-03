@@ -1434,7 +1434,7 @@ static mqd_t mq_fd = (mqd_t) -1;
  **/
 
 static const char *wr_msg_name = "/home/artc";
-static int wr_msg_id;
+//static int wr_msg_id;
 
 
 
@@ -2098,7 +2098,7 @@ void react_t::serve_client(serve_thread_data_t *st)
   fprintf(sock_log_fp, "In react_t::serve_client(), sock_fd = %d, n = %d\n", sock_fd, nc);
   fflush(sock_log_fp);
   int n_req = 0;
-  analog_point_t *analog_point = NULL;
+  //analog_point_t *analog_point = NULL;
   db_point_t *db_point = NULL;
   delim_separator_t ds_tag(1000, 100, '+');
   while (true)
@@ -2127,7 +2127,7 @@ void react_t::serve_client(serve_thread_data_t *st)
       ltrim(tag); 
       rtrim(tag); 
 
-      analog_point = NULL;
+      //analog_point = NULL;
       db_point = db->get_db_point(tag);
 
       if (db_point == NULL)
@@ -2324,7 +2324,7 @@ void react_t::setup_connection_handler(void)
 }
 
 /*************************************************************************/
-static int xsemcnt=0;
+//static int xsemcnt=0;
 /****************
 The followig is used to lock an object during method execution. This
 helps eliminate bugs, by assuring that the post will automatically
