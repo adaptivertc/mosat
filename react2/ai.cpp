@@ -141,6 +141,7 @@ void ai_point_t::set_conversion(void)
 
 void ai_point_t::init_values(void)
 {
+  //logfile->vprint("ai_point_t::init(): %s\n", this->tag);
   lo_alarm_shutdown = false;
   hi_alarm_shutdown = false;
   set_conversion();

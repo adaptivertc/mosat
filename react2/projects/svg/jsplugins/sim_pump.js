@@ -104,6 +104,14 @@ function sim_object_get_pv_f(tag)
 }
 sim_object_t.prototype.get_pv=sim_object_get_pv_f;
 
+function sim_object_set_pv_f(tag, new_val)
+{
+  console.log("setting PV for: " + tag);
+  this.pv[tag.toUpperCase()]=new_val;
+  console.log("new PV: " + new_val);
+}
+sim_object_t.prototype.set_pv=sim_object_set_pv_f;
+
     function sim_object_update_f()
     {
       if (this.up)

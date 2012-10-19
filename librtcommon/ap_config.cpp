@@ -164,6 +164,16 @@ bool ap_config_t::get_bool(const char *aKey, bool default_value)
 
 /**********************************************************************/
 
+void ap_config_t::insert_value(const char *aKey, const char *aVal)
+{
+  key[n_keys] = strdup(aKey);
+  val[n_keys] = strdup(aVal);
+  printf("key: %s, val: %s\n", key[n_keys], val[n_keys]);
+  n_keys++;
+}
+
+/**********************************************************************/
+
 void ap_config_t::read_file(const char *path)
 {
   char fname[100];
@@ -206,10 +216,7 @@ void ap_config_t::read_file(const char *path)
       continue;
     }
     rtrim(argv[1]);
-    key[n_keys] = strdup(argv[0]);
-    val[n_keys] = strdup(argv[1]);
-    printf("key: %s, val: %s\n", key[n_keys], val[n_keys]);
-    n_keys++;
+    this->insert_value(argv[0],argv[1]);
   }
 }
 

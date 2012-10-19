@@ -219,6 +219,12 @@ static void gen_simulation(FILE *js_fp)
   fprintf(js_fp, "}\n");
   fprintf(js_fp, "\n");
 
+  fprintf(js_fp, "function send_output(tag, new_value)\n");
+  fprintf(js_fp, "{\n");
+  fprintf(js_fp, "  sim.set_pv(tag, new_value);\n");
+  fprintf(js_fp, "}\n");
+  fprintf(js_fp, "\n");
+
   fprintf(js_fp, "function config_objects()\n");
   fprintf(js_fp, "{\n");
   fprintf(js_fp, "  for (var i=0; i < update_objs.length; i++)\n");

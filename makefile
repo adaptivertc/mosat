@@ -7,9 +7,7 @@ ARMDIRS= librtcommon modbus onboard react
 
 MAKE= make
 
-.PHONY : clean
-
-.PHONY : all 
+.PHONY : clean all 
 
 all:
 	for i in $(DIRS); do cd "$$i"; $(MAKE); cd ..; done

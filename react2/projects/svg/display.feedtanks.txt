@@ -1,4 +1,4 @@
-svg_header|My Title|0|0|300|150|
+svg_header|Feed Tanks|0|0|300|150|
 background|thistle|
 imasa_logo|0|0|20|
 
@@ -11,25 +11,25 @@ text|118|37|5|firebrick|start|OV Tank|From PF1082OV|
 
 valve3way|PUMP1_ON|magenta|gray|70|35|8|2|0|
 text|70|28|4|black|middle|COV-810-A|
-simple_pipe|black|2|74|35|h|110|
+pipe1d|PUMP1_ON|orange|grey|2|74|35|h|110|
 triangle|116|35|5|black|-90|
-simple_pipe|black|2|110|21|h|100|v|34|b|2|
+pipe1d|null|grey|grey|2|110|21|h|100|v|34|b|2|
 triangle|116|21|5|black|-90|
-simple_pipe|black|2|70|39|v|45|h|103|v|52|
-simple_pipe|black|2|66|35|h|33|v|52|
+pipe1d|null|grey|grey|2|70|39|v|45|h|103|v|52|
+pipe1d|null|grey|grey|2|66|35|h|33|v|52|
 
 text|225|18|4|black|middle|COV 21A,B|
 valve|PUMP2_ON|lime|gray|225|25|8|2|0|
 
 text|207|26|5|grey|end|Nitrogen|
-simple_pipe|black|2|210|25|h|221|
-simple_pipe|black|2|229|25|h|252|
+pipe1d|null|grey|grey|2|210|25|h|221|
+pipe1d|null|grey|grey|2|229|25|h|252|
 triangle|252|25|5|black|90|
 
-simple_pipe|black|2|202|68|h|240|v|26|b|2|
+pipe1d|null|grey|grey|2|202|68|h|240|v|26|b|2|
 text|200|69|5|grey|end|Conds.|
 
-simple_pipe|black|2|209|81|h|241|v|106|
+pipe1d|null|grey|grey|2|209|81|h|241|v|106|
 
 valve|PUMP3_ON|lime|gray|240|50|8|2|270|
 text|246|50|4|black|start|COV-21A,A|
@@ -39,15 +39,15 @@ pump|PUMP1_ON|magenta|gray|238|110|8|2|0|
 text|238|120|4|black|middle|P-810|
 valve3way|PUMP2_ON|magenta|gray|241|90|8|2|-90|
 text|243|85|4|black|start|COV-811-A|
-simple_pipe|black|2|245|90|h|255|
+pipe1d|null|grey|grey|2|245|90|h|255|
 triangle|261|90|5|black|-90|
 
 text|263|92|5|firebrick|start|BC Oil Feed|From P-574|
 
 valve|PUMP2_ON|magenta|gray|216|101|8|2|0|
 text|216|95|4|black|middle|MOV-810-N|
-simple_pipe|black|2|212|101|h|190|v|109|b|2|
-simple_pipe|black|2|220|101|h|240|b|2|
+pipe1d|null|grey|grey|2|212|101|h|190|v|109|b|2|
+pipe1d|null|grey|grey|2|220|101|h|240|b|2|
 
 simple_tank|p|black|20|50|15|40|1.5|
 text|27.5|55|4|white|middle|T810|
@@ -57,33 +57,33 @@ text|107.5|55|4|white|middle|T811|
 simple_rect|LEVEL|mediumslateblue|93|51.5|37|
 
 blades|xxx|30|60|9|10|0|
-motor|PUMP1_ON|lime|grey|38|60|8|0|
-text|42|56|4|black|middle|A810|
+motor|PUMP1_ON|lime|grey|38|60|12|0|
+text|44|54|5|black|middle|A810|
 
 blades|xxx|110|60|8|10|0|
-motor|PUMP2_ON|lime|grey|118|60|8|0|
-text|122|56|4|black|middle|A811|
+motor|PUMP2_ON|lime|grey|118|60|12|0|
+text|124|54|5|black|middle|A811|
 
 text|55|103|4|black|middle|MOV-899-H|
 valve|PUMP3_ON|cyan|gray|55|110|8|2|0|
 
-simple_pipe|black|2|59|110|h|234|
-simple_pipe|black|2|51|110|h|40|
-simple_pipe|black|2|54|88|h|70|v|109|b|2|
+pipe1d|null|grey|grey|2|59|110|h|234|
+pipe1d|null|grey|grey|2|51|110|h|40|
+pipe1d|null|grey|grey|2|54|88|h|70|v|109|b|2|
 
 text|35|111|5|grey|end|Nitrogen|
 
 text|50|80|4|black|middle|MOV-810-C|
 valve|PUMP1_ON|magenta|gray|50|88|8|2|0|
-simple_pipe|black|2|46|88|h|35|
+pipe1d|null|grey|grey|2|46|88|h|35|
 
 text|130|80|4|black|middle|MOV-811-C|
 valve|PUMP2_ON|lime|gray|130|88|8|2|0|
-simple_pipe|black|2|126|88|h|115|
-simple_pipe|black|2|134|88|h|150|v|109|b|2|
+pipe1d|null|grey|grey|2|126|88|h|115|
+pipe1d|PUMP2_ON|orange|grey|2|134|88|h|150|v|109|b|2|
 
 valve|PUMP3_ON|yellow|gray|205|81|8|1|0|
 text|208|74.5|4|black|end|TCV-21-A|
-simple_pipe|black|2|201|81|h|180|
+pipe1d|null|grey|grey|2|201|81|h|180|
 text|178|82|5|grey|end|Steam|
 

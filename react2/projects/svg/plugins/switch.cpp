@@ -107,7 +107,9 @@ void switch_t::generate(plugin_data_t d, int argc, char **argv)
   fprintf(d.js_fp, "  %s.interval_handler();\n", js_object_name);
   fprintf(d.js_fp, "}\n");
 
-  fprintf(d.js_fp, "var %s = new switch_t(\"%s\", \"%s\", \"%s\", \"%s\", \"%s\", %lf, %lf, \"%s()\");\n", js_object_name, js_group_name, js_on_name, js_off_name, on_color, off_color, cx, cy, js_handler_name); 
+  fprintf(d.js_fp, "var %s = new switch_t(\"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", %lf, %lf, \"%s()\");\n", 
+      js_object_name, tag, js_group_name, js_on_name, js_off_name, 
+      on_color, off_color, cx, cy, js_handler_name); 
 
   fprintf(d.svg_fp, "<!--  END insert for switch (%03d) -->\n", n_instance);
   fprintf(d.js_fp, "// --  END insert for switch (%03d)\n", n_instance);

@@ -40,6 +40,7 @@ public:
   void read_file(const char *path);
   const char *first(void);
   const char *next(void);
+  void insert_value(const char *key, const char *value);
   void set_delimiter(char a_delimiter){delimiter = a_delimiter;};
   ap_config_t();
   ap_config_t(char a_delimiter);

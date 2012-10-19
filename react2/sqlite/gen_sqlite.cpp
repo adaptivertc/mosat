@@ -368,13 +368,19 @@ void xprocess_file(FILE *fp_out, gen_names_t *gnames)
       gnames->table_name = strdup(argv[2]);
       if (argc > 3)
       {
-      gnames->obj_type = strdup(argv[3]);
+        gnames->obj_type = strdup(argv[3]);
       }
       else
       {
         snprintf(obj_type_name, sizeof(obj_type_name), "%s_t", argv[2]);
         gnames->obj_type = strdup(obj_type_name);
       }
+      continue;
+    }
+    else if (0 == strcasecmp(argv[0], "separator"))
+    {
+      // separator is only for user interface 
+      continue;
     }
     db_field_t *dbf; 
     dbf = create_field(argc, argv);
@@ -919,14 +925,17 @@ void  gen_sqlite_read_header(FILE *fp_out, const char *exe_name)
   fprintf(fp_out, "#include <stdlib.h>\n");
   fprintf(fp_out, "#include <sqlite3.h>\n");
   fprintf(fp_out, "#include \"rtcommon.h\"\n");
-  fprintf(fp_out, "#include \"db_point.h\"\n");
-  fprintf(fp_out, "#include \"logfile.h\"\n");
+  fprintf(fp_out, "#include \"ap_config.h\"\n");
+  fprintf(fp_out, "#include \"../db_point.h\"\n");
+  fprintf(fp_out, "#include \"../logfile.h\"\n");
+  fprintf(fp_out, "extern void sqlite_apconfig_read(sqlite3 *sqdb, ap_config_t *apconfig);\n");
   fprintf(fp_out, "static sqlite3 *sqdb = NULL;\n");
   fprintf(fp_out, "int read_fns_start_hook(const char *path)\n");
   fprintf(fp_out, "{\n");
   fprintf(fp_out, "  int retval;\n");
-  fprintf(fp_out, "  logfile->vprint(\"sqlite start hook: %%s\\n\", path);\n");
-  fprintf(fp_out, "  retval = sqlite3_open_v2(\"react_def.db\",  &sqdb,\n");
+  fprintf(fp_out, "  const char * dbpath = \"./sqlite/react_def.db\";\n");
+  fprintf(fp_out, "  logfile->vprint(\"sqlite start hook: %%s %%s\\n\", path, dbpath);\n");
+  fprintf(fp_out, "  retval = sqlite3_open_v2(dbpath,  &sqdb,\n");
   fprintf(fp_out, "      SQLITE_OPEN_READONLY, NULL);\n");
   fprintf(fp_out, "  logfile->vprint(\"sqlite open return value: %%d\\n\", retval);\n");
   fprintf(fp_out, "  if (retval != SQLITE_OK)\n");
@@ -936,6 +945,7 @@ void  gen_sqlite_read_header(FILE *fp_out, const char *exe_name)
   fprintf(fp_out, "    sqdb = NULL;\n");
   fprintf(fp_out, "    return -1;\n");
   fprintf(fp_out, "  }\n");
+  fprintf(fp_out, "  sqlite_apconfig_read(sqdb, &ap_config);\n");
   fprintf(fp_out, "  logfile->vprint(\"sqlite start hook: SUCCESS\\n\");\n");
   fprintf(fp_out, "  return 0;\n");
 
@@ -1003,6 +1013,7 @@ void gen_for_one_sqlite_read(FILE *fp_out, gen_names_t *gnames)
   fprintf(fp_out, "  char *errmsg;\n");
   fprintf(fp_out, "  int retval;\n");
   fprintf(fp_out, "  cbdata.max_points = 100;\n");
+  fprintf(fp_out, "  logfile->vprint(\"sqlite read from table: %s\\n\");\n", gnames->table_name);
   fprintf(fp_out, "  cbdata.dbps =\n");
   fprintf(fp_out, "     (%s **) malloc(cbdata.max_points * sizeof(%s*));\n",
        gnames->obj_type, gnames->obj_type);
@@ -1046,7 +1057,7 @@ int main(int argc, char *argv[])
   char relative_name[100];
   char config_name[100];
   char dat_name[100];
-  char base_dat_name[100];
+  //char base_dat_name[100];
   struct gen_names_t gnames;
 
   if (argc < 2)

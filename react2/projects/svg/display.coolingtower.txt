@@ -1,4 +1,4 @@
-svg_header|My Title|0|0|300|150|
+svg_header|Cooling Tower|0|0|300|150|
 background|thistle|
 imasa_logo|0|0|20|
 text|150|10|10|firebrick|middle|Cooling Tower|

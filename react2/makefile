@@ -65,6 +65,10 @@ react2:	$(INCLUDES) $(OBJS) dbpoint_util.so read_fns.cpp create_fns.cpp
 	echo \"`svn info | grep -i revision`\" > revision_number
 	$(CPP) $(LDFLAGS) -rdynamic -o $@ $(OBJS) $(LIBS) read_fns.cpp create_fns.cpp -lsqlite3 -lrt
 
+react2sql:	$(INCLUDES) $(OBJS) dbpoint_util.so ./sqlite/sqlite_read_fns.cpp create_fns.cpp
+	echo \"`svn info | grep -i revision`\" > revision_number
+	$(CPP) $(LDFLAGS) -rdynamic -o $@ $(OBJS) $(LIBS) ./sqlite/sqlite_read_fns.cpp sqlite/sql_read_apconfig.cpp create_fns.cpp -lsqlite3 -lrt
+
 rtshmmain: rtshmmain.o ldiodriver.o reactshmio.o logfile.o reactshmio.h $(INCLUDES)
 	$(CPP) -rdynamic -o rtshmmain rtshmmain.o ldiodriver.o reactshmio.o logfile.o $(RTCOMMON) -lrt -ldl
 

@@ -38,5 +38,8 @@ read_fns.o: read_fns.cpp
 sqlite_read_fns.o: sqlite_read_fns.cpp
 	$(CPP) -c -o sqlite_read_fns.o sqlite_read_fns.cpp
 
+sql_read_apconfig.o: sql_read_apconfig.cpp
+	$(CPP) -c -o sql_read_apconfig.o sql_read_apconfig.cpp
+
 clean: 
 	rm -fv main gen_sqlite out_di out_ai out_di.cpp out_ai.cpp read_dat react_def.db write_one_fns.cpp outmain.cpp read_fns.cpp insert_scripts read_script gen_react_db

@@ -26,7 +26,7 @@ const char *pump_t::get_name(void)
 
 void pump_t::generate(plugin_data_t d, int argc, char **argv)
 {
-  const char *tag = argv[1];
+  const char *the_tag = argv[1];
   const char *on_color = argv[2];
   const char *off_color = argv[3];
 //  double x1 = atof(argv[4]);
@@ -103,11 +103,14 @@ void pump_t::generate(plugin_data_t d, int argc, char **argv)
   double px, py;
   find_a_place_nearby(&px, &py, x1, y1, width, width); 
   fprintf(d.svg_fp, "<rect x=\"%lf\"  y=\"%lf\" width=\"%lf\" height=\"%lf\" onclick=\"show_popup(%lf,%lf,'ON', 'Off', '%s')\" visibility=\"hidden\" pointer-events=\"all\" onmouseover=\"this.style.cursor='pointer';\"/>\n",
-         x1, y1, width, width, px, py, tag); 
+         x1, y1, width, width, px, py, the_tag); 
   fprintf(d.js_fp, "// --  END insert for pump (%03d)\n", n_instance);
   fprintf(d.svg_fp, "<!--  END insert for pump (%03d) -->\n", n_instance);
-  add_js_library("pump.js");
-  add_animation_object(tag, js_object_name);
+  if ((strlen(the_tag) > 0) && (0 != strcmp(the_tag, "null")))
+  {
+    add_js_library("pump.js");
+    add_animation_object(the_tag, js_object_name);
+  }
 
   n_instance++;
 }
