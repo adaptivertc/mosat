@@ -28,11 +28,13 @@ function sim_object_t()
   this.filter_1_valve = false;
   this.filter_2_time = 0.0;
   this.filter_2_state = 0;
+  this.on_pressure = 121.6; 
 
   this.pv =
   {
     "TEMP_1":55,
     "LEVEL":25,
+    "PRESSURE":0,
     "LO_LEVEL":true,
     "HI_LEVEL":false,
     "HYDRAULIC_1A":false,
@@ -55,10 +57,11 @@ function sim_object_t()
     "TEMP_1":{"tag":"TEMP_1","description":"Tank Temp 1","eu":"degC","driver":0,"card":0,"channel":0,"eu_lo":0.000000,"eu_hi":10.000000,"raw_lo":0.000000,"raw_hi":10.000000,"decimal_places":1,"zero_cutoff":-5000.000000,"lo_alarm":50.000000,"lo_caution":52.000000,"hi_caution":58.000000,"hi_alarm":60.000000,"deadband":0.500000,"lo_alarm_enable":true,"lo_caution_enable":true,"hi_caution_enable":true,"hi_alarm_enable":true,"scale_lo":0.000000, "scale_hi":70.000000},
 
     "LEVEL":{"tag":"LEVEL","description":"Tank Level","eu":"cm","driver":0,"card":0,"channel":2,"eu_lo":0.000000,"eu_hi":10.000000,"raw_lo":0.000000,"raw_hi":10.000000,"decimal_places":1,"zero_cutoff":-5000.000000,"lo_alarm":21,"lo_caution":23,"hi_caution":28,"hi_alarm":30,"deadband":1,"lo_alarm_enable":true,"lo_caution_enable":true,"hi_caution_enable":true,"hi_alarm_enable":true,"scale_lo":0.000000, "scale_hi":35.000000},
+    "PRESSURE":{"tag":"PRESSURE","description":"Pressure","eu":"psi","driver":0,"card":0,"channel":3,"eu_lo":0.000000,"eu_hi":10.000000,"raw_lo":0.000000,"raw_hi":10.000000,"decimal_places":0,"zero_cutoff":-5000.000000,"lo_alarm":21,"lo_caution":23,"hi_caution":28,"hi_alarm":30,"deadband":1,"lo_alarm_enable":false,"lo_caution_enable":false,"hi_caution_enable":false,"hi_alarm_enable":false,"scale_lo":0.000000, "scale_hi":150.000000},
 
     "HI_LEVEL":{"tag":"hi_level","description":"Above high Level","driver":0,"card":0,"channel":9, "lo_desc":"ON","hi_desc":"OFF", "alarm_state":"NONE","shutdown_state":"NONE"},
 
-    "LO_LEVEL":{"tag":"lo_level","description":"Above low Level","driver":0,"card":0,"channel":8, "lo_desc":"ON","hi_desc":"OFF", "alarm_state":"NONE","shutdown_state":"NONE"},
+  t  "LO_LEVEL":{"tag":"lo_level","description":"Above low Level","driver":0,"card":0,"channel":8, "lo_desc":"ON","hi_desc":"OFF", "alarm_state":"NONE","shutdown_state":"NONE"},
 
     "HYDRAULIC_1A":{"tag":"hydraulic_1a","description":"hydraulic switch 1a","driver":0,"card":0,"channel":0, "lo_desc":"ON","hi_desc":"OFF", "alarm_state":"NONE","shutdown_state":"NONE"},
 
@@ -335,6 +338,11 @@ function sim_sm2_f(now)
 }
 sim_object_t.prototype.state_machine_filter_2=sim_sm2_f;
 
+function next_value(tau, stead_state_value, last_value, delta_t)
+{
+  var fraction = 1.0 - Math.exp(-delta_t/tau);
+  return last_value + ((steady_state_value - last_value) * fraction);
+}
 
 function sim_object_update_f(now)
 {
@@ -362,7 +370,7 @@ function sim_object_update_f(now)
   }
 
   this.tank_level += this.fill_rate * elapsed_time;
-  this.tank_temperature += this.temperature_rate * elapsed_time;
+  Rthis.tank_temperature += this.temperature_rate * elapsed_time;
 
 
   this.pv.HI_LEVEL = this.tank_level > TANK_HI_LEVEL_CM;

@@ -7,7 +7,7 @@
 
 static int n_instance = 1;
 
-class valve3way_t : public gen_plugin_base_t
+class pvalve3way_t : public gen_plugin_base_t
 {
 public:
   const char *get_name(void); 
@@ -16,15 +16,15 @@ public:
 
 extern "C" gen_plugin_base_t *get_object(void)
 {
-  return new valve3way_t;
+  return new pvalve3way_t;
 }
 
-const char *valve3way_t::get_name(void)
+const char *pvalve3way_t::get_name(void)
 {
-  return "valve3way";
+  return "pvalve3way";
 }
 
-void valve3way_t::generate(plugin_data_t d, int argc, char **argv)
+void pvalve3way_t::generate(plugin_data_t d, int argc, char **argv)
 {
   const char *tag = argv[1];
   const char *on_color = argv[2];
@@ -49,15 +49,15 @@ void valve3way_t::generate(plugin_data_t d, int argc, char **argv)
   char js_object_name[30];
   char js_out1_name[30];
   char js_out2_name[30];
-  snprintf(js_object_name, sizeof(js_object_name),   "valve3way_obj_%03d",  n_instance);
-  snprintf(js_out1_name,   sizeof(js_object_name),   "valve3way_out1_%03d", n_instance);
-  snprintf(js_out2_name,   sizeof(js_object_name),   "valve3way_out2_%03d", n_instance);
+  snprintf(js_object_name, sizeof(js_object_name),   "pvalve3way_obj_%03d",  n_instance);
+  snprintf(js_out1_name,   sizeof(js_object_name),   "pvalve3way_out1_%03d", n_instance);
+  snprintf(js_out2_name,   sizeof(js_object_name),   "pvalve3way_out2_%03d", n_instance);
 
   char transform_str[200];
   if (angle == 0) transform_str[0] = '\0';
   else snprintf(transform_str, sizeof(transform_str), "transform=\"rotate(%d %lf,%lf)\"", angle, cx, cy);
 
-  fprintf(d.svg_fp, "<!--  START insert for valve3way (%03d) -->\n", n_instance);
+  fprintf(d.svg_fp, "<!--  START insert for pvalve3way (%03d) -->\n", n_instance);
 
 
   fprintf(d.svg_fp, "<g stroke=\"black\" stroke-width=\"%lf\" %s>\n", 
@@ -76,29 +76,49 @@ void valve3way_t::generate(plugin_data_t d, int argc, char **argv)
                  on_color, x1 + (10.0 * scale_factor), y1, 
                  30.0 * scale_factor, 10.0 * scale_factor); 
   }
-  fprintf(d.svg_fp, "  <polygon id=\"valve3way_out1_%03d\" fill=\"%s\" points=\"%lf,%lf %lf,%lf %lf,%lf\"/>\n",
+  fprintf(d.svg_fp, "  <polygon fill=\"%s\" points=\"%lf,%lf %lf,%lf %lf,%lf\"/>\n",
+                on_color,
+                x2, cy + (width_factor * scale_factor), //y1 + (10.0 * scale_factor),
+                x2, cy - (width_factor * scale_factor), //y2, 
+                cx, cy);
+
+  fprintf(d.svg_fp, "  <polygon fill=\"%s\" points=\"%lf,%lf %lf,%lf %lf,%lf\"/>\n",
+                off_color,
+                x1, cy + (width_factor * scale_factor), //y1 + (10.0 * scale_factor),
+                x1, cy - (width_factor * scale_factor), //y2, 
+                cx, cy);
+  fprintf(d.svg_fp, "  <polygon id=\"pvalve3way_out1_%03d\" fill=\"%s\" points=\"%lf,%lf %lf,%lf %lf,%lf\"/>\n",
                 n_instance, on_color,
                 x1, cy + (width_factor * scale_factor), //y1 + (10.0 * scale_factor),
                 x1, cy - (width_factor * scale_factor), //y2, 
                 cx, cy);
-  fprintf(d.svg_fp, "  <polygon id=\"valve3way_out2_%03d\" fill=\"%s\" points=\"%lf,%lf %lf,%lf %lf,%lf\"/>\n",
-                n_instance, off_color,
-                x2, cy + (width_factor * scale_factor), //y1 + (10.0 * scale_factor),
-                x2, cy - (width_factor * scale_factor), //y2, 
-                cx, cy);
+
   fprintf(d.svg_fp, "  <polygon fill=\"%s\" points=\"%lf,%lf %lf,%lf %lf,%lf\"/>\n",
-                on_color,
+                off_color,
                 cx - (width_factor * scale_factor), cy + (width/2.0),
                 cx + (width_factor * scale_factor), cy + (width/2.0),
                 cx, cy);
+  fprintf(d.svg_fp, "  <polygon id=\"pvalve3way_out2_%03d\" fill=\"%s\" points=\"%lf,%lf %lf,%lf %lf,%lf\"/>\n",
+                n_instance, on_color,
+                cx - (width_factor * scale_factor), cy + (width/2.0),
+                cx + (width_factor * scale_factor), cy + (width/2.0),
+                cx, cy);
+
   fprintf(d.svg_fp, "  <line x1=\"%lf\" y1=\"%lf\" x2=\"%lf\" y2=\"%lf\" \n",
                cx, y1 + (10.0 * scale_factor), cx, cy);
   fprintf(d.svg_fp, "     stroke =\"black\" stroke-width=\"%lf\"/>\n",
            1.5 * scale_factor);
   fprintf(d.svg_fp, "</g>\n");
 
- fprintf(d.js_fp, "var %s = new valve3way_t(\"%s\", \"%s\", \"%s\", \"%s\");\n",
+//function pvalve3way_t(out1_name, out2_name, on_color, off_color, cx, cy, d, x1, x3, y1, y2)
+ fprintf(d.js_fp, "var %s = new pvalve3way_t(\"%s\", \"%s\", \"%s\", \"%s\",\n",
              js_object_name, js_out1_name, js_out2_name, on_color, off_color);
+ fprintf(d.js_fp, "         %lf, %lf, %lf, %lf, %lf, %lf, %lf);\n",
+             cx, cy, width/2.0, 
+             cx - (width_factor * scale_factor), 
+             cx + (width_factor * scale_factor),
+             cy + (width_factor * scale_factor),
+             cy - (width_factor * scale_factor) );
 
   double px, py;
   find_a_place_nearby(&px, &py, x1, y1, width, width);
@@ -106,11 +126,11 @@ void valve3way_t::generate(plugin_data_t d, int argc, char **argv)
          x1, y1, width, width, px, py, tag);
 
 
-  fprintf(d.js_fp, "// --  END insert for valve3way (%03d)\n", n_instance);
-  fprintf(d.svg_fp, "<!--  END insert for valve3way (%03d) -->\n", n_instance);
+  fprintf(d.js_fp, "// --  END insert for pvalve3way (%03d)\n", n_instance);
+  fprintf(d.svg_fp, "<!--  END insert for pvalve3way (%03d) -->\n", n_instance);
   n_instance++;
 
-  add_js_library("valve3way.js");
+  add_js_library("pvalve3way.js");
   add_animation_object(tag, js_object_name);
 }
 

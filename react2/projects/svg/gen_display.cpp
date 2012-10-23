@@ -229,6 +229,7 @@ static void gen_simulation(FILE *js_fp)
   fprintf(js_fp, "{\n");
   fprintf(js_fp, "  for (var i=0; i < update_objs.length; i++)\n");
   fprintf(js_fp, "  {\n");
+  fprintf(js_fp, "    console.log(\"config tag: \" + update_tags[i]);\n");
   fprintf(js_fp, "    update_objs[i].init(sim.get_cfg(update_tags[i]));\n");
   fprintf(js_fp, "  }\n");
   fprintf(js_fp, "}\n");
@@ -344,6 +345,7 @@ static void gen_ajax_animation(FILE *js_fp)
     fprintf(js_fp, "    config_xReq.abort();\n");
     fprintf(js_fp, "    return;\n"); 
     fprintf(js_fp, "  }\n"); 
+    fprintf(js_fp, "  console.log(\"config tag: \" + update_tags[n_config])\n");
     fprintf(js_fp, 
        "  config_xReq.open(\"GET\", react_config_hrf + update_tags[n_cfg], true);\n");
     fprintf(js_fp, "  config_xReq.send(null);\n");
@@ -450,6 +452,7 @@ static void gen_ajax_animation(FILE *js_fp)
     fprintf(js_fp, "  update_xReq.onreadystatechange = on_update_response;\n");
     fprintf(js_fp, "  if (update_tags.length > 0)\n"); 
     fprintf(js_fp, "  {\n");
+    fprintf(js_fp, "    console.log(\"config tag: \" + update_tags[0])\n");
     fprintf(js_fp, "    config_xReq = new XMLHttpRequest();\n");
     fprintf(js_fp, "    config_xReq.onreadystatechange = on_config_response;\n");
     fprintf(js_fp, "    config_xReq.open(\"GET\", react_config_hrf + update_tags[0], true);\n");
@@ -483,6 +486,9 @@ static void gen_ajax_animation(FILE *js_fp)
     fprintf(js_fp, "    arg_config_xReq.send(null);\n");
     fprintf(js_fp, "  }\n");
   }
+  fprintf(js_fp, "  console.log(\"react_update_hrf = \" + react_update_hrf);\n");
+  fprintf(js_fp, "  console.log(\"react_config_hrf = \" + react_config_hrf);\n");
+
   fprintf(js_fp, "  var interval = setInterval(\"intervalHandler()\", 200);\n");
   fprintf(js_fp, "};\n");
   fprintf(js_fp, "\n");

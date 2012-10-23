@@ -9,8 +9,8 @@ helloworld:
 	apxs2 -c mod_helloworld.c
 
 install:
-	sudo apxs2 -ie mod_helloworld.la
 	sudo apxs2 -ie mod_react.la
+#	sudo apxs2 -ie mod_helloworld.la
 
 restart:
 	sudo /etc/init.d/apache2 restart

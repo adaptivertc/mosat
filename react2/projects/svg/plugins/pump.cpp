@@ -52,8 +52,8 @@ void pump_t::generate(plugin_data_t d, int argc, char **argv)
 
 //tag|on_color|off_collor|x1|y1|width|type(1-2)|rotation(0,90,180,270)|
 
-  char js_object_name[30];
-  char js_group_name[30];
+  char js_object_name[60];
+  char js_group_name[60];
   snprintf(js_object_name, sizeof(js_object_name), "pump_obj_%03d", n_instance);
   snprintf(js_group_name, sizeof(js_group_name), "pump_group_obj_%03d", n_instance);
 
