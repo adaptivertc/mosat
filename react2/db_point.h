@@ -131,7 +131,7 @@ public:
   virtual const char *get_config_json(void) {return "{\"error\":true,\"error_string\":\"No config data defined for this point type\"}";};
   virtual void get_pv_json(char *buf, int sz) {snprintf(buf, sz, "0");};
   virtual int get_json(char *attribute, char *buf, int sz) {buf[0] = '\0';return -1;};
-  virtual int set_json(char *attribute, char *value) {return -1;};
+  virtual int set_json(const char *attribute, const char *value) {return -1;};
   virtual const char *get_tag(void) = 0;
   virtual const char *get_description(void) = 0;
   virtual void exit_cleanup(void) {};
@@ -206,7 +206,7 @@ protected:
   void set_format(void);
 public:
   virtual int get_json(char *attribute, char *buf, int sz);
-  virtual int set_json(char *attribute, char *value);
+  virtual int set_json(const char *attribute, const char *value){return -1;};
   inline double get_pv(void) {point_lock_t l(&point_lock, tag);return pv;};
   void display(void);
   void display_pv(void);
@@ -327,8 +327,8 @@ public:
   double ramp_val;
 public:
 
-  virtual int get_json(char *attribute, char *buf, int sz);
-  virtual int set_json(char *attribute, char *value);
+  int get_json(char *attribute, char *buf, int sz);
+  int set_json(const char *attribute, const char *value);
   virtual int get_driver(void) {return this->driver;};
   virtual int get_card(void) {return this->card;};
   virtual int get_channel(void) {return this->channel;};
@@ -390,7 +390,7 @@ public:
      are being updated.
    */
   virtual int get_json(char *attribute, char *buf, int sz);
-  virtual int set_json(char *attribute, char *value);
+  virtual int set_json(const char *attribute, const char *value){return -1;};
   const char *get_pv_string_ptr(void) {return pv_string;};
   const char *get_lo_desc_ptr(void) {return lo_desc;};
   const char *get_hi_desc_ptr(void) {return hi_desc;};
@@ -496,8 +496,8 @@ private:
   double blink_time;
   double operation_end_time;
 public:
-  virtual int get_json(char *attribute, char *buf, int sz);
-  virtual int set_json(char *attribute, char *value);
+  int get_json(char *attribute, char *buf, int sz);
+  int set_json(const char *attribute, const char *value);
   void init_values(void);
   virtual int get_driver(void) {return this->driver;};
   virtual int get_card(void) {return this->card;};

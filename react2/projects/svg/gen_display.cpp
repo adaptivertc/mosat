@@ -332,6 +332,20 @@ static void gen_ajax_animation(FILE *js_fp)
     fprintf(js_fp, "var config_xReq;\n");
     fprintf(js_fp, "var n_cfg = 0;\n");
 
+    fprintf(js_fp, "function send_output(tag, val)\n");
+    fprintf(js_fp, "{\n");
+    fprintf(js_fp, "  var path = \"react/output?\" + tag + \"+\" + val;\n");
+    fprintf(js_fp, "  console.log(\"send_output(\" + tag + \", \" + val + \")\");\n");
+    fprintf(js_fp, "  console.log(path);\n");
+    fprintf(js_fp, "  var post_request;\n");
+    fprintf(js_fp, "  post_request = new XMLHttpRequest();\n");
+    //fprintf(js_fp, "  post_request.open(\"POST\",\"react/send\",true);\n");
+    fprintf(js_fp, "  post_request.open(\"POST\",path,true);\n");
+    fprintf(js_fp, "  post_request.setRequestHeader(\"Content-type\",\n");
+    fprintf(js_fp, "           \"application/x-www-form-urlencoded\");\n");
+    fprintf(js_fp, "  post_request.send();\n");
+    fprintf(js_fp, "}\n");
+
     fprintf(js_fp, "function on_config_response()\n");
     fprintf(js_fp, "{\n");
     fprintf(js_fp, "  if (config_xReq.readyState != 4)  { return; }\n");
@@ -345,7 +359,7 @@ static void gen_ajax_animation(FILE *js_fp)
     fprintf(js_fp, "    config_xReq.abort();\n");
     fprintf(js_fp, "    return;\n"); 
     fprintf(js_fp, "  }\n"); 
-    fprintf(js_fp, "  console.log(\"config tag: \" + update_tags[n_config])\n");
+    fprintf(js_fp, "  console.log(\"config tag: \" + update_tags[n_cfg])\n");
     fprintf(js_fp, 
        "  config_xReq.open(\"GET\", react_config_hrf + update_tags[n_cfg], true);\n");
     fprintf(js_fp, "  config_xReq.send(null);\n");

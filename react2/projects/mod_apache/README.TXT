@@ -46,3 +46,7 @@ LoadModule react_module /usr/lib/apache2/modules/mod_react.so
 	/etc/init.d/apache2 restart
 
 
+To test a post:
+
+wget --quiet --output-document=- --post-data='tag=temp&value=true' http://127.0.0.1/react/output/
+

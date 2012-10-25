@@ -2121,7 +2121,7 @@ void react_t::serve_client(serve_thread_data_t *st)
     {
       msg = get_face(this, buf + 10); 
     }
-    else if (0 == strncasecmp(buf, "config", 3))
+    else if (0 == strncasecmp(buf, "config", 6))
     {
       char *tag = buf + 7;
       ltrim(tag); 
@@ -2175,6 +2175,34 @@ void react_t::serve_client(serve_thread_data_t *st)
       safe_strcat(buf_out, "]", sizeof(buf_out));
       msg = buf_out;
     }
+    else if (0 == strncasecmp(buf, "output", 6))
+    {
+      printf("msg: %s\n", buf);
+      char *output_string = buf + 7;
+      ltrim(output_string);
+      rtrim(output_string);
+      char **output_argv;
+      int output_argc;
+      output_argv = ds_tag.separate(&output_argc, output_string);
+      if (output_argc != 2)
+      {
+        msg = "Wrong number of args";
+      }
+      else
+      {
+        db_point = db->get_db_point(output_argv[0]);
+        if (db_point == NULL)
+        {
+          msg = "Tag not found";
+        }
+        else
+        {
+          db_point->set_json("pv", output_argv[1]); 
+          msg = "OK";
+        }
+      }
+    }
+
     else
     {
       snprintf(buf_out, sizeof(buf_out), "Unknown Command: '%s'\n", buf);

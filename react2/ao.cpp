@@ -54,7 +54,7 @@ int ao_point_t::get_json(char *attribute, char *buf, int sz)
 
 /********************************************************************/
 
-int ao_point_t::set_json(char *attribute, char *value)
+int ao_point_t::set_json(const char *attribute, const char *value)
 {
   if (0 == strcmp(attribute, "pv"))
   {

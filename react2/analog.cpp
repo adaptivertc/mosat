@@ -324,14 +324,6 @@ int analog_point_t::get_json(char *attribute, char *buf, int sz)
 
 /*************************************************************************/
 
-int analog_point_t::set_json(char *attribute, char *value)
-{
-  point_lock_t l(&point_lock, tag);
-  return -2;
-}
-
-/*************************************************************************/
-
 void analog_point_t::get_pv_json(char *buf, int sz)
 {
   point_lock_t l(&point_lock, tag);

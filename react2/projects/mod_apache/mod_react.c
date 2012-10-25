@@ -5,6 +5,7 @@
  *
  */
 
+#include <stdio.h>
 #include <httpd.h>
 #include <http_protocol.h>
 #include <http_config.h>
@@ -75,7 +76,7 @@ static void printtable(request_rec* r, apr_table_t* t,
   ap_rputs("</tbody></table>\n", r) ;
 }
 
-/*****************************************************/
+
 static double tag_val = 10.0;
 static int tag_dir = 1;
 
@@ -92,14 +93,83 @@ static int react_handler(request_rec* r)
   if ( r->method_number == M_PUT ) 
   {
   }
-  else if ( r->method_number == M_POST ) 
-  {
+ ****/ 
+
+  if ( r->method_number == M_POST ) 
+  { 
+    ap_set_content_type(r, "text/text;charset=ascii") ;
+    ap_rprintf(r, "Wow, got a POST!!\n");
+    ap_rprintf(r, "path_info: %s\n", r->path_info); 
+    ap_rprintf(r, "args: %s\n", r->args); 
+    ap_rprintf(r, "the_request: %s\n", r->the_request); 
+    ap_rprintf(r, "protocol: %s\n", r->protocol); 
+    ap_rprintf(r, "hostname: %s\n", r->hostname); 
+    ap_rprintf(r, "status_line: %s\n", r->status_line); 
+    ap_rprintf(r, "method: %s\n", r->method); 
+    //ap_rprintf(r, "boundary: %s\n", r->boundary); 
+    ap_rprintf(r, "range: %s\n", r->range); 
+    ap_rprintf(r, "content_type: %s\n", r->content_type); 
+    ap_rprintf(r, "handler: %s\n", r->handler); 
+    ap_rprintf(r, "content_encoding: %s\n", r->content_encoding); 
+    //ap_rprintf(r, "content_language: %s\n", r->content_language); 
+    ap_rprintf(r, "vlist_validator: %s\n", r->vlist_validator); 
+    ap_rprintf(r, "unparsed_uri: %s\n", r->unparsed_uri); 
+    ap_rprintf(r, "uri: %s\n", r->uri); 
+    ap_rprintf(r, "filename: %s\n", r->filename); 
+    ap_rprintf(r, "path_info: %s\n", r->path_info); 
+    ap_rprintf(r, "args: %s\n", r->args); 
+    //ap_rprintf(r, "case_preserved_filename: %s\n", r->case_preserved_filename); 
+
+    if (0 == strcmp(r->path_info, "/output"))
+    {
+      char buf[200];
+      snprintf(buf, sizeof(buf), "output:%s", r->args);
+      sem_wait(&sock_sem);
+      if (sock_fd == -1)
+      {
+        connect_socket();
+        //ap_rprintf(r, "Socket connected: %d<br>\n", sock_fd);
+      }
+
+      int n = write(sock_fd, buf, strlen(buf));
+      if (n <= 0)
+      {
+        ap_rputs("ERROR\n", r);
+        ap_rprintf(r, "write returned %d, %s\n", n, r->args); 
+        close(sock_fd);
+        sock_fd = -1;
+        sem_post(&sock_sem);
+        return OK;
+      }
+      else
+      {
+        n = read(sock_fd, buf, sizeof(buf));
+        buf[n] = '\0';
+        if (n <= 0)
+        {
+          ap_rputs("ERROR\n", r) ;
+          ap_rprintf(r, "read returned %d, %s\n", n); 
+          close(sock_fd);
+          sock_fd = -1;
+          sem_post(&sock_sem);
+          return OK;
+        }
+        else
+        {
+          sem_post(&sock_sem);
+          ap_rputs(buf, r) ;
+          return OK;
+        }
+      }
+    }
+    return OK ;
   }
-  else ****/ 
+
   if ( r->method_number != M_GET ) 
   {
     return HTTP_METHOD_NOT_ALLOWED ;  /* Reject other methods */
   }
+
   ap_set_content_type(r, "text/html;charset=ascii") ;
 
   lwp = syscall(SYS_gettid);
@@ -192,7 +262,7 @@ static int react_handler(request_rec* r)
     snprintf(buf, sizeof(buf), "%0.3lf", tag_val);
     ap_rputs(buf, r) ;
     return OK;
-     ***/
+     :***/
     /***/
     char buf[500];
     snprintf(buf, sizeof(buf), "%s:%s", r->path_info + 1, r->args); 

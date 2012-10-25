@@ -131,8 +131,9 @@ int do_point_t::get_json(char *attribute, char *buf, int sz)
 
 /********************************************************************/
 
-int do_point_t::set_json(char *attribute, char *value)
+int do_point_t::set_json(const char *attribute, const char *value)
 {
+  printf("do_point_t::set_json(%s, %s\n", attribute, value);
   if (0 == strcmp(attribute, "pv"))
   {
     this->send(0 == strcmp(value, "true"));
