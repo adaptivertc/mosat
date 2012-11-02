@@ -949,6 +949,7 @@ void react_t::read_all_points(const char *a_home_dir)
   ao_points = ao_point_t::read(&num_ao, a_home_dir);
   for (int i=0; i < num_ao; i++)
   {
+    logfile->vprint("Indexing ao: %s\n", ao_points[i]->get_tag());
     index_db_point(ao_points[i]);
   }
 

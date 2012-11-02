@@ -148,7 +148,7 @@ static int react_handler(request_rec* r)
         if (n <= 0)
         {
           ap_rputs("ERROR\n", r) ;
-          ap_rprintf(r, "read returned %d, %s\n", n); 
+          ap_rprintf(r, "read returned %d\n", n); 
           close(sock_fd);
           sock_fd = -1;
           sem_post(&sock_sem);

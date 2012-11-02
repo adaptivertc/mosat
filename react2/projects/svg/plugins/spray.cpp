@@ -40,6 +40,7 @@ void spray_t::generate(plugin_data_t d, int argc, char **argv)
   double x, y, line_width, top_spray_width, bottom_spray_width, spray_height;
 
   fprintf(d.svg_fp, "<!-- START insert for spray (%03d) -->\n", n_instance);
+  fprintf(d.svg_fp, "<!-- Original generator version written by Ricardo Tucker Carr -->\n");
 
   const char *the_tag = argv[1];
   x = atof(argv[2]);

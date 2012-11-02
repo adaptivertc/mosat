@@ -161,7 +161,8 @@ void spraydrv_t::read(void)
 {
   bool pump_on = di_data[0];
   bool pv_25_75 = di_data[1];
-  double pvalve_proportion = pv_25_75 ? 0.75 : 0.25; 
+//  double pvalve_proportion = pv_25_75 ? 0.75 : 0.25; 
+  double pvalve_proportion = ao_data[1]; 
   double last_pressure = ai_data[1]; 
   double now = react->get_time();
   double delta_t = now - last_time; 

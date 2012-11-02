@@ -1,4 +1,4 @@
-#PVALVE|Proportional Valve|%|0|0|1|0|10|0|10|2|0|1|
+PVALVE|Proportional Valve||0|0|1|0|10|0|10|2|0|1|0|1|
 #AO0|Motor Control|%|7|0|0|0|10|0|10|1|0|100|
 #    AO1|Analog Output 1|PSI|0|0|0|0|100|0|10|1|0|10|
 #    Tag

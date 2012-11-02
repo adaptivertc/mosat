@@ -42,7 +42,8 @@ function sim_object_t()
     "KWHM":104.823,
     "SPRAY_PUMP_ON":false,
     "PVALVE_ON":false,
-    "PRESSURE":0
+    "PRESSURE":0,
+    "SLIDER":25.0
   }
 
   this.cfg =
@@ -55,6 +56,7 @@ function sim_object_t()
     "KWHM":{"tag":"KWHM","description":"KWHM","eu":"kWh","driver":0,"card":0,"channel":2,"eu_lo":0.000000,"eu_hi":100.000000,"raw_lo":32000.000000,"raw_hi":6400.000000,"decimal_places":5,"zero_cutoff":-125.000000,"lo_alarm":15.0,"lo_caution":44.0,"hi_caution":80.0,"hi_alarm":90.0,"deadband":0.0,"lo_alarm_enable":false,"lo_caution_enable":false,"hi_caution_enable":false,"hi_alarm_enable":false, "scale_lo":0,"scale_hi":10000000},
     "PUMP1_AMP":{"tag":"PUMP1_AMP","description":"BOMBA 1","eu":"amps","driver":0,"card":0,"channel":5,"eu_lo":0.000000,"eu_hi":50.000000,"raw_lo":6400.000000,"raw_hi":32000.000000,"decimal_places":1,"zero_cutoff":-12.500000,"lo_alarm":0.000000,"lo_caution":0.000000,"hi_caution":30.000000,"hi_alarm":35.000000,"deadband":0.000000,"lo_alarm_enable":false,"lo_caution_enable":false,"hi_caution_enable":true,"hi_alarm_enable":true,"scale_lo":0,"scale_hi":40},
     "PUMP2_AMP":{"tag":"PUMP2_AMP","description":"BOMBA 2","eu":"amps","driver":0,"card":0,"channel":4,"eu_lo":0.000000,"eu_hi":50.000000,"raw_lo":6400.000000,"raw_hi":32000.000000,"decimal_places":1,"zero_cutoff":-12.500000,"lo_alarm":0.000000,"lo_caution":0.000000,"hi_caution":30.000000,"hi_alarm":35.000000,"deadband":0.000000,"lo_alarm_enable":false,"lo_caution_enable":false,"hi_caution_enable":true,"hi_alarm_enable":true,"scale_lo":0,"scale_hi":40},
+    "SLIDER":{"tag":"SLIDER","description":"Slider Value","eu":"%","driver":0,"card":0,"channel":3,"eu_lo":0.0,"eu_hi":100.0,"raw_lo":0.0,"raw_hi":100.0,"decimal_places":1,"zero_cutoff":-100.0,"lo_alarm":0.0,"lo_caution":0.0,"hi_caution":0.0,"hi_alarm":0.0,"deadband":0.0,"lo_alarm_enable":false,"lo_caution_enable":false,"hi_caution_enable":false,"hi_alarm_enable":false,"scale_lo":0,"scale_hi":100},
     "PUMP3_AMP":{"tag":"PUMP3_AMP","description":"BOMBA 3","eu":"amps","driver":0,"card":0,"channel":3,"eu_lo":0.000000,"eu_hi":50.000000,"raw_lo":6400.000000,"raw_hi":32000.000000,"decimal_places":1,"zero_cutoff":-12.500000,"lo_alarm":0.000000,"lo_caution":0.000000,"hi_caution":30.000000,"hi_alarm":35.000000,"deadband":0.000000,"lo_alarm_enable":false,"lo_caution_enable":false,"hi_caution_enable":true,"hi_alarm_enable":true,"scale_lo":0,"scale_hi":40},
     "PUMP1_ON": {"tag":"PUMP1_ON","description":"Bomba 1 ON","driver":0,"card":0,"channel":8, "lo_desc":"Off","hi_desc":"ON", "alarm_state":"NONE","shutdown_state":"NONE","invert_pv":false},
     "PUMP2_ON":{"tag":"PUMP2_ON","description":"Bomba 1 ON","driver":0,"card":0,"channel":9, "lo_desc":"Off","hi_desc":"ON", "alarm_state":"NONE","shutdown_state":"NONE","invert_pv":false},
@@ -123,6 +125,10 @@ sim_object_t.prototype.set_pv=sim_object_set_pv_f;
 
 function next_value(tau, steady_state_value, last_value, delta_t)
 {
+  if (Math.abs(steady_state_value - last_value) < 0.01)
+  {
+    return steady_state_value;
+  }
   var fraction = 1.0 - Math.exp(-delta_t/tau);
   return last_value + ((steady_state_value - last_value) * fraction);
 }
@@ -200,6 +206,7 @@ function next_value(tau, steady_state_value, last_value, delta_t)
         this.pv.PRESSURE = next_value(0.5, 0, this.pv.PRESSURE, now - this.last_time)
       }
       //console.log("PRESSURE: " + this.pv.PRESSURE)
+      /**
       if (this.pv.PVALVE_ON)
       {
         this.pv.PVALVE = 0.75; 
@@ -208,7 +215,7 @@ function next_value(tau, steady_state_value, last_value, delta_t)
       {
         this.pv.PVALVE = 0.25; 
       }
-      this.last_time = now; 
+      **/
       this.last_time = now; 
     }
     sim_object_t.prototype.update=sim_object_update_f;

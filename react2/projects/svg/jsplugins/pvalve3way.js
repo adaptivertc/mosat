@@ -33,12 +33,20 @@ function pvalve3way_update_f(pv)
   //console.log("pv = " + pv + ", obj = " + this.group_obj);
   var x = this.cx - this.d;
   var y = this.y1 + ((this.y2 - this.y1) * (pv)); 
-  var the_points = "" + this.cx + "," + this.cy + " " + x + ", " + this.y1 + " " + x + "," + y;   
+  var y1 = this.y1 + ((this.y2 - this.y1) * ((1-pv)/2.0)); 
+  var y2 = this.y2 - ((this.y2 - this.y1) * ((1-pv)/2.0)); 
+  var the_points = "" + this.cx + "," + this.cy + " " + x + ", " + y1 + " " + x + "," + y2;   
+//  var the_points = "" + this.cx + "," + this.cy + " " + x + ", " + y + " " + x + "," + this.y1;   
+
   this.out1_obj.setAttribute("points", the_points);
 
-  x = this.x1 + ((this.x2 - this.x1) * (1-pv)) 
   y = this.cy + this.d;
-  the_points = "" + this.cx + "," + this.cy + " " + this.x1 + ", " + y + " " + x + "," + y;   
+  x = this.x1 + ((this.x2 - this.x1) * (1-pv)) 
+  var x1 = this.x1 + ((this.x2 - this.x1) * ((pv)/2.0)) 
+  var x2 = this.x2 - ((this.x2 - this.x1) * ((pv)/2.0)) 
+//  the_points = "" + this.cx + "," + this.cy + " " + this.x1 + ", " + y + " " + x + "," + y;   
+  the_points = "" + this.cx + "," + this.cy + " " + x1 + ", " + y + " " + x2 + "," + y;   
+
   this.out2_obj.setAttribute("points", the_points);
 
 }

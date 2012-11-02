@@ -11,10 +11,10 @@ temp: temp.cpp
 #	../../pl out_temp_hum_sim.txt 
 
 weblogger: weblogger.cpp
-	g++ -Wall -lrt -o weblogger weblogger.cpp
+	g++ -Wall -o weblogger weblogger.cpp -lrt
 
 webbackground: webbackground.cpp
-	g++ -Wall -lrt -o webbackground webbackground.cpp $(RTCOMMON)
+	g++ -Wall -o webbackground webbackground.cpp $(RTCOMMON) -lrt
 
 divide: divide.cpp
 	g++ -Wall -g -o divide divide.cpp

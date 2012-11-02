@@ -15,6 +15,10 @@ install:
 restart:
 	sudo /etc/init.d/apache2 restart
 
+stop:
+	sudo /etc/init.d/apache2 stop 
+
 
 clean:
 	rm -rfv mod_helloworld.la mod_helloworld.lo mod_helloworld.slo .libs 
+	rm -rfv mod_react.la mod_react.lo mod_react.slo .libs 

@@ -40,6 +40,17 @@ install:
 depend:
 	gcc -MM -MF depend gen_display.cpp
 
+.PHONY: gauge spray.slider slider
+
+gauge:
+	./gen_display -f display.gauge.txt -o gauge.svg -sim
+
+spray.slider:
+	./gen_display -f display.spray.slider.txt -o spray.slider.svg -sim
+
+slider:
+	./gen_display -f display.slider.txt -o slider.svg -sim
+
 clean:
 	rm -rv gen_points gen_bar gen_tank gen_so_makefile ./plugins/*.so gen_display
 
