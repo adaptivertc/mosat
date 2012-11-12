@@ -54,6 +54,7 @@ void valve3way_t::generate_doc(doc_object_base_t *dob)
   dob->param("Width");
   dob->param("Type ");
   dob->param("Rotation Angle (typically 0, 90, 180, or 270)");
+  dob->example("valve3way|VALVE3WAY_DIR1|magenta|gray|70|35|8|2|0|1|");
   dob->end();
 }
 

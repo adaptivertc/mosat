@@ -51,6 +51,12 @@ void rgauge_t::generate_doc(doc_object_base_t *dob)
   dob->param("X of upper left corner");
   dob->param("Y of upper left corner");
   dob->param("Width");
+  dob->example("rgauge|1|PRESSURE|blue|80|30|55|");
+  dob->notes("Uses the following attributes of the tag: "
+       "'scale_hi', 'scale_lo', 'eu', 'decimal_places', "
+       "'lo_alarm', 'lo_caution', 'hi_caution', 'hi_alarm', "
+       " 'lo_alarm_enable', 'lo_caution_enable', "
+       "'hi_caution_enable', 'hi_alarm_enable'");
   dob->notes("Height = Width");
   dob->end();
 }

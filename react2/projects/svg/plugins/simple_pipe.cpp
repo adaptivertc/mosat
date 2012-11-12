@@ -281,6 +281,7 @@ void simple_pipe_t::generate_doc(doc_object_base_t *dob)
   dob->param("Direction that must be 'V' or 'H'");
   dob->param("Stopping point");
   dob->param("Now, Repeat 5 and 6 as many times as needed to complete the pipe");
+  dob->example("simple_pipe|gray|3|90|126|v|112|h|75|v|13.5|h|70|");
   dob->notes("You must alternate V and H, you can not have two Vs or two Hs in a row");
   dob->end();
 }

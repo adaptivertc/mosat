@@ -52,6 +52,7 @@ void cooling_tower_t::generate_doc(doc_object_base_t *dob)
   dob->param("Fill Color");
   dob->param("Text centered in middle of cooling tower (can be blank)");
   dob->param("Text color");
+  dob->example("cooling_tower|205|40|50|gray|CT-902|black|");
   dob->notes("No animation");
   dob->end();
 }

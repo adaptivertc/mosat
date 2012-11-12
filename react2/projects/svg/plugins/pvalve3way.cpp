@@ -54,6 +54,7 @@ void pvalve3way_t::generate_doc(doc_object_base_t *dob)
   dob->param("Width");
   dob->param("Type (1 = square handle, 2 = rounded handle");
   dob->param("Rotation of valve (typically 0, 90, 180, 270)");
+  dob->example("pvalve3way|PVALVE|magenta|gray|90|126|12|1|180|");
   dob->notes("We need to add other types");
   dob->end();
 }

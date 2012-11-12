@@ -51,6 +51,7 @@ void triangle_t::generate_doc(doc_object_base_t *dob)
   dob->param("base width of triange");
   dob->param("Fill color of triange");
   dob->param("Rotation (typically 0, 90, 180, or 270)");
+  dob->example("triangle|252|25|5|black|90|");
   dob->end();
 }
 

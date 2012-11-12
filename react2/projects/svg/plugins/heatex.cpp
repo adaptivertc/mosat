@@ -50,6 +50,7 @@ void heatex_t::generate_doc(doc_object_base_t *dob)
   dob->param("Y of upper left corner");
   dob->param("Width");
   dob->param("Angle of rotation about the center (typically 0, 90, 180, 270)");
+  dob->example("heatex|215|65|15|0|");
   dob->notes("No animation");
   dob->end();
 }
@@ -57,11 +58,10 @@ void heatex_t::generate_doc(doc_object_base_t *dob)
 
 void heatex_t::generate(plugin_data_t d, int argc, char **argv)
 {
-  //const char *tag = argv[1];
-  double x1 = atof(argv[2]);
-  double y1 = atof(argv[3]);
-  double width = atof(argv[4]);
-  int angle = atoi(argv[5]);
+  double x1 = atof(argv[1]);
+  double y1 = atof(argv[2]);
+  double width = atof(argv[3]);
+  int angle = atoi(argv[4]);
   double scale_factor = width / 40.0;
 
   double x2 = x1 + width;

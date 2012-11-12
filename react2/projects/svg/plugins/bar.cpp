@@ -51,7 +51,13 @@ void bar_t::generate_doc(doc_object_base_t *dob)
   dob->param("X of top left corner of bar");
   dob->param("Y of top left corner of bar");
   dob->param("Height of bar");
+  dob->notes("Uses the following attributes of the tag: "
+       "'scale_hi', 'scale_lo', 'eu', 'decimal_places', "
+       "'lo_alarm', 'lo_caution', 'hi_caution', 'hi_alarm', "
+       " 'lo_alarm_enable', 'lo_caution_enable', "
+       "'hi_caution_enable', 'hi_alarm_enable'");
   dob->notes("Automatically calculates width");
+  dob->example("bar|PRESSURE|orange|110|45|70|");
   dob->end();
 }
 

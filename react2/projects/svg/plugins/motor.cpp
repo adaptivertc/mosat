@@ -53,6 +53,7 @@ void motor_t::generate_doc(doc_object_base_t *dob)
   dob->param("Center Y of where shaft attaches");
   dob->param("Width of motor");
   dob->param("Angle of rotation around the shaft attach point");
+  dob->example("motor|PUMP1_ON|lime|grey|38|60|12|0|");
   dob->notes("Height is 54% of width");
   dob->end();
 }

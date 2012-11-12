@@ -14,16 +14,6 @@ panel|215|5|80|35|0.3|
 text|275|14|8|black|middle|System|Control|
 switch|PUMP2_ON|yellow|red|225|7|30|
 
-#motor|tag|lime|gray|200|90|30|0|
-#motor|tag|lime|lime|38|60|8|0|
-#motor|tag|on_color|off_collor|x1|y1|width|rotation(0,90,180,270)|
-#heatex|tag|x1|y1|width|rotation(0,90,180,270)|
-#heatex|tag|x1|y1|width|rotation(0,90,180,270)|
-#blades|xxx|200|45|60|30|0|
-#heatex|xxx|200|90|20|0|
-#cooling_tower|250|50|45|gray|CT-902|black|
-
-
 # Crystalizers 1,2
 panel|5|36|60|90|0.5|
 panel|8|38|46|29|0.3|

@@ -33,7 +33,7 @@ pipe1d|null|grey|grey|2|209|81|h|241|v|106|
 
 valve|PUMP3_ON|lime|gray|240|50|8|2|270|1|
 text|246|50|4|black|start|COV-21A,A|
-heatex|tagx|215|65|15|0|
+heatex|215|65|15|0|
 
 pump|PUMP1_ON|magenta|gray|238|110|8|2|0|
 text|238|120|4|black|middle|P-810|

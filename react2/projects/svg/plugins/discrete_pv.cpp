@@ -52,6 +52,7 @@ void discrete_pv_t::generate_doc(doc_object_base_t *dob)
   dob->param("Y (to baseline of string)");
   dob->param("Text Height");
   dob->notes("We could add parameters to control the allignment");
+  dob->notes("Uses tag attributes: 'lo_desc', 'hi_desc'");
   dob->end();
 }
 

@@ -53,7 +53,11 @@ void svg_header_t::generate_doc(doc_object_base_t *dob)
   dob->param("Y1 of Viewbox");
   dob->param("X2 of Viewbox");
   dob->param("Y2 of Viewbox");
-  dob->notes("Other types of headers are possible");
+  dob->notes("Other types of headers are possible. "
+    "For example you might want to make a header suitable for "
+    "embedding in an HTML file, one that takes up only a small "
+    "part of the screen, etc.");
+  dob->example("svg_header|Spray Demo|0|0|300|150|");
   dob->end();
 }
 

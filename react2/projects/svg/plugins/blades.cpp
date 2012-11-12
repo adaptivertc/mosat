@@ -54,6 +54,7 @@ void blades_t::generate_doc(doc_object_base_t *dob)
   dob->param("Rotation Angle (typically 0, 90, 180, or 270");
   dob->param("On Color (typically a bright color)");
   dob->param("Off Color (typically a shade of gray)");
+  dob->example("blades|PUMP1_ON|30|60|9|10|0|lime|gray|");
   dob->end();
 }
 

@@ -120,6 +120,8 @@ void simple_tank_t::generate_doc(doc_object_base_t *dob)
   dob->param("Cap Height (both types)");
   dob->param("Cone Height (cone only)");
   dob->param("Cone width at bottom (cone only)");
+  dob->example("simple_tank|c|black|30|10|40|110|1.5|25|3|");
+  dob->example("simple_tank|p|gray|60|20|35|100|8|");
   dob->end();
 }
 

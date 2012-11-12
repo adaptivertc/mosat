@@ -61,7 +61,7 @@ function sim_object_t()
     "PUMP1_ON": {"tag":"PUMP1_ON","description":"Bomba 1 ON","driver":0,"card":0,"channel":8, "lo_desc":"Off","hi_desc":"ON", "alarm_state":"NONE","shutdown_state":"NONE","invert_pv":false},
     "PUMP2_ON":{"tag":"PUMP2_ON","description":"Bomba 1 ON","driver":0,"card":0,"channel":9, "lo_desc":"Off","hi_desc":"ON", "alarm_state":"NONE","shutdown_state":"NONE","invert_pv":false},
     "PUMP3_ON":{"tag":"PUMP3_ON","description":"Bomba 1 ON","driver":0,"card":0,"channel":10, "lo_desc":"Off","hi_desc":"ON", "alarm_state":"NONE","shutdown_state":"NONE","invert_pv":false},
-    "SPRAY_PUMP_ON":{"tag":"SPRAY_PUMP_ON","description":"Spray Pump ON","driver":0,"card":0,"channel":11, "lo_desc":"Off","hi_desc":"ON", "alarm_state":"NONE","shutdown_state":"NONE","invert_pv":false},
+    "SPRAY_PUMP_ON":{"tag":"SPRAY_PUMP_ON","description":"Spray Pump ON","driver":0,"card":0,"channel":11, "lo_desc":"Off","hi_desc":"On", "alarm_state":"NONE","shutdown_state":"NONE","invert_pv":false},
     "PVALVE_ON":{"tag":"PVALVE_ON","description":"Proportional Valve ON","driver":0,"card":0,"channel":11, "lo_desc":"25","hi_desc":"75", "alarm_state":"NONE","shutdown_state":"NONE","invert_pv":false},
     "HI_HI_LEVEL":{"tag":"HI_HI_LEVEL","description":"Nivel Muy Alto","driver":0,"card":1,"channel":2, "lo_desc":"BELOW","hi_desc":"ABOVE", "alarm_state":"NONE","shutdown_state":"NONE","invert_pv":false},
     "HI_LEVEL":{"tag":"HI_LEVEL","description":"Nivel Alto","driver":0,"card":1,"channel":1, "lo_desc":"BELOW","hi_desc":"ABOVE", "alarm_state":"NONE","shutdown_state":"NONE","invert_pv":false},

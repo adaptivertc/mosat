@@ -49,10 +49,12 @@ void analog_pv_t::generate_doc(doc_object_base_t *dob)
   dob->start("analog_pv", "Dislays analog PV on screen as text");
   dob->param("Analog Tagname");
   dob->param("Text Color");
-  dob->param("X (to middle of string)n");
+  dob->param("X (to middle of string)");
   dob->param("Y (to baseline of string)");
   dob->param("Text Height");
+  dob->example("analog_pv|PVALVE|firebrick|90|138|5|");
   dob->notes("We could add parameters to control the allignment");
+  dob->notes("Uses tag attributes: 'eu', and 'decimal_places'");
   dob->end();
 }
 

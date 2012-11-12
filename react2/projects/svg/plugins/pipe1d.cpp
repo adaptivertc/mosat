@@ -276,6 +276,7 @@ void pipe1d_t::generate_doc(doc_object_base_t *dob)
   dob->param("Direction that must be 'V' or 'H'");
   dob->param("Stopping point");
   dob->param("Now, Repeat 7 and 8 as many times as needed to complete the pipe");
+  dob->example("pipe1d|PUMP2_ON|orange|grey|2|134|88|h|150|v|109|");
   dob->notes("You must alternate V and H, you can not have two Vs or two Hs in a row");
   dob->end();
 }

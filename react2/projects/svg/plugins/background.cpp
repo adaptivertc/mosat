@@ -48,7 +48,9 @@ void background_t::generate_doc(doc_object_base_t *dob)
 {
   dob->start("background" ,"Set the background color");
   dob->param("The background color.\n");
+  dob->example("background|thistle|");
   dob->notes("This will typically be the second line, right after the svg_header.");
+  dob->end();
 }
 
 void background_t::generate(plugin_data_t d, int argc, char **argv)

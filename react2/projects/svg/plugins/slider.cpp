@@ -51,6 +51,7 @@ void slider_t::generate_doc(doc_object_base_t *dob)
   dob->param("X of upper left corner");
   dob->param("Y of upper left corner");
   dob->param("Width");
+  dob->example("slider|PVALVE|blue|110|135.5|180|");
   dob->notes("You can grab the button in the middle and drag left or right to set the value");
   dob->end();
 }

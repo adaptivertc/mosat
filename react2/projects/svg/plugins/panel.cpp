@@ -58,6 +58,7 @@ void panel_t::generate_doc(doc_object_base_t *dob)
   dob->param("Width");
   dob->param("Height");
   dob->param("Shadow Width");
+  dob->example("panel|110|65|30|75|0.3|");
   dob->notes("For now, only in grey. Lighter upper and left edges, and darker lower and right edges");
   dob->end();
 

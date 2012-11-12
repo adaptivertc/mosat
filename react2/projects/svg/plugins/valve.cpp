@@ -45,7 +45,7 @@ const char *valve_t::get_name(void)
 
 void valve_t::generate_doc(doc_object_base_t *dob)
 {
-  dob->start("valve", "Simple two way valv animate by a discrete value");
+  dob->start("valve", "Simple two way valve animated by a discrete value");
   dob->param("Discrete tag");
   dob->param("On Color");
   dob->param("Off Color");
@@ -54,6 +54,7 @@ void valve_t::generate_doc(doc_object_base_t *dob)
   dob->param("Width");
   dob->param("Type ");
   dob->param("Rotation Angle (typically 0, 90, 180, or 270)");
+  dob->example("valve|VALVE3_ON|lime|gray|240|50|8|2|270|1|");
   dob->end();
 }
 

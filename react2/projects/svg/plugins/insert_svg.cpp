@@ -48,6 +48,7 @@ void insert_svg_t::generate_doc(doc_object_base_t *dob)
   dob->start("insert_svg", "Inserts raw SVG code into the SVG portion of the file");
   dob->param("Exact SVG text to be inserted");
   dob->notes("For simple things that do not require a dedicated widget");
+  dob->example("insert_svg|&lt;circle cx=\"107.5\" cy=\"126\" r=\"0.7\" fill=\"back\"/&gt;|");
   dob->end();
 }
 

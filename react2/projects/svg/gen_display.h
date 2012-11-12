@@ -12,11 +12,14 @@ class doc_object_base_t
 protected:
   FILE *fp;
   int param_number;
+  int note_number;
+  int example_number;
 public:
   void set_fp(FILE *the_fp){this->fp = the_fp;};
   virtual void header(void)=0;
   virtual void start(const char *name, const char *short_desc)=0;
   virtual void param(const char *short_desc)=0;
+  virtual void example(const char *example)=0;
   virtual void notes(const char *notes)=0;
   virtual void end(void)=0;
   virtual void footer(void)=0;
@@ -29,6 +32,7 @@ public:
   void set_fp(FILE *the_fp);
   void start(const char *name, const char *short_desc);
   void param(const char *short_desc);
+  void example(const char *example);
   void notes(const char *notes);
   void end(void);
   void footer(void);
@@ -41,6 +45,7 @@ public:
   void set_fp(FILE *the_fp);
   void start(const char *name, const char *short_desc);
   void param(const char *short_desc);
+  void example(const char *example);
   void notes(const char *notes);
   void end(void);
   void footer(void);

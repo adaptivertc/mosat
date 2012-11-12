@@ -52,6 +52,7 @@ void simple_contact_t::generate_doc(doc_object_base_t *dob)
   dob->param("X of upper left corner");
   dob->param("Y of upper left corner");
   dob->param("Width");
+  dob->example("simple_contact|HI_LEVEL|yellow|gray|20|52|9|");
   dob->end();
 }
 

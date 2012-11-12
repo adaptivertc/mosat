@@ -51,6 +51,7 @@ void text_t::generate_doc(doc_object_base_t *dob)
   dob->param("Text Height");
   dob->param("Text Color");
   dob->param("Text Anchor (start, middle, end)");
+  dob->example("text|260|22|5|firebrick|start|Oil Feed|To Cryst.|COV-Ax-D,-E,-F|");
   dob->notes("Preferred text object");
   dob->end();
 }

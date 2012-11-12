@@ -52,6 +52,12 @@ void gauge_t::generate_doc(doc_object_base_t *dob)
   dob->param("X of upper left corner"); 
   dob->param("Y of upper left corner"); 
   dob->param("Width"); 
+  dob->example("gauge|1|PRESSURE|green|125|10|75|");
+  dob->notes("Uses the following attributes of the tag: "
+       "'scale_hi', 'scale_lo', 'eu', 'decimal_places', "
+       "'lo_alarm', 'lo_caution', 'hi_caution', 'hi_alarm', "
+       " 'lo_alarm_enable', 'lo_caution_enable', "
+       "'hi_caution_enable', 'hi_alarm_enable'");
   dob->notes("Height = Width");
   dob->end();
 }

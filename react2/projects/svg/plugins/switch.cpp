@@ -52,6 +52,8 @@ void switch_t::generate_doc(doc_object_base_t *dob)
   dob->param("X of upper left corner");
   dob->param("Y of upper left corner");
   dob->param("Width");
+  dob->example("switch|SPRAY_PUMP_ON|lime|red|5|115|30|");
+  dob->notes("Uses tag attributes: 'lo_desc', 'hi_desc'");
   dob->end();
 }
 
@@ -76,6 +78,8 @@ void switch_t::generate(plugin_data_t d, int argc, char **argv)
   char js_click1_name[30];
   char js_click2_name[30];
   char js_handler_name[30];
+  char js_on_text_name[30];
+  char js_off_text_name[30];
   snprintf(js_object_name, sizeof(js_object_name), "switch_obj_%03d", n_instance);
   snprintf(js_click1_name, sizeof(js_click1_name), "switch_click1_%03d", n_instance);
   snprintf(js_click2_name, sizeof(js_click2_name), "switch_click2_%03d", n_instance);
@@ -83,6 +87,9 @@ void switch_t::generate(plugin_data_t d, int argc, char **argv)
   snprintf(js_group_name, sizeof(js_group_name), "switch_group_%03d", n_instance);
   snprintf(js_on_name, sizeof(js_on_name), "switch_on_%03d", n_instance);
   snprintf(js_off_name, sizeof(js_off_name), "switch_off_%03d", n_instance);
+
+  snprintf(js_on_text_name, sizeof(js_on_text_name), "switch_on_text_%03d", n_instance);
+  snprintf(js_off_text_name, sizeof(js_off_text_name), "switch_off_text_%03d", n_instance);
 
   fprintf(d.svg_fp, "<!--  START insert for switch (%03d) -->\n", n_instance);
   fprintf(d.js_fp, "// --  START insert for switch (%03d)\n", n_instance);
@@ -93,13 +100,13 @@ void switch_t::generate(plugin_data_t d, int argc, char **argv)
   fprintf(d.svg_fp, "<rect  id=\"%s\" x=\"%lf\" y=\"%lf\" rx=\"%lf\" ry=\"%lf\" width=\"%lf\" height=\"%lf\" fill=\"red\" stroke=\"black\" stroke-width=\"%lf\"/>\n", 
     js_off_name, x1 + (2.0 * scale_factor), y1 + (2.0 * scale_factor), 
     4.0 * scale_factor, 4.0 * scale_factor, 48.0 * scale_factor, 20.0 * scale_factor, scale_factor);
-  fprintf(d.svg_fp, "<text id=\"textxxx_001\" x=\"%lf\" y=\"%lf\" font-size=\"%lf\" fill=\"black\" text-anchor=\"middle\">Off</text>\n",
+  fprintf(d.svg_fp, "<text id=\"%s\" x=\"%lf\" y=\"%lf\" font-size=\"%lf\" fill=\"black\" text-anchor=\"middle\">Off</text>\n", js_off_text_name,
      x1 + 25.0 * scale_factor, y1 + 18.6 * scale_factor, 18.0 * scale_factor);
 
   fprintf(d.svg_fp, "<rect  id=\"%s\" x=\"%lf\" y=\"%lf\"  rx=\"%lf\" ry=\"%lf\" width=\"%lf\" height=\"%lf\" fill=\"gray\" stroke=\"black\" stroke-width=\"%lf\"/>\n", 
     js_on_name, x1 + (52.0 * scale_factor), y1 + (2.0 * scale_factor), 
     4.0 * scale_factor, 4.0 * scale_factor, 48.0 * scale_factor, 20.0 * scale_factor, scale_factor);
-  fprintf(d.svg_fp, "<text id=\"textxx_002\" x=\"%lf\" y=\"%lf\" font-size=\"%lf\" fill=\"black\" text-anchor=\"middle\">On</text>\n",
+  fprintf(d.svg_fp, "<text id=\"%s\" x=\"%lf\" y=\"%lf\" font-size=\"%lf\" fill=\"black\" text-anchor=\"middle\">On</text>\n", js_on_text_name,
      x1 + 75.0 * scale_factor, y1 + 18.6 * scale_factor, 18.0 * scale_factor);
 
 
@@ -139,9 +146,9 @@ void switch_t::generate(plugin_data_t d, int argc, char **argv)
   fprintf(d.js_fp, "  %s.interval_handler();\n", js_object_name);
   fprintf(d.js_fp, "}\n");
 
-  fprintf(d.js_fp, "var %s = new switch_t(\"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", %lf, %lf, \"%s()\");\n", 
+  fprintf(d.js_fp, "var %s = new switch_t(\"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", %lf, %lf, \"%s()\", \"%s\", \"%s\");\n", 
       js_object_name, tag, js_group_name, js_on_name, js_off_name, 
-      on_color, off_color, cx, cy, js_handler_name); 
+      on_color, off_color, cx, cy, js_handler_name, js_on_text_name, js_off_text_name); 
 
   fprintf(d.svg_fp, "<!--  END insert for switch (%03d) -->\n", n_instance);
   fprintf(d.js_fp, "// --  END insert for switch (%03d)\n", n_instance);

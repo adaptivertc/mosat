@@ -55,6 +55,8 @@ void rect_light_t::generate_doc(doc_object_base_t *dob)
   dob->param("Width");
   dob->param("Height");
   dob->param("Text Location (B = below, A = Above, L = left, R = right, N = none)");
+  dob->example("rect_light|hydraulic_1a|lime|gray|120|68|8|8|N|");
+  dob->notes("Uses tag attributes: 'lo_desc', 'hi_desc'");
   dob->end();
 }
 

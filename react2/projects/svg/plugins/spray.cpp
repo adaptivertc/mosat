@@ -62,6 +62,7 @@ void spray_t::generate_doc(doc_object_base_t *dob)
   dob->param("Width of top of spray");
   dob->param("Width of bottom of spray");
   dob->param("Spray Height");
+  dob->example("spray|PRESSURE|180|15|7|1|4|70|90|");
   dob->end();
 }
 

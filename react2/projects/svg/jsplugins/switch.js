@@ -1,5 +1,6 @@
 
-function switch_t(tag, group_name, on_name, off_name, on_color, off_color, cx, cy, hstr)
+function switch_t(tag, group_name, on_name, off_name, on_color, off_color, cx, cy, hstr,
+    on_text_name, off_text_name)
 {
   console.log("group_name " + group_name);
   this.on_color = on_color;
@@ -10,6 +11,8 @@ function switch_t(tag, group_name, on_name, off_name, on_color, off_color, cx, c
   this.group_obj=document.getElementById(group_name);
   this.on_obj=document.getElementById(on_name);
   this.off_obj=document.getElementById(off_name);
+  this.on_text_obj=document.getElementById(on_text_name);
+  this.off_text_obj=document.getElementById(off_text_name);
   this.interval_handler_str=hstr;
   this.state=false;
   this.in_limbo=true; // Waiting for first update
@@ -26,6 +29,8 @@ function switch_init_f(val)
   console.log("init, tag = " + this.tag);
   this.lo_desc = val.lo_desc;
   this.hi_desc = val.hi_desc;
+  this.on_text_obj.textContent = this.hi_desc;
+  this.off_text_obj.textContent = this.lo_desc;
 }
 switch_t.prototype.init=switch_init_f;
 

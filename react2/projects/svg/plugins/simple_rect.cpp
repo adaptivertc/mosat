@@ -51,6 +51,10 @@ void simple_rect_t::generate_doc(doc_object_base_t *dob)
   dob->param("X of upper left corner");
   dob->param("Y of upper left corner");
   dob->param("Height");
+  dob->example("simple_rect|PRESSURE|mediumslateblue|110|45|70|");
+  dob->notes("Uses the following attributes of the tag: "
+       "'scale_hi', 'scale_lo', 'eu', 'decimal_places'");
+  dob->notes("Automatically calculates width");
   dob->end();
 }
 

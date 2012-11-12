@@ -53,6 +53,7 @@ void simple_panel_t::generate_doc(doc_object_base_t *dob)
   dob->param("Center X");
   dob->param("Center Y");
   dob->param("Radius");
+  dob->example("simple_panel|PUMP1_ON|darkturquoise|gray|86|109|8|");
   dob->end();
 }
 
