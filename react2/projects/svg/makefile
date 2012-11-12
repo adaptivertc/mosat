@@ -28,8 +28,8 @@ gen_so_makefile: gen_so_makefile.cpp
 gen_tank: gen_tank.cpp
 	$(CPP) -o gen_tank gen_tank.cpp
 
-gen_display:  gen_display.cpp include_file.cpp gen_display.h react_svg.h
-	$(CPP) gen_display.cpp include_file.cpp -ldl -rdynamic -o gen_display $(RTCOMMON)
+gen_display:  gen_display.cpp doc_text.cpp doc_html.cpp include_file.cpp gen_display.h react_svg.h
+	$(CPP) gen_display.cpp doc_text.cpp doc_html.cpp include_file.cpp -ldl -rdynamic -o gen_display $(RTCOMMON)
 
 dtest.svg: display.txt gen_display so_files
 	./gen_display -f display.txt -d ./plugins/ -o dtest.svg -sim

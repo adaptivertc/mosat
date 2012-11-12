@@ -38,6 +38,9 @@ function bar_init_f(val)
   this.decimal_places = val.decimal_places;
   console.log("max: " + this.max);
   console.log("eu_label: " + this.eu_label);
+  if (val.hi_caution_enable || val.hi_alarm_enable ||
+      val.lo_caution_enable || val.lo_alarm_enable)
+  {
       var ay;
       var awidth = (this.x2 - this.x1) * 0.3;
       var ax = this.x1 - (awidth * 0.5) - (this.stroke_width * 0.5);
@@ -75,6 +78,7 @@ function bar_init_f(val)
           bar_draw_alarm(ax, ay, this.y2, "red", awidth);
         }
       }
+  }
 
       console.log("Starting tics");
       var sinfo = new ScaleInfo();

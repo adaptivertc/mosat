@@ -7,10 +7,50 @@ struct plugin_data_t
   FILE *svg_top_of_file_fp;
 };
 
+class doc_object_base_t
+{
+protected:
+  FILE *fp;
+  int param_number;
+public:
+  void set_fp(FILE *the_fp){this->fp = the_fp;};
+  virtual void header(void)=0;
+  virtual void start(const char *name, const char *short_desc)=0;
+  virtual void param(const char *short_desc)=0;
+  virtual void notes(const char *notes)=0;
+  virtual void end(void)=0;
+  virtual void footer(void)=0;
+};
+
+class doc_html_object_t : public doc_object_base_t
+{
+public:
+  void header(void);
+  void set_fp(FILE *the_fp);
+  void start(const char *name, const char *short_desc);
+  void param(const char *short_desc);
+  void notes(const char *notes);
+  void end(void);
+  void footer(void);
+};
+
+class doc_text_object_t : public doc_object_base_t
+{
+public:
+  void header(void);
+  void set_fp(FILE *the_fp);
+  void start(const char *name, const char *short_desc);
+  void param(const char *short_desc);
+  void notes(const char *notes);
+  void end(void);
+  void footer(void);
+};
+
 class gen_plugin_base_t
 {
 public:
   virtual const char *get_name(void)=0;
+  virtual void generate_doc(doc_object_base_t *doc_base)=0;
   virtual void generate(plugin_data_t d, int argc, char **argv)=0;
 };
 

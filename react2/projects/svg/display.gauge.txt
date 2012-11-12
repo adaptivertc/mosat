@@ -1,16 +1,16 @@
 svg_header|Round Gauge|0|0|300|150|
 background|burlywood|
-imasa_logo|0|0|24|
+#imasa_logo|0|0|24|
 bar|level|blue|36|5|125|
-rgauge|0|pump1_amp|blue|74|1|73|
-gauge|2|pump2_amp|darkorange|151|1|73|
-gauge|1|pump3_amp|green|226|1|73|
-only_text|Pump 1|green|112|85|10|middle|
-only_text|Pump 2|darkred|187|85|10|middle|
-only_text|Pump 3|blue|262|85|10|middle|
+rgauge|0|pump1_amp|blue|74|10|73|
+gauge|2|pump2_amp|darkorange|151|10|73|
+gauge|1|pump3_amp|green|226|10|73|
+only_text|Pump 1|green|112|95|10|middle|
+only_text|Pump 2|darkred|187|95|10|middle|
+only_text|Pump 3|blue|262|95|10|middle|
 simple_contact|HI_HI_LEVEL|yellow|gray|20|20|9|
 simple_contact|HI_LEVEL|yellow|gray|20|52|9|
 simple_contact|LO_LEVEL|yellow|gray|20|100|9|
-pump|PUMP1_ON|gray|lime|110|108|25|1|0|
-pump|PUMP2_ON|gray|lime|187|108|25|1|0|
-pump|PUMP3_ON|gray|lime|264|108|25|1|0|
+pump|PUMP1_ON|gray|lime|110|118|25|1|0|
+pump|PUMP2_ON|gray|lime|187|118|25|1|0|
+pump|PUMP3_ON|gray|lime|264|118|25|1|0|

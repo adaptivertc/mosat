@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 static int n_instance = 1;
 
-class valve_t : public gen_plugin_base_t
+class pvalve_t : public gen_plugin_base_t
 {
 public:
   const char *get_name(void); 
@@ -35,29 +35,30 @@ public:
 
 extern "C" gen_plugin_base_t *get_object(void)
 {
-  return new valve_t;
+  return new pvalve_t;
 }
 
-const char *valve_t::get_name(void)
+const char *pvalve_t::get_name(void)
 {
-  return "valve";
+  return "pvalve";
 }
 
-void valve_t::generate_doc(doc_object_base_t *dob)
+void pvalve_t::generate_doc(doc_object_base_t *dob)
 {
-  dob->start("valve", "Simple two way valv animate by a discrete value");
-  dob->param("Discrete tag");
+  dob->start("pvalve", "Simple 2 way proportional valve, animated by analog value");
+  dob->param("Analog Tag");
   dob->param("On Color");
   dob->param("Off Color");
-  dob->param("Center X");
-  dob->param("Center Y");
+  dob->param("Center X of the valve");
+  dob->param("Center Y of the valve");
   dob->param("Width");
-  dob->param("Type ");
-  dob->param("Rotation Angle (typically 0, 90, 180, or 270)");
+  dob->param("Type (1 = square handle, 2 = rounded handle");
+  dob->param("Rotation of valve (typically 0, 90, 180, 270)");
+  dob->notes("We need to add other types");
   dob->end();
 }
 
-void valve_t::generate(plugin_data_t d, int argc, char **argv)
+void pvalve_t::generate(plugin_data_t d, int argc, char **argv)
 {
   const char *tag = argv[1];
   const char *on_color = argv[2];
@@ -69,6 +70,7 @@ void valve_t::generate(plugin_data_t d, int argc, char **argv)
   double cy = atof(argv[5]);
 //
   double width = atof(argv[6]);
+  double height = width;
   int type = atoi(argv[7]);
   int angle = atoi(argv[8]);
   double scale_factor = width / 50.0;
@@ -80,12 +82,7 @@ void valve_t::generate(plugin_data_t d, int argc, char **argv)
 //
   double x2 = x1 + width;
   double y2 = y1 + width;
-  bool gen_popup = false;
 
-  if (argc > 9)
-  {
-    gen_popup = (argv[9][0] == '1');
-  }
 
 
 
@@ -96,14 +93,14 @@ void valve_t::generate(plugin_data_t d, int argc, char **argv)
 
   char js_object_name[30];
   char js_group_name[30];
-  snprintf(js_object_name, sizeof(js_object_name), "valve_obj_%03d", n_instance);
-  snprintf(js_group_name, sizeof(js_group_name), "valve_group_obj_%03d", n_instance);
+  snprintf(js_object_name, sizeof(js_object_name), "pvalve_obj_%03d", n_instance);
+  snprintf(js_group_name, sizeof(js_group_name), "pvalve_group_obj_%03d", n_instance);
 
   char str[200];
   if (angle == 0) str[0] = '\0';
   else snprintf(str, sizeof(str), "transform=\"rotate(%d %lf,%lf)\"", angle, cx, cy);
 
-  fprintf(d.svg_fp, "<!--  START insert for valve (%03d) -->\n", n_instance);
+  fprintf(d.svg_fp, "<!--  START insert for pvalve (%03d) -->\n", n_instance);
 
 
   fprintf(d.svg_fp, "<g id=\"%s\" fill=\"%s\" stroke=\"black\" stroke-width=\"%lf\" %s>\n", 
@@ -134,22 +131,19 @@ void valve_t::generate(plugin_data_t d, int argc, char **argv)
            1.5 * scale_factor);
   fprintf(d.svg_fp, "</g>\n");
 
-  fprintf(d.js_fp, "var %s = new pump_t(\"%s\", \"%s\", \"%s\");\n",
-             js_object_name, js_group_name, on_color, off_color);
+  fprintf(d.js_fp, "var %s = new pvalve_t(\"%s\", \"%s\", \"%s\", %lf, %lf, %lf, %lf);\n",
+             js_object_name, js_group_name, on_color, off_color, cx, cy, width, height);
 
-  if (gen_popup)
-  {
-    double px, py;
-    find_a_place_nearby(&px, &py, x1, y1, width, width);
-    fprintf(d.svg_fp, "<rect x=\"%lf\"  y=\"%lf\" width=\"%lf\" height=\"%lf\" onclick=\"show_popup(%lf,%lf,'Open', 'Close', '%s')\" visibility=\"hidden\" pointer-events=\"all\" onmouseover=\"this.style.cursor='pointer';\"/>\n",
+  double px, py;
+  find_a_place_nearby(&px, &py, x1, y1, width, width);
+  fprintf(d.svg_fp, "<rect x=\"%lf\"  y=\"%lf\" width=\"%lf\" height=\"%lf\" onclick=\"show_popup(%lf,%lf,'Open', 'Close', '%s')\" visibility=\"hidden\" pointer-events=\"all\" onmouseover=\"this.style.cursor='pointer';\"/>\n",
          x1, y1, width, width, px, py, tag);
-  }
 
-  fprintf(d.js_fp, "// --  END insert for valve (%03d)\n", n_instance);
-  fprintf(d.svg_fp, "<!--  END insert for valve (%03d) -->\n", n_instance);
+  fprintf(d.js_fp, "// --  END insert for pvalve (%03d)\n", n_instance);
+  fprintf(d.svg_fp, "<!--  END insert for pvalve (%03d) -->\n", n_instance);
   n_instance++;
 
-  add_js_library("pump.js");
+  add_js_library("pvalve.js");
   add_animation_object(tag, js_object_name);
 }
 

@@ -1,3 +1,21 @@
+/************************************************************************
+This software is part of React, a control engine
+Copyright (C) 2012 Donald Wayne Carr 
+
+This program is free software; you can redistribute it and/or modify 
+it under the terms of the GNU General Public License as published by 
+the Free Software Foundation; either version 2 of the License, or 
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful, 
+but WITHOUT ANY WARRANTY; without even the implied warranty of 
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License along 
+with this program; if not, write to the Free Software Foundation, Inc., 
+59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+***********************************************************************/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -13,6 +31,7 @@ class spray_t : public gen_plugin_base_t
 {
 public:
   const char *get_name(void); 
+  void generate_doc(doc_object_base_t *dob);
   void generate(plugin_data_t d, int argc, char **argv);
 };
 
@@ -32,6 +51,21 @@ const char *spray_t::get_name(void)
 
 /*******************************************/
 
+void spray_t::generate_doc(doc_object_base_t *dob)
+{
+  dob->start("spray", "Spray patern with dashed lines that grow with analog value");
+  dob->param("Analog Tag");
+  dob->param("X of center/start of spray");
+  dob->param("Y of center/start of spray");
+  dob->param("Number of lines in the spray");
+  dob->param("Line width of the spray (at 100% of range)");
+  dob->param("Width of top of spray");
+  dob->param("Width of bottom of spray");
+  dob->param("Spray Height");
+  dob->end();
+}
+
+/*******************************************/
 void spray_t::generate(plugin_data_t d, int argc, char **argv)
 {
   int i, nlines;

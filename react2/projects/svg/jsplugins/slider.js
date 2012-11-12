@@ -21,7 +21,7 @@ function slider_t(tag, slide_name, rect_name, text_name, x1, y1, length, width, 
   this.mouse_dragging = false;
   this.output_delayed=false;
   this.pv = 0.0;
-  this.last_output_time = new Date();
+  this.last_output_time = (new Date()).getTime() - 100000; //no output delay on startup
   console.log("timeout function: " + this.timeout_fn);
 }
 
@@ -68,7 +68,7 @@ function slider_output_f()
     this.output_delayed = true; 
     this.had_outputs = false;
     setTimeout(this.timeout_fn, MAX_OUTPUT_RATE);
-    this.last_output_time = new Date();
+    this.last_output_time = (new Date()).getTime();
     send_output(this.tag, this.pv);
     console.log("Output sent !!!!!!!!!!!!!!!!!!!!!");
   }
@@ -140,9 +140,9 @@ slider_t.prototype.init=slider_init_f;
 
 function slider_update_f(pv)
 {
-  var now = new Date();
+  var now = (new Date()).getTime();
   // ONLY set the value if we have not sent an output in the last second.
-  if ((now.getTime() - this.last_output_time.getTime()) > UPDATE_DELAY)
+  if ((now - this.last_output_time) > UPDATE_DELAY)
   {
     var fraction =  (pv - this.scale_lo) / (this.scale_hi - this.scale_lo); 
     var x = this.x1 + (fraction * this.length);

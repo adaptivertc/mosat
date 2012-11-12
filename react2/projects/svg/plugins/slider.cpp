@@ -1,3 +1,21 @@
+/************************************************************************
+This software is part of React, a control engine
+Copyright (C) 2012 Donald Wayne Carr 
+
+This program is free software; you can redistribute it and/or modify 
+it under the terms of the GNU General Public License as published by 
+the Free Software Foundation; either version 2 of the License, or 
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful, 
+but WITHOUT ANY WARRANTY; without even the implied warranty of 
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License along 
+with this program; if not, write to the Free Software Foundation, Inc., 
+59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+***********************************************************************/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,8 +28,9 @@ static int n_instance = 1;
 class slider_t : public gen_plugin_base_t
 {
 public:
-  void generate(plugin_data_t d, int argc, char **argv);
   const char *get_name(void); 
+  void generate_doc(doc_object_base_t *dob);
+  void generate(plugin_data_t d, int argc, char **argv);
 };
 
 extern "C" gen_plugin_base_t *get_object(void)
@@ -22,6 +41,18 @@ extern "C" gen_plugin_base_t *get_object(void)
 const char *slider_t::get_name(void)
 {
   return "slider";
+}
+
+void slider_t::generate_doc(doc_object_base_t *dob)
+{
+  dob->start("slider", "Analog slider to send analog values to the control system, also reads back value");
+  dob->param("Analog Tag");
+  dob->param("Bar color");
+  dob->param("X of upper left corner");
+  dob->param("Y of upper left corner");
+  dob->param("Width");
+  dob->notes("You can grab the button in the middle and drag left or right to set the value");
+  dob->end();
 }
 
 void slider_t::generate(plugin_data_t d, int argc, char **argv)
@@ -204,15 +235,15 @@ void slider_t::generate(plugin_data_t d, int argc, char **argv)
   fprintf(d.js_fp, "document.addEventListener(\"mouseup\", %s, false);\n", slider_mouseup_name);
   fprintf(d.js_fp, "document.addEventListener(\"mousemove\", %s, false);\n", slider_mousemove_name);
 
-  fprintf(d.js_fp, "var %s = new slider_t(\"%s\", \"%s\", \"%s\", \"%s\", %lf, %lf, %lf, %lf, \"%s()\");\n", 
-     js_object_name, the_tag, js_circle_name, js_rect_name, 
-     js_text_name, x1, y1, width, height, slider_timeout_name); 
-
-  add_js_library("transform.js");
-  add_js_library("slider.js");
-
   if ((strlen(the_tag) > 0) && (0 != strcmp(the_tag, "null")))
   {
+    fprintf(d.js_fp, "var %s = new slider_t(\"%s\", \"%s\", \"%s\", \"%s\", %lf, %lf, %lf, %lf, \"%s()\");\n", 
+       js_object_name, the_tag, js_circle_name, js_rect_name, 
+       js_text_name, x1, y1, width, height, slider_timeout_name); 
+
+    add_js_library("transform.js");
+    add_js_library("slider.js");
+
     add_animation_object(the_tag, js_object_name);
   }
 

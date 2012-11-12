@@ -1,3 +1,21 @@
+/************************************************************************
+This software is part of React, a control engine
+Copyright (C) 2012 Donald Wayne Carr 
+
+This program is free software; you can redistribute it and/or modify 
+it under the terms of the GNU General Public License as published by 
+the Free Software Foundation; either version 2 of the License, or 
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful, 
+but WITHOUT ANY WARRANTY; without even the implied warranty of 
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License along 
+with this program; if not, write to the Free Software Foundation, Inc., 
+59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+***********************************************************************/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -226,6 +244,7 @@ class pipe1d_t : public gen_plugin_base_t
 {
 public:
   const char *get_name(void); 
+  void generate_doc(doc_object_base_t *dob);
   void generate(plugin_data_t d, int argc, char **argv);
 };
 
@@ -244,6 +263,24 @@ const char *pipe1d_t::get_name(void)
 }
 
 /*******************************************/
+
+void pipe1d_t::generate_doc(doc_object_base_t *dob)
+{
+  dob->start("pipe1d", " A simple pipe with no shading, that you can animate the color");
+  dob->param("Discrete Tag");
+  dob->param("On Color");
+  dob->param("Off Color");
+  dob->param("Width of the pipe");
+  dob->param("X of the starting point of the pipe");
+  dob->param("Y of the starting point of the pipe");
+  dob->param("Direction that must be 'V' or 'H'");
+  dob->param("Stopping point");
+  dob->param("Now, Repeat 7 and 8 as many times as needed to complete the pipe");
+  dob->notes("You must alternate V and H, you can not have two Vs or two Hs in a row");
+  dob->end();
+}
+
+
 
 void pipe1d_t::generate(plugin_data_t d, int argc, char **argv)
 {

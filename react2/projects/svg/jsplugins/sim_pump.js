@@ -27,7 +27,7 @@ function sim_object_t()
   this.pv =
   {
     "LEVEL":0.50,
-    "PVALVE":0.25,
+    "PVALVE":0.10,
     "PUMP1_AMP":0,
     "PUMP2_AMP":0,
     "PUMP3_AMP":0,
@@ -42,14 +42,14 @@ function sim_object_t()
     "KWHM":104.823,
     "SPRAY_PUMP_ON":false,
     "PVALVE_ON":false,
-    "PRESSURE":0,
-    "SLIDER":25.0
+    "PRESSURE":0.0,
+    "SLIDER":10.0
   }
 
   this.cfg =
   {
     "LEVEL":{"tag":"LEVEL","description":"NIVEL","eu":"cm","driver":0,"card":0,"channel":2,"eu_lo":0.000000,"eu_hi":500.000000,"raw_lo":32000.000000,"raw_hi":6400.000000,"decimal_places":0,"zero_cutoff":-125.000000,"lo_alarm":15.0,"lo_caution":44.0,"hi_caution":300.0,"hi_alarm":380.0,"deadband":0.0,"lo_alarm_enable":true,"lo_caution_enable":true,"hi_caution_enable":true,"hi_alarm_enable":true, "scale_lo":0,"scale_hi":450},
-    "PRESSURE":{"tag":"PRESSURE","description":"Pressure","eu":"psi","driver":0,"card":0,"channel":3,"eu_lo":0.000000,"eu_hi":10.000000,"raw_lo":0.000000,"raw_hi":10.000000,"decimal_places":0,"zero_cutoff":-5000.000000,"lo_alarm":21,"lo_caution":23,"hi_caution":28,"hi_alarm":30,"deadband":1,"lo_alarm_enable":false,"lo_caution_enable":false,"hi_caution_enable":false,"hi_alarm_enable":false,"scale_lo":0.000000, "scale_hi":150.000000},
+    "PRESSURE":{"tag":"PRESSURE","description":"Pressure","eu":"psi","driver":0,"card":0,"channel":3,"eu_lo":0.000000,"eu_hi":10.000000,"raw_lo":0.000000,"raw_hi":10.000000,"decimal_places":0,"zero_cutoff":-5000.000000,"lo_alarm":21,"lo_caution":23,"hi_caution":28,"hi_alarm":30,"deadband":1,"lo_alarm_enable":false,"lo_caution_enable":false,"hi_caution_enable":false,"hi_alarm_enable":false,"scale_lo":0.000000, "scale_hi":175.000000},
     "PVALVE":{"tag":"PVALVE","description":"Proportion Valve","eu":"","driver":0,"card":0,"channel":3,"eu_lo":0.000000,"eu_hi":10.000000,"raw_lo":0.000000,"raw_hi":10.000000,"decimal_places":2,"zero_cutoff":-5000.000000,"lo_alarm":21,"lo_caution":23,"hi_caution":28,"hi_alarm":30,"deadband":1,"lo_alarm_enable":false,"lo_caution_enable":false,"hi_caution_enable":false,"hi_alarm_enable":false,"scale_lo":0.000000, "scale_hi":1.000000},
     "KW":{"tag":"KW","description":"KW","eu":"kW","driver":0,"card":0,"channel":2,"eu_lo":0.000000,"eu_hi":100.000000,"raw_lo":32000.000000,"raw_hi":6400.000000,"decimal_places":1,"zero_cutoff":-125.000000,"lo_alarm":15.0,"lo_caution":44.0,"hi_caution":80.0,"hi_alarm":90.0,"deadband":0.0,"lo_alarm_enable":false,"lo_caution_enable":false,"hi_caution_enable":true,"hi_alarm_enable":false, "scale_lo":0,"scale_hi":100},
     "KWH":{"tag":"KWH","description":"KWH","eu":"kWh","driver":0,"card":0,"channel":2,"eu_lo":0.000000,"eu_hi":100.000000,"raw_lo":32000.000000,"raw_hi":6400.000000,"decimal_places":5,"zero_cutoff":-125.000000,"lo_alarm":15.0,"lo_caution":44.0,"hi_caution":80.0,"hi_alarm":90.0,"deadband":0.0,"lo_alarm_enable":false,"lo_caution_enable":false,"hi_caution_enable":false,"hi_alarm_enable":false, "scale_lo":0,"scale_hi":10000000},

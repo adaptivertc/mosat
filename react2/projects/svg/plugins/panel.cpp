@@ -1,3 +1,21 @@
+/************************************************************************
+This software is part of React, a control engine
+Copyright (C) 2012 Donald Wayne Carr 
+
+This program is free software; you can redistribute it and/or modify 
+it under the terms of the GNU General Public License as published by 
+the Free Software Foundation; either version 2 of the License, or 
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful, 
+but WITHOUT ANY WARRANTY; without even the implied warranty of 
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License along 
+with this program; if not, write to the Free Software Foundation, Inc., 
+59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+***********************************************************************/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -13,6 +31,7 @@ class panel_t : public gen_plugin_base_t
 {
 public:
   const char *get_name(void); 
+  void generate_doc(doc_object_base_t *dob);
   void generate(plugin_data_t d, int argc, char **argv);
 };
 
@@ -31,6 +50,20 @@ const char *panel_t::get_name(void)
 }
 
 /*******************************************/
+void panel_t::generate_doc(doc_object_base_t *dob)
+{
+  dob->start("panel", "A decrative raised panel to group other widgets");
+  dob->param("X of upper left corner");
+  dob->param("Y of upper left corner");
+  dob->param("Width");
+  dob->param("Height");
+  dob->param("Shadow Width");
+  dob->notes("For now, only in grey. Lighter upper and left edges, and darker lower and right edges");
+  dob->end();
+
+}
+
+
 
 void panel_t::generate(plugin_data_t d, int argc, char **argv)
 {

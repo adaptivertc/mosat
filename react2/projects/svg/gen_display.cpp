@@ -1,3 +1,21 @@
+/************************************************************************
+This software is part of React, a control engine
+Copyright (C) 2012 Donald Wayne Carr 
+
+This program is free software; you can redistribute it and/or modify 
+it under the terms of the GNU General Public License as published by 
+the Free Software Foundation; either version 2 of the License, or 
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful, 
+but WITHOUT ANY WARRANTY; without even the implied warranty of 
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License along 
+with this program; if not, write to the Free Software Foundation, Inc., 
+59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+***********************************************************************/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -760,6 +778,8 @@ int main(int argc, char *argv[])
   const char *config_name = "display.txt"; 
   const char *output_name = "dtest.svg"; 
   popup_on = false;
+  bool doc_on = false;
+  bool html_on = false;
 
   for (int current_arg=1; current_arg < argc; current_arg++)
   {
@@ -774,6 +794,18 @@ int main(int argc, char *argv[])
     else if (0 == strcmp(argv[current_arg], "-popup"))
     {
       popup_on = true;
+    }
+    else if (0 == strcmp(argv[current_arg], "-doc"))
+    {
+      doc_on = true;
+    }
+    else if (0 == strcmp(argv[current_arg], "-html"))
+    {
+      html_on = true;
+    }
+    else if (0 == strcmp(argv[current_arg], "-text"))
+    {
+      html_on = false;
     }
     else if (0 == strcmp(argv[current_arg], "-d"))
     {
@@ -914,13 +946,47 @@ int main(int argc, char *argv[])
   }
   printf ("found %d plugins!!!\n", n_plugins);
 
+  doc_object_base_t *doc_object;
+  FILE *docfp;
+  if (doc_on)
+  {
+     if (html_on)
+     {
+       printf("generating html documentation\n");
+       doc_object = new doc_html_object_t();
+     }
+     else
+     {
+       printf("generating text documentation\n");
+       doc_object = new doc_text_object_t();
+     }
+     docfp = fopen(output_name, "w");
+     if (docfp == NULL)
+     {
+       perror(output_name);
+     }
+     doc_object->set_fp(docfp);
+     doc_object->header();
+  }
   // Ok, probamos todos de los objetos para ver que si funcionan.
   for (i=0; i < n_plugins; i++)
   {
     printf("plugin[%d]-handles objects of type: %s\n", i+1, mi_objs[i]->get_name());
+    if (doc_on)
+    {
+      printf("generating doc for %s\n", mi_objs[i]->get_name());
+      mi_objs[i]->generate_doc(doc_object);
+    }
     //convertir_uno(mi_objs[i], "Teacher, esto es una prueba MUY MUY MUY tonta");
   }
   printf("\n");
+
+  if (doc_on)
+  {
+    doc_object->footer();
+    fclose(docfp);
+    exit(0);
+  }
 
   printf("Config file is: %s\n", config_name);
   printf("Output file is: %s\n", output_name);
