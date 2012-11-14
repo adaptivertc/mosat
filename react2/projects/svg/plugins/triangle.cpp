@@ -68,13 +68,13 @@ void triangle_t::generate(plugin_data_t d, int argc, char **argv)
   
   char str[200];
   if (angle == 0) str[0] = '\0';
-  else snprintf(str, sizeof(str), "transform=\"rotate(%d %lf,%lf)\"", angle, cx, cy);
+  else snprintf(str, sizeof(str), "transform=\"rotate(%d %lg,%lg)\"", angle, cx, cy);
   printf("Tringle: %s\n", str);
 
 
   fprintf(d.svg_fp, "<!--  START insert for triangle (%03d) -->\n", n_instance);
 
-  fprintf(d.svg_fp, "<polygon points=\"%lf,%lf %lf,%lf %lf,%lf \" stroke=\"black\" stroke-width=\"%lf\" fill=\"%s\" %s/>\n",
+  fprintf(d.svg_fp, "<polygon points=\"%lg,%lg %lg,%lg %lg,%lg \" stroke=\"black\" stroke-width=\"%lg\" fill=\"%s\" %s/>\n",
              cx - (width / 2.0), cy, cx + (width / 2.0), cy, cx, cy - height, 0.05 * width, color, str);
 
   fprintf(d.svg_fp, "<!--  END insert for triangle (%03d) -->\n", n_instance);

@@ -71,19 +71,19 @@ void simple_contact_t::generate(plugin_data_t d, int argc, char **argv)
   fprintf(d.svg_fp, "<!--  START insert for simple_contact (%03d) -->\n", n_instance);
   fprintf(d.js_fp, "// --  START insert for simple_contact (%03d)\n", n_instance);
 
-  fprintf(d.svg_fp, "<rect id=\"simple_contact_%03d\" x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\" fill=\"%s\" stroke=\"black\" stroke-width=\"%lf\"/>\n",
+  fprintf(d.svg_fp, "<rect id=\"simple_contact_%03d\" x=\"%lg\" y=\"%lg\" width=\"%lg\" height=\"%lg\" fill=\"%s\" stroke=\"black\" stroke-width=\"%lg\"/>\n",
             n_instance, x, y, width, width, on_color, stroke_width);
 
-  fprintf(d.svg_fp, "<line id=\"simple_contact_line_%03d\" x1=\"%lf\" y1=\"%lf\" x2=\"%lf\" y2=\"%lf\"\n       style=\"stroke:black;stroke-width:%lf\"/>\n", 
+  fprintf(d.svg_fp, "<line id=\"simple_contact_line_%03d\" x1=\"%lg\" y1=\"%lg\" x2=\"%lg\" y2=\"%lg\"\n       style=\"stroke:black;stroke-width:%lg\"/>\n", 
          n_instance, x, on_y2, x + (width * 0.75), on_y2, stroke_width);
 
-  fprintf(d.svg_fp, "<line x1=\"%lf\" y1=\"%lf\" x2=\"%lf\" y2=\"%lf\"\n      style=\"stroke:black;stroke-width:%lf\"/>\n", 
+  fprintf(d.svg_fp, "<line x1=\"%lg\" y1=\"%lg\" x2=\"%lg\" y2=\"%lg\"\n      style=\"stroke:black;stroke-width:%lg\"/>\n", 
          x + (width * 0.7), on_y2, x + width, on_y2, stroke_width);
 
   char js_object_name[30];
   snprintf(js_object_name, sizeof(js_object_name), "simple_contact_obj_%03d", n_instance);
 
-  fprintf(d.js_fp, "var %s = new simple_contact_t(\"simple_contact_%03d\",\"simple_contact_line_%03d\", \"%s\", \"%s\", %lf, %lf);\n", 
+  fprintf(d.js_fp, "var %s = new simple_contact_t(\"simple_contact_%03d\",\"simple_contact_line_%03d\", \"%s\", \"%s\", %lg, %lg);\n", 
        js_object_name, n_instance, n_instance, on_color, off_color, on_y2, off_y2); 
 
   fprintf(d.svg_fp, "<!--  END insert for simple_contact (%03d) -->\n", n_instance);

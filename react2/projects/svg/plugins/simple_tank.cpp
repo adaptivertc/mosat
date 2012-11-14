@@ -32,10 +32,10 @@ void gen_cone_tank(FILE *fp, double x, double y, double width, double height, do
 {
   fprintf(fp, "  <g stroke=\"#000000\" stroke-width=\"0\">\n");
   fprintf(fp, "    <rect fill=\"url(#%sLinearV)\"\n", tank_color);
-  fprintf(fp, "      x=\"%f\" y=\"%f\" width=\"%f\" height=\"%f\"/>\n", 
+  fprintf(fp, "      x=\"%lg\" y=\"%lg\" width=\"%lg\" height=\"%lg\"/>\n", 
                           x, y + cap_height, width, height - cone_height - cap_height);
   fprintf(fp, "    <path fill=\"url(#%sRadial)\"\n", tank_color);
-  fprintf(fp, "      d=\"M%f,%f A%f,%f 0 1,1 %f,%f z M%f,%f L%f,%f\"/>\n",
+  fprintf(fp, "      d=\"M%lg,%lg A%lg,%lg 0 1,1 %lg,%lg z M%lg,%lg L%lg,%lg\"/>\n",
                      //d="M0,50 A125,50 0 1,1 250,50 M250,100 L250,100"/>
                           x, y + cap_height, 
                           width / 2.0, cap_height, 
@@ -43,7 +43,7 @@ void gen_cone_tank(FILE *fp, double x, double y, double width, double height, do
                           x, y + (cap_height * 2.0),
                           x, y + (cap_height * 2.0)); 
   fprintf(fp, "    <path fill=\"url(#%sRadial)\"\n", tank_color);
-  fprintf(fp, "d=\"M%f,%f h%f l%f,%f h%f z m 0 %f h 0\"/>\n",
+  fprintf(fp, "d=\"M%lg,%lg h%lg l%lg,%lg h%lg z m 0 %lg h 0\"/>\n",
                      //d="M0,400 h200 l-50,100 h-100 z "/>
                           x, y + height - cone_height,
                           width, 
@@ -59,10 +59,10 @@ void gen_pressure_tank(FILE *fp, double x, double y, double width, double height
 {
   fprintf(fp, "  <g stroke=\"#000000\" stroke-width=\"0\">\n");
   fprintf(fp, "    <rect fill=\"url(#%sLinearV)\"\n", tank_color);
-  fprintf(fp, "      x=\"%f\" y=\"%f\" width=\"%f\" height=\"%f\"/>\n", 
+  fprintf(fp, "      x=\"%lg\" y=\"%lg\" width=\"%lg\" height=\"%lg\"/>\n", 
                           x, y + top_height, width, height - (2 * top_height));
   fprintf(fp, "    <path fill=\"url(#%sRadial)\"\n", tank_color);
-  fprintf(fp, "      d=\"M%f,%f A%f,%f 0 1,1 %f,%f z M%f,%f L%f,%f\"/>\n",
+  fprintf(fp, "      d=\"M%lg,%lg A%lg,%lg 0 1,1 %lg,%lg z M%lg,%lg L%lg,%lg\"/>\n",
                      //d="M0,50 A125,50 0 1,1 250,50 M250,100 L250,100"/>
                           x, y + top_height, 
                           width / 2.0, top_height, 
@@ -70,7 +70,7 @@ void gen_pressure_tank(FILE *fp, double x, double y, double width, double height
                           x, y + (top_height * 2.0),
                           x, y + (top_height * 2.0)); 
   fprintf(fp, "    <path fill=\"url(#%sRadial)\"\n", tank_color);
-  fprintf(fp, "      d=\"M%f,%f A%f,%f 0 1,0 %f,%f z M%f,%f L%f,%f\"/>\n",
+  fprintf(fp, "      d=\"M%lg,%lg A%lg,%lg 0 1,0 %lg,%lg z M%lg,%lg L%lg,%lg\"/>\n",
                       //d="M0,450 A125,50 0 1,0 250,450 M250,400 L250,400"/>
                           x, y + height - (top_height), 
                           (width / 2.0), (top_height), 
@@ -197,13 +197,13 @@ void simple_tank_t::generate(plugin_data_t d, int argc, char **argv)
     cone_height = atof(argv[8]);
     cone_width = atof(argv[9]);
     printf("cone tank:\n");
-    printf("x = %lf\n", x);
-    printf("y = %lf\n", y);
-    printf("width = %lf\n", width);
-    printf("height = %lf\n", height);
-    printf("cap_height = %lf\n", cap_height);
-    printf("cone_height = %lf\n", cone_height);
-    printf("cone_width = %lf\n", cone_width);
+    printf("x = %lg\n", x);
+    printf("y = %lg\n", y);
+    printf("width = %lg\n", width);
+    printf("height = %lg\n", height);
+    printf("cap_height = %lg\n", cap_height);
+    printf("cone_height = %lg\n", cone_height);
+    printf("cone_width = %lg\n", cone_width);
     gen_cone_tank(d.svg_fp, x, y, width, height, cap_height, cone_height, cone_width);
   }
   else if ((argc == 8) && (argv[1][0] == 'p'))
@@ -215,11 +215,11 @@ void simple_tank_t::generate(plugin_data_t d, int argc, char **argv)
     height = atof(argv[6]);
     cap_height = atof(argv[7]);
     printf("pressure tank:\n");
-    printf("x = %lf\n", x);
-    printf("y = %lf\n", y);
-    printf("width = %lf\n", width);
-    printf("height = %lf\n", height);
-    printf("cap_height = %lf\n", cap_height);
+    printf("x = %lg\n", x);
+    printf("y = %lg\n", y);
+    printf("width = %lg\n", width);
+    printf("height = %lg\n", height);
+    printf("cap_height = %lg\n", cap_height);
     gen_pressure_tank(d.svg_fp, x, y, width, height, cap_height);
   }
   else

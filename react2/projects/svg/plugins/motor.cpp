@@ -88,13 +88,13 @@ void motor_t::generate(plugin_data_t d, int argc, char **argv)
 
   char str[200];
   if (angle == 0) str[0] = '\0';
-  else snprintf(str, sizeof(str), "transform=\"rotate(%d %lf,%lf)\"", angle, cx, cy);
+  else snprintf(str, sizeof(str), "transform=\"rotate(%d %lg,%lg)\"", angle, cx, cy);
 
   fprintf(d.svg_fp, "<!--  START insert for motor (%03d) -->\n", n_instance);
   fprintf(d.js_fp, "// --  START insert for motor (%03d)\n", n_instance);
 
   fprintf(d.svg_fp, "<g  %s >\n", str);
-  fprintf(d.svg_fp, "<rect id=\"%s\" x=\"%lf\" y=\"%lf\" rx=\"%lf\" ry=\"%lf\" width=\"%lf\" height=\"%lf\" fill=\"%s\" stroke=\"black\" stroke-width=\"%lf\"/>\n",
+  fprintf(d.svg_fp, "<rect id=\"%s\" x=\"%lg\" y=\"%lg\" rx=\"%lg\" ry=\"%lg\" width=\"%lg\" height=\"%lg\" fill=\"%s\" stroke=\"black\" stroke-width=\"%lg\"/>\n",
        js_group_name, x1, y1, 5.0 * scale_factor, 8.0 * scale_factor, width, height, on_color, 0.6 * scale_factor);
   double fin_x = x1 + 20 * scale_factor; 
   double fin_width = 75.0 * scale_factor;
@@ -104,13 +104,13 @@ void motor_t::generate(plugin_data_t d, int argc, char **argv)
   for (int i=0; i < 6; i++)
   {
     double fin_y = y1 + (((i * 10.0) + 1.0) * scale_factor);
-    fprintf(d.svg_fp, "  <rect x=\"%lf\" y=\"%lf\" rx=\"%lf\" ry=\"%lf\" width=\"%lf\" height=\"%lf\"\n"
-         "        fill=\"black\" stroke=\"black\" stroke-width=\"%lf\"/>\n", 
+    fprintf(d.svg_fp, "  <rect x=\"%lg\" y=\"%lg\" rx=\"%lg\" ry=\"%lg\" width=\"%lg\" height=\"%lg\"\n"
+         "        fill=\"black\" stroke=\"black\" stroke-width=\"%lg\"/>\n", 
       fin_x, fin_y, fin_rx, fin_rx, fin_width, fin_height, fin_stroke_width);
   }
-  fprintf(d.svg_fp, "<line x1=\"%lf\" y1=\"%lf\" x2=\"%lf\" y2=\"%lf\" stroke=\"black\" stroke-width=\"%lf\"/>\n",
+  fprintf(d.svg_fp, "<line x1=\"%lg\" y1=\"%lg\" x2=\"%lg\" y2=\"%lg\" stroke=\"black\" stroke-width=\"%lg\"/>\n",
           fin_x, y1, fin_x, y1 + height, 1.5 * scale_factor);
-  fprintf(d.svg_fp, "<line x1=\"%lf\" y1=\"%lf\" x2=\"%lf\" y2=\"%lf\" stroke=\"black\" stroke-width=\"%lf\"/>\n", 
+  fprintf(d.svg_fp, "<line x1=\"%lg\" y1=\"%lg\" x2=\"%lg\" y2=\"%lg\" stroke=\"black\" stroke-width=\"%lg\"/>\n", 
           fin_x + fin_width, y1, fin_x + fin_width, y1 + height, 1.5 * scale_factor);
 
   fprintf(d.svg_fp, "</g>\n");
@@ -133,7 +133,7 @@ void motor_t::generate(plugin_data_t d, int argc, char **argv)
 
   double px, py;
   find_a_place_nearby(&px, &py, x1, y1, width, height);
-  fprintf(d.svg_fp, "<rect x=\"%lf\"  y=\"%lf\" width=\"%lf\" height=\"%lf\" onclick=\"show_popup(%lf,%lf,'ON', 'Off', '%s')\" visibility=\"hidden\" pointer-events=\"all\" onmouseover=\"this.style.cursor='pointer';\"/>\n",
+  fprintf(d.svg_fp, "<rect x=\"%lg\"  y=\"%lg\" width=\"%lg\" height=\"%lg\" onclick=\"show_popup(%lg,%lg,'ON', 'Off', '%s')\" visibility=\"hidden\" pointer-events=\"all\" onmouseover=\"this.style.cursor='pointer';\"/>\n",
          x1, y1, width, width, px, py, the_tag);
 
 

@@ -89,45 +89,45 @@ void valve3way_t::generate(plugin_data_t d, int argc, char **argv)
 
   char transform_str[200];
   if (angle == 0) transform_str[0] = '\0';
-  else snprintf(transform_str, sizeof(transform_str), "transform=\"rotate(%d %lf,%lf)\"", angle, cx, cy);
+  else snprintf(transform_str, sizeof(transform_str), "transform=\"rotate(%d %lg,%lg)\"", angle, cx, cy);
 
   fprintf(d.svg_fp, "<!--  START insert for valve3way (%03d) -->\n", n_instance);
 
 
-  fprintf(d.svg_fp, "<g stroke=\"black\" stroke-width=\"%lf\" %s>\n", 
+  fprintf(d.svg_fp, "<g stroke=\"black\" stroke-width=\"%lg\" %s>\n", 
        0.5 * scale_factor, transform_str);
   if (type == 1)
   {
     fprintf(d.svg_fp, "  <path  fill=\"%s\" \n", on_color);
-    fprintf(d.svg_fp, "     d=\"M%lf,%lf A%lf,%lf 0 1,1 %lf,%lf Z\"/>\n",
+    fprintf(d.svg_fp, "     d=\"M%lg,%lg A%lg,%lg 0 1,1 %lg,%lg Z\"/>\n",
            x1 + (10.0 * scale_factor), y1 + (10.0 * scale_factor), 
            5.0 * scale_factor, 3.0 * scale_factor, 
            x1 + (40.0 * scale_factor), y1 + (10.0 * scale_factor));
   }
   else if (type == 2)
   {
-    fprintf(d.svg_fp, "  <rect fill=\"%s\" x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\"/>\n",
+    fprintf(d.svg_fp, "  <rect fill=\"%s\" x=\"%lg\" y=\"%lg\" width=\"%lg\" height=\"%lg\"/>\n",
                  on_color, x1 + (10.0 * scale_factor), y1, 
                  30.0 * scale_factor, 10.0 * scale_factor); 
   }
-  fprintf(d.svg_fp, "  <polygon id=\"valve3way_out1_%03d\" fill=\"%s\" points=\"%lf,%lf %lf,%lf %lf,%lf\"/>\n",
+  fprintf(d.svg_fp, "  <polygon id=\"valve3way_out1_%03d\" fill=\"%s\" points=\"%lg,%lg %lg,%lg %lg,%lg\"/>\n",
                 n_instance, on_color,
                 x1, cy + (width_factor * scale_factor), //y1 + (10.0 * scale_factor),
                 x1, cy - (width_factor * scale_factor), //y2, 
                 cx, cy);
-  fprintf(d.svg_fp, "  <polygon id=\"valve3way_out2_%03d\" fill=\"%s\" points=\"%lf,%lf %lf,%lf %lf,%lf\"/>\n",
+  fprintf(d.svg_fp, "  <polygon id=\"valve3way_out2_%03d\" fill=\"%s\" points=\"%lg,%lg %lg,%lg %lg,%lg\"/>\n",
                 n_instance, off_color,
                 x2, cy + (width_factor * scale_factor), //y1 + (10.0 * scale_factor),
                 x2, cy - (width_factor * scale_factor), //y2, 
                 cx, cy);
-  fprintf(d.svg_fp, "  <polygon fill=\"%s\" points=\"%lf,%lf %lf,%lf %lf,%lf\"/>\n",
+  fprintf(d.svg_fp, "  <polygon fill=\"%s\" points=\"%lg,%lg %lg,%lg %lg,%lg\"/>\n",
                 on_color,
                 cx - (width_factor * scale_factor), cy + (width/2.0),
                 cx + (width_factor * scale_factor), cy + (width/2.0),
                 cx, cy);
-  fprintf(d.svg_fp, "  <line x1=\"%lf\" y1=\"%lf\" x2=\"%lf\" y2=\"%lf\" \n",
+  fprintf(d.svg_fp, "  <line x1=\"%lg\" y1=\"%lg\" x2=\"%lg\" y2=\"%lg\" \n",
                cx, y1 + (10.0 * scale_factor), cx, cy);
-  fprintf(d.svg_fp, "     stroke =\"black\" stroke-width=\"%lf\"/>\n",
+  fprintf(d.svg_fp, "     stroke =\"black\" stroke-width=\"%lg\"/>\n",
            1.5 * scale_factor);
   fprintf(d.svg_fp, "</g>\n");
 
@@ -136,7 +136,7 @@ void valve3way_t::generate(plugin_data_t d, int argc, char **argv)
 
   double px, py;
   find_a_place_nearby(&px, &py, x1, y1, width, width);
-  fprintf(d.svg_fp, "<rect x=\"%lf\"  y=\"%lf\" width=\"%lf\" height=\"%lf\" onclick=\"show_popup(%lf,%lf,'Open', 'Close', '%s')\" visibility=\"hidden\" pointer-events=\"all\" onmouseover=\"this.style.cursor='pointer';\"/>\n",
+  fprintf(d.svg_fp, "<rect x=\"%lg\"  y=\"%lg\" width=\"%lg\" height=\"%lg\" onclick=\"show_popup(%lg,%lg,'Open', 'Close', '%s')\" visibility=\"hidden\" pointer-events=\"all\" onmouseover=\"this.style.cursor='pointer';\"/>\n",
          x1, y1, width, width, px, py, tag);
 
 

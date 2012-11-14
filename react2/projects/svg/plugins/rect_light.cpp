@@ -105,10 +105,10 @@ void rect_light_t::generate(plugin_data_t d, int argc, char **argv)
   fprintf(d.svg_fp, "<!--  START insert for rect_light (%03d) -->\n", n_instance);
   fprintf(d.js_fp, "// --  START insert for rect_light (%03d)\n", n_instance);
 
-  fprintf(d.svg_fp, "<rect id=\"rect_light_%03d\" x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\" fill=\"%s\" stroke=\"black\" stroke-width=\"%lf\"/>\n",
+  fprintf(d.svg_fp, "<rect id=\"rect_light_%03d\" x=\"%lg\" y=\"%lg\" width=\"%lg\" height=\"%lg\" fill=\"%s\" stroke=\"black\" stroke-width=\"%lg\"/>\n",
             n_instance, x, y, width, height, on_color, stroke_width);
   if (has_text)
-  	fprintf(d.svg_fp, "<text id=\"rect_light_pv_%03d\" x=\"%lf\" y=\"%lf\" font-family=\"Verdana\" font-size=\"%lf\" fill=\"black\" text-anchor=\"%s\">0</text>\n",
+  	fprintf(d.svg_fp, "<text id=\"rect_light_pv_%03d\" x=\"%lg\" y=\"%lg\" font-family=\"Verdana\" font-size=\"%lg\" fill=\"black\" text-anchor=\"%s\">0</text>\n",
                      n_instance, text_x, text_y, font_size, text_align);
 
 

@@ -138,28 +138,28 @@ void bar_t::generate(plugin_data_t d, int argc, char **argv)
   fprintf(d.js_fp, "// --  START insert for bar (%03d)\n", n_instance);
 
 //----------
-  fprintf(d.svg_fp, "  <rect fill=\"url(#whiteLinearV)\" x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\" stroke=\"none\" stroke-width=\"0\"/>\n",
+  fprintf(d.svg_fp, "  <rect fill=\"url(#whiteLinearV)\" x=\"%lg\" y=\"%lg\" width=\"%lg\" height=\"%lg\" stroke=\"none\" stroke-width=\"0\"/>\n",
                          x, y, width, height);
-  fprintf(d.svg_fp, "  <rect fill=\"url(#%sLinearV)\" id=\"bar_%03d\" x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\" stroke=\"none\" stroke-width=\"0\" transform=\"rotate(180 %lf %lf)\"/>\n",
+  fprintf(d.svg_fp, "  <rect fill=\"url(#%sLinearV)\" id=\"bar_%03d\" x=\"%lg\" y=\"%lg\" width=\"%lg\" height=\"%lg\" stroke=\"none\" stroke-width=\"0\" transform=\"rotate(180 %lg %lg)\"/>\n",
                          bar_color,
                          n_instance, x, y, width, height, cx, cy);
-  fprintf(d.svg_fp, "  <rect x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\" fill=\"none\" stroke=\"#000000\" stroke-width=\"%lf\" />\n",
+  fprintf(d.svg_fp, "  <rect x=\"%lg\" y=\"%lg\" width=\"%lg\" height=\"%lg\" fill=\"none\" stroke=\"#000000\" stroke-width=\"%lg\" />\n",
                          x, y, width, height, stroke_width);
 
 //----------
-//  fprintf(d.svg_fp, "<rect  fill=\"cornsilk\" x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\" stroke=\"black\" stroke-width=\"%lf\"/>\n",
+//  fprintf(d.svg_fp, "<rect  fill=\"cornsilk\" x=\"%lg\" y=\"%lg\" width=\"%lg\" height=\"%lg\" stroke=\"black\" stroke-width=\"%lg\"/>\n",
  //                    x, y, width, height, stroke_width);
-  //fprintf(d.svg_fp, "<rect  id=\"bar_%03d\" fill=\"%s\" x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\" stroke=\"none\" stroke-width=\"0\" transform=\"rotate(180 %lf %lf)\"/>\n",
+  //fprintf(d.svg_fp, "<rect  id=\"bar_%03d\" fill=\"%s\" x=\"%lg\" y=\"%lg\" width=\"%lg\" height=\"%lg\" stroke=\"none\" stroke-width=\"0\" transform=\"rotate(180 %lg %lg)\"/>\n",
 //                     n_instance, color, (x + stroke_width / 2.0), 
  //                    y, width-stroke_width, height, cx, cy);
-  fprintf(d.svg_fp, "<text id=\"bar_pv_%03d\" x=\"%lf\" y=\"%lf\" font-family=\"Verdana\" font-size=\"%lf\" fill=\"black\" text-anchor=\"middle\">0</text>\n",
+  fprintf(d.svg_fp, "<text id=\"bar_pv_%03d\" x=\"%lg\" y=\"%lg\" font-family=\"Verdana\" font-size=\"%lg\" fill=\"black\" text-anchor=\"middle\">0</text>\n",
                     n_instance, cx, y + height + (font_size * 1.1), font_size); 
 //---------------
 
   char js_object_name[30];
   snprintf(js_object_name, sizeof(js_object_name), "bar_obj_%03d", n_instance);
 
-  fprintf(d.js_fp, "var %s = new bar_t(\"bar_%03d\", \"bar_pv_%03d\", %lf, %lf, %lf, %lf, %lf);\n", 
+  fprintf(d.js_fp, "var %s = new bar_t(\"bar_%03d\", \"bar_pv_%03d\", %lg, %lg, %lg, %lg, %lg);\n", 
                js_object_name, n_instance, n_instance, x, y, x+width, y+height, stroke_width); 
 
   fprintf(d.svg_fp, "<!--  END insert for bar (%03d) -->\n", n_instance);
@@ -175,11 +175,11 @@ void bar_t::generate(plugin_data_t d, int argc, char **argv)
 /******
 void gen_analog_bar(FILE *fp, const char *id, double x, double y, double width, double height)
 {
-  fprintf(fp, "  <rect fill=\"url(#grBarGrey)\" x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\" stroke=\"none\" stroke-width=\"0\"/>\n",
+  fprintf(fp, "  <rect fill=\"url(#grBarGrey)\" x=\"%lg\" y=\"%lg\" width=\"%lg\" height=\"%lg\" stroke=\"none\" stroke-width=\"0\"/>\n",
                          x, y, width, height);
-  fprintf(fp, "  <rect fill=\"url(#grBarBlue)\" id=\"%s\" x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\" stroke=\"none\" stroke-width=\"0\" transform=\"rotate(180 %lf %lf)\"/>\n",
+  fprintf(fp, "  <rect fill=\"url(#grBarBlue)\" id=\"%s\" x=\"%lg\" y=\"%lg\" width=\"%lg\" height=\"%lg\" stroke=\"none\" stroke-width=\"0\" transform=\"rotate(180 %lg %lg)\"/>\n",
                          id, x, y, width, height, x + (width * 0.5), y + (height * 0.5));
-  fprintf(fp, "  <rect x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\" fill=\"none\" stroke=\"#000000\" stroke-width=\"1\" />\n",
+  fprintf(fp, "  <rect x=\"%lg\" y=\"%lg\" width=\"%lg\" height=\"%lg\" fill=\"none\" stroke=\"#000000\" stroke-width=\"1\" />\n",
                          x, y, width, height);
 }
 *********/

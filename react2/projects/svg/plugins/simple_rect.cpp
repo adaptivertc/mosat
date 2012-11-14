@@ -51,7 +51,10 @@ void simple_rect_t::generate_doc(doc_object_base_t *dob)
   dob->param("X of upper left corner");
   dob->param("Y of upper left corner");
   dob->param("Height");
+  dob->param("Width (optional, 0.2 * height if not given)");
+  dob->param("Font Size for PV (optional, 0.1 * height if not given)");
   dob->example("simple_rect|PRESSURE|mediumslateblue|110|45|70|");
+  dob->example("simple_rect|PRESSURE|mediumslateblue|100|35|80|15|8|");
   dob->notes("Uses the following attributes of the tag: "
        "'scale_hi', 'scale_lo', 'eu', 'decimal_places'");
   dob->notes("Automatically calculates width");
@@ -65,8 +68,11 @@ void simple_rect_t::generate(plugin_data_t d, int argc, char **argv)
   double x = atof(argv[3]);
   double y = atof(argv[4]);
   double height = atof(argv[5]);
+  
   double width = height * 0.2;
+  if (argc > 6) width = atof(argv[6]);
   double font_size = height * 0.1;
+  if (argc > 7) font_size = atof(argv[7]);
   double cx = x + (width/2.0);
   double cy = y + (height/2.0);
   double stroke_width = height / 100.0;
@@ -74,18 +80,18 @@ void simple_rect_t::generate(plugin_data_t d, int argc, char **argv)
   
   fprintf(d.svg_fp, "<!--  START insert for simple_rect (%03d) -->\n", n_instance);
   fprintf(d.js_fp, "// --  START insert for simple_rect (%03d)\n", n_instance);
-  fprintf(d.svg_fp, "<rect  fill=\"cornsilk\" x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\" stroke=\"black\" stroke-width=\"%lf\"/>\n",
+  fprintf(d.svg_fp, "<rect  fill=\"cornsilk\" x=\"%lg\" y=\"%lg\" width=\"%lg\" height=\"%lg\" stroke=\"black\" stroke-width=\"%lg\"/>\n",
                      x, y, width, height, stroke_width);
-  fprintf(d.svg_fp, "<rect  id=\"simple_rect_%03d\" fill=\"%s\" x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\" stroke=\"none\" stroke-width=\"0\" transform=\"rotate(180 %lf %lf)\"/>\n",
+  fprintf(d.svg_fp, "<rect  id=\"simple_rect_%03d\" fill=\"%s\" x=\"%lg\" y=\"%lg\" width=\"%lg\" height=\"%lg\" stroke=\"none\" stroke-width=\"0\" transform=\"rotate(180 %lg %lg)\"/>\n",
                      n_instance, color, (x + stroke_width / 2.0), 
                      y, width-stroke_width, height, cx, cy);
-  fprintf(d.svg_fp, "<text id=\"simple_rect_pv_%03d\" x=\"%lf\" y=\"%lf\" font-family=\"Verdana\" font-size=\"%lf\" fill=\"black\" text-anchor=\"middle\">0</text>\n",
+  fprintf(d.svg_fp, "<text id=\"simple_rect_pv_%03d\" x=\"%lg\" y=\"%lg\" font-family=\"Verdana\" font-size=\"%lg\" fill=\"black\" text-anchor=\"middle\">0</text>\n",
                      n_instance, cx, y + height + (font_size * 1.1), font_size); 
 
   char js_object_name[30];
   snprintf(js_object_name, sizeof(js_object_name), "simple_rect_obj_%03d", n_instance);
 
-  fprintf(d.js_fp, "var %s = new simple_rect_t(\"simple_rect_%03d\", \"simple_rect_pv_%03d\", %lf);\n", js_object_name, n_instance, n_instance, height); 
+  fprintf(d.js_fp, "var %s = new simple_rect_t(\"simple_rect_%03d\", \"simple_rect_pv_%03d\", %lg);\n", js_object_name, n_instance, n_instance, height); 
 
   fprintf(d.svg_fp, "<!--  END insert for simple_rect (%03d) -->\n", n_instance);
   fprintf(d.js_fp, "// --  END insert for simple_rect (%03d)\n", n_instance);

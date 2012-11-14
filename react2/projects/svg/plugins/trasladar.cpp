@@ -63,13 +63,13 @@ void trasladar_t::generate(plugin_data_t d, int argc, char **argv)
   
   fprintf(d.svg_fp, "<!--  START insert for trasladar (%03d) -->\n", n_instance);
   fprintf(d.js_fp, "// --  START insert for trasladar (%03d)\n", n_instance);
-  fprintf(d.svg_fp, "<rect  id=\"trasladar_%03d\" fill=\"%s\" x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\" stroke=\"none\" stroke-width=\"0\" />\n",
+  fprintf(d.svg_fp, "<rect  id=\"trasladar_%03d\" fill=\"%s\" x=\"%lg\" y=\"%lg\" width=\"%lg\" height=\"%lg\" stroke=\"none\" stroke-width=\"0\" />\n",
                      n_instance, color, x1, y, width, width);
 
   char js_object_name[30];
   snprintf(js_object_name, sizeof(js_object_name), "trasladar_obj_%03d", n_instance);
 
-  fprintf(d.js_fp, "var %s = new trasladar_t(\"trasladar_%03d\", %lf, %lf);\n", js_object_name, n_instance, x1, x2); 
+  fprintf(d.js_fp, "var %s = new trasladar_t(\"trasladar_%03d\", %lg, %lg);\n", js_object_name, n_instance, x1, x2); 
 
   fprintf(d.svg_fp, "<!--  END insert for trasladar (%03d) -->\n", n_instance);
   fprintf(d.js_fp, "// --  END insert for trasladar (%03d)\n", n_instance);

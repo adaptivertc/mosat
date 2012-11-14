@@ -70,7 +70,7 @@ void text_t::generate(plugin_data_t d, int argc, char **argv)
   for (int i=6; i < argc; i++)
   {
     const char *the_text = argv[i];
-    fprintf(d.svg_fp, "<text x=\"%lf\" y=\"%lf\" font-family=\"Verdana\" font-size=\"%lf\" fill=\"%s\" text-anchor=\"%s\">%s</text>\n",
+    fprintf(d.svg_fp, "<text x=\"%lg\" y=\"%lg\" font-family=\"Verdana\" font-size=\"%lg\" fill=\"%s\" text-anchor=\"%s\">%s</text>\n",
                      x, y, height, color, anchor, the_text); 
     y += height * 1.05; 
   }

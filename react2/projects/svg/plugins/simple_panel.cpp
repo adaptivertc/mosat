@@ -73,9 +73,9 @@ void simple_panel_t::generate(plugin_data_t d, int argc, char **argv)
   fprintf(d.svg_fp, "<!--  START insert for simple_panel (%03d) -->\n", n_instance);
   fprintf(d.js_fp, "// --  START insert for simple_panel (%03d)\n", n_instance);
 
-  fprintf(d.svg_fp, "<circle id=\"simple_panel_%03d\" cx=\"%lf\" cy=\"%lf\" r=\"%lf\" fill=\"%s\" stroke=\"black\" stroke-width=\"%lf\"/>\n",
+  fprintf(d.svg_fp, "<circle id=\"simple_panel_%03d\" cx=\"%lg\" cy=\"%lg\" r=\"%lg\" fill=\"%s\" stroke=\"black\" stroke-width=\"%lg\"/>\n",
             n_instance, cx, cy, r, on_color, stroke_width);
-  fprintf(d.svg_fp, "<text id=\"simple_panel_pv_%03d\" x=\"%lf\" y=\"%lf\" font-family=\"Verdana\" font-size=\"%lf\" fill=\"black\" text-anchor=\"middle\">0</text>\n",
+  fprintf(d.svg_fp, "<text id=\"simple_panel_pv_%03d\" x=\"%lg\" y=\"%lg\" font-family=\"Verdana\" font-size=\"%lg\" fill=\"black\" text-anchor=\"middle\">0</text>\n",
                      n_instance, cx, cy + r + (font_size * 1.1), font_size);
 
 

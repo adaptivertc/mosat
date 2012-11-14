@@ -75,26 +75,26 @@ void heatex_t::generate(plugin_data_t d, int argc, char **argv)
 
   char str[200];
   if (angle == 0) str[0] = '\0';
-  else snprintf(str, sizeof(str), "transform=\"rotate(%d %lf,%lf)\"", angle, cx, cy);
+  else snprintf(str, sizeof(str), "transform=\"rotate(%d %lg,%lg)\"", angle, cx, cy);
 
   fprintf(d.svg_fp, "<!--  START insert for heatex (%03d) -->\n", n_instance);
 
   fprintf(d.svg_fp, "<g id=\"group_object\" fill=\"%s\" stroke=\"none\"  %s>\n", "rgb(40,40,40)", str);
 
-  fprintf(d.svg_fp, "<rect x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\"/>\n", 
+  fprintf(d.svg_fp, "<rect x=\"%lg\" y=\"%lg\" width=\"%lg\" height=\"%lg\"/>\n", 
             x1, y1, 5.0 * scale_factor, 50.0 * scale_factor);
-  fprintf(d.svg_fp, "<rect x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\"/>\n",
+  fprintf(d.svg_fp, "<rect x=\"%lg\" y=\"%lg\" width=\"%lg\" height=\"%lg\"/>\n",
                   x1 + 35.0 * scale_factor, y1, 5.0 * scale_factor, 50.0 * scale_factor);
 
-  fprintf(d.svg_fp, "<rect x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\"/>\n",
+  fprintf(d.svg_fp, "<rect x=\"%lg\" y=\"%lg\" width=\"%lg\" height=\"%lg\"/>\n",
             x1, y1 + 5.0 * scale_factor, 40.0 * scale_factor, 5.0 * scale_factor);
-  fprintf(d.svg_fp, "<rect x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\"/>\n",
+  fprintf(d.svg_fp, "<rect x=\"%lg\" y=\"%lg\" width=\"%lg\" height=\"%lg\"/>\n",
             x1, y1 + 40.0 * scale_factor, 40.0 * scale_factor, 5.0 * scale_factor);
 
   for (int i=0; i < 5; i++)
   {
     double the_x = x1 + (scale_factor * (8.75 + (5.0 * i)));
-    fprintf(d.svg_fp, "<rect x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\"/>\n",
+    fprintf(d.svg_fp, "<rect x=\"%lg\" y=\"%lg\" width=\"%lg\" height=\"%lg\"/>\n",
                the_x, y1 + (5.0 * scale_factor), 2.0 * scale_factor, 40 * scale_factor);
   }
 

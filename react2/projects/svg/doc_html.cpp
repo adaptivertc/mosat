@@ -87,7 +87,9 @@ void doc_html_object_t::header(void)
   fprintf(this->fp, "which are delimited by a vertical bar: '|'.\n");
   fprintf(this->fp, "The widgets that come later in the file are later on the draw list, and thus,\n");
   fprintf(this->fp, "if widgets overlap, the one later in the file will be on top.\n");
-  fprintf(this->fp, "</p>\n");
+  fprintf(this->fp, "For example, if you use the 'panel' object, all widgets that will be on\n");
+  fprintf(this->fp, "the panel, must come in the file AFTER the panel, otherwise, they will be \n");
+  fprintf(this->fp, "hidden by the panel.\n");
   fprintf(this->fp, "</p>\n");
   fprintf(this->fp, "<hr>\n");
 }

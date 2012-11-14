@@ -31,7 +31,7 @@ static const char *pipe_color = "gray";
 void gen_elbo_ru(FILE *fp, double x, double y, double pipe_width, double elbo_width)
 {
   double small_width = elbo_width - pipe_width;
-  fprintf(fp, "<path fill=\"url(#%sRadial)\" d=\"M%lf,%lf a%lf,%lf 0 0,0 %lf,%lf h%lf a%lf,%lf 0 0,1 %lf,%lf z\"/>\n",
+  fprintf(fp, "<path fill=\"url(#%sRadial)\" d=\"M%lg,%lg a%lg,%lg 0 0,0 %lg,%lg h%lg a%lg,%lg 0 0,1 %lg,%lg z\"/>\n",
           pipe_color,
           /* M */ x, y + (pipe_width/2), 
           /* a */  elbo_width, elbo_width, elbo_width, -elbo_width,
@@ -44,7 +44,7 @@ void gen_elbo_ru(FILE *fp, double x, double y, double pipe_width, double elbo_wi
 void gen_elbo_rd(FILE *fp, double x, double y, double pipe_width, double elbo_width)
 {
   double small_width = elbo_width - pipe_width;
-  fprintf(fp, "<path fill=\"url(#%sRadial)\" d=\"M%lf,%lf a%lf,%lf 0 0,1 %lf,%lf h%lf a%lf,%lf 0 0,0 %lf,%lf z\"/>\n",
+  fprintf(fp, "<path fill=\"url(#%sRadial)\" d=\"M%lg,%lg a%lg,%lg 0 0,1 %lg,%lg h%lg a%lg,%lg 0 0,0 %lg,%lg z\"/>\n",
           pipe_color,
           /* M */ x, y - (pipe_width/2), 
           /* a */  elbo_width, elbo_width, elbo_width, elbo_width,
@@ -57,7 +57,7 @@ void gen_elbo_rd(FILE *fp, double x, double y, double pipe_width, double elbo_wi
 void gen_elbo_lu(FILE *fp, double x, double y, double pipe_width, double elbo_width)
 {
   double small_width = elbo_width - pipe_width;
-  fprintf(fp, "<path fill=\"url(#%sRadial)\" d=\"M%lf,%lf a%lf,%lf 0 0,1 %lf,%lf h%lf a%lf,%lf 0 0,0 %lf,%lf z\"/>\n",
+  fprintf(fp, "<path fill=\"url(#%sRadial)\" d=\"M%lg,%lg a%lg,%lg 0 0,1 %lg,%lg h%lg a%lg,%lg 0 0,0 %lg,%lg z\"/>\n",
           pipe_color,
           /* M */ x, y + (pipe_width/2), 
           /* a */  elbo_width, elbo_width, -elbo_width, -elbo_width,
@@ -70,7 +70,7 @@ void gen_elbo_lu(FILE *fp, double x, double y, double pipe_width, double elbo_wi
 void gen_elbo_ld(FILE *fp, double x, double y, double pipe_width, double elbo_width)
 {
   double small_width = elbo_width - pipe_width;
-  fprintf(fp, "<path fill=\"url(#%sRadial)\" d=\"M%lf,%lf a%lf,%lf 0 0,0 %lf,%lf h%lf a%lf,%lf 0 0,1 %lf,%lf z\"/>\n",
+  fprintf(fp, "<path fill=\"url(#%sRadial)\" d=\"M%lg,%lg a%lg,%lg 0 0,0 %lg,%lg h%lg a%lg,%lg 0 0,1 %lg,%lg z\"/>\n",
           pipe_color,
           /* M */ x, y - (pipe_width/2), 
           /* a */  elbo_width, elbo_width, -elbo_width, elbo_width,
@@ -86,14 +86,14 @@ static bool first = true;
 
 void gen_butt_end(FILE *fp, double width, double butt_width, double x2, double y2)
 {
-  printf("butt end - width: %lf, bwidth: %lf, x2: %lf, y2: %lf\n",
+  printf("butt end - width: %gf, bwidth: %lg, x2: %lg, y2: %lg\n",
          width, butt_width, x2, y2);
   if (last_V && last_VU)
   {
     // draw the butt end up
     printf("butt up\n");
     fprintf(fp, 
-    "<polygon fill=\"url(#%sLinearV)\" points=\"%lf,%lf %lf,%lf %lf,%lf\"/>\n",
+    "<polygon fill=\"url(#%sLinearV)\" points=\"%lg,%lg %lg,%lg %lg,%lg\"/>\n",
           pipe_color, x2 - (width/2.0), y2, x2 + (width/2.0), y2, x2, y2 - (butt_width/2.0));
   }
   else if (last_V && !last_VU)
@@ -101,7 +101,7 @@ void gen_butt_end(FILE *fp, double width, double butt_width, double x2, double y
     // draw the butt end down 
     printf("butt down\n");
     fprintf(fp, 
-    "<polygon fill=\"url(#%sLinearV)\" points=\"%lf,%lf %lf,%lf %lf,%lf\"/>\n",
+    "<polygon fill=\"url(#%sLinearV)\" points=\"%lg,%lg %lg,%lg %lg,%lg\"/>\n",
           pipe_color, x2 - (width/2.0), y2, x2 + (width/2.0), y2, x2, y2 + (butt_width/2.0));
   }
   else if (!last_V && last_HR)
@@ -109,7 +109,7 @@ void gen_butt_end(FILE *fp, double width, double butt_width, double x2, double y
     // draw the butt end right 
     printf("butt right\n");
     fprintf(fp, 
-    "<polygon fill=\"url(#%sLinearH)\" points=\"%lf,%lf %lf,%lf %lf,%lf\"/>\n",
+    "<polygon fill=\"url(#%sLinearH)\" points=\"%lg,%lg %lg,%lg %lg,%lg\"/>\n",
           pipe_color, x2, y2 - (width/2.0), x2, y2 + (width/2.0), x2 + (butt_width/2.0), y2);
   }
   else if (!last_V && !last_HR)
@@ -117,7 +117,7 @@ void gen_butt_end(FILE *fp, double width, double butt_width, double x2, double y
     // draw the butt end left 
     printf("butt left\n");
     fprintf(fp, 
-    "<polygon fill=\"url(#%sLinearH)\" points=\"%lf,%lf %lf,%lf %lf,%lf\"/>\n",
+    "<polygon fill=\"url(#%sLinearH)\" points=\"%lg,%lg %lg,%lg %lg,%lg\"/>\n",
           pipe_color, x2, y2 - (width/2.0), x2, y2 + (width/2.0), x2 - (butt_width/2.0), y2);
   }
   
@@ -145,41 +145,41 @@ void gen_v_pipe(FILE *fp, double x, double y1, double y2, double width)
     last_VU = false;
   }
 
-  printf("V - x1: %lf, y1: %lf, x2: %lf, y2: %lf\n", x1, y1, x2, y2);
+  printf("V - x1: %lg, y1: %lg, x2: %lg, y2: %lg\n", x1, y1, x2, y2);
 
   if (first)
   {
     first = false;
     fprintf(fp, 
-     "<rect fill=\"url(#%sLinearV)\" x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\"/>\n",
+     "<rect fill=\"url(#%sLinearV)\" x=\"%lg\" y=\"%lg\" width=\"%lg\" height=\"%lg\"/>\n",
           pipe_color, x - (width/2.0), y1, width, y2-y1);
   }
   else if (last_HR && last_VU)
   {
     // case last was to the right, next is up 
     fprintf(fp, 
-    "<polygon fill=\"url(#%sLinearV)\" points=\"%lf,%lf %lf,%lf %lf,%lf %lf,%lf %lf,%lf\"/>\n",
+    "<polygon fill=\"url(#%sLinearV)\" points=\"%lg,%lg %lg,%lg %lg,%lg %lg,%lg %lg,%lg\"/>\n",
           pipe_color, x, y2, x2, y2, x2, y1, x1, y1, x1, y2 - (width * 0.5));
   }
   else if (!last_HR && last_VU)
   {
     // case last was to the left, next is up 
     fprintf(fp, 
-    "<polygon fill=\"url(#%sLinearV)\" points=\"%lf,%lf %lf,%lf %lf,%lf %lf,%lf %lf,%lf\"/>\n",
+    "<polygon fill=\"url(#%sLinearV)\" points=\"%lg,%lg %lg,%lg %lg,%lg %lg,%lg %lg,%lg\"/>\n",
           pipe_color, x, y2, x1, y2, x1, y1, x2, y1, x2, y2 - (width * 0.5));
   }
   else if (last_HR && !last_VU)
   {
     // case last was to the right, next is down
     fprintf(fp, 
-    "<polygon fill=\"url(#%sLinearV)\" points=\"%lf,%lf %lf,%lf %lf,%lf %lf,%lf %lf,%lf\"/>\n",
+    "<polygon fill=\"url(#%sLinearV)\" points=\"%lg,%lg %lg,%lg %lg,%lg %lg,%lg %lg,%lg\"/>\n",
           pipe_color, x, y1, x2, y1, x2, y2, x1, y2, x1, y1 + (width * 0.5));
   }
   else if (!last_HR && !last_VU)
   {
     // case last was to the left, next is down
     fprintf(fp, 
-    "<polygon fill=\"url(#%sLinearV)\" points=\"%lf,%lf %lf,%lf %lf,%lf %lf,%lf %lf,%lf\"/>\n",
+    "<polygon fill=\"url(#%sLinearV)\" points=\"%lg,%lg %lg,%lg %lg,%lg %lg,%lg %lg,%lg\"/>\n",
           pipe_color, x, y1, x1, y1, x1, y2, x2, y2, x2, y1 + (width * 0.5));
   }
 }
@@ -204,41 +204,41 @@ void gen_h_pipe(FILE *fp, double x1, double y, double x2, double width)
   {
     last_HR = true; 
   }
-  printf("H - x1: %lf, y1: %lf, x2: %lf, y2: %lf\n", x1, y1, x2, y2);
+  printf("H - x1: %lg, y1: %lg, x2: %lg, y2: %lg\n", x1, y1, x2, y2);
 
   if (first)
   {
     first = false;
     fprintf(fp, 
-     "<rect fill=\"url(#%sLinearH)\" x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\"/>\n",
+     "<rect fill=\"url(#%sLinearH)\" x=\"%lg\" y=\"%lg\" width=\"%lg\" height=\"%lg\"/>\n",
           pipe_color, x1, y - (width / 2.0), x2-x1, width);
   }
   else if (last_HR && last_VU)
   {
     // case last was up, next is right 
     fprintf(fp, 
-   "<polygon fill=\"url(#%sLinearH)\" points=\"%lf,%lf %lf,%lf %lf,%lf %lf,%lf %lf,%lf\"/>\n",
+   "<polygon fill=\"url(#%sLinearH)\" points=\"%lg,%lg %lg,%lg %lg,%lg %lg,%lg %lg,%lg\"/>\n",
           pipe_color, x1, y1, x2 , y1, x2, y2, x1 + (width * 0.5), y2, x1, y);
   }
   else if (!last_HR && last_VU)
   {
     // case last was up, next is left 
     fprintf(fp, 
-   "<polygon fill=\"url(#%sLinearH)\" points=\"%lf,%lf %lf,%lf %lf,%lf %lf,%lf %lf,%lf\"/>\n",
+   "<polygon fill=\"url(#%sLinearH)\" points=\"%lg,%lg %lg,%lg %lg,%lg %lg,%lg %lg,%lg\"/>\n",
           pipe_color, x2, y1, x1 , y1, x1, y2, x2 - (width * 0.5), y2, x2, y);
   }
   else if (last_HR && !last_VU)
   {
     // case last was down, next is right 
     fprintf(fp, 
-    "<polygon fill=\"url(#%sLinearH)\" points=\"%lf,%lf %lf,%lf %lf,%lf %lf,%lf %lf,%lf\"/>\n",
+    "<polygon fill=\"url(#%sLinearH)\" points=\"%lg,%lg %lg,%lg %lg,%lg %lg,%lg %lg,%lg\"/>\n",
           pipe_color, x1, y2, x2 , y2, x2, y1, x1 + (width * 0.5), y1, x1, y);
   }
   else if (!last_HR && !last_VU)
   {
     // case last was down, next is left 
     fprintf(fp, 
-    "<polygon fill=\"url(#%sLinearH)\" points=\"%lf,%lf %lf,%lf %lf,%lf %lf,%lf %lf,%lf\"/>\n",
+    "<polygon fill=\"url(#%sLinearH)\" points=\"%lg,%lg %lg,%lg %lg,%lg %lg,%lg %lg,%lg\"/>\n",
           pipe_color, x2, y2, x1 , y2, x1, y1, x2 - (width * 0.5), y1, x2, y);
   }
 }
@@ -353,12 +353,12 @@ void simple_pipe_t::generate(plugin_data_t d, int argc, char **argv)
       case 'h':
       case 'H':
         x2 = atof(argv[i+1]);
-        printf("Making Horizontal section to %lf\n", x2);
+        printf("Making Horizontal section to %lg\n", x2);
         y2 = y1;
         if (((i+2) < (argc-1)) && (argv[i+2][0] != 'b') && (argv[i+2][0] != 'B'))
         {
           fprintf(d.svg_fp,  
-         "<circle cx=\"%lf\" cy=\"%lf\" r=\"%lf\" fill=\"url(#%sRadial)\"/>\n",
+         "<circle cx=\"%lg\" cy=\"%lg\" r=\"%lg\" fill=\"url(#%sRadial)\"/>\n",
               x2, y2, width / 2.0, pipe_color);
         }
         gen_h_pipe(d.svg_fp, x1, y1,  x2, width);
@@ -366,19 +366,19 @@ void simple_pipe_t::generate(plugin_data_t d, int argc, char **argv)
       case 'v':
       case 'V':
         y2 = atof(argv[i+1]);
-        printf("Making Vertical section to %lf\n", y2);
+        printf("Making Vertical section to %lg\n", y2);
         x2 = x1;
         if (((i+2) < (argc-1)) && (argv[i+2][0] != 'b') && (argv[i+2][0] != 'B'))
         {
           fprintf(d.svg_fp,  
-         "<circle cx=\"%lf\" cy=\"%lf\" r=\"%lf\" fill=\"url(#%sRadial)\"/>\n",
+         "<circle cx=\"%lg\" cy=\"%lg\" r=\"%lg\" fill=\"url(#%sRadial)\"/>\n",
               x2, y2, width / 2.0, pipe_color);
         }
         gen_v_pipe(d.svg_fp, x1, y1, y2, width);
         break;
       case 'b':
       case 'B':
-        printf("Making piece to butt against a pipe %lf, %lf\n", x2, y2);
+        printf("Making piece to butt against a pipe %lg, %lg\n", x2, y2);
         butt_width = atof(argv[i+1]);
         gen_butt_end(d.svg_fp, width, butt_width, x2, y2);
         break;

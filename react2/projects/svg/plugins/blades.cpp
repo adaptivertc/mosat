@@ -83,27 +83,27 @@ void blades_t::generate(plugin_data_t d, int argc, char **argv)
 
   char str[200];
   if (angle == 0) str[0] = '\0';
-  else snprintf(str, sizeof(str), "transform=\"rotate(%d %lf,%lf)\"", angle, cx, cy);
+  else snprintf(str, sizeof(str), "transform=\"rotate(%d %lg,%lg)\"", angle, cx, cy);
 
   fprintf(d.svg_fp, "<!--  START insert for blades (%03d) -->\n", n_instance);
 
-  fprintf(d.svg_fp, "<g id=\"%s\" fill=\"%s\" stroke=\"black\" stroke-width=\"%lf\" %s>\n", 
+  fprintf(d.svg_fp, "<g id=\"%s\" fill=\"%s\" stroke=\"black\" stroke-width=\"%lg\" %s>\n", 
                   js_group_name, on_color,  0.3 * scale_factor, str);
 
-  fprintf(d.svg_fp, "<polygon points=\"%lf,%lf %lf,%lf %lf,%lf\"/>\n",
+  fprintf(d.svg_fp, "<polygon points=\"%lg,%lg %lg,%lg %lg,%lg\"/>\n",
                     cx, cy, x1 + (9.0 * scale_factor), y1 + (7.0 * scale_factor), x1 + (12.0 * scale_factor), y1 ); 
 
-  fprintf(d.svg_fp, "<circle cx=\"%lf\" cy=\"%lf\" r=\"%lf\" stroke=\"black\" stroke-width=\"%lf\" fill=\"black\"/>\n",
+  fprintf(d.svg_fp, "<circle cx=\"%lg\" cy=\"%lg\" r=\"%lg\" stroke=\"black\" stroke-width=\"%lg\" fill=\"black\"/>\n",
                     cx, cy, 5 * scale_factor, 0.3 * scale_factor);
-  fprintf(d.svg_fp, "<polygon points=\"%lf,%lf %lf,%lf %lf,%lf\" />\n",
+  fprintf(d.svg_fp, "<polygon points=\"%lg,%lg %lg,%lg %lg,%lg\" />\n",
                     cx, cy, x1 + (8.0 * scale_factor), y1 - (20.0 * scale_factor), x1, y1 - (25 * scale_factor) );
-  fprintf(d.svg_fp, "<polygon points=\"%lf,%lf %lf,%lf %lf,%lf\" />\n",
+  fprintf(d.svg_fp, "<polygon points=\"%lg,%lg %lg,%lg %lg,%lg\" />\n",
                     cx, cy, x1 - (8.0 * scale_factor), y1 + (20.0 * scale_factor), x1, y1 + (25.0 * scale_factor));
-  fprintf(d.svg_fp, "<polygon points=\"%lf,%lf %lf,%lf %lf,%lf\" />\n",
+  fprintf(d.svg_fp, "<polygon points=\"%lg,%lg %lg,%lg %lg,%lg\" />\n",
                     cx, cy, x1 - (10.0 * scale_factor), y1 - (9.0 * scale_factor), x1 - (12.0 * scale_factor), y1 - (1.0 * scale_factor)); 
-//  fprintf(d.svg_fp, "<line x1=\"%lf\" y1=\"%lf\" x2=\"%lf\" y2=\"%lf\" stroke=\"%s\" stroke-width=\"%lf\"/>\n",
+//  fprintf(d.svg_fp, "<line x1=\"%lg\" y1=\"%lg\" x2=\"%lg\" y2=\"%lg\" stroke=\"%s\" stroke-width=\"%lg\"/>\n",
 //                    cx, cy, x1 + shaft_length, y1, "lime", 4.0 * scale_factor); 
-  fprintf(d.svg_fp, "<rect x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\" stroke=\"black\" stroke-width=\"%lf\"/>\n",
+  fprintf(d.svg_fp, "<rect x=\"%lg\" y=\"%lg\" width=\"%lg\" height=\"%lg\" stroke=\"black\" stroke-width=\"%lg\"/>\n",
                     cx, cy - (2.0 * scale_factor), shaft_length, 4.0 * scale_factor, 0.5 * scale_factor); 
 
 

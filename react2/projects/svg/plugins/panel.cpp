@@ -93,16 +93,16 @@ void panel_t::generate(plugin_data_t d, int argc, char **argv)
 
   fprintf(d.svg_fp, "<!-- START insert for panel (%03d) -->\n", n_instance);
 
-  fprintf(d.svg_fp, "<rect fill=\"%s\" x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\" stroke=\"none\"/>\n",
+  fprintf(d.svg_fp, "<rect fill=\"%s\" x=\"%lg\" y=\"%lg\" width=\"%lg\" height=\"%lg\" stroke=\"none\"/>\n",
         str_pcolor, x1, y1, width, height);
 
-  fprintf(d.svg_fp, "<polygon points=\"%lf,%lf %lf,%lf %lf,%lf %lf,%lf\" fill=\"%s\" stroke=\"none\"/>\n",
+  fprintf(d.svg_fp, "<polygon points=\"%lg,%lg %lg,%lg %lg,%lg %lg,%lg\" fill=\"%s\" stroke=\"none\"/>\n",
      x1, y1, x1+sw, y1+sw, x2-sw, y1+sw, x2, y1, str_lcolor);
-  fprintf(d.svg_fp, "<polygon points=\"%lf,%lf %lf,%lf %lf,%lf %lf,%lf\" fill=\"%s\" stroke=\"none\"/>\n", 
+  fprintf(d.svg_fp, "<polygon points=\"%lg,%lg %lg,%lg %lg,%lg %lg,%lg\" fill=\"%s\" stroke=\"none\"/>\n", 
      x1, y1, x1+sw, y1+sw, x1+sw, y2-sw, x1, y2, str_lcolor);
-  fprintf(d.svg_fp, "<polygon points=\"%lf,%lf %lf,%lf %lf,%lf %lf,%lf\" fill=\"%s\" stroke=\"none\"/>\n",
+  fprintf(d.svg_fp, "<polygon points=\"%lg,%lg %lg,%lg %lg,%lg %lg,%lg\" fill=\"%s\" stroke=\"none\"/>\n",
      x1, y2, x1+sw, y2-sw, x2-sw, y2-sw, x2, y2, str_scolor);
-  fprintf(d.svg_fp, "<polygon points=\"%lf,%lf %lf,%lf %lf,%lf %lf,%lf\" fill=\"%s\" stroke=\"none\"/>\n",
+  fprintf(d.svg_fp, "<polygon points=\"%lg,%lg %lg,%lg %lg,%lg %lg,%lg\" fill=\"%s\" stroke=\"none\"/>\n",
      x2, y2, x2-sw, y2-sw, x2-sw, y1+sw, x2, y1, str_scolor);
 
  

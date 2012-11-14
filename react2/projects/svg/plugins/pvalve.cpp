@@ -99,45 +99,45 @@ void pvalve_t::generate(plugin_data_t d, int argc, char **argv)
 
   char str[200];
   if (angle == 0) str[0] = '\0';
-  else snprintf(str, sizeof(str), "transform=\"rotate(%d %lf,%lf)\"", angle, cx, cy);
+  else snprintf(str, sizeof(str), "transform=\"rotate(%d %lg,%lg)\"", angle, cx, cy);
 
   fprintf(d.svg_fp, "<!--  START insert for pvalve (%03d) -->\n", n_instance);
 
 
-  fprintf(d.svg_fp, "<g id=\"%s\" fill=\"%s\" stroke=\"black\" stroke-width=\"%lf\" %s>\n", 
+  fprintf(d.svg_fp, "<g id=\"%s\" fill=\"%s\" stroke=\"black\" stroke-width=\"%lg\" %s>\n", 
        js_group_name, on_color, 0.5 * scale_factor, str);
   if (type == 1)
   {
     fprintf(d.svg_fp, "  <path  \n");
-    fprintf(d.svg_fp, "     d=\"M%lf,%lf A%lf,%lf 0 1,1 %lf,%lf Z\"/>\n",
+    fprintf(d.svg_fp, "     d=\"M%lg,%lg A%lg,%lg 0 1,1 %lg,%lg Z\"/>\n",
            x1 + (10.0 * scale_factor), y1 + (10.0 * scale_factor), 
            5.0 * scale_factor, 5.0 * scale_factor, 
            x1 + (40.0 * scale_factor), y1 + (10.0 * scale_factor));
   }
   else if (type == 2)
   {
-    fprintf(d.svg_fp, "  <rect x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\"/>\n",
+    fprintf(d.svg_fp, "  <rect x=\"%lg\" y=\"%lg\" width=\"%lg\" height=\"%lg\"/>\n",
                  x1 + (10.0 * scale_factor), y1, 
                  30.0 * scale_factor, 10.0 * scale_factor); 
   }
-  fprintf(d.svg_fp, "  <polygon points=\"%lf,%lf %lf,%lf %lf,%lf\"/>\n",
+  fprintf(d.svg_fp, "  <polygon points=\"%lg,%lg %lg,%lg %lg,%lg\"/>\n",
                 x1, y1 + (10.0 * scale_factor),
                 x1, y2, cx, cy);
-  fprintf(d.svg_fp, "  <polygon points=\"%lf,%lf %lf,%lf %lf,%lf\"/>\n",
+  fprintf(d.svg_fp, "  <polygon points=\"%lg,%lg %lg,%lg %lg,%lg\"/>\n",
                 x2, y1 + (10.0 * scale_factor),
                 x2, y2, cx, cy);
-  fprintf(d.svg_fp, "  <line x1=\"%lf\" y1=\"%lf\" x2=\"%lf\" y2=\"%lf\" \n",
+  fprintf(d.svg_fp, "  <line x1=\"%lg\" y1=\"%lg\" x2=\"%lg\" y2=\"%lg\" \n",
                cx, y1 + (10.0 * scale_factor), cx, cy);
-  fprintf(d.svg_fp, "     stroke =\"black\" stroke-width=\"%lf\"/>\n",
+  fprintf(d.svg_fp, "     stroke =\"black\" stroke-width=\"%lg\"/>\n",
            1.5 * scale_factor);
   fprintf(d.svg_fp, "</g>\n");
 
-  fprintf(d.js_fp, "var %s = new pvalve_t(\"%s\", \"%s\", \"%s\", %lf, %lf, %lf, %lf);\n",
+  fprintf(d.js_fp, "var %s = new pvalve_t(\"%s\", \"%s\", \"%s\", %lg, %lg, %lg, %lg);\n",
              js_object_name, js_group_name, on_color, off_color, cx, cy, width, height);
 
   double px, py;
   find_a_place_nearby(&px, &py, x1, y1, width, width);
-  fprintf(d.svg_fp, "<rect x=\"%lf\"  y=\"%lf\" width=\"%lf\" height=\"%lf\" onclick=\"show_popup(%lf,%lf,'Open', 'Close', '%s')\" visibility=\"hidden\" pointer-events=\"all\" onmouseover=\"this.style.cursor='pointer';\"/>\n",
+  fprintf(d.svg_fp, "<rect x=\"%lg\"  y=\"%lg\" width=\"%lg\" height=\"%lg\" onclick=\"show_popup(%lg,%lg,'Open', 'Close', '%s')\" visibility=\"hidden\" pointer-events=\"all\" onmouseover=\"this.style.cursor='pointer';\"/>\n",
          x1, y1, width, width, px, py, tag);
 
   fprintf(d.js_fp, "// --  END insert for pvalve (%03d)\n", n_instance);

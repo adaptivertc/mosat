@@ -142,34 +142,34 @@ void slider_t::generate(plugin_data_t d, int argc, char **argv)
   fprintf(d.js_fp, "// --  START insert for slider (%03d)\n", n_instance);
   /***********************/
 
-  fprintf(d.svg_fp, "<rect  x=\"%lf\" y=\"%lf\" rx=\"%lf\" ry=\"%lf\" width=\"%lf\" height=\"%lf\"\n", 
+  fprintf(d.svg_fp, "<rect  x=\"%lg\" y=\"%lg\" rx=\"%lg\" ry=\"%lg\" width=\"%lg\" height=\"%lg\"\n", 
     x1, y1, height * 0.4, height * 0.4, width, height);
-  fprintf(d.svg_fp, "  fill=\"url(#whiteLinearH)\" stroke=\"black\" stroke-width=\"%lf\"\n", stroke_width);
+  fprintf(d.svg_fp, "  fill=\"url(#whiteLinearH)\" stroke=\"black\" stroke-width=\"%lg\"\n", stroke_width);
   fprintf(d.svg_fp, "  pointer-events=\"all\" onmouseover=\"this.style.cursor='pointer';\"\n");
   fprintf(d.svg_fp, "  onmousedown=\"%s(evt)\"/>\n", slider_mousedown_name); 
 
-  fprintf(d.svg_fp, "  <line x1=\"%lf\" y1=\"%lf\" x2=\"%lf\" y2=\"%lf\"\n", 
+  fprintf(d.svg_fp, "  <line x1=\"%lg\" y1=\"%lg\" x2=\"%lg\" y2=\"%lg\"\n", 
          x1, y1 + (height), x1, y1 + (height * 1.55));
-  fprintf(d.svg_fp, "     stroke=\"black\" stroke-width=\"%lf\"/>\n", 
+  fprintf(d.svg_fp, "     stroke=\"black\" stroke-width=\"%lg\"/>\n", 
               stroke_width);
 
-  fprintf(d.svg_fp, "  <line x1=\"%lf\" y1=\"%lf\" x2=\"%lf\" y2=\"%lf\"\n", 
+  fprintf(d.svg_fp, "  <line x1=\"%lg\" y1=\"%lg\" x2=\"%lg\" y2=\"%lg\"\n", 
          x1 + (width * 0.5), y1 + (height*1.2), x1 + (width * 0.5), y1 + (height * 1.55));
-  fprintf(d.svg_fp, "     stroke=\"black\" stroke-width=\"%lf\"/>\n", 
+  fprintf(d.svg_fp, "     stroke=\"black\" stroke-width=\"%lg\"/>\n", 
               stroke_width);
 
-  fprintf(d.svg_fp, "  <line x1=\"%lf\" y1=\"%lf\" x2=\"%lf\" y2=\"%lf\"\n", 
+  fprintf(d.svg_fp, "  <line x1=\"%lg\" y1=\"%lg\" x2=\"%lg\" y2=\"%lg\"\n", 
          x1 + width, y1 + (height), x1 + width, y1 + (height * 1.55));
-  fprintf(d.svg_fp, "     stroke=\"black\" stroke-width=\"%lf\"/>\n", 
+  fprintf(d.svg_fp, "     stroke=\"black\" stroke-width=\"%lg\"/>\n", 
               stroke_width);
 
-  fprintf(d.svg_fp, "<rect  id=\"%s\" x=\"%lf\" y=\"%lf\" rx=\"%lf\" ry=\"%lf\" width=\"%lf\" height=\"%lf\"\n", 
+  fprintf(d.svg_fp, "<rect  id=\"%s\" x=\"%lg\" y=\"%lg\" rx=\"%lg\" ry=\"%lg\" width=\"%lg\" height=\"%lg\"\n", 
     js_rect_name, x1, y1, height * 0.5, height * 0.4, width * 0.5, height);
-  fprintf(d.svg_fp, "  fill=\"url(#%sLinearH)\" stroke=\"black\" stroke-width=\"%lf\"\n", slider_color, stroke_width);
+  fprintf(d.svg_fp, "  fill=\"url(#%sLinearH)\" stroke=\"black\" stroke-width=\"%lg\"\n", slider_color, stroke_width);
   fprintf(d.svg_fp, "  pointer-events=\"all\" onmouseover=\"this.style.cursor='pointer';\"\n");
   fprintf(d.svg_fp, "  onmousedown=\"%s(evt)\"/>\n", slider_mousedown_name); 
 
-  fprintf(d.svg_fp, "<circle id=\"%s\" cx=\"%lf\" cy=\"%lf\" r=\"%lf\" stroke=\"black\" fill=\"url(#whiteRadial)\" stroke-width=\"%lf\"\n",
+  fprintf(d.svg_fp, "<circle id=\"%s\" cx=\"%lg\" cy=\"%lg\" r=\"%lg\" stroke=\"black\" fill=\"url(#whiteRadial)\" stroke-width=\"%lg\"\n",
      js_circle_name, x1 + (width * 0.5), y1 + (height * 0.5), 
          circle_radius, stroke_width);
   fprintf(d.svg_fp, "  pointer-events=\"all\" onmouseover=\"this.style.cursor='pointer';\"\n");
@@ -178,7 +178,7 @@ void slider_t::generate(plugin_data_t d, int argc, char **argv)
   fprintf(d.svg_fp, "  onmousedown=\"%s(evt)\"/>\n", 
          slider_mousedown_name);
 
-  fprintf(d.svg_fp, "  <text id=\"%s\" x=\"%lf\" y=\"%lf\" font-size=\"%lf\" fill=\"black\"\n",
+  fprintf(d.svg_fp, "  <text id=\"%s\" x=\"%lg\" y=\"%lg\" font-size=\"%lg\" fill=\"black\"\n",
                             js_text_name, x1 + (width / 2.0), y1 - height, height * 1.2);
   fprintf(d.svg_fp, "       alignment-baseline=\"middle\" text-anchor=\"middle\">50.0</text>\n");
 
@@ -238,7 +238,7 @@ void slider_t::generate(plugin_data_t d, int argc, char **argv)
 
   if ((strlen(the_tag) > 0) && (0 != strcmp(the_tag, "null")))
   {
-    fprintf(d.js_fp, "var %s = new slider_t(\"%s\", \"%s\", \"%s\", \"%s\", %lf, %lf, %lf, %lf, \"%s()\");\n", 
+    fprintf(d.js_fp, "var %s = new slider_t(\"%s\", \"%s\", \"%s\", \"%s\", %lg, %lg, %lg, %lg, \"%s()\");\n", 
        js_object_name, the_tag, js_circle_name, js_rect_name, 
        js_text_name, x1, y1, width, height, slider_timeout_name); 
 

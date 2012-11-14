@@ -67,13 +67,13 @@ void gen_imasa_logo(FILE *fp, double x, double y, double height, double width)
   fprintf(fp, "  </defs>\n");
 
       // Now, draw the upper polygon in gradient of blue 
-  fprintf(fp, "<polygon points=\"%lf,%lf %lf,%lf %lf,%lf %lf,%lf\"\n",
+  fprintf(fp, "<polygon points=\"%lg,%lg %lg,%lg %lg,%lg %lg,%lg\"\n",
        x + 0, y + halfy, x + halfx, y + 0, 
        x + width, y + halfy, x + halfx, y + height);
   fprintf(fp, "  style=\"fill:url(#imasaLinearBlue);stroke:none;stroke-width:0\"/>\n");
 
       // Now, draw the lower polygon in gradient of gray 
-  fprintf(fp, "<polygon points=\"%lf,%lf %lf,%lf %lf,%lf %lf,%lf %lf,%lf %lf,%lf\"\n",
+  fprintf(fp, "<polygon points=\"%lg,%lg %lg,%lg %lg,%lg %lg,%lg %lg,%lg %lg,%lg\"\n",
            x + (halfx * fbotb), 
            y + halfy + (halfy * fbotb),
 
@@ -94,7 +94,7 @@ void gen_imasa_logo(FILE *fp, double x, double y, double height, double width)
   fprintf(fp, "  style=\"fill:url(#imasaLinearGrey);stroke:none;stroke-width:0\"/>\n");
 
       // Now, draw the IMASA 'M' in gradient of white 
-  fprintf(fp, "<polygon points=\"%lf,%lf %lf,%lf %lf,%lf %lf,%lf %lf,%lf %lf,%lf %lf,%lf %lf,%lf %lf,%lf %lf,%lf %lf,%lf %lf,%lf\"\n",
+  fprintf(fp, "<polygon points=\"%lg,%lg %lg,%lg %lg,%lg %lg,%lg %lg,%lg %lg,%lg %lg,%lg %lg,%lg %lg,%lg %lg,%lg %lg,%lg %lg,%lg\"\n",
            x + (halfx * fbotb), 
            y + halfy + (halfy * fbotb),
 

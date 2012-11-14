@@ -68,7 +68,7 @@ void discrete_pv_t::generate(plugin_data_t d, int argc, char **argv)
   
   fprintf(d.svg_fp, "<!--  START insert for discrete_pv (%03d) -->\n", n_instance);
   fprintf(d.js_fp, "// --  START insert for discrete_pv (%03d)\n", n_instance);
-  fprintf(d.svg_fp, "<text id=\"discrete_pv_%03d\" x=\"%lf\" y=\"%lf\" font-family=\"Verdana\" font-size=\"%lf\" fill=\"%s\" text-anchor=\"middle\">0</text>\n",
+  fprintf(d.svg_fp, "<text id=\"discrete_pv_%03d\" x=\"%lg\" y=\"%lg\" font-family=\"Verdana\" font-size=\"%lg\" fill=\"%s\" text-anchor=\"middle\">0</text>\n",
              n_instance, x, y, font_size, color); 
 
   char js_object_name[30];
