@@ -24,7 +24,7 @@ LIBS = -ldl $(RTCOMMON)
 
 GENFILES =  gen_case.cpp gen_script.cpp gen_script.h
 
-DRIVERDIRS = drivers/sim drivers/modbusdrv drivers/shmdrv drivers/sim_pump drivers/sim_pump_low drivers/sim_plastic
+DRIVERDIRS = drivers/sim drivers/modbusdrv drivers/shmdrv drivers/sim_pump drivers/sim_pump_low drivers/sim_plastic drivers/sim_spray
 
 DRIVERDIRS2 = drivers/sim_tina drivers/dallas_1wire drivers/sim_ac drivers/process drivers/simple_ascii drivers/simple_ascii_new 
 

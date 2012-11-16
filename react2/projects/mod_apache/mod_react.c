@@ -397,6 +397,6 @@ module AP_MODULE_DECLARE_DATA react_module =
         NULL,
         NULL,
         react_hooks
-} ;
+};
 
 /*****************************************************/

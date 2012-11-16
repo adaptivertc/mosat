@@ -4,6 +4,7 @@ export CPATH=../../../include/
 .PHONY : clean
 .PHONY : all
 .PHONY : so_files 
+.PHONY : doc 
 
 RTCOMMON=../../../librtcommon/librtcommon.a
 
@@ -50,6 +51,10 @@ spray.slider:
 
 slider:
 	./gen_display -f display.slider.txt -o slider.svg -sim
+
+doc:
+	./gen_display -doc -html -o svgdoc.html
+	./gen_display -doc -text -o svgdoc.txt
 
 clean:
 	rm -rv gen_points gen_bar gen_tank gen_so_makefile ./plugins/*.so gen_display

@@ -61,7 +61,7 @@ function sim_object_t()
 
     "HI_LEVEL":{"tag":"hi_level","description":"Above high Level","driver":0,"card":0,"channel":9, "lo_desc":"ON","hi_desc":"OFF", "alarm_state":"NONE","shutdown_state":"NONE"},
 
-  t  "LO_LEVEL":{"tag":"lo_level","description":"Above low Level","driver":0,"card":0,"channel":8, "lo_desc":"ON","hi_desc":"OFF", "alarm_state":"NONE","shutdown_state":"NONE"},
+    "LO_LEVEL":{"tag":"lo_level","description":"Above low Level","driver":0,"card":0,"channel":8, "lo_desc":"ON","hi_desc":"OFF", "alarm_state":"NONE","shutdown_state":"NONE"},
 
     "HYDRAULIC_1A":{"tag":"hydraulic_1a","description":"hydraulic switch 1a","driver":0,"card":0,"channel":0, "lo_desc":"ON","hi_desc":"OFF", "alarm_state":"NONE","shutdown_state":"NONE"},
 
@@ -370,7 +370,7 @@ function sim_object_update_f(now)
   }
 
   this.tank_level += this.fill_rate * elapsed_time;
-  Rthis.tank_temperature += this.temperature_rate * elapsed_time;
+  this.tank_temperature += this.temperature_rate * elapsed_time;
 
 
   this.pv.HI_LEVEL = this.tank_level > TANK_HI_LEVEL_CM;

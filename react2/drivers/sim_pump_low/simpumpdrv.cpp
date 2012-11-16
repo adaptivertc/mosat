@@ -28,7 +28,7 @@ Contains code for input/output drivers.
 
 #include <stdio.h>
 #include <unistd.h>
-#include <fcntl.h> // for open(...)
+#include <fcntl.h> 
 #include <stdlib.h>
 #include <string.h>
 #include <float.h>
@@ -41,44 +41,70 @@ Contains code for input/output drivers.
 #include "db.h"
 #include "iodriver.h"
 
-#include "simpumpdrv.h"
+/***/
 
-/***********************************************************************
+#define LO_LEVEL_CH 0
+#define HI_LEVEL_CH 1
+#define HI_HI_LEVEL_CH 2
 
-class simpumpdrv_factory_t : public io_driver_factory_t
+#define P1V_DO_CH 4
+#define P2V_DO_CH 5
+
+#define P1_DO_CH 1
+#define P2_DO_CH 2
+#define P3_DO_CH 3 
+
+#define P1V_DI_CH 6
+#define P2V_DI_CH 7
+
+#define P1_DI_CH 8
+#define P2_DI_CH 9
+#define P3_DI_CH 10 
+
+#define MIXER_DI_CH 5 
+
+#define P1_AI_CH 5
+#define P2_AI_CH 4
+#define P3_AI_CH 3
+
+#define LEVEL_CH 2
+
+#define PUMP_ON_TIME (30.0)
+#define PUMP_OFF_TIME (35.0)
+#define LO_SWITCH_CM (100.0)
+#define HI_SWITCH_CM (275.0)
+#define HI_HI_SWITCH_CM (450.0)
+
+#define SWITCH_DEADBAND (12.0)
+
+class simpumpdrv_t : public io_driver_t
 {
-private:
-  react_drv_base_t *drvb;
-  
 public:
-  simpumpdrv_factory_t(react_drv_base_t *r) {drvb = r;};
-  io_driver_t *new_driver(const char *config_data, char *err, int esz)
-     {return new simpumpdrv_t(drvb);};
-  const char *long_description(void) {return "PumpSimulator";};
-  const char *short_discription(void) {return "pumpSim";}; 
-  const char *abbreviation(void) {return "PSIM";};
-  ~simpumpdrv_factory_t(void) {};
+  FILE *fp;
+  FILE *fpout;
+  bool di_data[64];
+  bool do_data[64];
+  double ao_data[32];
+  double ai_data[32];
+  react_drv_base_t *react;
+
+  bool filling;
+  double start;
+  double fill_rate;
+  double pump_rate;
+  double last_time;
+  double the_level;
+
+  simpumpdrv_t(react_drv_base_t *r);
+  void read(void);
+  bool get_di(int channel);
+  double get_ai(int channel);
+  void send_do(int channel, bool val);
+  void send_ao(int channel, double val);
+  void close(void);
 };
 
-
-***********************************************************************/
-/*
-
-extern "C" io_driver_factory_t *new_simpumpdrv_factory_1_0(react_drv_base_t *r, const char *option)
-{
-  return new simpumpdrv_factory_t(r);
-}
-
-***********************************************************************/
-
-/***
-static double add_rand_noise(double val, double full_scale, double fraction_noise)
-{
-  double rand_mult = (((double) random() / (double) RAND_MAX) 
-        * 2.0 * fraction_noise) - fraction_noise;
-  return val + (full_scale * rand_mult);
-}
-***/
+/********/
 
 /**********************************************************************/
 

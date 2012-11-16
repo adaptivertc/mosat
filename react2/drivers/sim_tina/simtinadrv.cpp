@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 /************************************************************************
 
-Iodriver.c
+simtinadrv.cpp
 
 Contains code for input/output drivers.
 
@@ -41,32 +41,68 @@ Contains code for input/output drivers.
 #include "db.h"
 #include "iodriver.h"
 
-#include "simtinadrv.h"
-
 /***********************************************************************/
 
-/***
-static double add_rand_noise(double val, double full_scale, double fraction_noise)
-{
-  double rand_mult = (((double) random() / (double) RAND_MAX) 
-        * 2.0 * fraction_noise) - fraction_noise;
-  return val + (full_scale * rand_mult);
-}
-***/
+#define COLD_VALVE_DO_CH 8
+#define DRAIN_VALVE_DO_CH 9
 
-/**********************************************************************/
+#define LO_LEVEL_CH 8
+#define HI_LEVEL_CH 9
 
-/***
-static double calc_temp_raw(double temp_eu)
+#define TEMP1_CH 0
+#define TEMP2_CH 1
+#define LEVEL_CH 2
+
+
+#define FILL_TIME (35.0)
+#define DRAIN_TIME (20.0)
+
+#define PUMP_ON_TIME (30.0)
+#define PUMP_OFF_TIME (35.0)
+
+
+#define LO_SWITCH_CM (33.0)
+#define HI_SWITCH_CM (38.0)
+
+#define SWITCH_DEADBAND (1.0)
+
+
+class simtinadrv_t : public io_driver_t
 {
-  //return 10.0 * (temp_eu / 100.0);
-  return temp_eu;
-}
-static double calc_level_raw(double level_eu)
-{
-  return 10.0 * (level_eu / 38.0);
-}
-***/
+public:
+  FILE *fp;
+  FILE *fpout;
+  bool di_data[64];
+  bool do_data[64];
+  double ao_data[32];
+  double ai_data[32];
+  react_drv_base_t *react;
+
+
+  bool filling;
+  double start;
+
+  double fill_rate;
+  double drain_rate;
+  double water_temp;
+
+  double actual_fill_rate;
+
+  bool cooling;
+  bool draining;
+
+  double last_time;
+  double the_level;
+
+  simtinadrv_t(react_drv_base_t *r);
+  void read(void);
+  bool get_di(int channel);
+  double get_ai(int channel);
+  void send_do(int channel, bool val);
+  void send_ao(int channel, double val);
+  void close(void);
+};
+
 
 /**********************************************************************/
 

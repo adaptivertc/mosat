@@ -3,16 +3,16 @@ background|burlywood|
 bar|TEMP_1|red|36|5|125|
 bar|LEVEL|blue|200|5|125|
 
-only_text|Hi Contact|red|140|8|5|start|
+only_text|Hi Contact|firebrick|140|8|5|start|
 simple_contact|HI_LEVEL|yellow|gray|130|5|6|
-only_text|Lo Contact|orange|140|23|5|start|
+only_text|Lo Contact|firebrick|140|23|5|start|
 simple_contact|LO_LEVEL|yellow|gray|130|20|6|
 
 panel|110|65|30|75|0.3|
 rect_light|hydraulic_1a|lime|gray|120|68|8|8|N|
 rect_light|hydraulic_1b|lime|gray|120|84|8|8|N|
 
-only_text|Filter 1|green|124|105|5|middle|
+only_text|Filter 1|firebrick|124|105|5|middle|
 rect_light|red_do_1|red|gray|120|110|8|8|N|
 rect_light|yellow_do_1|yellow|gray|120|118|8|8|N|
 rect_light|green_do_1|lime|gray|120|126|8|8|N|
@@ -21,14 +21,14 @@ panel|76|65|30|75|0.3|
 rect_light|hydraulic_2a|lime|gray|86|68|8|8|N|
 rect_light|hydraulic_2b|lime|gray|86|84|8|8|N|
 
-only_text|Filter 2|green|90|105|5|middle|
+only_text|Filter 2|firebrick|90|105|5|middle|
 rect_light|red_do_2|red|gray|86|110|8|8|N|
 rect_light|yellow_do_2|yellow|gray|86|118|8|8|N|
 rect_light|green_do_2|lime|gray|86|126|8|8|N|
 
-only_text|Motor|green|86|40|5|middle|
+only_text|Motor|firebrick|86|40|5|middle|
 rect_light|motor_on|lime|gray|84|46|8|8|B|
-only_text|Cold|green|106|40|5|middle|
+only_text|Cold|firebrick|106|40|5|middle|
 rect_light|valve_1|lime|gray|104|46|8|8|B|
-only_text|Suction|green|126|40|5|middle|
+only_text|Suction|firebrick|126|40|5|middle|
 rect_light|valve_2|lime|gray|124|46|8|8|B|

@@ -60,7 +60,7 @@ void analog_pv_t::generate_doc(doc_object_base_t *dob)
 
 void analog_pv_t::generate(plugin_data_t d, int argc, char **argv)
 {
-  const char *tag = argv[1];
+  const char *the_tag = argv[1];
   const char *color = argv[2];
   double x = atof(argv[3]);
   double y = atof(argv[4]);
@@ -73,14 +73,18 @@ void analog_pv_t::generate(plugin_data_t d, int argc, char **argv)
   fprintf(d.svg_fp, "<text id=\"analog_pv_%03d\" x=\"%lg\" y=\"%lg\" font-family=\"Verdana\" font-size=\"%lg\" fill=\"%s\" text-anchor=\"middle\">0</text>\n",
              n_instance, x, y, font_size, color); 
 
-  char js_object_name[30];
-  snprintf(js_object_name, sizeof(js_object_name), "analog_pv_obj_%03d", n_instance);
 
-  fprintf(d.js_fp, "var %s = new analog_pv_t(\"analog_pv_%03d\");\n", js_object_name, n_instance); 
+  if ((strlen(the_tag) > 0) && (0 != strcmp(the_tag, "null")))
+  {
+    char js_object_name[30];
+    snprintf(js_object_name, sizeof(js_object_name), "analog_pv_obj_%03d", n_instance);
+    fprintf(d.js_fp, "var %s = new analog_pv_t(\"analog_pv_%03d\");\n", js_object_name, n_instance); 
+    add_js_library("analog_pv.js");
+    add_animation_object(the_tag, js_object_name);
+  }
+
   fprintf(d.svg_fp, "<!--  END insert for analog_pv (%03d) -->\n", n_instance);
   fprintf(d.js_fp, "// --  END insert for analog_pv (%03d)\n", n_instance);
-  add_js_library("analog_pv.js");
-  add_animation_object(tag, js_object_name);
   n_instance++;
 }
 

@@ -45,7 +45,7 @@ const char *rgauge_t::get_name(void)
 
 void rgauge_t::generate_doc(doc_object_base_t *dob)
 {
-  dob->start("rgauge", "A fancy circular gage with large text, circle of growing rectanges that light up to indicate value\n");
+  dob->start("rgauge", "A fancy circular gauge with large text, circle of growing rectanges that light up to indicate value\n");
   dob->param("Type (Currently not used, and to easily switch from type 'gauge')");
   dob->param("Color of large pv text, and engieering units label");
   dob->param("X of upper left corner");

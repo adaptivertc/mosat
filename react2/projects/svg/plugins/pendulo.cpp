@@ -71,16 +71,16 @@ void pendulo_t::generate(plugin_data_t d, int argc, char **argv)
   fprintf(d.svg_fp, "<path fill=\"%s\" id=\"pendulo_%03d\"\n",
            color, n_instance);
          
-  fprintf(d.svg_fp, "    d=\"M%lf,%lf A%lf,%lf 0 1,1 %lf,%lf L%lf,%lf Z\" />\n",
+  fprintf(d.svg_fp, "    d=\"M%lg,%lg A%lg,%lg 0 1,1 %lg,%lg L%lg,%lg Z\" />\n",
            x - r, y, r, r,  x + r, y, x, y + height);
 
-  fprintf(d.svg_fp, "<text id=\"pendulo_pv_%03d\" x=\"%lf\" y=\"%lf\" font-family=\"Verdana\" font-size=\"%lf\" fill=\"black\" text-anchor=\"middle\">0</text>\n",
+  fprintf(d.svg_fp, "<text id=\"pendulo_pv_%03d\" x=\"%lg\" y=\"%lg\" font-family=\"Verdana\" font-size=\"%lg\" fill=\"black\" text-anchor=\"middle\">0</text>\n",
                      n_instance, x, y - r - (font_size * 1.1), font_size);
 
 
   snprintf(obj_name, sizeof(obj_name), "pendulo_obj_%03d", n_instance);
 
-  fprintf(d.js_fp, "var %s = new pendulo_t(\"pendulo_%03d\", \"pendulo_pv_%03d\", %lf, %lf);\n", 
+  fprintf(d.js_fp, "var %s = new pendulo_t(\"pendulo_%03d\", \"pendulo_pv_%03d\", %lg, %lg);\n", 
                obj_name, n_instance, n_instance, x, y);
 
   fprintf(d.svg_fp, "<!--  END insert for pendulo (%03d) -->\n", n_instance);

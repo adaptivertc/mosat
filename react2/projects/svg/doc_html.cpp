@@ -91,6 +91,13 @@ void doc_html_object_t::header(void)
   fprintf(this->fp, "the panel, must come in the file AFTER the panel, otherwise, they will be \n");
   fprintf(this->fp, "hidden by the panel.\n");
   fprintf(this->fp, "</p>\n");
+  fprintf(this->fp, "<p>\n");
+  fprintf(this->fp, "For any objects that support animation, you can turn off animation by simply leaving\n");
+  fprintf(this->fp, "the tagname blank, or putting 'null' for the tagname. Of course, for some, like analog_pv, it\n");
+  fprintf(this->fp, "would not make sense to turn off animation, as it is the equivalent of putting a\n");
+  fprintf(this->fp, "string up that just contains '0', and never changes. For others, like pipe1d, it makes perfect sense to \n");
+  fprintf(this->fp, "have a pipe for which you do not wish to animate the color.</p>\n");
+  fprintf(this->fp, "</p>\n");
   fprintf(this->fp, "<hr>\n");
 }
 

@@ -31,6 +31,7 @@ Contains code for input/output drivers.
 #include <fcntl.h> // for open(...)
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include <float.h>
 #include <sys/time.h>
 #include <sys/types.h>
@@ -41,8 +42,178 @@ Contains code for input/output drivers.
 #include "db.h"
 #include "iodriver.h"
 
-#include "sim.h"
-#include "simiodriver.h"
+//#include "sim.h"
+//#include "simiodriver.h"
+
+/*******************/
+class burnersim_t
+{
+private:
+  double fInputTemp;
+  double fFlowRate;
+  double fBurnerSetting;
+  double fCurrentOutputTemp;
+  double fLastOutputTemp;
+  double fLastBurnerSetting;
+  double fLastTempBeforeBurner;
+  double fLastInputTemp;
+  double fLastFlowRate;
+  bool fFirst;
+  double fLastTime;
+  double fDelay;
+  double fTau;
+  double fEfectiveBurnerSetting;
+  double *fBurnerHistory;
+  int current_history;
+public:
+  burnersim_t(double aInputTemp, double aFlowRate, double aBurnerSetting);
+  void set_input_temp(double val);
+  void set_burner(double val);
+  void set_flow_rate(double val);
+  double calcSteadyStateTemp(double inputTemp,
+                                     double inputFlow,
+                                     double burnerSetting);
+  double getValue();
+  double nextValue(double aTime, double newInputTemp,
+		  double newInputFlow, double newBurnerSetting);
+};
+
+/***********/
+
+class sim_io_driver_t : public io_driver_t
+{
+public:
+  FILE *fp;
+  FILE *fpout;
+  bool di_data[64];
+  bool do_data[64];
+  double ao_data[32];
+  double ai_data[32];
+  burnersim_t *burnsim;
+  react_drv_base_t *react;
+
+  sim_io_driver_t(react_drv_base_t *r);
+  void read(void);
+  bool get_di(int channel);
+  double get_ai(int channel);
+  void send_do(int channel, bool val);
+  void send_ao(int channel, double val);
+  void close(void);
+};
+/**------------------**/
+/*******************************************************/
+
+void burnersim_t::set_input_temp(double val)
+{
+  // Assume degrees centigrade.
+  // How about just a fixed delay for this to get to the burner.
+  fInputTemp = val;
+}
+
+/*******************************************************/
+
+burnersim_t::burnersim_t(double aInputTemp,
+		double aFlowRate, double aBurnerSetting)
+{
+  fLastBurnerSetting = aBurnerSetting;
+  fLastInputTemp = aInputTemp;
+  fLastFlowRate = aFlowRate;
+  fLastOutputTemp = calcSteadyStateTemp(fLastInputTemp,
+                                           fLastFlowRate,
+                                           fLastBurnerSetting);
+  //printf("starting output temp: %lf\n", fLastOutputTemp);
+  fInputTemp = aInputTemp;
+  fFlowRate = aFlowRate;
+  fBurnerSetting = aBurnerSetting;
+  fFirst = true;
+  fDelay = 0.0;
+  fTau = 0.3;
+}
+
+/*******************************************************/
+
+void burnersim_t::set_burner(double val)
+{
+  // Assume kilocalories / second
+  // We need to work on the parameters for the delay here.
+  // Possibly a fixed delay where nothing happens, then a
+  // ramp to the new value.
+  fBurnerSetting = val;
+}
+
+/*******************************************************/
+
+void burnersim_t::set_flow_rate(double val)
+{
+  // Assume liters / second
+  // Maybe no delay needed?
+  fFlowRate = val;
+}
+
+/*******************************************************/
+
+double burnersim_t::getValue()
+{
+  return fCurrentOutputTemp;
+}
+
+/*******************************************************/
+
+double burnersim_t::calcSteadyStateTemp(double inputTemp,
+                                     double inputFlow,
+                                     double burnerSetting)
+  {
+    // Flow Rate: Liters / sec
+    // Input Temp: degrees C
+    // Burner Setting in kilocalories / sec
+
+    return  inputTemp + ((10.0 * burnerSetting) / inputFlow);
+  }
+
+/*******************************************************/
+
+double burnersim_t::nextValue(double aTime, double newInputTemp,
+	       double newFlowRate, double newBurnerSetting)
+{
+  if (fFirst)
+  {
+    fLastTime = aTime;
+    fFirst = false;
+    return fLastOutputTemp;
+  }
+  if ((newInputTemp != fLastInputTemp) ||
+      (newFlowRate != fLastFlowRate) ||
+      (newBurnerSetting != fLastBurnerSetting))
+  {
+    //printf("New setting: %lf, %lf, %lf\n",
+//		    newInputTemp, newFlowRate, newBurnerSetting);
+  }
+
+  double deltaTime = aTime - fLastTime;
+  double steadyStateTemp =
+               calcSteadyStateTemp(fLastInputTemp,
+                                  fLastFlowRate,
+                                  fLastBurnerSetting);
+  double deltaTemp = steadyStateTemp - fLastOutputTemp;
+  double fraction = 1.0 - exp(-deltaTime/fTau);
+  fCurrentOutputTemp = fLastOutputTemp +
+      (deltaTemp * fraction);
+
+  fLastBurnerSetting = newBurnerSetting;
+  fLastInputTemp = newInputTemp;
+  fLastFlowRate = newFlowRate;
+  fLastOutputTemp = fCurrentOutputTemp;
+  fLastTime = aTime;
+  //double x = 0.125;
+  //printf("%lf, %lf, %lf, %lf, %lf, %lf\n", deltaTime, fraction,
+//		    deltaTemp, fLastBurnerSetting,
+//		    steadyStateTemp, fCurrentOutputTemp);
+  return fCurrentOutputTemp;
+}
+
+/*******************************************************/
+/**------------------**/
+
 
 /***********************************************************************/
 
@@ -182,45 +353,10 @@ bool sim_io_driver_t::get_di(int channel)
 
 void sim_io_driver_t::read(void)
 {
-  /*********
-  if (fp != NULL)
-  {
-    char line[300];
-    if (NULL != fgets(line, sizeof(line), fp))
-    {
-      for (int i=0; i < 8; i++)
-      {
-        di_data[i] = (line[i] == 'T');
-      }
-    }
-    else
-    {
-      for (int i=0; i < 8; i++)
-      {
-        di_data[i] = false;
-      }
-    }
-  }
-  //printf("Read: ");
-  for(int i=0; i < 8; i++)
-  {
-    //printf("%s ", di_data[i] ? "T": "F");
-  }
-  ***/
-
   //printf("Calling burner sim\n");
   ai_data[0] = burnsim->nextValue(react->get_time(), ao_data[0],
 		                   ao_data[1], ao_data[2]);
   //printf("new val = %lf\n", ai_data[0]);
-	  /**
-  if (fpout != NULL)
-  {
-    fprintf(fpout, "%lf\t %lf\t %lf\n",
-		  react->get_time(),
-		  ai_data[0],
-		  ao_data[2]);
-  }
-	/***/
 }
 
 

@@ -65,7 +65,7 @@ void bar_t::generate_doc(doc_object_base_t *dob)
 void bar_t::generate(plugin_data_t d, int argc, char **argv)
 {
   const char *bar_color = "blue";
-  const char *tag = argv[1];
+  const char *the_tag = argv[1];
   const char *the_color = argv[2];
   double x = atof(argv[3]);
   double y = atof(argv[4]);
@@ -156,18 +156,21 @@ void bar_t::generate(plugin_data_t d, int argc, char **argv)
                     n_instance, cx, y + height + (font_size * 1.1), font_size); 
 //---------------
 
-  char js_object_name[30];
-  snprintf(js_object_name, sizeof(js_object_name), "bar_obj_%03d", n_instance);
-
-  fprintf(d.js_fp, "var %s = new bar_t(\"bar_%03d\", \"bar_pv_%03d\", %lg, %lg, %lg, %lg, %lg);\n", 
+  if ((strlen(the_tag) > 0) && (0 != strcmp(the_tag, "null")))
+  {
+    char js_object_name[30];
+    snprintf(js_object_name, sizeof(js_object_name), "bar_obj_%03d", n_instance);
+    fprintf(d.js_fp, "var %s = new bar_t(\"bar_%03d\", \"bar_pv_%03d\", %lg, %lg, %lg, %lg, %lg);\n", 
                js_object_name, n_instance, n_instance, x, y, x+width, y+height, stroke_width); 
+    add_js_library("scales.js");
+    add_js_library("bar.js");
+    //add_svg_library("bar_lib.svg");
+    add_animation_object(the_tag, js_object_name);
+  }
+
 
   fprintf(d.svg_fp, "<!--  END insert for bar (%03d) -->\n", n_instance);
   fprintf(d.js_fp, "// --  END insert for bar (%03d)\n", n_instance);
-  add_js_library("scales.js");
-  add_js_library("bar.js");
-  //add_svg_library("bar_lib.svg");
-  add_animation_object(tag, js_object_name);
 
   n_instance++;
 }

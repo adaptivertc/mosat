@@ -273,7 +273,7 @@ const char *simple_pipe_t::get_name(void)
 
 void simple_pipe_t::generate_doc(doc_object_base_t *dob)
 {
-  dob->start("simple_pipe", "Simple 3d pipe with shading");
+  dob->start("simple_pipe", "Simple pipe with color gradients to give 3d look.");
   dob->param("Color of the pipe");
   dob->param("Width of the pipe");
   dob->param("X of the starting point of the pipe");
@@ -283,6 +283,16 @@ void simple_pipe_t::generate_doc(doc_object_base_t *dob)
   dob->param("Now, Repeat 5 and 6 as many times as needed to complete the pipe");
   dob->example("simple_pipe|gray|3|90|126|v|112|h|75|v|13.5|h|70|");
   dob->notes("You must alternate V and H, you can not have two Vs or two Hs in a row");
+  dob->notes("You can not animate the color of this pipe right now. It is more complicated "
+             "because there are three colors used: radial color gradient, vertical color "
+             "gradient, and horzontal color gradient, So, you would have to set up a list "
+             "of objects and then walk down the list changing the colors one at a time. "
+             "For now, if you need to animate the color of the pipe, use pipe1d. "
+             "With pipe1d, it was trivial to animate the color, since you can put all of the "
+             "segments in a group, then you just change the color of the group. "
+             "Sooner or later, I am sure somebody will make it work with 3d pipes, "
+             "it is just very tricky, and I am tackling other things first. "
+);
   dob->end();
 }
 

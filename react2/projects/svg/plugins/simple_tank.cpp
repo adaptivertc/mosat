@@ -111,8 +111,8 @@ const char *simple_tank_t::get_name(void)
 void simple_tank_t::generate_doc(doc_object_base_t *dob)
 {
   dob->start("simple_tank", "Either a standard pressure tank, or a cone take");
-  dob->param("Type (c = cone, p = pressure");
-  dob->param("tank color (both types_");
+  dob->param("Type (c = cone, p = pressure)");
+  dob->param("tank color (both types)");
   dob->param("X of upper left (both types)");
   dob->param("Y of upper left (both types)");
   dob->param("Width (both types)");
@@ -122,6 +122,7 @@ void simple_tank_t::generate_doc(doc_object_base_t *dob)
   dob->param("Cone width at bottom (cone only)");
   dob->example("simple_tank|c|black|30|10|40|110|1.5|25|3|");
   dob->example("simple_tank|p|gray|60|20|35|100|8|");
+  dob->notes("No animation");
   dob->end();
 }
 

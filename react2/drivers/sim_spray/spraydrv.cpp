@@ -1,6 +1,6 @@
 /************************************************************************
 This software is part of React, a control engine
-Copyright (C) 2005,2006 Donald Wayne Carr 
+Copyright (C) 2012 Donald Wayne Carr 
 
 This program is free software; you can redistribute it and/or modify 
 it under the terms of the GNU General Public License as published by 
@@ -113,7 +113,6 @@ void spraydrv_t::send_do(int aChannel, bool aVal)
   do_data[aChannel] = aVal;
 }
 
-
 /***********************************************************************/
 
 double spraydrv_t::get_ai(int aChannel)
@@ -154,7 +153,6 @@ double next_pressure(double tau, double steady_state_value,
   return last_value + ((steady_state_value - last_value) * fraction);
 }
 
-
 /***********************************************************************/
 
 void spraydrv_t::read(void)
@@ -180,7 +178,5 @@ void spraydrv_t::read(void)
   ai_data[1] = pressure; 
   last_time = now;
 }
-
-
 
 /*************************************************************e**********/

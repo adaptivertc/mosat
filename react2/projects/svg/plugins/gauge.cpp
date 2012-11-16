@@ -65,7 +65,7 @@ void gauge_t::generate_doc(doc_object_base_t *dob)
 void gauge_t::generate(plugin_data_t d, int argc, char **argv)
 {
   int gtype = atol(argv[1]);
-  const char *tag = argv[2];
+  const char *the_tag = argv[2];
   const char *color = argv[3];
   double x = atof(argv[4]);
   double y = atof(argv[5]);
@@ -82,11 +82,6 @@ void gauge_t::generate(plugin_data_t d, int argc, char **argv)
   fprintf(d.svg_fp, "<!--  START insert for gauge (%03d) -->\n", n_instance);
   fprintf(d.js_fp, "// --  START insert for gauge (%03d)\n", n_instance);
 
-  char js_object_name[30];
-  snprintf(js_object_name, sizeof(js_object_name), "gauge_obj_%03d", n_instance);
-
-  fprintf(d.js_fp, "var %s = new gauge_t(\"gauge_needle_%03d\", \"gauge_pv_%03d\", \"gauge_eu_%03d\", %lg, %lg, %lg);\n", 
-           js_object_name, n_instance, n_instance, n_instance, x, y, width); 
 
   if (gtype == 1)
   {
@@ -213,12 +208,21 @@ void gauge_t::generate(plugin_data_t d, int argc, char **argv)
                             n_instance, cx, cy + (width * (45.0/150.0)), width * (15.0/150.0));
   fprintf(d.svg_fp, "       alignment-baseline=\"middle\" text-anchor=\"middle\">cm</text>\n");
 
+  if ((strlen(the_tag) > 0) && (0 != strcmp(the_tag, "null")))
+  {
+    char js_object_name[30];
+    snprintf(js_object_name, sizeof(js_object_name), "gauge_obj_%03d", n_instance);
+
+    fprintf(d.js_fp, "var %s = new gauge_t(\"gauge_needle_%03d\", \"gauge_pv_%03d\","
+              " \"gauge_eu_%03d\", %lg, %lg, %lg);\n", 
+              js_object_name, n_instance, n_instance, n_instance, x, y, width); 
+    //add_svg_library("filter1.svg");
+    add_js_library("scales.js");
+    add_js_library("gauge.js");
+    add_animation_object(the_tag, js_object_name);
+  }
   fprintf(d.svg_fp, "<!--  END insert for gauge (%03d) -->\n", n_instance);
   fprintf(d.js_fp, "// --  END insert for gauge (%03d)\n", n_instance);
-  //add_svg_library("filter1.svg");
-  add_js_library("scales.js");
-  add_js_library("gauge.js");
-  add_animation_object(tag, js_object_name);
 
   n_instance++;
 }

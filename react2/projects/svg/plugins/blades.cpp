@@ -86,6 +86,8 @@ void blades_t::generate(plugin_data_t d, int argc, char **argv)
   else snprintf(str, sizeof(str), "transform=\"rotate(%d %lg,%lg)\"", angle, cx, cy);
 
   fprintf(d.svg_fp, "<!--  START insert for blades (%03d) -->\n", n_instance);
+  fprintf(d.js_fp, "// --  START insert for blades (%03d)\n", n_instance);
+
 
   fprintf(d.svg_fp, "<g id=\"%s\" fill=\"%s\" stroke=\"black\" stroke-width=\"%lg\" %s>\n", 
                   js_group_name, on_color,  0.3 * scale_factor, str);
@@ -106,11 +108,7 @@ void blades_t::generate(plugin_data_t d, int argc, char **argv)
   fprintf(d.svg_fp, "<rect x=\"%lg\" y=\"%lg\" width=\"%lg\" height=\"%lg\" stroke=\"black\" stroke-width=\"%lg\"/>\n",
                     cx, cy - (2.0 * scale_factor), shaft_length, 4.0 * scale_factor, 0.5 * scale_factor); 
 
-
   fprintf(d.svg_fp, "</g>\n");
-
-  fprintf(d.svg_fp, "<!--  END insert for blades (%03d) -->\n", n_instance);
-
 
   if ((strlen(the_tag) > 0) && (0 != strcmp(the_tag, "null")))
   {
@@ -120,6 +118,8 @@ void blades_t::generate(plugin_data_t d, int argc, char **argv)
     add_animation_object(the_tag, js_object_name);
   }
 
+  fprintf(d.svg_fp, "<!--  END insert for blades (%03d) -->\n", n_instance);
+  fprintf(d.js_fp, "// --  END insert for blades (%03d)\n", n_instance);
+
   n_instance++;
 }
-
