@@ -55,6 +55,12 @@ void background_t::generate_doc(doc_object_base_t *dob)
 
 void background_t::generate(plugin_data_t d, int argc, char **argv)
 {
+  if (argc != 2)
+  {
+    printf("There must be 2 arguments to background\n");
+    exit(-1);
+  }
+
   const char *color = argv[1];
   fprintf(d.svg_top_of_file_fp, "<!--  START insert background color -->\n");
  

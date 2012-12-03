@@ -110,26 +110,38 @@ void switch_t::generate(plugin_data_t d, int argc, char **argv)
      x1 + 75.0 * scale_factor, y1 + 18.6 * scale_factor, 18.0 * scale_factor);
 
 
-  fprintf(d.svg_fp, "<circle cx=\"%lg\" cy=\"%lg\" r=\"%lg\" stroke=\"darkgray\" stroke-width=\"1\" fill=\"gray\"/>\n",
-     cx, cy, 40.0 * scale_factor);
-  fprintf(d.svg_fp, "<circle cx=\"%lg\" cy=\"%lg\" r=\"%lg\" stroke=\"none\" fill=\"white\"/>\n",
-     cx, cy, 38.0 * scale_factor);
-  fprintf(d.svg_fp, "<circle cx=\"%lg\" cy=\"%lg\" r=\"%lg\" stroke=\"none\" fill=\"url(#grayRadialSwitch)\"/>\n",
-     cx, cy, 37.0 * scale_factor);
+  fprintf(d.svg_fp, "<circle cx=\"%lg\" cy=\"%lg\" r=\"%lg\" "
+              "stroke=\"darkgray\" stroke-width=\"1\" fill=\"gray\"/>\n",
+              cx, cy, 40.0 * scale_factor);
+  fprintf(d.svg_fp, "<circle cx=\"%lg\" cy=\"%lg\" r=\"%lg\" "
+                    "stroke=\"none\" fill=\"white\"/>\n",
+              cx, cy, 38.0 * scale_factor);
+  fprintf(d.svg_fp, "<circle cx=\"%lg\" cy=\"%lg\" r=\"%lg\" "
+                "stroke=\"none\" fill=\"url(#grayRadialSwitch)\"/>\n",
+              cx, cy, 37.0 * scale_factor);
 
-  fprintf(d.svg_fp, "<g id=\"%s\" transform=\"rotate(-45 %lg,%lg)\">\n", js_group_name, cx, cy);
-  fprintf(d.svg_fp, "  <circle id=\"c1\" cx=\"%lg\" cy=\"%lg\" r=\"%lg\" stroke=\"none\" fill=\"url(#grayLinearSwitch1)\"/>\n",
-     cx, cy, 30.0 * scale_factor);
-  fprintf(d.svg_fp, "  <rect id=\"r1\" x=\"%lg\" y=\"%lg\" width=\"%lg\" height=\"%lg\" rx=\"%lg\" ry=\"%lg\" fill=\"url(#grayLinearSwitch2)\" stroke=\"none\"/>\n", 
+  fprintf(d.svg_fp, "<g id=\"%s\" transform=\"rotate(-45 %lg,%lg)\">\n", 
+                   js_group_name, cx, cy);
+  fprintf(d.svg_fp, "  <circle id=\"c1\" cx=\"%lg\" cy=\"%lg\" r=\"%lg\" "
+             "stroke=\"none\" fill=\"url(#grayLinearSwitch1)\"/>\n",
+              cx, cy, 30.0 * scale_factor);
+  fprintf(d.svg_fp, "  <rect id=\"r1\" x=\"%lg\" y=\"%lg\" width=\"%lg\" height=\"%lg\" "
+               "rx=\"%lg\" ry=\"%lg\" fill=\"url(#grayLinearSwitch2)\" stroke=\"none\"/>\n", 
         x1 + (45.0 * scale_factor), y1 + (21.0 * scale_factor), 10.0 * scale_factor, 
            87.0 * scale_factor, 4.0 * scale_factor, 4.0 * scale_factor);
-  fprintf(d.svg_fp, "  <circle id=\"p1\" cx=\"%lg\" cy=\"%lg\" r=\"%lg\" stroke=\"none\" fill=\"white\"/>\n",
+  fprintf(d.svg_fp, "  <circle id=\"p1\" cx=\"%lg\" cy=\"%lg\" r=\"%lg\" "
+                    "stroke=\"none\" fill=\"white\"/>\n",
                  cx, y1 + (27.0 * scale_factor), 3.0 * scale_factor);
   fprintf(d.svg_fp, "</g>\n");
-  fprintf(d.svg_fp, "<rect id=\"rect_001\" x=\"%lg\"  y=\"%lg\" width=\"%lg\" height=\"%lg\" onclick=\"%s()\" visibility=\"hidden\" pointer-events=\"all\" onmouseover=\"this.style.cursor='pointer';\"/>\n", 
+  fprintf(d.svg_fp, "<rect id=\"rect_001\" x=\"%lg\"  y=\"%lg\" width=\"%lg\" height=\"%lg\" "
+                    "onclick=\"%s()\" visibility=\"hidden\" pointer-events=\"all\" "
+                    "onmouseover=\"this.style.cursor='pointer';\"/>\n", 
           x1, y1, 42.0 * scale_factor, 40.0 * scale_factor, js_click1_name);
-  fprintf(d.svg_fp, "<rect id=\"rect_001\" x=\"%lg\" y=\"%lg\" width=\"%lg\" height=\"%lg\" onclick=\"%s()\" visibility=\"hidden\" pointer-events=\"all\" onmouseover=\"this.style.cursor='pointer';\"/>\n", 
-          x1 + (58.0 * scale_factor), y1, (42.0 * scale_factor), 40.0 * scale_factor, js_click2_name);
+  fprintf(d.svg_fp, "<rect id=\"rect_001\" x=\"%lg\" y=\"%lg\" width=\"%lg\" height=\"%lg\" "
+                    "onclick=\"%s()\" visibility=\"hidden\" pointer-events=\"all\" "
+                    "onmouseover=\"this.style.cursor='pointer';\"/>\n", 
+          x1 + (58.0 * scale_factor), y1, (42.0 * scale_factor), 
+              40.0 * scale_factor, js_click2_name);
 
   /***********************/
   
@@ -146,7 +158,8 @@ void switch_t::generate(plugin_data_t d, int argc, char **argv)
   fprintf(d.js_fp, "  %s.interval_handler();\n", js_object_name);
   fprintf(d.js_fp, "}\n");
 
-  fprintf(d.js_fp, "var %s = new switch_t(\"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", %lg, %lg, \"%s()\", \"%s\", \"%s\");\n", 
+  fprintf(d.js_fp, "var %s = new switch_t(\"%s\", \"%s\", \"%s\", \"%s\", "
+                   "\"%s\", \"%s\", %lg, %lg, \"%s()\", \"%s\", \"%s\");\n", 
       js_object_name, tag, js_group_name, js_on_name, js_off_name, 
       on_color, off_color, cx, cy, js_handler_name, js_on_text_name, js_off_text_name); 
 

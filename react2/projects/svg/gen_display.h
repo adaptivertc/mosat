@@ -1,4 +1,7 @@
 
+
+enum rtsvg_param_t {rtsvg_X, rtsvg_Y, rtsvg_WIDTH, rtsvg_HEIGHT, rtsvg_TEXT};
+
 struct plugin_data_t
 {
   FILE *svg_fp;
@@ -57,6 +60,7 @@ public:
   virtual const char *get_name(void)=0;
   virtual void generate_doc(doc_object_base_t *doc_base)=0;
   virtual void generate(plugin_data_t d, int argc, char **argv)=0;
+  virtual rtsvg_param_t *param_types(int *n) {*n=0; return NULL;};
 };
 
 void add_js_library(const char *file_name);

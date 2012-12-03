@@ -63,6 +63,12 @@ void svg_header_t::generate_doc(doc_object_base_t *dob)
 
 void svg_header_t::generate(plugin_data_t d, int argc, char **argv)
 {
+  if (argc != 6)
+  {
+    printf("There must be 6 arguments to svg_header\n");
+    exit(-1);
+  }
+
   const char *title = argv[1];
   const char *x1 = argv[2];
   const char *y1 = argv[3];

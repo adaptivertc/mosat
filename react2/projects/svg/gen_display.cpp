@@ -39,13 +39,21 @@ static const char *sim_file="sim_pump.js";
 
 /*********************************/
 
+static const int MAX_JSOBJS = 200;
+static const int MAX_TAGS = MAX_JSOBJS;
+static const int MAX_JSLIBS = 200;
+static const int MAX_SVGLIBS = 200;
+static const int MAX_PLUGINS = 200;
+static const int MAX_ARG_OBJS = 50;
+int n_plugins = 0;
+gen_plugin_base_t *the_plugins[MAX_PLUGINS];
 static int n_objs = 0;
-static const char *js_objs[200];
-static const char *tags[200];
+static const char *js_objs[MAX_JSOBJS];
+static const char *tags[MAX_TAGS];
 static int n_js_libs = 0;
-static const char *js_lib_files[200];
+static const char *js_lib_files[MAX_JSLIBS];
 static int n_svg_libs = 0;
-static const char *svg_lib_files[200];
+static const char *svg_lib_files[MAX_SVGLIBS];
 
 struct obj_list_t 
 {
@@ -54,14 +62,14 @@ struct obj_list_t
 };
 
 static int max_argn = -1;
-static obj_list_t *arg_objs[50] = {
+static obj_list_t *arg_objs[MAX_ARG_OBJS] = {
 NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
 NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
 NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
 NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
 NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 }; 
-static int arg_count[50];
+static int arg_count[MAX_ARG_OBJS];
 
 /*********************************/
 void find_a_place_nearby(double *x,double *y, 
@@ -126,7 +134,7 @@ void find_a_place_nearby(double *x,double *y,
 
 void add_arg_object(int argn, const char *obj)
 {
-  if (argn >= 50)
+  if (argn >= MAX_ARG_OBJS)
   {
     printf("Max args exceeded (%d), exiting . . . \n", argn);
     exit(-1);
@@ -157,7 +165,7 @@ void add_js_library(const char *file_name)
       return;
     }
   }
-  if (n_js_libs >= 200)
+  if (n_js_libs >= MAX_JSLIBS)
   {
     printf("Max javascript libraries exceeded, exiting . . . \n");
     exit(-1);
@@ -177,7 +185,7 @@ void add_svg_library(const char *file_name)
       return;
     }
   }
-  if (n_svg_libs >= 200)
+  if (n_svg_libs >= MAX_SVGLIBS)
   {
     printf("Max SVG libraries exceeded, exiting . . . \n");
     exit(-1);
@@ -198,7 +206,7 @@ void add_animation_object(const char *the_tag, const char *the_js_object)
     return;
   }
   // Now make sure we have not exceeded the MAX.
-  if (n_objs >= 200)
+  if (n_objs >= MAX_JSOBJS)
   {
     printf("Max objects exceeded, exiting . . . \n");
     exit(-1);
@@ -215,6 +223,27 @@ static void gen_simulation(FILE *js_fp)
 {
   fprintf(js_fp, "// -- START insert simulation code --\n");
 
+  if (max_argn != -1)
+  {
+    // Only generate the array of arrays of objects if there is at least one argument. 
+    fprintf(js_fp, "var arg_objs = new Array(");
+    for (int i=0; i <= max_argn; i++)
+    {
+      fprintf(js_fp, "%s\n    [", i==0?"":",");
+      obj_list_t *tmp = arg_objs[i]; 
+      for (int j=0; tmp != NULL; j++)
+      {
+        fprintf(js_fp, "%s%s", j==0?"":",", tmp->obj);
+        tmp = tmp->next;
+      }
+      fprintf(js_fp, "]"); 
+    }
+    fprintf(js_fp, 
+           ");\n"
+       "var arg_tags;\n"
+       "var n_arg_cfg = 0;\n"
+      ); 
+  }
   fprintf(js_fp, "const update_objs = new Array(");
   for (int i=0; i < n_objs; i++)
   {
@@ -229,43 +258,103 @@ static void gen_simulation(FILE *js_fp)
   }
   fprintf(js_fp, ");\n"); 
 
-  fprintf(js_fp, "function update_objects()\n");
-  fprintf(js_fp, "{\n");
-  fprintf(js_fp, "  for (var i=0; i < update_objs.length; i++)\n");
-  fprintf(js_fp, "  {\n");
-  fprintf(js_fp, "    update_objs[i].update(sim.get_pv(update_tags[i]));\n");
-  fprintf(js_fp, "  }\n");
+  fprintf(js_fp, 
+       "function update_objects()\n"
+       "{\n"
+       "  for (var i=0; i < update_objs.length; i++)\n"
+       "  {\n"
+       "    update_objs[i].update(sim.get_pv(update_tags[i]));\n"
+       "  }\n"
+    );
+
+  if (max_argn != -1)
+  {
+    fprintf(js_fp, 
+       "  for (var i=0; (i < arg_objs.length); i++)\n"
+       "  {\n"
+       "    var aobjs = arg_objs[i]\n"
+       "    var one_val = sim.get_pv(arg_tags[i])\n"
+       "    for (var j=0; j < aobjs.length; j++)\n"
+       "    {\n"
+       "      aobjs[j].update(one_val);\n"
+       "    }\n"
+       "  }\n"
+      );
+  }
+
   fprintf(js_fp, "}\n");
   fprintf(js_fp, "\n");
 
-  fprintf(js_fp, "function send_output(tag, new_value)\n");
-  fprintf(js_fp, "{\n");
-  fprintf(js_fp, "  console.log(\"send_output, tag: \" + tag + \": \" + new_value);\n");
-  fprintf(js_fp, "  sim.set_pv(tag, new_value);\n");
+  fprintf(js_fp, 
+       "function send_output(tag, new_value)\n"
+       "{\n"
+       "  console.log(\"send_output, tag: \" + tag + \": \" + new_value);\n"
+       "  sim.set_pv(tag, new_value);\n"
+       "}\n"
+      "\n"
+    );
+
+  fprintf(js_fp, 
+     "function config_objects()\n"
+     "{\n"
+     "  var i;\n"
+     "  for (i=0; i < update_objs.length; i++)\n"
+     "  {\n"
+     "    console.log(\"config tag: \" + update_tags[i]);\n"
+     "    update_objs[i].init(sim.get_cfg(update_tags[i]));\n"
+     "  }\n"
+   );
+
+  if (max_argn != -1)
+  {
+    fprintf(js_fp, 
+      "  for (i=0; i < arg_objs.length; i++)\n"
+      "  {\n"
+      "    var aobjs = arg_objs[i]\n"
+      "    for (var j=0; j < aobjs.length; j++)\n"
+      "    {\n"
+      "      console.log(\"arg tag: \" + arg_tags[i]);\n"
+      "      aobjs[j].init(sim.get_cfg(arg_tags[i]));\n"
+      "    }\n"
+      "  }\n"
+     );
+  }
+
   fprintf(js_fp, "}\n");
   fprintf(js_fp, "\n");
 
-  fprintf(js_fp, "function config_objects()\n");
-  fprintf(js_fp, "{\n");
-  fprintf(js_fp, "  for (var i=0; i < update_objs.length; i++)\n");
-  fprintf(js_fp, "  {\n");
-  fprintf(js_fp, "    console.log(\"config tag: \" + update_tags[i]);\n");
-  fprintf(js_fp, "    update_objs[i].init(sim.get_cfg(update_tags[i]));\n");
-  fprintf(js_fp, "  }\n");
-  fprintf(js_fp, "}\n");
-  fprintf(js_fp, "\n");
-
-  fprintf(js_fp, "var sim_now=0.0;\n");
-  fprintf(js_fp, "function intervalHandler()\n");
-  fprintf(js_fp, "{\n");
-  fprintf(js_fp, "  sim_now+=0.1\n");
-  fprintf(js_fp, "  sim.update(sim_now);\n");
-  fprintf(js_fp, "  update_objects();\n");
-  fprintf(js_fp, "}\n");
-  fprintf(js_fp, "\n");
+  fprintf(js_fp, 
+    "var sim_now=0.0;\n"
+    "function intervalHandler()\n"
+    "{\n"
+    "  sim_now+=0.1\n"
+    "  sim.update(sim_now);\n"
+    "  update_objects();\n"
+    "}\n"
+    "\n"
+  );
 
   fprintf(js_fp, "function load()\n");
   fprintf(js_fp, "{\n");
+  if (max_argn != -1)
+  {
+    fprintf(js_fp, 
+      "  var argtmp = location.search.substr(1);\n"
+      "  arg_tags = argtmp.split('+');\n"
+      "  for (var i=0; i < arg_tags.length; i++)\n"
+      "  {\n"
+      "    console.log(\"arg_tags[\" + i +  \"]: \" + arg_tags[i])\n"
+      "  }\n"
+      "  for (var i=0; (i < arg_objs.length); i++)\n"
+      "  {\n"
+      "    var aobjs = arg_objs[i]\n"
+      "    for (var j=0; j < aobjs.length; j++)\n"
+      "    {\n"
+      "      console.log(\"arg objs[\" + i +\"][\" + j + \"]: \" + aobjs[j]);\n"
+      "    }\n"
+      "  }\n"
+    );
+  }
   fprintf(js_fp, "  config_objects();\n");
   fprintf(js_fp, "  update_objects();\n");
   //fprintf(js_fp, "  pump_1_timeout();\n");
@@ -318,9 +407,8 @@ static void gen_ajax_animation(FILE *js_fp)
     fprintf(js_fp, ");\n"); 
   }
 
-  if (max_argn >= 0)
+  if (max_argn != -1)
   {
-
     // Only generate the array of arrays of objects if there is at least one argument. 
     fprintf(js_fp, "var arg_objs = new Array(");
     for (int i=0; i <= max_argn; i++)
@@ -335,12 +423,14 @@ static void gen_ajax_animation(FILE *js_fp)
       fprintf(js_fp, "]"); 
     }
     fprintf(js_fp, ");\n"); 
-    fprintf(js_fp, "arg_update_hrf = \"http://\" + location.hostname + \"/react/tag\" + location.search;\n");
-    fprintf(js_fp, "arg_config_hrf = \"http://\" + location.hostname + \"/react/config?\";\n");
-    fprintf(js_fp, "var arg_update_xReq;\n");
-    fprintf(js_fp, "var arg_config_xReq;\n");
-    fprintf(js_fp, "var arg_tags;\n"); 
-    fprintf(js_fp, "var n_arg_cfg = 0;\n");
+    fprintf(js_fp, 
+      "arg_update_hrf = \"http://\" + location.hostname + \"/react/tag\" + location.search;\n"
+      "arg_config_hrf = \"http://\" + location.hostname + \"/react/config?\";\n"
+      "var arg_update_xReq;\n"
+      "var arg_config_xReq;\n"
+      "var arg_tags;\n"
+      "var n_arg_cfg = 0;\n"
+    );
   }
 
 
@@ -352,128 +442,140 @@ static void gen_ajax_animation(FILE *js_fp)
     fprintf(js_fp, "var config_xReq;\n");
     fprintf(js_fp, "var n_cfg = 0;\n");
 
-    fprintf(js_fp, "function send_output(tag, val)\n");
-    fprintf(js_fp, "{\n");
-    fprintf(js_fp, "  var path = \"react/output?\" + tag + \"+\" + val;\n");
-    fprintf(js_fp, "  console.log(\"send_output(\" + tag + \", \" + val + \")\");\n");
-    fprintf(js_fp, "  console.log(path);\n");
-    fprintf(js_fp, "  var post_request;\n");
-    fprintf(js_fp, "  post_request = new XMLHttpRequest();\n");
-    //fprintf(js_fp, "  post_request.open(\"POST\",\"react/send\",true);\n");
-    fprintf(js_fp, "  post_request.open(\"POST\",path,true);\n");
-    fprintf(js_fp, "  post_request.setRequestHeader(\"Content-type\",\n");
-    fprintf(js_fp, "           \"application/x-www-form-urlencoded\");\n");
-    fprintf(js_fp, "  post_request.send();\n");
-    fprintf(js_fp, "}\n");
-
-    fprintf(js_fp, "function on_config_response()\n");
-    fprintf(js_fp, "{\n");
-    fprintf(js_fp, "  if (config_xReq.readyState != 4)  { return; }\n");
-    fprintf(js_fp, "  console.log(\"config response: \" + config_xReq.responseText);\n");
-    fprintf(js_fp, "  var val = JSON.parse(config_xReq.responseText);\n");
-    fprintf(js_fp, "  update_objs[n_cfg].init(val);\n");
-  
-    fprintf(js_fp, "  n_cfg++;\n");
-    fprintf(js_fp, "  if (n_cfg >= update_tags.length) \n");
-    fprintf(js_fp, "  {\n");
-    fprintf(js_fp, "    config_xReq.abort();\n");
-    fprintf(js_fp, "    return;\n"); 
-    fprintf(js_fp, "  }\n"); 
-    fprintf(js_fp, "  console.log(\"config tag: \" + update_tags[n_cfg])\n");
     fprintf(js_fp, 
-       "  config_xReq.open(\"GET\", react_config_hrf + update_tags[n_cfg], true);\n");
-    fprintf(js_fp, "  config_xReq.send(null);\n");
-    fprintf(js_fp, "}\n");
+      "function send_output(tag, val)\n"
+      "{\n"
+      "  var path = \"react/output?\" + tag + \"+\" + val;\n"
+      "  console.log(\"send_output(\" + tag + \", \" + val + \")\");\n"
+      "  console.log(path);\n"
+      "  var post_request;\n"
+      "  post_request = new XMLHttpRequest();\n"
+    //  "  post_request.open(\"POST\",\"react/send\",true);\n"
+      "  post_request.open(\"POST\",path,true);\n"
+      "  post_request.setRequestHeader(\"Content-type\",\n"
+      "           \"application/x-www-form-urlencoded\");\n"
+      "  post_request.send();\n"
+      "}\n"
+    );
+
+    fprintf(js_fp, 
+      "function on_config_response()\n"
+      "{\n"
+      "  if (config_xReq.readyState != 4)  { return; }\n"
+      "  console.log(\"config response: \" + config_xReq.responseText);\n"
+      "  var val = JSON.parse(config_xReq.responseText);\n"
+      "  update_objs[n_cfg].init(val);\n"
+      "  \n"
+      "  n_cfg++;\n"
+      "  if (n_cfg >= update_tags.length) \n"
+      "  {\n"
+      "    config_xReq.abort();\n"
+      "    return;\n"
+      "  }\n"
+      "  console.log(\"config tag: \" + update_tags[n_cfg])\n"
+      "  config_xReq.open(\"GET\", react_config_hrf + update_tags[n_cfg], true);\n"
+      "  config_xReq.send(null);\n"
+      "}\n"
+    );
   }
 
-  if (max_argn >= 0)
+  if (max_argn != -1)
   {
-    fprintf(js_fp, "function on_arg_config_response()\n");
-    fprintf(js_fp, "{\n");
-    fprintf(js_fp, "  if (arg_config_xReq.readyState != 4)  { return; }\n");
-    fprintf(js_fp, "  console.log(\"arg config response: \" + arg_config_xReq.responseText);\n");
-    fprintf(js_fp, "  var val = JSON.parse(arg_config_xReq.responseText);\n");
-    fprintf(js_fp, "    var aobjs = arg_objs[n_arg_cfg]\n");
-    fprintf(js_fp, "    for (var j=0; j < aobjs.length; j++)\n");
-    fprintf(js_fp, "    {\n");
-    fprintf(js_fp, "      aobjs[j].init(val);\n");
-    fprintf(js_fp, "    }\n");
-  
-    fprintf(js_fp, "  n_arg_cfg++;\n");
-    fprintf(js_fp, "  if (n_arg_cfg >= arg_tags.length) \n");
-    fprintf(js_fp, "  {\n");
-    fprintf(js_fp, "    arg_config_xReq.abort();\n");
-    fprintf(js_fp, "    return;\n"); 
-    fprintf(js_fp, "  }\n"); 
     fprintf(js_fp, 
-     "  arg_config_xReq.open(\"GET\", arg_config_hrf + arg_tags[n_arg_cfg], true);\n");
-    fprintf(js_fp, "  arg_config_xReq.send(null);\n");
-    fprintf(js_fp, "}\n");
+      "function on_arg_config_response()\n"
+      "{\n"
+      "  if (arg_config_xReq.readyState != 4)  { return; }\n"
+      "  console.log(\"arg config response: \" + arg_config_xReq.responseText);\n"
+      "  var val = JSON.parse(arg_config_xReq.responseText);\n"
+      "    var aobjs = arg_objs[n_arg_cfg]\n"
+      "    for (var j=0; j < aobjs.length; j++)\n"
+      "    {\n"
+      "      aobjs[j].init(val);\n"
+      "    }\n"
+      "    \n"
+      "  n_arg_cfg++;\n"
+      "  if (n_arg_cfg >= arg_tags.length) \n"
+      "  {\n"
+      "    arg_config_xReq.abort();\n"
+      "    return;\n"
+      "  }\n"
+      "  arg_config_xReq.open(\"GET\", arg_config_hrf + arg_tags[n_arg_cfg], true);\n"
+      "  arg_config_xReq.send(null);\n"
+      "}\n"
+     );
 
-    fprintf(js_fp, "function update_arg_objects(objs, vals)\n");
-    fprintf(js_fp, "{\n");
-    fprintf(js_fp, "  for (var i=0; (i < vals.length) && (i < objs.length); i++)\n");
-    fprintf(js_fp, "  {\n");
-    fprintf(js_fp, "    var aobjs = arg_objs[i]\n");
-    fprintf(js_fp, "    for (var j=0; j < aobjs.length; j++)\n");
-    fprintf(js_fp, "    {\n");
-    fprintf(js_fp, "      aobjs[j].update(vals[i]);\n");
-    fprintf(js_fp, "    }\n");
-    fprintf(js_fp, "  }\n");
-    fprintf(js_fp, "}\n");
-    fprintf(js_fp, "function on_arg_update_response()\n");
-    fprintf(js_fp, "{\n");
-    fprintf(js_fp, "  if (arg_update_xReq.readyState != 4)  { return; }\n");
-    fprintf(js_fp, "  var val = JSON.parse(arg_update_xReq.responseText);\n");
-    fprintf(js_fp, "  update_arg_objects(arg_objs, val);\n");
-    fprintf(js_fp, "  arg_update_xReq.abort(); // set the ready state back to 0\n");
-    fprintf(js_fp, "}\n");
+    fprintf(js_fp, 
+      "function update_arg_objects(objs, vals)\n"
+      "{\n"
+      "  for (var i=0; (i < vals.length) && (i < objs.length); i++)\n"
+      "  {\n"
+      "    var aobjs = arg_objs[i]\n"
+      "    for (var j=0; j < aobjs.length; j++)\n"
+      "    {\n"
+      "      aobjs[j].update(vals[i]);\n"
+      "    }\n"
+      "  }\n"
+      "}\n"
+      "function on_arg_update_response()\n"
+      "{\n"
+      "  if (arg_update_xReq.readyState != 4)  { return; }\n"
+      "  var val = JSON.parse(arg_update_xReq.responseText);\n"
+      "  update_arg_objects(arg_objs, val);\n"
+      "  arg_update_xReq.abort(); // set the ready state back to 0\n"
+      "}\n"
+    );
   }
   
 
   if (n_objs > 0)
   {
-    //fprintf(js_fp, "var sim_val = 20;\n");
-    fprintf(js_fp, "function on_update_response()\n");
-    fprintf(js_fp, "{\n");
-    fprintf(js_fp, "  if (update_xReq.readyState != 4)  { return; }\n");
-    fprintf(js_fp, "  var val = JSON.parse(update_xReq.responseText);\n");
-    fprintf(js_fp, "  //console.log(\"response: \" + update_xReq.responseText);\n");
-    fprintf(js_fp, "  for (var i=0; i < update_objs.length; i++)\n");
-    fprintf(js_fp, "  {\n");
-    //fprintf(js_fp, "    //console.log(\"update_objs[\" + i + \"] = \" + update_objs[i] + \"sim_val: \" + sim_val);\n");
-    //fprintf(js_fp, "    //update_objs[i].update(sim_val + (i * 5));\n");
-    //fprintf(js_fp, "    //console.log(\"val: \" + val[i]);\n");
-    fprintf(js_fp, "    update_objs[i].update(val[i]);\n");
-    //fprintf(js_fp, "    sim_val++;\n");
-    //fprintf(js_fp, "    if (sim_val==100)\n");
-    //fprintf(js_fp, "    {\n");
-    //fprintf(js_fp, "      sim_val=0\n");
-    //fprintf(js_fp, "    }\n");
+    fprintf(js_fp, 
+    //  "var sim_val = 20;\n"
+      "function on_update_response()\n"
+      "{\n"
+      "  if (update_xReq.readyState != 4)  { return; }\n"
+      "  var val = JSON.parse(update_xReq.responseText);\n"
+      "  //console.log(\"response: \" + update_xReq.responseText);\n"
+      "  for (var i=0; i < update_objs.length; i++)\n"
+      "  {\n"
+    //  "    //console.log(\"update_objs[\" + i + \"] = \" + update_objs[i] + \"sim_val: \" + sim_val);\n"
+    //  "    //update_objs[i].update(sim_val + (i * 5));\n"
+    //  "    //console.log(\"val: \" + val[i]);\n"
+      "    update_objs[i].update(val[i]);\n"
+    //  "    sim_val++;\n"
+    //  "    if (sim_val==100)\n"
+    //  "    {\n"
+    //  "      sim_val=0\n"
+    //  "    }\n"
            
-    fprintf(js_fp, "  }\n");
-    fprintf(js_fp, "  update_xReq.abort(); // set the ready state back to 0\n");
-    fprintf(js_fp, "}\n");
-    fprintf(js_fp, "\n");
+      "  }\n"
+      "  update_xReq.abort(); // set the ready state back to 0\n"
+      "}\n"
+      "\n"
+    );
   }
 
   fprintf(js_fp, "function intervalHandler()\n");
   fprintf(js_fp, "{\n");
   if (n_objs > 0)
   {
-    fprintf(js_fp, "  if (update_xReq.readyState == 0)\n");  
-    fprintf(js_fp, "  {\n");
-    fprintf(js_fp, "    update_xReq.open(\"GET\", react_update_hrf, true);\n");
-    fprintf(js_fp, "    update_xReq.send(null);\n");
-    fprintf(js_fp, "  }\n");
+    fprintf(js_fp, 
+      "  if (update_xReq.readyState == 0)\n"
+      "  {\n"
+      "    update_xReq.open(\"GET\", react_update_hrf, true);\n"
+      "    update_xReq.send(null);\n"
+      "  }\n"
+     );
   }
-  if (max_argn >= 0)
+  if (max_argn != -1)
   {
-    fprintf(js_fp, "  if (arg_update_xReq.readyState == 0)\n");  
-    fprintf(js_fp, "  {\n");
-    fprintf(js_fp, "    arg_update_xReq.open(\"GET\", arg_update_hrf, true);\n");
-    fprintf(js_fp, "    arg_update_xReq.send(null);\n");
-    fprintf(js_fp, "  }\n");
+    fprintf(js_fp, 
+      "  if (arg_update_xReq.readyState == 0)\n"
+      "  {\n"
+      "    arg_update_xReq.open(\"GET\", arg_update_hrf, true);\n"
+      "    arg_update_xReq.send(null);\n"
+      "  }\n"
+     );
   }
   fprintf(js_fp, "}\n");
   fprintf(js_fp, "\n");
@@ -482,46 +584,53 @@ static void gen_ajax_animation(FILE *js_fp)
   fprintf(js_fp, "{\n");
   if (n_objs > 0)
   {
-    fprintf(js_fp, "  update_xReq = new XMLHttpRequest();\n");
-    fprintf(js_fp, "  update_xReq.onreadystatechange = on_update_response;\n");
-    fprintf(js_fp, "  if (update_tags.length > 0)\n"); 
-    fprintf(js_fp, "  {\n");
-    fprintf(js_fp, "    console.log(\"config tag: \" + update_tags[0])\n");
-    fprintf(js_fp, "    config_xReq = new XMLHttpRequest();\n");
-    fprintf(js_fp, "    config_xReq.onreadystatechange = on_config_response;\n");
-    fprintf(js_fp, "    config_xReq.open(\"GET\", react_config_hrf + update_tags[0], true);\n");
-    fprintf(js_fp, "    config_xReq.send(null);\n");
-    fprintf(js_fp, "  }\n");
+    fprintf(js_fp, 
+      "  update_xReq = new XMLHttpRequest();\n"
+      "  update_xReq.onreadystatechange = on_update_response;\n"
+      "  if (update_tags.length > 0)\n"
+      "  {\n"
+      "    console.log(\"config tag: \" + update_tags[0])\n"
+      "    config_xReq = new XMLHttpRequest();\n"
+      "    config_xReq.onreadystatechange = on_config_response;\n"
+      "    config_xReq.open(\"GET\", react_config_hrf + update_tags[0], true);\n"
+      "    config_xReq.send(null);\n"
+      "  }\n"
+    );
   }
-  if (max_argn >= 0)
+  if (max_argn != -1)
   {
-    fprintf(js_fp, "  arg_update_xReq = new XMLHttpRequest();\n");
-    fprintf(js_fp, "  arg_update_xReq.onreadystatechange = on_arg_update_response;\n");
-    fprintf(js_fp, "  console.log(\"arg_update_hrf: \" + arg_update_hrf)\n");
-    fprintf(js_fp, "  var argtmp = location.search.substr(1);\n");
-    fprintf(js_fp, "  arg_tags = argtmp.split('+');\n");
-    fprintf(js_fp, "  for (var i=0; i < arg_tags.length; i++)\n");
-    fprintf(js_fp, "  {\n");
-    fprintf(js_fp, "    console.log(\"arg_tags[\" + i +  \"]: \" + arg_tags[i])\n");
-    fprintf(js_fp, "  }\n");
-    fprintf(js_fp, "  for (var i=0; (i < arg_objs.length); i++)\n");
-    fprintf(js_fp, "  {\n");
-    fprintf(js_fp, "    var aobjs = arg_objs[i]\n");
-    fprintf(js_fp, "    for (var j=0; j < aobjs.length; j++)\n");
-    fprintf(js_fp, "    {\n");
-    fprintf(js_fp, "      console.log(\"arg objs[\" + i +\"][\" + j + \"]: \" + aobjs[j]);\n");
-    fprintf(js_fp, "    }\n");
-    fprintf(js_fp, "  }\n");
-    fprintf(js_fp, "  if (arg_tags.length > 0)\n"); 
-    fprintf(js_fp, "  {\n");
-    fprintf(js_fp, "    arg_config_xReq = new XMLHttpRequest();\n");
-    fprintf(js_fp, "    arg_config_xReq.onreadystatechange = on_arg_config_response;\n");
-    fprintf(js_fp, "    arg_config_xReq.open(\"GET\", arg_config_hrf + arg_tags[0], true);\n");
-    fprintf(js_fp, "    arg_config_xReq.send(null);\n");
-    fprintf(js_fp, "  }\n");
+    fprintf(js_fp, 
+      "  arg_update_xReq = new XMLHttpRequest();\n"
+      "  arg_update_xReq.onreadystatechange = on_arg_update_response;\n"
+      "  console.log(\"arg_update_hrf: \" + arg_update_hrf)\n"
+      "  var argtmp = location.search.substr(1);\n"
+      "  arg_tags = argtmp.split('+');\n"
+      "  for (var i=0; i < arg_tags.length; i++)\n"
+      "  {\n"
+      "    console.log(\"arg_tags[\" + i +  \"]: \" + arg_tags[i])\n"
+      "  }\n"
+      "  for (var i=0; (i < arg_objs.length); i++)\n"
+      "  {\n"
+      "    var aobjs = arg_objs[i]\n"
+      "    for (var j=0; j < aobjs.length; j++)\n"
+      "    {\n"
+      "      console.log(\"arg objs[\" + i +\"][\" + j + \"]: \" + aobjs[j]);\n"
+      "    }\n"
+      "  }\n"
+      "  if (arg_tags.length > 0)\n"
+      "  {\n"
+      "    arg_config_xReq = new XMLHttpRequest();\n"
+      "    arg_config_xReq.onreadystatechange = on_arg_config_response;\n"
+      "    arg_config_xReq.open(\"GET\", arg_config_hrf + arg_tags[0], true);\n"
+      "    arg_config_xReq.send(null);\n"
+      "  }\n"
+     );
   }
-  fprintf(js_fp, "  console.log(\"react_update_hrf = \" + react_update_hrf);\n");
-  fprintf(js_fp, "  console.log(\"react_config_hrf = \" + react_config_hrf);\n");
+  if (n_objs > 0)
+  {
+    fprintf(js_fp, "  console.log(\"react_update_hrf = \" + react_update_hrf);\n");
+    fprintf(js_fp, "  console.log(\"react_config_hrf = \" + react_config_hrf);\n");
+  }
 
   fprintf(js_fp, "  var interval = setInterval(\"intervalHandler()\", 200);\n");
   fprintf(js_fp, "};\n");
@@ -602,7 +711,6 @@ static void do_gen(const char *fname)
   }
   else
   {
-    //add_js_library("sim_pump.js");
     add_js_library(sim_file);
     printf("Generating simulator . . . \n");
     gen_simulation(js_fp);
@@ -681,22 +789,24 @@ static void gen_final_file(const char *fname)
 
   if (popup_on)
   {
-    fprintf(fp, "var popupobj=document.getElementById(\"popup\");\n");
-    fprintf(fp, "function show_main()\n");
-    fprintf(fp, "{\n");
-    fprintf(fp, "  reactmainobj.parentNode.appendChild(reactmainobj);\n");
-    fprintf(fp, "}\n");
-    fprintf(fp, "function show_popup(x,y,text_on, text_off, text_tag)\n");
-    fprintf(fp, "{\n");
-    fprintf(fp, "  popupobj.setAttribute(\"transform\", \"translate(\" + x +\",\" + y +\")\");\n");
-    fprintf(fp, "  popupobj.parentNode.appendChild(popupobj);\n");
-    fprintf(fp, "  var onobj=document.getElementById(\"popup_on\");\n");
-    fprintf(fp, "  onobj.textContent=text_on;\n");
-    fprintf(fp, "  var offobj=document.getElementById(\"popup_off\");\n");
-    fprintf(fp, "  offobj.textContent=text_off;\n");
-    fprintf(fp, "  var tagobj=document.getElementById(\"popup_tag\");\n");
-    fprintf(fp, "  tagobj.textContent=text_tag;\n");
-    fprintf(fp, "}\n");
+    fprintf(fp, 
+      "var popupobj=document.getElementById(\"popup\");\n"
+      "function show_main()\n"
+      "{\n"
+      "  reactmainobj.parentNode.appendChild(reactmainobj);\n"
+      "}\n"
+      "function show_popup(x,y,text_on, text_off, text_tag)\n"
+      "{\n"
+      "  popupobj.setAttribute(\"transform\", \"translate(\" + x +\",\" + y +\")\");\n"
+      "  popupobj.parentNode.appendChild(popupobj);\n"
+      "  var onobj=document.getElementById(\"popup_on\");\n"
+      "  onobj.textContent=text_on;\n"
+      "  var offobj=document.getElementById(\"popup_off\");\n"
+      "  offobj.textContent=text_off;\n"
+      "  var tagobj=document.getElementById(\"popup_tag\");\n"
+      "  tagobj.textContent=text_tag;\n"
+      "}\n"
+    );
   }
 
   for (int i=0; i < n_js_libs; i++)
@@ -717,15 +827,12 @@ static void gen_final_file(const char *fname)
 
 /********************************/
 
-#define MAX_PLUGINS (100)
-int n_plugins = 0;
-gen_plugin_base_t *mi_objs[MAX_PLUGINS];
 
 static gen_plugin_base_t *get_plugin(const char *type)
 {
   for (int i=0; i < n_plugins; i++)
   {
-    if (0 == strcmp(mi_objs[i]->get_name(), type)) return mi_objs[i];
+    if (0 == strcmp(the_plugins[i]->get_name(), type)) return the_plugins[i];
   }
   return NULL;
 }
@@ -734,30 +841,32 @@ static gen_plugin_base_t *get_plugin(const char *type)
 
 void print_help()
 {
-  printf("Usage: gen_display [-f <config-file-name>] [-d <plugin-director>]\n");
-  printf("                   [-o <output-file-name>] [-react] [-sim]\n");
-  printf("Run the display builder (gen_display)\n\n");
-  printf("  -d   use an alternate directory for the plugin directory.\n");
-  printf("       The -d command must be followed by a plugin directory.\n");
-  printf("       This will be used as the plugin directory, in place of\n");
-  printf("       the default of \"./plugins/\".\n");
-  printf("  -f   use an alternate configuration file for the display.\n");
-  printf("       The -f command must be followed by a file name.\n");
-  printf("       This will be used as the configuration file name, in place of\n");
-  printf("       the default of \"display.txt\".\n");
-  printf("  -o   use an alternate output file name for the final output.\n");
-  printf("       The -o command must be followed by a file name.\n");
-  printf("       This will be used as the output file name, in place of\n");
-  printf("       the default of \"dtest.svg\".\n");
-  printf("  -react   option tells gen_display to generate Ajax code to connect to\n");
-  printf("           REACT (via Apache)  for configuration and point value information\n");
-  printf("  -sim     option tells gen_display to generate a simulator\n");
-  printf("           for configuration and point value information\n");
-  printf("             default sim file is: sim_pump.js\n");
-  printf("  -sim_file same as -sim but, with the sim file specified in \n");
-  printf("            the next argument\n");
-  printf("  -popup   option enables popups for valves, pumps, etc.\n");
-  printf("\n");
+  printf(
+    "Usage: gen_display [-f <config-file-name>] [-d <plugin-director>]\n"
+    "                   [-o <output-file-name>] [-react] [-sim]\n"
+    "Run the display builder (gen_display)\n\n"
+    "  -d   use an alternate directory for the plugin directory.\n"
+    "       The -d command must be followed by a plugin directory.\n"
+    "       This will be used as the plugin directory, in place of\n"
+    "       the default of \"./plugins/\".\n"
+    "  -f   use an alternate configuration file for the display.\n"
+    "       The -f command must be followed by a file name.\n"
+    "       This will be used as the configuration file name, in place of\n"
+    "       the default of \"display.txt\".\n"
+    "  -o   use an alternate output file name for the final output.\n"
+    "       The -o command must be followed by a file name.\n"
+    "       This will be used as the output file name, in place of\n"
+    "       the default of \"dtest.svg\".\n"
+    "  -react   option tells gen_display to generate Ajax code to connect to\n"
+    "           REACT (via Apache)  for configuration and point value information\n"
+    "  -sim     option tells gen_display to generate a simulator\n"
+    "           for configuration and point value information\n"
+    "             default sim file is: sim_pump.js\n"
+    "  -sim_file same as -sim but, with the sim file specified in \n"
+    "            the next argument\n"
+    "  -popup   option enables popups for valves, pumps, etc.\n"
+    "\n"
+  );
 }
 
 /*********************************/
@@ -768,7 +877,6 @@ int main(int argc, char *argv[])
   struct dirent *dent;
   void *handle;
   char *error;
-  //mi_base_t *mi_objs[100];
   crear_objeto_t cofn;
   int i;
 
@@ -898,6 +1006,7 @@ int main(int argc, char *argv[])
     if (dent->d_type != DT_REG)
     {
       //continue;
+      // Comented out because on some VMs does not ruturn DT_REG
     }
 
     int len = strlen(dent->d_name);
@@ -914,9 +1023,6 @@ int main(int argc, char *argv[])
       // Not a shared object file, IGNORE
       continue;
     }
-
-    //printf("ext = %s\n", ext);
-    //printf("File name = %s\n", dent->d_name);
 
     snprintf(sofile, sizeof(sofile), "%s/%s", dir_name, dent->d_name);
 
@@ -940,8 +1046,16 @@ int main(int argc, char *argv[])
       fprintf (stderr, "%s\n", error);
       continue;
     }
-    mi_objs[n_plugins] = cofn();
-    n_plugins++;
+    if (n_plugins < MAX_PLUGINS)
+    {
+      the_plugins[n_plugins] = cofn();
+      n_plugins++;
+    }
+    else
+    {
+      printf("Maximum number of plugins exceeded, exiting . . . . \n");
+      exit(-1);
+    }
 
   }
   printf ("found %d plugins!!!\n", n_plugins);
@@ -950,34 +1064,45 @@ int main(int argc, char *argv[])
   FILE *docfp;
   if (doc_on)
   {
-     if (html_on)
-     {
-       printf("generating html documentation\n");
-       doc_object = new doc_html_object_t();
-     }
-     else
-     {
-       printf("generating text documentation\n");
-       doc_object = new doc_text_object_t();
-     }
-     docfp = fopen(output_name, "w");
-     if (docfp == NULL)
-     {
-       perror(output_name);
-     }
-     doc_object->set_fp(docfp);
-     doc_object->header();
+    if (html_on)
+    {
+      printf("generating html documentation\n");
+      doc_object = new doc_html_object_t();
+    }
+    else
+    {
+      printf("generating text documentation\n");
+      doc_object = new doc_text_object_t();
+    }
+    docfp = fopen(output_name, "w");
+    if (docfp == NULL)
+    {
+      perror(output_name);
+    }
+    doc_object->set_fp(docfp);
+    doc_object->header();
   }
+
   // Ok, probamos todos de los objetos para ver que si funcionan.
   for (i=0; i < n_plugins; i++)
   {
-    printf("plugin[%d]-handles objects of type: %s\n", i+1, mi_objs[i]->get_name());
+    printf("plugin[%d]-handles objects of type: %s\n", i+1, the_plugins[i]->get_name());
+    rtsvg_param_t *params;
+    int n_params;
+    params = the_plugins[i]->param_types(&n_params);
+    if (params != NULL)
+    {
+      printf("Has param types defined\n");
+    }
+    else
+    {
+      printf("param_types: NULL\n");
+    }
     if (doc_on)
     {
-      printf("generating doc for %s\n", mi_objs[i]->get_name());
-      mi_objs[i]->generate_doc(doc_object);
+      printf("generating doc for %s\n", the_plugins[i]->get_name());
+      the_plugins[i]->generate_doc(doc_object);
     }
-    //convertir_uno(mi_objs[i], "Teacher, esto es una prueba MUY MUY MUY tonta");
   }
   printf("\n");
 
@@ -992,7 +1117,7 @@ int main(int argc, char *argv[])
   printf("Output file is: %s\n", output_name);
 
   do_gen(config_name);
-  if (max_argn >= 0)
+  if (max_argn != -1)
   {
     bool args_ok = true;
     for (int i=0; i <= max_argn; i++)
@@ -1014,15 +1139,10 @@ int main(int argc, char *argv[])
 
   gen_final_file(output_name);
 
-  //char cmd[300];
-  //snprintf(cmd, sizeof(cmd), "sudo cp %s /var/www/", output_name); 
-  //printf("%s\n", cmd);
-  //system(cmd);
-
   // Ok, borrar todos de los objetos para ver que funciona los destructores.
   for (i=0; i < n_plugins; i++)
   {
-    delete(mi_objs[i]);
+    delete(the_plugins[i]);
   }
   printf("\n\n");
 
