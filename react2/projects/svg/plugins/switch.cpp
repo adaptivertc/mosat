@@ -97,13 +97,13 @@ void switch_t::generate(plugin_data_t d, int argc, char **argv)
 
 //  <rect id="rect_001" x="0" y="0" rx="3" ry="3" width="100" height="105" fill="lightgray" stroke="darkgray" stroke-width="1"/>
 
-  fprintf(d.svg_fp, "<rect  id=\"%s\" x=\"%lg\" y=\"%lg\" rx=\"%lg\" ry=\"%lg\" width=\"%lg\" height=\"%lg\" fill=\"red\" stroke=\"black\" stroke-width=\"%lg\"/>\n", 
+  fprintf(d.svg_fp, "<rect  id=\"%s\" x=\"%lg\" y=\"%lg\" rx=\"%lg\" ry=\"%lg\" width=\"%lg\" height=\"%lg\" fill=\"red\" stroke=\"black\" stroke-width=\"%lg\" filter=\"url(#filter1)\"/>\n", 
     js_off_name, x1 + (2.0 * scale_factor), y1 + (2.0 * scale_factor), 
     4.0 * scale_factor, 4.0 * scale_factor, 48.0 * scale_factor, 20.0 * scale_factor, scale_factor);
   fprintf(d.svg_fp, "<text id=\"%s\" x=\"%lg\" y=\"%lg\" font-size=\"%lg\" fill=\"black\" text-anchor=\"middle\">Off</text>\n", js_off_text_name,
      x1 + 25.0 * scale_factor, y1 + 18.6 * scale_factor, 18.0 * scale_factor);
 
-  fprintf(d.svg_fp, "<rect  id=\"%s\" x=\"%lg\" y=\"%lg\"  rx=\"%lg\" ry=\"%lg\" width=\"%lg\" height=\"%lg\" fill=\"gray\" stroke=\"black\" stroke-width=\"%lg\"/>\n", 
+  fprintf(d.svg_fp, "<rect  id=\"%s\" x=\"%lg\" y=\"%lg\"  rx=\"%lg\" ry=\"%lg\" width=\"%lg\" height=\"%lg\" fill=\"gray\" stroke=\"black\" stroke-width=\"%lg\" filter=\"url(#filter1)\"/>\n", 
     js_on_name, x1 + (52.0 * scale_factor), y1 + (2.0 * scale_factor), 
     4.0 * scale_factor, 4.0 * scale_factor, 48.0 * scale_factor, 20.0 * scale_factor, scale_factor);
   fprintf(d.svg_fp, "<text id=\"%s\" x=\"%lg\" y=\"%lg\" font-size=\"%lg\" fill=\"black\" text-anchor=\"middle\">On</text>\n", js_on_text_name,
@@ -111,7 +111,7 @@ void switch_t::generate(plugin_data_t d, int argc, char **argv)
 
 
   fprintf(d.svg_fp, "<circle cx=\"%lg\" cy=\"%lg\" r=\"%lg\" "
-              "stroke=\"darkgray\" stroke-width=\"1\" fill=\"gray\"/>\n",
+              "stroke=\"darkgray\" stroke-width=\"1\" fill=\"gray\" filter=\"url(#filter1)\"/>\n",
               cx, cy, 40.0 * scale_factor);
   fprintf(d.svg_fp, "<circle cx=\"%lg\" cy=\"%lg\" r=\"%lg\" "
                     "stroke=\"none\" fill=\"white\"/>\n",
@@ -169,6 +169,9 @@ void switch_t::generate(plugin_data_t d, int argc, char **argv)
   add_js_library("switch.js");
   add_svg_library("switch_grad.svg");
   add_animation_object(tag, js_object_name);
+  add_svg_library("filter1.svg");
+
+
 
   n_instance++;
 }

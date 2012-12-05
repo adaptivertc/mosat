@@ -84,7 +84,8 @@ void valve_t::generate(plugin_data_t d, int argc, char **argv)
   double y2 = y1 + width;
   bool gen_popup = false;
 
-  if (argc > 9)
+  
+  if (d.popup_on && (argc > 9))
   {
     gen_popup = (argv[9][0] == '1');
   }
@@ -143,7 +144,9 @@ void valve_t::generate(plugin_data_t d, int argc, char **argv)
   {
     double px, py;
     find_a_place_nearby(&px, &py, x1, y1, width, width);
-    fprintf(d.svg_fp, "<rect x=\"%lg\"  y=\"%lg\" width=\"%lg\" height=\"%lg\" onclick=\"show_popup(%lg,%lg,'Open', 'Close', '%s')\" visibility=\"hidden\" pointer-events=\"all\" onmouseover=\"this.style.cursor='pointer';\"/>\n",
+    fprintf(d.svg_fp, "<rect x=\"%lg\"  y=\"%lg\" width=\"%lg\" height=\"%lg\"\n"
+      "   onclick=\"show_popup(%lg,%lg,'Open', 'Close', '%s')\" visibility=\"hidden\"\n"
+      "   pointer-events=\"all\" onmouseover=\"this.style.cursor='pointer';\"/>\n",
          x1, y1, width, width, px, py, tag);
   }
 

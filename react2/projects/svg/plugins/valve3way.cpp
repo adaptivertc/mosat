@@ -45,7 +45,7 @@ const char *valve3way_t::get_name(void)
 
 void valve3way_t::generate_doc(doc_object_base_t *dob)
 {
-  dob->start("valve3way", "Simple three way valve animate by a discrete value");
+  dob->start("valve3way", "Simple three way valve animated by a discrete value");
   dob->param("Discrete tag");
   dob->param("On Color");
   dob->param("Off Color");
@@ -54,12 +54,31 @@ void valve3way_t::generate_doc(doc_object_base_t *dob)
   dob->param("Width");
   dob->param("Type (1 = square handle, 2 = rounded handle)");
   dob->param("Rotation Angle (typically 0, 90, 180, or 270)");
-  dob->example("valve3way|VALVE3WAY_DIR1|magenta|gray|70|35|8|2|0|1|");
+  dob->param("On outlet: 1=left, 2=right, 3=bottom");
+  dob->param("Off outlet:  1=left, 2=right, 3=bottom");
+  dob->param("Popup Enabled 1=true, 0=false");
+  dob->example("valve3way|VALVE3WAY_DIR1|magenta|gray|70|35|8|2|90|2|3|1|");
+
+  dob->notes("This is for a 3 way valve controlled by a boolean that directs fluid to one of "
+             "two possible outlets, from one inlet. This means you have to define "
+             "the two outlets, and the third, by implication is the inlet.");             
+
+  dob->notes("When you set 'on outlet' and 'off outlet', you are setting where the fluid goes when the "
+            "when the valve is 'on' or 'off'. "
+            "These directions are looking at the valve with the handle up, so, for example, if you rotate, "
+            "the valve 90 degrees, 'right' is on the bottom, 'left' is on the top, and 'bottom' is on the left");
+
   dob->end();
 }
 
 void valve3way_t::generate(plugin_data_t d, int argc, char **argv)
 {
+  if (argc != 12)
+  {
+    printf("There must be 12 arguments to 'valve3way'\n");
+    exit(-1);
+  }
+
   const char *tag = argv[1];
   const char *on_color = argv[2];
   const char *off_color = argv[3];
@@ -68,6 +87,8 @@ void valve3way_t::generate(plugin_data_t d, int argc, char **argv)
   double width = atof(argv[6]);
   int type = atoi(argv[7]);
   int angle = atoi(argv[8]);
+  int on_code = atoi(argv[9]);
+  int off_code = atoi(argv[10]);
 
   double scale_factor = width / 50.0;
   double x1 = cx - (width / 2.0);
@@ -75,17 +96,36 @@ void valve3way_t::generate(plugin_data_t d, int argc, char **argv)
   double y1 = cy - (30.0 * scale_factor);
   double width_factor = 17.5;
 
+  bool gen_popup = false;
+
+  if (d.popup_on && (argc > 11))
+  {
+    gen_popup = (argv[11][0] == '1');
+  }
+
+  
 //tag|on_color|off_collor|x1|y1|width|type(1-2)|rotation(0,90,180,270)|
 
   if (type > 2) type = 2;
   if (type < 1) type = 1;
 
+  if ((on_code < 1) || (on_code > 3))
+  {
+    printf("The on_code must be 1, 2, or 3: %d\n", on_code);
+    exit(-1);
+  }
+  if ((off_code < 1) || (off_code > 3))
+  {
+    printf("The off_code must be 1, 2, or 3: %d\n", off_code);
+    exit(-1);
+  }
+
   char js_object_name[30];
-  char js_out1_name[30];
-  char js_out2_name[30];
+  char js_on_name[30];
+  char js_off_name[30];
   snprintf(js_object_name, sizeof(js_object_name),   "valve3way_obj_%03d",  n_instance);
-  snprintf(js_out1_name,   sizeof(js_object_name),   "valve3way_out1_%03d", n_instance);
-  snprintf(js_out2_name,   sizeof(js_object_name),   "valve3way_out2_%03d", n_instance);
+  snprintf(js_on_name,   sizeof(js_object_name),   "valve3way_out%d_%03d", on_code, n_instance);
+  snprintf(js_off_name,   sizeof(js_object_name),   "valve3way_out%d_%03d", off_code, n_instance);
 
   char transform_str[200];
   if (angle == 0) transform_str[0] = '\0';
@@ -116,12 +156,12 @@ void valve3way_t::generate(plugin_data_t d, int argc, char **argv)
                 x1, cy - (width_factor * scale_factor), //y2, 
                 cx, cy);
   fprintf(d.svg_fp, "  <polygon id=\"valve3way_out2_%03d\" fill=\"%s\" points=\"%lg,%lg %lg,%lg %lg,%lg\"/>\n",
-                n_instance, off_color,
+                n_instance, on_color,
                 x2, cy + (width_factor * scale_factor), //y1 + (10.0 * scale_factor),
                 x2, cy - (width_factor * scale_factor), //y2, 
                 cx, cy);
-  fprintf(d.svg_fp, "  <polygon fill=\"%s\" points=\"%lg,%lg %lg,%lg %lg,%lg\"/>\n",
-                on_color,
+  fprintf(d.svg_fp, "  <polygon id=\"valve3way_out3_%03d\" fill=\"%s\" points=\"%lg,%lg %lg,%lg %lg,%lg\"/>\n",
+                n_instance, on_color,
                 cx - (width_factor * scale_factor), cy + (width/2.0),
                 cx + (width_factor * scale_factor), cy + (width/2.0),
                 cx, cy);
@@ -132,12 +172,17 @@ void valve3way_t::generate(plugin_data_t d, int argc, char **argv)
   fprintf(d.svg_fp, "</g>\n");
 
  fprintf(d.js_fp, "var %s = new valve3way_t(\"%s\", \"%s\", \"%s\", \"%s\");\n",
-             js_object_name, js_out1_name, js_out2_name, on_color, off_color);
+             js_object_name, js_on_name, js_off_name, on_color, off_color);
 
-  double px, py;
-  find_a_place_nearby(&px, &py, x1, y1, width, width);
-  fprintf(d.svg_fp, "<rect x=\"%lg\"  y=\"%lg\" width=\"%lg\" height=\"%lg\" onclick=\"show_popup(%lg,%lg,'Open', 'Close', '%s')\" visibility=\"hidden\" pointer-events=\"all\" onmouseover=\"this.style.cursor='pointer';\"/>\n",
+  if (gen_popup)
+  {
+    double px, py;
+    find_a_place_nearby(&px, &py, x1, y1, width, width);
+    fprintf(d.svg_fp, "<rect x=\"%lg\"  y=\"%lg\" width=\"%lg\" height=\"%lg\"\n"
+      "   onclick=\"show_popup(%lg,%lg,'Open', 'Close', '%s')\" visibility=\"hidden\"\n"
+      "   pointer-events=\"all\" onmouseover=\"this.style.cursor='pointer';\"/>\n",
          x1, y1, width, width, px, py, tag);
+  }
 
 
   fprintf(d.js_fp, "// --  END insert for valve3way (%03d)\n", n_instance);

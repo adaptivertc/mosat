@@ -275,7 +275,7 @@ void gen_h_pipe(FILE *fp, double x1, double y, double x2, double width)
 
 static int n_instance = 1;
 
-class pipe1d_t : public gen_plugin_base_t
+class pipe2d_t : public gen_plugin_base_t
 {
 public:
   const char *get_name(void); 
@@ -287,21 +287,21 @@ public:
 
 extern "C" gen_plugin_base_t *get_object(void)
 {
-  return new pipe1d_t;
+  return new pipe2d_t;
 }
 
 /*******************************************/
 
-const char *pipe1d_t::get_name(void)
+const char *pipe2d_t::get_name(void)
 {
-  return "pipe1d";
+  return "pipe2d";
 }
 
 /*******************************************/
 
-void pipe1d_t::generate_doc(doc_object_base_t *dob)
+void pipe2d_t::generate_doc(doc_object_base_t *dob)
 {
-  dob->start("pipe1d", " A simple pipe with no color gradient for 3d look, but, you can animate the color");
+  dob->start("pipe2d", " A simple pipe with no color gradient for 3d look, but, you can animate the color");
   dob->param("Discrete Tag (Can be null or blank if you do not want animation of color)");
   dob->param("On Color");
   dob->param("Off Color");
@@ -311,14 +311,14 @@ void pipe1d_t::generate_doc(doc_object_base_t *dob)
   dob->param("Direction that must be 'V' or 'H'");
   dob->param("Stopping point");
   dob->param("Now, Repeat 7 and 8 as many times as needed to complete the pipe");
-  dob->example("pipe1d|PUMP2_ON|orange|grey|2|134|88|h|150|v|109|");
+  dob->example("pipe2d|PUMP2_ON|orange|grey|2|134|88|h|150|v|109|");
   dob->notes("You must alternate V and H, you can not have two Vs or two Hs in a row");
   dob->end();
 }
 
 
 
-void pipe1d_t::generate(plugin_data_t d, int argc, char **argv)
+void pipe2d_t::generate(plugin_data_t d, int argc, char **argv)
 {
   const char *the_tag = argv[1];
   const char *on_color = argv[2];
@@ -335,12 +335,12 @@ void pipe1d_t::generate(plugin_data_t d, int argc, char **argv)
   printf("Tag is: %s\n", the_tag);
   first = true;
 
-  fprintf(d.svg_fp, "<!-- START insert for pipe1d (%03d) -->\n", n_instance);
+  fprintf(d.svg_fp, "<!-- START insert for pipe2d (%03d) -->\n", n_instance);
 /***/
   char js_object_name[30];
   char js_group_name[30];
-  snprintf(js_object_name, sizeof(js_object_name), "pipe1d_obj_%03d", n_instance);
-  snprintf(js_group_name, sizeof(js_group_name), "pipe1d_group_obj_%03d", n_instance);
+  snprintf(js_object_name, sizeof(js_object_name), "pipe2d_obj_%03d", n_instance);
+  snprintf(js_group_name, sizeof(js_group_name), "pipe2d_group_obj_%03d", n_instance);
   fprintf(d.svg_fp, "<g id=\"%s\" fill=\"%s\" stroke=\"none\">\n",
        js_group_name, on_color);
 /***/
@@ -396,7 +396,7 @@ void pipe1d_t::generate(plugin_data_t d, int argc, char **argv)
                        js_object_name, js_group_name, on_color, off_color);
 
 
-  fprintf(d.svg_fp, "<!--  END insert for pipe1d (%03d) -->\n", n_instance);
+  fprintf(d.svg_fp, "<!--  END insert for pipe2d (%03d) -->\n", n_instance);
   if ((strlen(the_tag) > 0) && (0 != strcmp(the_tag, "null")))
   {
     add_js_library("pump.js");

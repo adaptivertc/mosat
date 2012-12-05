@@ -1,18 +1,24 @@
 
-
 #include <stdio.h>
+#include <stdlib.h>
 
 void include_file(FILE *fp, const char *dirname, const char *fname)
 {
-//'int asprintf(char **strp, const char *fmt, ...);
+  // This inserts another file into a file that is already open for writing
   char *thepath;
-  asprintf(&thepath, "%s/%s", dirname, fname);
+  if (-1 == asprintf(&thepath, "%s/%s", dirname, fname))
+  {
+    perror(fname);
+    fprintf(stderr, "Call to asprintf failed: %s, %s\n", dirname, fname);
+    return;
+  }
   printf("//Including file: %s\n", thepath);
   FILE *fp_include = fopen(thepath, "r");
   if (fp_include == NULL)
   {
     perror(thepath);
     fprintf(stderr, "Can not open file for include: %s\n", thepath);
+    free(thepath);
     return;
   }
   char line[200];
@@ -21,4 +27,5 @@ void include_file(FILE *fp, const char *dirname, const char *fname)
     fprintf(fp, "%s", line);
   }
   fclose(fp_include);
+  free(thepath);
 }

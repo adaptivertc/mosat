@@ -51,8 +51,11 @@ void text_t::generate_doc(doc_object_base_t *dob)
   dob->param("Text Height");
   dob->param("Text Color");
   dob->param("Text Anchor (start, middle, end)");
+  dob->param("Text");
+  dob->param("Now, you can repeat 'Text' as many times as needed to create multiple line text");
   dob->example("text|260|22|5|firebrick|start|Oil Feed|To Cryst.|COV-Ax-D,-E,-F|");
   dob->notes("Preferred text object");
+  dob->notes("Multiple lines are placed directly below the first, with the same 'Text Anchor'");
   dob->end();
 }
 

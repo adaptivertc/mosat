@@ -369,7 +369,7 @@ static void gen_simulation(FILE *js_fp)
   if (popup_on)
   {
     fprintf(js_fp, "  show_main();\n");
-    fprintf(js_fp, "  show_popup(50,50, 'Extend', 'Retract');\n");
+    //fprintf(js_fp, "  show_popup(50,50, 'On', 'Off');\n");
   }
 
   fprintf(js_fp, "};\n");
@@ -671,6 +671,7 @@ static void do_gen(const char *fname)
   pdata.js_fp = js_fp; 
   //pdata.svg_after_header_fp = 
   pdata.svg_top_of_file_fp = svg_top_of_file_fp;
+  pdata.popup_on = popup_on;
 
 
   delim_file_t df(500, 50, '|', '#');
@@ -773,7 +774,6 @@ static void gen_final_file(const char *fname)
   fprintf(fp, "</g>\n");
   if (popup_on)
   {
-
     include_file(fp, ".", "popup.svg");
   }
 

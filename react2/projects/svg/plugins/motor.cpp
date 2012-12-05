@@ -73,11 +73,19 @@ void motor_t::generate(plugin_data_t d, int argc, char **argv)
   int angle = atoi(argv[7]);
   double scale_factor = width / 100.0;
   double height = 54.0 * scale_factor;
+  bool gen_popup = false;
 
   //double cx = x1 + (width / 2.0);
   //double cy = y1 + (height / 2.0);
   double x1 = cx;
   double y1 = cy - (height / 2.0);
+
+  if (d.popup_on && (argc > 8))
+  {
+    gen_popup = (argv[8][0] == '1');
+  }
+
+
 
 //motor|tag|on_color|off_collor|x1|y1|width|rotation(0,90,180,270)|
 
@@ -131,11 +139,15 @@ void motor_t::generate(plugin_data_t d, int argc, char **argv)
   //fprintf(d.js_fp, "var %s = new discrete_t(xxx);\n", 
   //          js_object_name);//, js_group_name, on_color, off_color);
 
-  double px, py;
-  find_a_place_nearby(&px, &py, x1, y1, width, height);
-  fprintf(d.svg_fp, "<rect x=\"%lg\"  y=\"%lg\" width=\"%lg\" height=\"%lg\" onclick=\"show_popup(%lg,%lg,'ON', 'Off', '%s')\" visibility=\"hidden\" pointer-events=\"all\" onmouseover=\"this.style.cursor='pointer';\"/>\n",
-         x1, y1, width, width, px, py, the_tag);
-
+  if (gen_popup)
+  {
+    double px, py;
+    find_a_place_nearby(&px, &py, x1, y1, width, height);
+    fprintf(d.svg_fp, "<rect x=\"%lg\"  y=\"%lg\" width=\"%lg\" height=\"%lg\"\n"
+       "   onclick=\"show_popup(%lg,%lg,'ON', 'Off', '%s')\" visibility=\"hidden\"\n"
+       "   pointer-events=\"all\" onmouseover=\"this.style.cursor='pointer';\"/>\n",
+           x1, y1, width, width, px, py, the_tag);
+  }
 
   fprintf(d.js_fp, "// --  END insert for motor (%03d)\n", n_instance);
   fprintf(d.svg_fp, "<!--  END insert for motor (%03d) -->\n", n_instance);

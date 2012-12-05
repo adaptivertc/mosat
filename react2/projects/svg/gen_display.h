@@ -8,6 +8,7 @@ struct plugin_data_t
   FILE *js_fp;
   //FILE *svg_after_header_fp;
   FILE *svg_top_of_file_fp;
+  bool popup_on;
 };
 
 class doc_object_base_t
