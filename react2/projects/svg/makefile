@@ -41,7 +41,7 @@ install:
 depend:
 	gcc -MM -MF depend gen_display.cpp
 
-.PHONY: gauge spray.slider slider
+.PHONY: gauge spray.slider slider svgs feed cool switch tina transfer spray
 
 gauge:
 	./gen_display -f display.gauge.txt -o gauge.svg -sim
@@ -56,6 +56,32 @@ doc:
 	./gen_display -doc -html -o svgdoc.html
 	./gen_display -doc -text -o svgdoc.txt
 
+feed: 
+	./gen_display -f display.feedtanks.txt -o feed.svg -sim -popup
+
+cool:
+	./gen_display -f display.coolingtower.txt -o cool.svg -sim -popup
+
+switch:
+	./gen_display -f display.switch.txt -o switch.svg -sim
+
+spray:
+	./gen_display -f display.spray.round.txt -o spray.svg -sim -popup
+
+tina:
+	./gen_display -f display.tina.txt -o tina.svg -sim_file sim_tina.js -popup
+
+transfer:
+	./gen_display -f display.transfer.txt -o transfer.svg -sim
+
 clean:
 	rm -rv gen_points gen_bar gen_tank gen_so_makefile ./plugins/*.so gen_display
+
+svgs:
+	make feed
+	make cool
+	make spray
+	make transfer
+	make tina
+	make switch
 

@@ -30,6 +30,7 @@ static bool last_V = true;
 static bool first = true;
 static double stroke_width = 1.0;
 static const char *stroke_color = "black";
+static const char *shadow = " filter=\"url(#pipeshadow)\" ";
 
 void gen_butt_end(FILE *fp, double width, double butt_width, double x2, double y2)
 {
@@ -98,8 +99,8 @@ void gen_v_pipe(FILE *fp, double x, double y1, double y2, double width)
   {
     first = false;
     fprintf(fp, 
-     "<rect x=\"%lg\" y=\"%lg\" width=\"%lg\" height=\"%lg\"/>\n",
-          x - (width/2.0), y1, width, y2-y1);
+     "<rect x=\"%lg\" y=\"%lg\" width=\"%lg\" height=\"%lg\" %s/>\n",
+          x - (width/2.0), y1, width, y2-y1, shadow);
     fprintf(fp, "<line x1=\"%lg\" y1=\"%lg\"  x2=\"%lg\" y2=\"%lg\" ",
             x1, y1, x1, y2); 
     fprintf(fp, "stroke-width=\"%lg\" stroke=\"%s\"/>\n",
@@ -113,8 +114,8 @@ void gen_v_pipe(FILE *fp, double x, double y1, double y2, double width)
   {
     // case last was to the right, next is up 
     fprintf(fp, 
-    "<polygon points=\"%lg,%lg %lg,%lg %lg,%lg %lg,%lg %lg,%lg\"/>\n",
-          x, y2, x2, y2, x2, y1, x1, y1, x1, y2 - (width * 0.5));
+    "<polygon points=\"%lg,%lg %lg,%lg %lg,%lg %lg,%lg %lg,%lg\" %s/>\n",
+          x, y2, x2, y2, x2, y1, x1, y1, x1, y2 - (width * 0.5), shadow);
     fprintf(fp, "<line x1=\"%lg\" y1=\"%lg\"  x2=\"%lg\" y2=\"%lg\" ",
             x1, y1, x1, y2 - (width * 0.5)); 
     fprintf(fp, "stroke-width=\"%lg\" stroke=\"%s\"/>\n",
@@ -128,8 +129,8 @@ void gen_v_pipe(FILE *fp, double x, double y1, double y2, double width)
   {
     // case last was to the left, next is up 
     fprintf(fp, 
-    "<polygon points=\"%lg,%lg %lg,%lg %lg,%lg %lg,%lg %lg,%lg\"/>\n",
-          x, y2, x1, y2, x1, y1, x2, y1, x2, y2 - (width * 0.5));
+    "<polygon points=\"%lg,%lg %lg,%lg %lg,%lg %lg,%lg %lg,%lg\" %s/>\n",
+          x, y2, x1, y2, x1, y1, x2, y1, x2, y2 - (width * 0.5), shadow);
     fprintf(fp, "<line x1=\"%lg\" y1=\"%lg\"  x2=\"%lg\" y2=\"%lg\" ",
             x1, y1, x1, y2); 
     fprintf(fp, "stroke-width=\"%lg\" stroke=\"%s\"/>\n",
@@ -144,8 +145,8 @@ void gen_v_pipe(FILE *fp, double x, double y1, double y2, double width)
   {
     // case last was to the right, next is down
     fprintf(fp, 
-    "<polygon points=\"%lg,%lg %lg,%lg %lg,%lg %lg,%lg %lg,%lg\"/>\n",
-          x, y1, x2, y1, x2, y2, x1, y2, x1, y1 + (width * 0.5));
+    "<polygon points=\"%lg,%lg %lg,%lg %lg,%lg %lg,%lg %lg,%lg\" %s/>\n",
+          x, y1, x2, y1, x2, y2, x1, y2, x1, y1 + (width * 0.5), shadow);
     fprintf(fp, "<line x1=\"%lg\" y1=\"%lg\"  x2=\"%lg\" y2=\"%lg\" ",
             x1, y1 + (width * 0.5), x1, y2); 
     fprintf(fp, "stroke-width=\"%lg\" stroke=\"%s\"/>\n",
@@ -159,8 +160,8 @@ void gen_v_pipe(FILE *fp, double x, double y1, double y2, double width)
   {
     // case last was to the left, next is down
     fprintf(fp, 
-    "<polygon points=\"%lg,%lg %lg,%lg %lg,%lg %lg,%lg %lg,%lg\"/>\n",
-          x, y1, x1, y1, x1, y2, x2, y2, x2, y1 + (width * 0.5));
+    "<polygon points=\"%lg,%lg %lg,%lg %lg,%lg %lg,%lg %lg,%lg\" %s/>\n",
+          x, y1, x1, y1, x1, y2, x2, y2, x2, y1 + (width * 0.5), shadow);
     fprintf(fp, "<line x1=\"%lg\" y1=\"%lg\"  x2=\"%lg\" y2=\"%lg\" ",
             x1, y1, x1, y2); 
     fprintf(fp, "stroke-width=\"%lg\" stroke=\"%s\"/>\n",
@@ -198,8 +199,8 @@ void gen_h_pipe(FILE *fp, double x1, double y, double x2, double width)
   {
     first = false;
     fprintf(fp, 
-     "<rect x=\"%lg\" y=\"%lg\" width=\"%lg\" height=\"%lg\"/>\n",
-          x1, y - (width / 2.0), x2-x1, width);
+     "<rect x=\"%lg\" y=\"%lg\" width=\"%lg\" height=\"%lg\" %s/>\n",
+          x1, y - (width / 2.0), x2-x1, width, shadow);
     fprintf(fp, "<line x1=\"%lg\" y1=\"%lg\"  x2=\"%lg\" y2=\"%lg\" ",
             x1, y1, x2, y1); 
     fprintf(fp, "stroke-width=\"%lg\" stroke=\"%s\"/>\n",
@@ -213,8 +214,8 @@ void gen_h_pipe(FILE *fp, double x1, double y, double x2, double width)
   {
     // case last was up, next is right 
     fprintf(fp, 
-   "<polygon points=\"%lg,%lg %lg,%lg %lg,%lg %lg,%lg %lg,%lg\"/>\n",
-          x1, y1, x2 , y1, x2, y2, x1 + (width * 0.5), y2, x1, y);
+   "<polygon points=\"%lg,%lg %lg,%lg %lg,%lg %lg,%lg %lg,%lg\" %s/>\n",
+          x1, y1, x2 , y1, x2, y2, x1 + (width * 0.5), y2, x1, y, shadow);
     fprintf(fp, "<line x1=\"%lg\" y1=\"%lg\"  x2=\"%lg\" y2=\"%lg\" ",
             x1, y1, x2, y1); 
     fprintf(fp, "stroke-width=\"%lg\" stroke=\"%s\"/>\n",
@@ -228,8 +229,8 @@ void gen_h_pipe(FILE *fp, double x1, double y, double x2, double width)
   {
     // case last was up, next is left 
     fprintf(fp, 
-   "<polygon points=\"%lg,%lg %lg,%lg %lg,%lg %lg,%lg %lg,%lg\"/>\n",
-          x2, y1, x1 , y1, x1, y2, x2 - (width * 0.5), y2, x2, y);
+   "<polygon points=\"%lg,%lg %lg,%lg %lg,%lg %lg,%lg %lg,%lg\" %s/>\n",
+          x2, y1, x1 , y1, x1, y2, x2 - (width * 0.5), y2, x2, y, shadow);
     fprintf(fp, "<line x1=\"%lg\" y1=\"%lg\"  x2=\"%lg\" y2=\"%lg\" ",
             x1, y1, x2, y1); 
     fprintf(fp, "stroke-width=\"%lg\" stroke=\"%s\"/>\n",
@@ -243,8 +244,8 @@ void gen_h_pipe(FILE *fp, double x1, double y, double x2, double width)
   {
     // case last was down, next is right 
     fprintf(fp, 
-    "<polygon points=\"%lg,%lg %lg,%lg %lg,%lg %lg,%lg %lg,%lg\"/>\n",
-          x1, y2, x2 , y2, x2, y1, x1 + (width * 0.5), y1, x1, y);
+    "<polygon points=\"%lg,%lg %lg,%lg %lg,%lg %lg,%lg %lg,%lg\" %s/>\n",
+          x1, y2, x2 , y2, x2, y1, x1 + (width * 0.5), y1, x1, y, shadow);
     fprintf(fp, "<line x1=\"%lg\" y1=\"%lg\"  x2=\"%lg\" y2=\"%lg\" ",
             x1 + (width * 0.5), y1, x2, y1); 
     fprintf(fp, "stroke-width=\"%lg\" stroke=\"%s\"/>\n",
@@ -258,8 +259,8 @@ void gen_h_pipe(FILE *fp, double x1, double y, double x2, double width)
   {
     // case last was down, next is left 
     fprintf(fp, 
-    "<polygon points=\"%lg,%lg %lg,%lg %lg,%lg %lg,%lg %lg,%lg\"/>\n",
-          x2, y2, x1 , y2, x1, y1, x2 - (width * 0.5), y1, x2, y);
+    "<polygon points=\"%lg,%lg %lg,%lg %lg,%lg %lg,%lg %lg,%lg\" %s/>\n",
+          x2, y2, x1 , y2, x1, y1, x2 - (width * 0.5), y1, x2, y, shadow);
     fprintf(fp, "<line x1=\"%lg\" y1=\"%lg\"  x2=\"%lg\" y2=\"%lg\" ",
             x1, y1, x2 - (width * 0.5), y1); 
     fprintf(fp, "stroke-width=\"%lg\" stroke=\"%s\"/>\n",
@@ -313,6 +314,7 @@ void pipe2d_t::generate_doc(doc_object_base_t *dob)
   dob->param("Now, Repeat 7 and 8 as many times as needed to complete the pipe");
   dob->example("pipe2d|PUMP2_ON|orange|grey|2|134|88|h|150|v|109|");
   dob->notes("You must alternate V and H, you can not have two Vs or two Hs in a row");
+  dob->notes("Has a slight shadow below and to the right for a subtle effect");
   dob->end();
 }
 
@@ -358,8 +360,8 @@ void pipe2d_t::generate(plugin_data_t d, int argc, char **argv)
           fprintf(d.svg_fp,  
          "<circle cx=\"%lg\" cy=\"%lg\" r=\"%lg\" \n",
               x2, y2, width / 2.0);
-          fprintf(d.svg_fp, "stroke-width=\"%lg\" stroke=\"%s\"/>\n",
-             stroke_width, stroke_color);
+          fprintf(d.svg_fp, "stroke-width=\"%lg\" stroke=\"%s\" %s/>\n",
+             stroke_width, stroke_color, shadow);
         }
         gen_h_pipe(d.svg_fp, x1, y1,  x2, width);
         break;
@@ -373,8 +375,8 @@ void pipe2d_t::generate(plugin_data_t d, int argc, char **argv)
           fprintf(d.svg_fp,  
          "<circle cx=\"%lg\" cy=\"%lg\" r=\"%lg\" \n",
               x2, y2, width / 2.0);
-          fprintf(d.svg_fp, "stroke-width=\"%lg\" stroke=\"%s\"/>\n",
-               stroke_width, stroke_color);
+          fprintf(d.svg_fp, "stroke-width=\"%lg\" stroke=\"%s\" %s/>\n",
+               stroke_width, stroke_color, shadow);
         }
         gen_v_pipe(d.svg_fp, x1, y1, y2, width);
         break;
@@ -402,7 +404,7 @@ void pipe2d_t::generate(plugin_data_t d, int argc, char **argv)
     add_js_library("pump.js");
     add_animation_object(the_tag, js_object_name);
   }
-
+  add_svg_library("pipeshadow.svg");
   n_instance++;
 }
 

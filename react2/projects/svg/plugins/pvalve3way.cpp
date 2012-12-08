@@ -71,12 +71,19 @@ void pvalve3way_t::generate(plugin_data_t d, int argc, char **argv)
   double width = atof(argv[6]);
   int type = atoi(argv[7]);
   int angle = atoi(argv[8]);
+  bool gen_popup = false;
 
   double scale_factor = width / 50.0;
   double x1 = cx - (width / 2.0);
   double x2 = cx + (width / 2.0);
   double y1 = cy - (30.0 * scale_factor);
   double width_factor = 17.5;
+
+  if (d.popup_on && (argc > 9))
+  {
+    gen_popup = (argv[9][0] == '1');
+  }
+
 
 //tag|on_color|off_collor|x1|y1|width|type(1-2)|rotation(0,90,180,270)|
 
@@ -157,11 +164,16 @@ void pvalve3way_t::generate(plugin_data_t d, int argc, char **argv)
              cy + (width_factor * scale_factor),
              cy - (width_factor * scale_factor) );
 
-  double px, py;
-  find_a_place_nearby(&px, &py, x1, y1, width, width);
-  fprintf(d.svg_fp, "<rect x=\"%lg\"  y=\"%lg\" width=\"%lg\" height=\"%lg\" onclick=\"show_popup(%lg,%lg,'Open', 'Close', '%s')\" visibility=\"hidden\" pointer-events=\"all\" onmouseover=\"this.style.cursor='pointer';\"/>\n",
-         x1, y1, width, width, px, py, tag);
+  if (gen_popup)
+  {
 
+    double px, py;
+    find_a_place_nearby(&px, &py, x1, y1, width, width);
+    fprintf(d.svg_fp, "<rect x=\"%lg\"  y=\"%lg\" width=\"%lg\" height=\"%lg\"\n"
+                      "  onclick=\"show_popup(%lg,%lg,'Open', 'Close', '%s')\" visibility=\"hidden\" \n"
+                      "  pointer-events=\"all\" onmouseover=\"this.style.cursor='pointer';\"/>\n",
+                      x1, y1, width, width, px, py, tag);
+  }
 
   fprintf(d.js_fp, "// --  END insert for pvalve3way (%03d)\n", n_instance);
   fprintf(d.svg_fp, "<!--  END insert for pvalve3way (%03d) -->\n", n_instance);

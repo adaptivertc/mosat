@@ -66,6 +66,7 @@ function sim_object_t()
     "PUMP1_ON": {"tag":"PUMP1_ON","description":"Bomba 1 ON","lo_desc":"Off","hi_desc":"ON", "invert_pv":false},
     "PUMP2_ON":{"tag":"PUMP2_ON","description":"Bomba 1 ON","lo_desc":"Off","hi_desc":"ON", "invert_pv":false},
     "PUMP3_ON":{"tag":"PUMP3_ON","description":"Bomba 1 ON","lo_desc":"Off","hi_desc":"ON", "invert_pv":false},
+    "COV-810-A":{"tag":"COV-810-A","description":"COV-810-A","lo_desc":"to 811","hi_desc":"to 810", "invert_pv":false},
     "SPRAY_PUMP_ON":{"tag":"SPRAY_PUMP_ON","description":"Spray Pump ON","lo_desc":"Off","hi_desc":"On","invert_pv":false},
     "PVALVE_ON":{"tag":"PVALVE_ON","description":"Proportional Valve ON","lo_desc":"25","hi_desc":"75","invert_pv":false},
     "XFER_ON":{"tag":"XFER_ON","description":"Transfer ON","lo_desc":"Stop","hi_desc":"Start","invert_pv":false},

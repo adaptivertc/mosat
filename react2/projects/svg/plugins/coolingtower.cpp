@@ -53,7 +53,7 @@ void cooling_tower_t::generate_doc(doc_object_base_t *dob)
   dob->param("Text centered in middle of cooling tower (can be blank)");
   dob->param("Text color");
   dob->example("cooling_tower|205|40|50|gray|CT-902|black|");
-  dob->notes("No animation");
+  dob->notes("No animation, includes shadow");
   dob->end();
 }
 
@@ -70,11 +70,12 @@ void cooling_tower_t::generate(plugin_data_t d, int argc, char **argv)
   
   fprintf(d.svg_fp, "<!--  START insert for cooling_tower (%03d) -->\n", n_instance);
 
-  fprintf(d.svg_fp, "<polygon points=\"%lg,%lg %lg,%lg %lg,%lg %lg,%lg\" stroke=\"black\" stroke-width=\"%lg\" fill=\"%s\"/>\n",
+  fprintf(d.svg_fp, "<polygon points=\"%lg,%lg %lg,%lg %lg,%lg %lg,%lg\" stroke=\"black\" stroke-width=\"%lg\" fill=\"%s\" filter=\"url(#filter1)\"/>\n",
              x1, y1, x1 + width, y1, x1 + (40 * scale_factor), y2, x1 + (10.0 * scale_factor), y2, 0.5 * scale_factor, color);
   fprintf(d.svg_fp, "<text x=\"%lg\" y=\"%lg\" font-size=\"%lg\" fill=\"%s\" text-anchor=\"middle\">%s</text>\n",
            x1 + (width / 2.0), y1 + (8.0 * scale_factor), 5.0 * scale_factor, text_color, the_text);
   fprintf(d.svg_fp, "<!--  END insert for cooling_tower (%03d) -->\n", n_instance);
+  add_svg_library("filter1.svg");
   n_instance++;
 }
 

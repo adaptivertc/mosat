@@ -2,7 +2,7 @@ svg_header|Feed Tanks|0|0|300|150|
 background|thistle|
 imasa_logo|0|0|20|
 
-link|5|145|5|firebrick|start|cool.svg|Cooling Tower|switch.svg|Main Switching|
+link|5|145|5|firebrick|start|cool.svg|Cooling Tower|switch.svg|Main Switching|spray.svg|Spray|tina.svg|Tina|transfer.svg|Transfer|
 
 text|120|12|15|firebrick|middle|Feed Tanks|
 
@@ -11,14 +11,14 @@ text|260|22|5|firebrick|start|Oil Feed|To Cryst.|COV-Ax-D,-E,-F|
 text|118|22|5|firebrick|start|Olein Tank|From PF1082B|
 text|118|37|5|firebrick|start|OV Tank|From PF1082OV|
 
-valve3way|PUMP1_ON|orange|gray|70|35|8|2|0|1|3|1|
+valve3way|COV-810-A|orange|gray|70|35|8|2|0|1|3|1|
 text|70|28|4|black|middle|COV-810-A|
 pipe2d|null|orange|orange|2|74|35|h|110|
 triangle|116|35|5|black|-90|
 pipe2d|null|orange|orange|2|110|21|h|100|v|34|b|2|
 triangle|116|21|5|black|-90|
-pipe2d|PUMP1_ON|lightgrey|orange|2|70|39|v|45|h|103|v|52|
-pipe2d|PUMP1_ON|orange|lightgrey|2|66|35|h|33|v|52|
+pipe2d|COV-810-A|lightgrey|orange|2|70|39|v|45|h|103|v|52|
+pipe2d|COV-810-A|orange|lightgrey|2|66|35|h|33|v|52|
 
 text|225|18|4|black|middle|COV 21A,B|
 valve|PUMP2_ON|lime|gray|225|25|8|2|0|1|
@@ -46,6 +46,9 @@ triangle|261|90|5|black|-90|
 
 text|263|92|5|firebrick|start|BC Oil Feed|From P-574|
 
+#moved up
+pipe2d|null|lightgrey|lightgrey|2|59|110|h|234|
+
 valve|PUMP2_ON|magenta|gray|216|101|8|2|0|1|
 text|216|95|4|black|middle|MOV-810-N|
 pipe2d|null|lightgrey|lightgrey|2|212|101|h|190|v|109|b|2|
@@ -69,7 +72,8 @@ text|124|54|5|black|middle|A811|
 text|55|103|4|black|middle|MOV-899-H|
 valve|PUMP3_ON|cyan|gray|55|110|8|2|0|1|
 
-pipe2d|null|lightgrey|lightgrey|2|59|110|h|234|
+#moved up
+#pipe2d|null|lightgrey|lightgrey|2|59|110|h|234|
 pipe2d|null|lightgrey|lightgrey|2|51|110|h|40|
 pipe2d|null|lightgrey|lightgrey|2|54|88|h|70|v|109|b|2|
 

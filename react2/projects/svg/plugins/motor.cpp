@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gen_display.h"
 
 static int n_instance = 1;
+static const char *shadow = " filter=\"url(#pipeshadow)\" ";
 
 class motor_t : public gen_plugin_base_t
 {
@@ -102,8 +103,10 @@ void motor_t::generate(plugin_data_t d, int argc, char **argv)
   fprintf(d.js_fp, "// --  START insert for motor (%03d)\n", n_instance);
 
   fprintf(d.svg_fp, "<g  %s >\n", str);
-  fprintf(d.svg_fp, "<rect id=\"%s\" x=\"%lg\" y=\"%lg\" rx=\"%lg\" ry=\"%lg\" width=\"%lg\" height=\"%lg\" fill=\"%s\" stroke=\"black\" stroke-width=\"%lg\"/>\n",
-       js_group_name, x1, y1, 5.0 * scale_factor, 8.0 * scale_factor, width, height, on_color, 0.6 * scale_factor);
+  fprintf(d.svg_fp, "<rect id=\"%s\" x=\"%lg\" y=\"%lg\" rx=\"%lg\" ry=\"%lg\" \n"
+                    "width=\"%lg\" height=\"%lg\" fill=\"%s\" stroke=\"black\" stroke-width=\"%lg\" %s/>\n",
+       js_group_name, x1, y1, 5.0 * scale_factor, 8.0 * scale_factor, 
+       width, height, on_color, 0.6 * scale_factor, shadow);
   double fin_x = x1 + 20 * scale_factor; 
   double fin_width = 75.0 * scale_factor;
   double fin_height = 3.0 * scale_factor;
@@ -160,6 +163,7 @@ void motor_t::generate(plugin_data_t d, int argc, char **argv)
     add_animation_object(the_tag, js_object_name);
   }
 
+  add_svg_library("pipeshadow.svg");
   n_instance++;
 }
 

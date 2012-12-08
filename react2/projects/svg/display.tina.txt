@@ -1,7 +1,8 @@
-svg_header|Plastic Factory|0|0|300|150|
+svg_header|Tina|0|0|300|150|
 background|burlywood|
-bar|TEMP_1|red|36|5|125|
-bar|LEVEL|blue|200|5|125|
+link|5|146|5|firebrick|start|cool.svg|Cooling Tower|feed.svg|Feed Tanks|switch.svg|Main Switching|spray.svg|Spray|
+bar|TEMP_1|red|36|5|120|
+bar|LEVEL|blue|200|5|120|
 
 only_text|Hi Contact|firebrick|140|8|5|start|
 simple_contact|HI_LEVEL|yellow|gray|130|5|6|

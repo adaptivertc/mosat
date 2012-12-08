@@ -1,6 +1,6 @@
 svg_header|Cooling Tower|0|0|300|150|
 background|thistle|
-link|5|145|5|firebrick|start|feed.svg|Feed Tanks|switch.svg|Main Switching|
+link|5|145|5|firebrick|start|feed.svg|Feed Tanks|switch.svg|Main Switching|spray.svg|Spray|tina.svg|Tina|transfer.svg|Transfer|
 imasa_logo|0|0|20|
 text|150|10|10|firebrick|middle|Cooling Tower|
 text|4|25|5|firebrick|start|Crystalizers|Cooling Circuit|To F1011B,|F1018B|

@@ -80,7 +80,7 @@ void find_a_place_nearby(double *x,double *y,
                       300, 150, 
                       item_x, item_y, 
                       item_width, item_height,
-                      80, 40); 
+                      60, 30); 
 }
 
 void find_a_place_nearby(double *x,double *y, 
@@ -772,11 +772,12 @@ static void gen_final_file(const char *fname)
   include_file(fp, ".", "_tmp_display.svg");
 
   fprintf(fp, "</g>\n");
+
+  // The popups must go here to be OUTSIDE of the main group
   if (popup_on)
   {
-    include_file(fp, ".", "popup.svg");
+    include_file(fp, "./svgplugins", "discrete_popup.svg");
   }
-
   fprintf(fp, "<script type=\"text/ecmascript\"><![CDATA[\n");
      // max one output every 250 ms
   fprintf(fp, "const MAX_OUTPUT_RATE = 250;\n"); 
@@ -790,21 +791,27 @@ static void gen_final_file(const char *fname)
   if (popup_on)
   {
     fprintf(fp, 
-      "var popupobj=document.getElementById(\"popup\");\n"
+      "var dpopupobj=document.getElementById(\"discrete_popup\");\n"
+      "function popup_on_timeout()\n"
+      "  {document.getElementById('popup_bg_on').setAttribute('fill','yellow');}\n" 
+      "function popup_off_timeout()\n"
+      "  {document.getElementById('popup_bg_off').setAttribute('fill','yellow');}\n" 
       "function show_main()\n"
       "{\n"
       "  reactmainobj.parentNode.appendChild(reactmainobj);\n"
       "}\n"
-      "function show_popup(x,y,text_on, text_off, text_tag)\n"
+      "function show_popup(x,y,text_on, text_off, the_tag)\n"
       "{\n"
-      "  popupobj.setAttribute(\"transform\", \"translate(\" + x +\",\" + y +\")\");\n"
-      "  popupobj.parentNode.appendChild(popupobj);\n"
+      "  dpopupobj.setAttribute(\"transform\", \"translate(\" + x +\",\" + y +\")\");\n"
+      "  dpopupobj.parentNode.appendChild(dpopupobj);\n"
       "  var onobj=document.getElementById(\"popup_on\");\n"
-      "  onobj.textContent=text_on;\n"
+      //"  onobj.textContent=text_on;\n"
+      "  onobj.textContent=sim.get_cfg(the_tag).hi_desc;\n"
       "  var offobj=document.getElementById(\"popup_off\");\n"
-      "  offobj.textContent=text_off;\n"
+      //"  offobj.textContent=text_off;\n"
+      "  offobj.textContent=sim.get_cfg(the_tag).lo_desc;\n"
       "  var tagobj=document.getElementById(\"popup_tag\");\n"
-      "  tagobj.textContent=text_tag;\n"
+      "  tagobj.textContent=the_tag;\n"
       "}\n"
     );
   }
@@ -902,6 +909,7 @@ int main(int argc, char *argv[])
     else if (0 == strcmp(argv[current_arg], "-popup"))
     {
       popup_on = true;
+      add_svg_library("filter1.svg");
     }
     else if (0 == strcmp(argv[current_arg], "-doc"))
     {

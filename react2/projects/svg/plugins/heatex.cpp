@@ -24,6 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gen_display.h"
 
 static int n_instance = 1;
+static const char *shadow = " filter=\"url(#pipeshadow)\" ";
+
 
 class heatex_t : public gen_plugin_base_t
 {
@@ -81,26 +83,27 @@ void heatex_t::generate(plugin_data_t d, int argc, char **argv)
 
   fprintf(d.svg_fp, "<g id=\"group_object\" fill=\"%s\" stroke=\"none\"  %s>\n", "rgb(40,40,40)", str);
 
-  fprintf(d.svg_fp, "<rect x=\"%lg\" y=\"%lg\" width=\"%lg\" height=\"%lg\"/>\n", 
-            x1, y1, 5.0 * scale_factor, 50.0 * scale_factor);
-  fprintf(d.svg_fp, "<rect x=\"%lg\" y=\"%lg\" width=\"%lg\" height=\"%lg\"/>\n",
-                  x1 + 35.0 * scale_factor, y1, 5.0 * scale_factor, 50.0 * scale_factor);
+  fprintf(d.svg_fp, "<rect x=\"%lg\" y=\"%lg\" width=\"%lg\" height=\"%lg\" %s/>\n", 
+            x1, y1, 5.0 * scale_factor, 50.0 * scale_factor, shadow);
+  fprintf(d.svg_fp, "<rect x=\"%lg\" y=\"%lg\" width=\"%lg\" height=\"%lg\" %s/>\n",
+                  x1 + 35.0 * scale_factor, y1, 5.0 * scale_factor, 50.0 * scale_factor, shadow);
 
-  fprintf(d.svg_fp, "<rect x=\"%lg\" y=\"%lg\" width=\"%lg\" height=\"%lg\"/>\n",
-            x1, y1 + 5.0 * scale_factor, 40.0 * scale_factor, 5.0 * scale_factor);
-  fprintf(d.svg_fp, "<rect x=\"%lg\" y=\"%lg\" width=\"%lg\" height=\"%lg\"/>\n",
-            x1, y1 + 40.0 * scale_factor, 40.0 * scale_factor, 5.0 * scale_factor);
+  fprintf(d.svg_fp, "<rect x=\"%lg\" y=\"%lg\" width=\"%lg\" height=\"%lg\" %s/>\n",
+            x1, y1 + 5.0 * scale_factor, 40.0 * scale_factor, 5.0 * scale_factor, shadow);
+  fprintf(d.svg_fp, "<rect x=\"%lg\" y=\"%lg\" width=\"%lg\" height=\"%lg\" %s/>\n",
+            x1, y1 + 40.0 * scale_factor, 40.0 * scale_factor, 5.0 * scale_factor, shadow);
 
   for (int i=0; i < 5; i++)
   {
     double the_x = x1 + (scale_factor * (8.75 + (5.0 * i)));
-    fprintf(d.svg_fp, "<rect x=\"%lg\" y=\"%lg\" width=\"%lg\" height=\"%lg\"/>\n",
-               the_x, y1 + (5.0 * scale_factor), 2.0 * scale_factor, 40 * scale_factor);
+    fprintf(d.svg_fp, "<rect x=\"%lg\" y=\"%lg\" width=\"%lg\" height=\"%lg\" %s/>\n",
+               the_x, y1 + (5.0 * scale_factor), 2.0 * scale_factor, 40 * scale_factor, shadow);
   }
 
   fprintf(d.svg_fp, "</g>\n");
 
   fprintf(d.svg_fp, "<!--  END insert for heatex (%03d) -->\n", n_instance);
+  add_svg_library("pipeshadow.svg");
   n_instance++;
 }
 
