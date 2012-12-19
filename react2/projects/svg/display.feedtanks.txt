@@ -2,7 +2,7 @@ svg_header|Feed Tanks|0|0|300|150|
 background|thistle|
 imasa_logo|0|0|20|
 
-link|5|145|5|firebrick|start|cool.svg|Cooling Tower|switch.svg|Main Switching|spray.svg|Spray|tina.svg|Tina|transfer.svg|Transfer|
+link|5|145|5|firebrick|start|cool.svg|Cooling Tower|switch.svg|Main Switching|spray.svg|Spray|tina.svg|Tina|transfer.svg|Transfer|gauge.svg|Gauges|pipes.svg|Pipes|pipes2d.svg|Pipes 2D|
 
 text|120|12|15|firebrick|middle|Feed Tanks|
 

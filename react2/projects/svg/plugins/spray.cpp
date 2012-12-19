@@ -69,6 +69,13 @@ void spray_t::generate_doc(doc_object_base_t *dob)
 /*******************************************/
 void spray_t::generate(plugin_data_t d, int argc, char **argv)
 {
+  if (argc != 9)
+  {
+    printf("%s, line %d: There must be 9 arguments to spray\n",
+           d.file_name, d.line_number);
+    exit(-1);
+  }
+
   int i, nlines;
   double topx1, bottomx1, top_increment, bottom_increment;
   double x1, y1, x2, y2;
@@ -86,14 +93,16 @@ void spray_t::generate(plugin_data_t d, int argc, char **argv)
   bottom_spray_width = atof(argv[7]);
   spray_height = atof(argv[8]);
 
-  fprintf(stderr, "x = %lg\n", x);
-  fprintf(stderr, "y = %lg\n", y);
-  fprintf(stderr, "nlines = %d\n", nlines);
-  fprintf(stderr, "line_width = %lg\n", line_width);
-  fprintf(stderr, "top_spray_width = %lg\n", top_spray_width);
-  fprintf(stderr, "bottom_spray_width = %lg\n", bottom_spray_width);
-  fprintf(stderr, "spray_height = %lg\n", spray_height);
-  
+  if (!d.silent)
+  {
+    fprintf(stderr, "x = %lg\n", x);
+    fprintf(stderr, "y = %lg\n", y);
+    fprintf(stderr, "nlines = %d\n", nlines);
+    fprintf(stderr, "line_width = %lg\n", line_width);
+    fprintf(stderr, "top_spray_width = %lg\n", top_spray_width);
+    fprintf(stderr, "bottom_spray_width = %lg\n", bottom_spray_width);
+    fprintf(stderr, "spray_height = %lg\n", spray_height);
+  } 
   topx1 = x-(top_spray_width/2.0);
   bottomx1 = x-(bottom_spray_width/2.0);
   top_increment = top_spray_width/(nlines-1.0);

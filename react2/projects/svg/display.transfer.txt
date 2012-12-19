@@ -2,7 +2,7 @@ svg_header|Transfer T812 >> T826|0|0|300|150|
 background|thistle|
 imasa_logo|0|0|30|
 
-link|5|145|5|firebrick|start|cool.svg|Cooling Tower|feed.svg|Feed Tanks|switch.svg|Switch|spray.svg|Spray|tina.svg|Tina|
+link|5|145|5|firebrick|start|cool.svg|Cooling Tower|feed.svg|Feed Tanks|switch.svg|Switch|spray.svg|Spray|tina.svg|Tina|gauge.svg|Gauges|pipes.svg|Pipes|pipes2d.svg|Pipes 2D|
 
 text|120|12|12|firebrick|middle|Transfer T812 >> T826|
 

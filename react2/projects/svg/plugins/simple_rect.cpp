@@ -63,6 +63,13 @@ void simple_rect_t::generate_doc(doc_object_base_t *dob)
 
 void simple_rect_t::generate(plugin_data_t d, int argc, char **argv)
 {
+  if (argc < 6)
+  {
+    printf("%s, line %d: There must be AT LEAST 6 arguments to simple_rect\n",
+           d.file_name, d.line_number);
+    exit(-1);
+  }
+
   const char *tag = argv[1];
   const char *color = argv[2];
   double x = atof(argv[3]);

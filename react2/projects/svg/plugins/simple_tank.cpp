@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gen_display.h"
 
 static const char *tank_color = "gray";
+static bool silent = false;
 
 /******************************************/
 
@@ -128,6 +129,14 @@ void simple_tank_t::generate_doc(doc_object_base_t *dob)
 
 void simple_tank_t::generate(plugin_data_t d, int argc, char **argv)
 {
+  if ((argc != 8) && (argc != 10))
+  {
+    printf("%s, line %d: There must be 8 or 10 arguments to simple_tank\n",
+           d.file_name, d.line_number);
+    exit(-1);
+  }
+  silent = d.silent;
+
   double x = 50;
   double y = 50;
   double width = 800;
@@ -197,14 +206,17 @@ void simple_tank_t::generate(plugin_data_t d, int argc, char **argv)
     cap_height = atof(argv[7]);
     cone_height = atof(argv[8]);
     cone_width = atof(argv[9]);
-    printf("cone tank:\n");
-    printf("x = %lg\n", x);
-    printf("y = %lg\n", y);
-    printf("width = %lg\n", width);
-    printf("height = %lg\n", height);
-    printf("cap_height = %lg\n", cap_height);
-    printf("cone_height = %lg\n", cone_height);
-    printf("cone_width = %lg\n", cone_width);
+    if (!silent) 
+    {
+      printf("cone tank:\n");
+      printf("x = %lg\n", x);
+      printf("y = %lg\n", y);
+      printf("width = %lg\n", width);
+      printf("height = %lg\n", height);
+      printf("cap_height = %lg\n", cap_height);
+      printf("cone_height = %lg\n", cone_height);
+      printf("cone_width = %lg\n", cone_width);
+    }
     gen_cone_tank(d.svg_fp, x, y, width, height, cap_height, cone_height, cone_width);
   }
   else if ((argc == 8) && (argv[1][0] == 'p'))
@@ -215,19 +227,24 @@ void simple_tank_t::generate(plugin_data_t d, int argc, char **argv)
     width = atof(argv[5]);
     height = atof(argv[6]);
     cap_height = atof(argv[7]);
-    printf("pressure tank:\n");
-    printf("x = %lg\n", x);
-    printf("y = %lg\n", y);
-    printf("width = %lg\n", width);
-    printf("height = %lg\n", height);
-    printf("cap_height = %lg\n", cap_height);
+    if (!silent) 
+    {
+      printf("pressure tank:\n");
+      printf("x = %lg\n", x);
+      printf("y = %lg\n", y);
+      printf("width = %lg\n", width);
+      printf("height = %lg\n", height);
+      printf("cap_height = %lg\n", cap_height);
+    }
     gen_pressure_tank(d.svg_fp, x, y, width, height, cap_height);
   }
   else
   {
-    printf("Incorrect arguments for tank, examples:\n");
+    printf("%s, line %d: Incorrect arguments for tank, examples:\n",
+           d.file_name, d.line_number);
     printf("    |simple_tank|c|0|0|300|400|20|50|20|\n");
     printf("    |simple_tank|p|0|0|300|400|20|\n");
+    exit(-1);
   }
   fprintf(d.svg_fp, "<!--  END insert for simple_tank (%03d) -->\n", n_instance);
   //add_svg_library("gray_gradients.svg");

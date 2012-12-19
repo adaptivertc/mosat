@@ -171,6 +171,13 @@ void imasa_logo_t::generate_doc(doc_object_base_t *dob)
 
 void imasa_logo_t::generate(plugin_data_t d, int argc, char **argv)
 {
+  if (argc != 4)
+  {
+    printf("%s, line %d: There must be 4 arguments to imasa_logo\n",
+           d.file_name, d.line_number);
+    exit(-1);
+  }
+
   double x = atof(argv[1]);
   double y = atof(argv[2]);
   double height = atof(argv[3]);

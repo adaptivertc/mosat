@@ -1,6 +1,6 @@
 svg_header|Tina|0|0|300|150|
 background|burlywood|
-link|5|146|5|firebrick|start|cool.svg|Cooling Tower|feed.svg|Feed Tanks|switch.svg|Main Switching|spray.svg|Spray|
+link|5|146|5|firebrick|start|cool.svg|Cooling Tower|feed.svg|Feed Tanks|switch.svg|Main Switching|spray.svg|Spray|gauge.svg|Gauges|pipes.svg|Pipes|pipes2d.svg|Pipes 2D|
 bar|TEMP_1|red|36|5|120|
 bar|LEVEL|blue|200|5|120|
 
@@ -9,7 +9,8 @@ simple_contact|HI_LEVEL|yellow|gray|130|5|6|
 only_text|Lo Contact|firebrick|140|23|5|start|
 simple_contact|LO_LEVEL|yellow|gray|130|20|6|
 
-panel|110|65|30|75|0.3|
+#panel|110|64|30|75|0.3|
+groupbox|110|63.5|30|75|2|0.8|cornsilk|
 rect_light|hydraulic_1a|lime|gray|120|68|8|8|N|
 rect_light|hydraulic_1b|lime|gray|120|84|8|8|N|
 
@@ -18,7 +19,8 @@ rect_light|red_do_1|red|gray|120|110|8|8|N|
 rect_light|yellow_do_1|yellow|gray|120|118|8|8|N|
 rect_light|green_do_1|lime|gray|120|126|8|8|N|
 
-panel|76|65|30|75|0.3|
+#panel|76|64|30|75|0.3|
+groupbox|76|63.5|30|75|2|0.8|cornsilk|
 rect_light|hydraulic_2a|lime|gray|86|68|8|8|N|
 rect_light|hydraulic_2b|lime|gray|86|84|8|8|N|
 

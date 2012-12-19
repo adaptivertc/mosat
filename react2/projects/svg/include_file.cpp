@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void include_file(FILE *fp, const char *dirname, const char *fname)
+void include_file(FILE *fp, const char *dirname, const char *fname, bool silent)
 {
   // This inserts another file into a file that is already open for writing
   char *thepath;
@@ -12,7 +12,7 @@ void include_file(FILE *fp, const char *dirname, const char *fname)
     fprintf(stderr, "Call to asprintf failed: %s, %s\n", dirname, fname);
     return;
   }
-  printf("//Including file: %s\n", thepath);
+  if (!silent) printf("//Including file: %s\n", thepath);
   FILE *fp_include = fopen(thepath, "r");
   if (fp_include == NULL)
   {

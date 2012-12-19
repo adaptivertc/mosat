@@ -56,6 +56,13 @@ void insert_svg_t::generate_doc(doc_object_base_t *dob)
 
 void insert_svg_t::generate(plugin_data_t d, int argc, char **argv)
 {
+  if (argc != 2)
+  {
+    printf("%s, line %d: There must be 2 arguments to insert_svg\n",
+           d.file_name, d.line_number);
+    exit(-1);
+  }
+
   const char *the_svg = argv[1];
   
   fprintf(d.svg_fp, "<!--  START insert for insert_svg (%03d) -->\n", n_instance);

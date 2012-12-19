@@ -59,6 +59,13 @@ void discrete_pv_t::generate_doc(doc_object_base_t *dob)
 
 void discrete_pv_t::generate(plugin_data_t d, int argc, char **argv)
 {
+  if (argc != 6)
+  {
+    printf("%s, line %d: There must be 6 arguments to discrete_pv\n",
+           d.file_name, d.line_number);
+    exit(-1);
+  }
+
   const char *the_tag = argv[1];
   const char *color = argv[2];
   double x = atof(argv[3]);

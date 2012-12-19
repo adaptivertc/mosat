@@ -57,7 +57,8 @@ void background_t::generate(plugin_data_t d, int argc, char **argv)
 {
   if (argc != 2)
   {
-    printf("There must be 2 arguments to background\n");
+    printf("%s, line %d: There must be 2 arguments to background\n",
+           d.file_name, d.line_number);
     exit(-1);
   }
 

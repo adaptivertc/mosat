@@ -61,6 +61,19 @@ void link_t::generate_doc(doc_object_base_t *dob)
 
 void link_t::generate(plugin_data_t d, int argc, char **argv)
 {
+  if (argc < 8)
+  {
+    printf("%s, line %d: There must be AT LEAST 8 arguments to link\n",
+           d.file_name, d.line_number);
+    exit(-1);
+  }
+  if ((argc % 2) != 0)
+  {
+    printf("%s, line %d: There must be a text description for every link URL.\n",
+           d.file_name, d.line_number);
+    exit(-1);
+  }
+
   double x = atof(argv[1]);
   double y = atof(argv[2]);
   double height = atof(argv[3]);

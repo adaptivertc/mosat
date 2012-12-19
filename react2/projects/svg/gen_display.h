@@ -1,6 +1,8 @@
 
 
-enum rtsvg_param_t {rtsvg_X, rtsvg_Y, rtsvg_WIDTH, rtsvg_HEIGHT, rtsvg_TEXT};
+enum rtsvg_param_t {rtsvg_X, rtsvg_Y, rtsvg_WIDTH, rtsvg_HEIGHT, rtsvg_TEXT, rtsvt_INT, rtsvg_FLOAT, rtsvg_BOOL};
+
+char *check_params(rtsvg_param_t params[]);
 
 struct plugin_data_t
 {
@@ -9,6 +11,9 @@ struct plugin_data_t
   //FILE *svg_after_header_fp;
   FILE *svg_top_of_file_fp;
   bool popup_on;
+  const char *file_name;
+  int line_number;
+  bool silent;
 };
 
 class doc_object_base_t

@@ -60,6 +60,12 @@ void blades_t::generate_doc(doc_object_base_t *dob)
 
 void blades_t::generate(plugin_data_t d, int argc, char **argv)
 {
+  if (argc != 9)
+  {
+    printf("%s, line %d: There must be 9 arguments to blades\n",
+           d.file_name, d.line_number);
+  }
+
   const char *the_tag = argv[1];
   double x1 = atof(argv[2]);
   double y1 = atof(argv[3]);

@@ -61,6 +61,13 @@ void pump_t::generate_doc(doc_object_base_t *dob)
 
 void pump_t::generate(plugin_data_t d, int argc, char **argv)
 {
+  if ((argc != 10) && (argc != 9))
+  {
+    printf("%s, line %d: There must be 9 or 10 arguments to pump\n",
+           d.file_name, d.line_number);
+    exit(-1);
+  }
+
   const char *the_tag = argv[1];
   const char *on_color = argv[2];
   const char *off_color = argv[3];

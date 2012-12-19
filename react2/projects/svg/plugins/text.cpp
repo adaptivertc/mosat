@@ -61,6 +61,13 @@ void text_t::generate_doc(doc_object_base_t *dob)
 
 void text_t::generate(plugin_data_t d, int argc, char **argv)
 {
+  if (argc < 7)
+  {
+    printf("%s, line %d: There must be AT LEAST 7 arguments to text\n",
+           d.file_name, d.line_number);
+    exit(-1);
+  }
+
   double x = atof(argv[1]);
   double y = atof(argv[2]);
   double height = atof(argv[3]);
@@ -68,6 +75,14 @@ void text_t::generate(plugin_data_t d, int argc, char **argv)
   const char *anchor = argv[5];
 
 //x|y|height|color|anchor|line1|line2|. . . |lineN
+  if ( (0 != strcmp(anchor, "start")) &&
+       (0 != strcmp(anchor, "middle")) &&
+       (0 != strcmp(anchor, "end")) )
+  {
+    printf("%s, line %d: Anchor must be 'start', 'middle', or 'end'\n",
+           d.file_name, d.line_number);
+    exit(-1);
+  }
   
   fprintf(d.svg_fp, "<!--  START insert for text (%03d) -->\n", n_instance);
   for (int i=6; i < argc; i++)

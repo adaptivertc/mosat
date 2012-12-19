@@ -57,6 +57,13 @@ void triangle_t::generate_doc(doc_object_base_t *dob)
 
 void triangle_t::generate(plugin_data_t d, int argc, char **argv)
 {
+  if (argc != 6)
+  {
+    printf("%s, line %d: There must be 6 arguments to triangle\n",
+           d.file_name, d.line_number);
+    exit(-1);
+  }
+
   double cx = atof(argv[1]);
   double cy = atof(argv[2]);
   double width = atof(argv[3]);
@@ -69,7 +76,7 @@ void triangle_t::generate(plugin_data_t d, int argc, char **argv)
   char str[200];
   if (angle == 0) str[0] = '\0';
   else snprintf(str, sizeof(str), "transform=\"rotate(%d %lg,%lg)\"", angle, cx, cy);
-  printf("Tringle: %s\n", str);
+  if (!d.silent) printf("Triangle: %s\n", str);
 
 
   fprintf(d.svg_fp, "<!--  START insert for triangle (%03d) -->\n", n_instance);

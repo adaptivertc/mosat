@@ -60,6 +60,13 @@ void switch_t::generate_doc(doc_object_base_t *dob)
 
 void switch_t::generate(plugin_data_t d, int argc, char **argv)
 {
+  if (argc != 7)
+  {
+    printf("%s, line %d: There must be 7 arguments to switch\n",
+           d.file_name, d.line_number);
+    exit(-1);
+  }
+
   const char *tag = argv[1];
   const char *on_color = argv[2];
   const char *off_color = argv[3];

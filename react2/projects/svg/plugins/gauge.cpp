@@ -64,6 +64,13 @@ void gauge_t::generate_doc(doc_object_base_t *dob)
 
 void gauge_t::generate(plugin_data_t d, int argc, char **argv)
 {
+  if (argc != 7)
+  {
+    printf("%s, line %d: There must be 7 arguments to gauge\n",
+           d.file_name, d.line_number);
+    exit(-1);
+  }
+
   int gtype = atol(argv[1]);
   const char *the_tag = argv[2];
   const char *color = argv[3];

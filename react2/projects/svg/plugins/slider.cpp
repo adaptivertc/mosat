@@ -58,6 +58,13 @@ void slider_t::generate_doc(doc_object_base_t *dob)
 
 void slider_t::generate(plugin_data_t d, int argc, char **argv)
 {
+  if (argc != 6)
+  {
+    printf("%s, line %d: There must be 6 arguments to slider\n",
+           d.file_name, d.line_number);
+    exit(-1);
+  }
+
   const char *the_tag = argv[1];
   const char *the_color = argv[2];
   double x1 = atof(argv[3]);
@@ -134,7 +141,7 @@ void slider_t::generate(plugin_data_t d, int argc, char **argv)
     slider_color = "gray";
     add_svg_library("gray_gradients.svg");
   }
-  printf("Slider, tag: %s, color: %s\n", the_tag, slider_color);
+  if (!d.silent) printf("Slider, tag: %s, color: %s\n", the_tag, slider_color);
 
 
 

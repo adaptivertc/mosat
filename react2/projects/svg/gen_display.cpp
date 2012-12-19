@@ -34,6 +34,7 @@ static const int RT_SIM_MODE = 0;
 static const int RT_REACT_MODE = 1;
 static int run_mode = RT_SIM_MODE;
 static bool popup_on = false;
+static bool silent = false;
 static const char *sim_file="sim_pump.js";
 
 
@@ -672,6 +673,7 @@ static void do_gen(const char *fname)
   //pdata.svg_after_header_fp = 
   pdata.svg_top_of_file_fp = svg_top_of_file_fp;
   pdata.popup_on = popup_on;
+  pdata.silent = silent;
 
 
   delim_file_t df(500, 50, '|', '#');
@@ -680,20 +682,25 @@ static void do_gen(const char *fname)
   int argc;
   int line_num;
   gen_plugin_base_t *obj;
+  pdata.file_name = fname;
 
   for (argv = df.first(fname, &argc, &line_num);
          (argv != NULL);
             argv = df.next(&argc, &line_num))
   {
+    pdata.line_number = line_num;
     if (argc < 2)
     {
       printf("Wrong number of args, line %d\n", line_num);
       continue;
     }
-    printf("%d: %s", line_num, argv[0]);
-    for (int i=1; i < argc; i++)
+    if (!silent) 
     {
-      printf(", %s", argv[i]);
+      printf("%d: %s", line_num, argv[0]);
+      for (int i=1; i < argc; i++)
+      {
+        printf(", %s", argv[i]);
+      }
     }
     obj = get_plugin(argv[0]);    
     if (obj == NULL)
@@ -701,19 +708,19 @@ static void do_gen(const char *fname)
       printf("No such object type: %s\n", argv[0]);
       exit(-1);
     }
-    printf("    Generating %s . . . .\n", argv[0]);
+    if (!silent) printf("    Generating %s . . . .\n", argv[0]);
     obj->generate(pdata, argc, argv);
   }
 
   if (run_mode == RT_REACT_MODE)
   {
-    printf("Generating connection to REACT . . . \n");
+    if (!silent) printf("Generating connection to REACT . . . \n");
     gen_ajax_animation(js_fp);
   }
   else
   {
     add_js_library(sim_file);
-    printf("Generating simulator . . . \n");
+    if (!silent) printf("Generating simulator . . . \n");
     gen_simulation(js_fp);
   }
 
@@ -760,23 +767,23 @@ static void gen_final_file(const char *fname)
 
   fprintf(fp, "-->\n");
 
-  include_file(fp, ".", "_tmp_top_of_file.svg");
+  include_file(fp, ".", "_tmp_top_of_file.svg", silent);
 
   for (int i=0; i < n_svg_libs; i++)
   {
     fprintf(fp, "<!-- START insert svg library: %s-->\n", svg_lib_files[i]);
-    include_file(fp, "./svgplugins", svg_lib_files[i]);
+    include_file(fp, "./svgplugins", svg_lib_files[i], silent);
     fprintf(fp, "<!-- END insert svg library: %s -->\n", svg_lib_files[i]);
   }
 
-  include_file(fp, ".", "_tmp_display.svg");
+  include_file(fp, ".", "_tmp_display.svg", silent);
 
   fprintf(fp, "</g>\n");
 
   // The popups must go here to be OUTSIDE of the main group
   if (popup_on)
   {
-    include_file(fp, "./svgplugins", "discrete_popup.svg");
+    include_file(fp, "./svgplugins", "discrete_popup.svg", silent);
   }
   fprintf(fp, "<script type=\"text/ecmascript\"><![CDATA[\n");
      // max one output every 250 ms
@@ -819,11 +826,11 @@ static void gen_final_file(const char *fname)
   for (int i=0; i < n_js_libs; i++)
   {
     fprintf(fp, "// -- START insert js library: %s\n", js_lib_files[i]);
-    include_file(fp, "./jsplugins", js_lib_files[i]);
+    include_file(fp, "./jsplugins", js_lib_files[i], silent);
     fprintf(fp, "// -- END insert js library: %s\n", js_lib_files[i]);
   }
 
-  include_file(fp, ".", "_tmp_display.js");
+  include_file(fp, ".", "_tmp_display.js", silent);
 
   fprintf(fp, "]]></script>\n");
 
@@ -872,6 +879,10 @@ void print_help()
     "  -sim_file same as -sim but, with the sim file specified in \n"
     "            the next argument\n"
     "  -popup   option enables popups for valves, pumps, etc.\n"
+    "  -silent  option disables all output to stdout or stderr, except for error messages.\n"
+    "  -doc   generate documentation - default is html, uses the output file specified with -o\n"
+    "  -text  Set documentation output to text\n"
+    "  -html  Set documentation output to html\n"
     "\n"
   );
 }
@@ -894,7 +905,7 @@ int main(int argc, char *argv[])
   const char *output_name = "dtest.svg"; 
   popup_on = false;
   bool doc_on = false;
-  bool html_on = false;
+  bool html_on = true;
 
   for (int current_arg=1; current_arg < argc; current_arg++)
   {
@@ -905,6 +916,10 @@ int main(int argc, char *argv[])
     else if (0 == strcmp(argv[current_arg], "-sim"))
     {
       run_mode = RT_SIM_MODE;
+    }
+    else if (0 == strcmp(argv[current_arg], "-silent"))
+    {
+      silent = true;
     }
     else if (0 == strcmp(argv[current_arg], "-popup"))
     {
@@ -1014,7 +1029,7 @@ int main(int argc, char *argv[])
     if (dent->d_type != DT_REG)
     {
       //continue;
-      // Comented out because on some VMs does not ruturn DT_REG
+      // Commented out because on some VMs does not ruturn DT_REG
     }
 
     int len = strlen(dent->d_name);
@@ -1033,8 +1048,10 @@ int main(int argc, char *argv[])
     }
 
     snprintf(sofile, sizeof(sofile), "%s/%s", dir_name, dent->d_name);
-
-    printf("Opening plugin[%d]: %s\n", n_plugins + 1,  sofile);
+    if (!silent)
+    {
+      printf("Opening plugin[%d]: %s\n", n_plugins + 1,  sofile);
+    }
 
     if (n_plugins > (MAX_PLUGINS - 1)) 
     {
@@ -1066,7 +1083,10 @@ int main(int argc, char *argv[])
     }
 
   }
-  printf ("found %d plugins!!!\n", n_plugins);
+  if (!silent)
+  {
+    printf ("found %d plugins!!!\n", n_plugins);
+  }
 
   doc_object_base_t *doc_object;
   FILE *docfp;
@@ -1074,12 +1094,18 @@ int main(int argc, char *argv[])
   {
     if (html_on)
     {
-      printf("generating html documentation\n");
+      if (!silent)
+      {
+        printf("generating html documentation\n");
+      }
       doc_object = new doc_html_object_t();
     }
     else
     {
-      printf("generating text documentation\n");
+      if (!silent)
+      {
+        printf("generating text documentation\n");
+      }
       doc_object = new doc_text_object_t();
     }
     docfp = fopen(output_name, "w");
@@ -1094,25 +1120,34 @@ int main(int argc, char *argv[])
   // Ok, probamos todos de los objetos para ver que si funcionan.
   for (i=0; i < n_plugins; i++)
   {
-    printf("plugin[%d]-handles objects of type: %s\n", i+1, the_plugins[i]->get_name());
+    if (!silent)
+    {
+      printf("plugin[%d]-handles objects of type: %s\n", i+1, the_plugins[i]->get_name());
+    }
     rtsvg_param_t *params;
     int n_params;
     params = the_plugins[i]->param_types(&n_params);
-    if (params != NULL)
+    if (!silent)
     {
-      printf("Has param types defined\n");
-    }
-    else
-    {
-      printf("param_types: NULL\n");
+      if (params != NULL)
+      {
+        printf("Has param types defined\n");
+      }
+      else
+      {
+        printf("param_types: NULL\n");
+      }
     }
     if (doc_on)
     {
-      printf("generating doc for %s\n", the_plugins[i]->get_name());
+      if (!silent)
+      {
+        printf("generating doc for %s\n", the_plugins[i]->get_name());
+      }
       the_plugins[i]->generate_doc(doc_object);
     }
   }
-  printf("\n");
+  if (!silent) printf("\n");
 
   if (doc_on)
   {
@@ -1121,8 +1156,11 @@ int main(int argc, char *argv[])
     exit(0);
   }
 
-  printf("Config file is: %s\n", config_name);
-  printf("Output file is: %s\n", output_name);
+  if (!silent)
+  {
+    printf("Config file is: %s\n", config_name);
+    printf("Output file is: %s\n", output_name);
+  }
 
   do_gen(config_name);
   if (max_argn != -1)
@@ -1130,7 +1168,10 @@ int main(int argc, char *argv[])
     bool args_ok = true;
     for (int i=0; i <= max_argn; i++)
     {
-      printf("$%d: %d object(s)", i, arg_count[i]);
+      if (!silent)
+      {
+        printf("$%d: %d object(s)", i, arg_count[i]);
+      }
       if (arg_count[i] == 0)
       {
         args_ok = false;
@@ -1152,7 +1193,10 @@ int main(int argc, char *argv[])
   {
     delete(the_plugins[i]);
   }
-  printf("\n\n");
+  if (!silent)
+  {
+    printf("\n\n");
+  }
 
   return 0;
 }

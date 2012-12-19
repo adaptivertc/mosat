@@ -1,6 +1,6 @@
 svg_header|Spray Demo|0|0|300|150|
 background|thistle|
-link|5|7|5|firebrick|start|cool.svg|Cooling Tower|feed.svg|Feed Tanks|switch.svg|Main Switching|tina.svg|Tina|transfer.svg|Transfer|
+link|5|7|5|firebrick|start|cool.svg|Cooling Tower|feed.svg|Feed Tanks|switch.svg|Main Switching|tina.svg|Tina|transfer.svg|Transfer|gauge.svg|Gauges|pipes.svg|Pipes|pipes2d.svg|Pipes 2D|
 simple_tank|c|black|30|10|40|110|1.5|25|3|
 simple_pipe|gray|3|50|120|v|130|h|65|
 simple_pipe|gray|3|70|126|h|88|

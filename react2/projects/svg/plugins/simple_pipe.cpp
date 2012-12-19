@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 
 static const char *pipe_color = "gray";
+static bool silent = false;
 
 /*******************************************/
 
@@ -86,12 +87,12 @@ static bool first = true;
 
 void gen_butt_end(FILE *fp, double width, double butt_width, double x2, double y2)
 {
-  printf("butt end - width: %gf, bwidth: %lg, x2: %lg, y2: %lg\n",
+  if (!silent) printf("butt end - width: %gf, bwidth: %lg, x2: %lg, y2: %lg\n",
          width, butt_width, x2, y2);
   if (last_V && last_VU)
   {
     // draw the butt end up
-    printf("butt up\n");
+    if (!silent) printf("butt up\n");
     fprintf(fp, 
     "<polygon fill=\"url(#%sLinearV)\" points=\"%lg,%lg %lg,%lg %lg,%lg\"/>\n",
           pipe_color, x2 - (width/2.0), y2, x2 + (width/2.0), y2, x2, y2 - (butt_width/2.0));
@@ -99,7 +100,7 @@ void gen_butt_end(FILE *fp, double width, double butt_width, double x2, double y
   else if (last_V && !last_VU)
   {
     // draw the butt end down 
-    printf("butt down\n");
+    if (!silent) printf("butt down\n");
     fprintf(fp, 
     "<polygon fill=\"url(#%sLinearV)\" points=\"%lg,%lg %lg,%lg %lg,%lg\"/>\n",
           pipe_color, x2 - (width/2.0), y2, x2 + (width/2.0), y2, x2, y2 + (butt_width/2.0));
@@ -107,7 +108,7 @@ void gen_butt_end(FILE *fp, double width, double butt_width, double x2, double y
   else if (!last_V && last_HR)
   {
     // draw the butt end right 
-    printf("butt right\n");
+    if (!silent) printf("butt right\n");
     fprintf(fp, 
     "<polygon fill=\"url(#%sLinearH)\" points=\"%lg,%lg %lg,%lg %lg,%lg\"/>\n",
           pipe_color, x2, y2 - (width/2.0), x2, y2 + (width/2.0), x2 + (butt_width/2.0), y2);
@@ -115,7 +116,7 @@ void gen_butt_end(FILE *fp, double width, double butt_width, double x2, double y
   else if (!last_V && !last_HR)
   {
     // draw the butt end left 
-    printf("butt left\n");
+    if (!silent) printf("butt left\n");
     fprintf(fp, 
     "<polygon fill=\"url(#%sLinearH)\" points=\"%lg,%lg %lg,%lg %lg,%lg\"/>\n",
           pipe_color, x2, y2 - (width/2.0), x2, y2 + (width/2.0), x2 - (butt_width/2.0), y2);
@@ -145,7 +146,7 @@ void gen_v_pipe(FILE *fp, double x, double y1, double y2, double width)
     last_VU = false;
   }
 
-  printf("V - x1: %lg, y1: %lg, x2: %lg, y2: %lg\n", x1, y1, x2, y2);
+  if (!silent) printf("V - x1: %lg, y1: %lg, x2: %lg, y2: %lg\n", x1, y1, x2, y2);
 
   if (first)
   {
@@ -204,7 +205,7 @@ void gen_h_pipe(FILE *fp, double x1, double y, double x2, double width)
   {
     last_HR = true; 
   }
-  printf("H - x1: %lg, y1: %lg, x2: %lg, y2: %lg\n", x1, y1, x2, y2);
+  if (!silent) printf("H - x1: %lg, y1: %lg, x2: %lg, y2: %lg\n", x1, y1, x2, y2);
 
   if (first)
   {
@@ -298,6 +299,20 @@ void simple_pipe_t::generate_doc(doc_object_base_t *dob)
 
 void simple_pipe_t::generate(plugin_data_t d, int argc, char **argv)
 {
+  if (argc < 7)
+  {
+    printf("%s, line %d: There must be AT LEAST 7 arguments to simple_pipe\n",
+           d.file_name, d.line_number);
+    exit(-1);
+  }
+  if ((argc % 2) != 1)
+  {
+    printf("%s, line %d: There must be an odd number of arguments to simple_pipe\n",
+           d.file_name, d.line_number);
+    exit(-1);
+  }
+  silent = d.silent;
+
   const char *the_color = argv[1];
   double width = atof(argv[2]);
   double x1 = atof(argv[3]);
@@ -352,18 +367,27 @@ void simple_pipe_t::generate(plugin_data_t d, int argc, char **argv)
     add_svg_library("gray_gradients.svg");
   }
 
-  printf("Pipe color is: %s\n", pipe_color);
+  if (!silent) printf("Pipe color is: %s\n", pipe_color);
   first = true;
 
   fprintf(d.svg_fp, "<!-- START insert for simple_pipe (%03d) -->\n", n_instance);
+  char last = ' ';
+
   for (int i=5; i < (argc-1); i+=2)
   {
     switch (argv[i][0])
     {
       case 'h':
       case 'H':
+        if ((!first) && (last != 'V'))
+        {
+          printf("%s, line %d: you must alternate horizontal and vertical\n",
+             d.file_name, d.line_number);
+          exit(-1);
+        }
+        last = 'H';
         x2 = atof(argv[i+1]);
-        printf("Making Horizontal section to %lg\n", x2);
+        if (!silent) printf("Making Horizontal section to %lg\n", x2);
         y2 = y1;
         if (((i+2) < (argc-1)) && (argv[i+2][0] != 'b') && (argv[i+2][0] != 'B'))
         {
@@ -375,8 +399,15 @@ void simple_pipe_t::generate(plugin_data_t d, int argc, char **argv)
         break;
       case 'v':
       case 'V':
+        if ((!first) && (last != 'H'))
+        {
+          printf("%s, line %d: you must alternate horizontal and vertical\n",
+             d.file_name, d.line_number);
+          exit(-1);
+        }
+        last = 'V';
         y2 = atof(argv[i+1]);
-        printf("Making Vertical section to %lg\n", y2);
+        if (!silent) printf("Making Vertical section to %lg\n", y2);
         x2 = x1;
         if (((i+2) < (argc-1)) && (argv[i+2][0] != 'b') && (argv[i+2][0] != 'B'))
         {
@@ -388,12 +419,23 @@ void simple_pipe_t::generate(plugin_data_t d, int argc, char **argv)
         break;
       case 'b':
       case 'B':
-        printf("Making piece to butt against a pipe %lg, %lg\n", x2, y2);
+        if (!silent) printf("Making piece to butt against a pipe %lg, %lg\n", x2, y2);
+        if (argc != (i + 2))
+        {
+          printf("%s, line %d: Butt end must be the last argument for simple_pipe\n",
+             d.file_name, d.line_number);
+          exit(-1);
+        }
+
         butt_width = atof(argv[i+1]);
         gen_butt_end(d.svg_fp, width, butt_width, x2, y2);
         break;
       default:
         printf("Error: %s, must be either 'h' or 'v' or 'b' for the direction\n", argv[i]);
+        printf("%s, line %d: found %s, must be either 'h' or 'v' or 'b' for the direction\n",
+           d.file_name, d.line_number, argv[i]);
+        exit(-1);
+
         break;
     } 
     x1 = x2;

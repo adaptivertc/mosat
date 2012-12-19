@@ -64,6 +64,12 @@ void bar_t::generate_doc(doc_object_base_t *dob)
 
 void bar_t::generate(plugin_data_t d, int argc, char **argv)
 {
+  if (argc != 6)
+  {
+    printf("%s, line %d: There must be 6 arguments to bar\n",
+           d.file_name, d.line_number);
+    exit(-1);
+  }
   const char *bar_color = "blue";
   const char *the_tag = argv[1];
   const char *the_color = argv[2];
