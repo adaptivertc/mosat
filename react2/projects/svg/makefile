@@ -9,6 +9,11 @@ export CPATH=../../../include/
 RTCOMMON=../../../librtcommon/librtcommon.a
 
 SILENT=-silent
+#SILENT=
+GENMODE=-sim
+#GENMODE=-react
+TINAMODE=-sim_file sim_tina.js
+#TINAMODE=-react
 
 CPP=g++ -Wall -Werror -std=c++0x
 
@@ -35,7 +40,7 @@ gen_display:  gen_display.cpp doc_text.cpp doc_html.cpp include_file.cpp gen_dis
 	$(CPP) gen_display.cpp doc_text.cpp doc_html.cpp include_file.cpp -ldl -rdynamic -o gen_display $(RTCOMMON)
 
 dtest.svg: display.txt gen_display so_files
-	./gen_display $(SILENT) -f display.txt -d ./plugins/ -o dtest.svg -sim
+	./gen_display $(SILENT) -f display.txt -d ./plugins/ -o dtest.svg $(GENMODE)
 
 install: 
 	sudo cp ai.svg /var/www
@@ -46,47 +51,47 @@ depend:
 .PHONY: imasa gauge spray.slider slider svgs feed cool switch tina transfer spray
 
 gauge:
-	./gen_display $(SILENT) -f display.gauge.txt -o gauge.svg -sim
+	./gen_display $(SILENT) -f display.gauge.txt -o gauge.svg $(GENMODE)
 
 spray.slider:
-	./gen_display $(SILENT) -f display.spray.slider.txt -o spray.slider.svg -sim
+	./gen_display $(SILENT) -f display.spray.slider.txt -o spray.slider.svg $(GENMODE)
 
 slider:
-	./gen_display $(SILENT) -f display.slider.txt -o slider.svg -sim
+	./gen_display $(SILENT) -f display.slider.txt -o slider.svg $(GENMODE)
 
 doc:
 	./gen_display $(SILENT) -doc -html -o svgdoc.html
 	./gen_display $(SILENT) -doc -text -o svgdoc.txt
 
 feed: 
-	./gen_display $(SILENT) -f display.feedtanks.txt -o feed.svg -sim -popup
+	./gen_display $(SILENT) -f display.feedtanks.txt -o feed.svg $(GENMODE) -popup
 
 cool:
-	./gen_display $(SILENT) -f display.coolingtower.txt -o cool.svg -sim -popup
+	./gen_display $(SILENT) -f display.coolingtower.txt -o cool.svg $(GENMODE) -popup
 
 switch:
-	./gen_display $(SILENT) -f display.switch.txt -o switch.svg -sim
+	./gen_display $(SILENT) -f display.switch.txt -o switch.svg $(GENMODE)
 
 spray:
-	./gen_display $(SILENT) -f display.spray.round.txt -o spray.svg -sim -popup
+	./gen_display $(SILENT) -f display.spray.round.txt -o spray.svg $(GENMODE) -popup
 
 tina:
-	./gen_display $(SILENT) -f display.tina.txt -o tina.svg -sim_file sim_tina.js -popup
+	./gen_display $(SILENT) -f display.tina.txt -o tina.svg $(TINAMODE) -popup
 
 transfer:
-	./gen_display $(SILENT) -f display.transfer.txt -o transfer.svg -sim
+	./gen_display $(SILENT) -f display.transfer.txt -o transfer.svg $(GENMODE)
 
 imasa:
-	./gen_display $(SILENT) -f display.imasa.txt -o imasa.svg -sim
+	./gen_display $(SILENT) -f display.imasa.txt -o imasa.svg $(GENMODE)
 
 pipes:
-	./gen_display $(SILENT) -f display.pipes.txt -o pipes.svg -sim
+	./gen_display $(SILENT) -f display.pipes.txt -o pipes.svg $(GENMODE)
 
 pipes2d:
-	./gen_display $(SILENT) -f display.pipes2d.txt -o pipes2d.svg -sim
+	./gen_display $(SILENT) -f display.pipes2d.txt -o pipes2d.svg $(GENMODE)
 
 clean:
 	rm -rv gen_points gen_bar gen_tank gen_so_makefile ./plugins/*.so gen_display
 
-svgs: feed cool spray transfer tina switch imasa pipes pipes2d gauge
+svgs: feed cool spray transfer tina switch imasa pipes pipes2d gauge slider
 

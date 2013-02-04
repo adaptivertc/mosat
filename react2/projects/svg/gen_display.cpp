@@ -296,6 +296,14 @@ static void gen_simulation(FILE *js_fp)
     );
 
   fprintf(js_fp, 
+     "function get_config(the_tag)\n"
+     "{\n"
+     "  return sim.get_cfg(the_tag);\n"
+     "}\n"
+     "\n"
+    );
+
+  fprintf(js_fp, 
      "function config_objects()\n"
      "{\n"
      "  var i;\n"
@@ -460,12 +468,25 @@ static void gen_ajax_animation(FILE *js_fp)
     );
 
     fprintf(js_fp, 
+      "var config_vals = new Array();\n"
+      "function save_config(val)\n"
+      "{\n"
+      "  config_vals[val.tag.toUpperCase()] = val;\n"
+      "}\n"
+      "function get_config(the_tag)\n"
+      "{\n"
+      "  return config_vals[the_tag.toUpperCase()];\n"
+      "}\n"
+     );
+
+    fprintf(js_fp, 
       "function on_config_response()\n"
       "{\n"
       "  if (config_xReq.readyState != 4)  { return; }\n"
       "  console.log(\"config response: \" + config_xReq.responseText);\n"
       "  var val = JSON.parse(config_xReq.responseText);\n"
       "  update_objs[n_cfg].init(val);\n"
+      "  save_config(val);\n"
       "  \n"
       "  n_cfg++;\n"
       "  if (n_cfg >= update_tags.length) \n"
@@ -783,7 +804,10 @@ static void gen_final_file(const char *fname)
   // The popups must go here to be OUTSIDE of the main group
   if (popup_on)
   {
-    include_file(fp, "./svgplugins", "discrete_popup.svg", silent);
+    const char *dpopup_name = "discrete_popup.svg";
+    fprintf(fp, "<!-- START insert %s-->\n", dpopup_name);
+    include_file(fp, "./svgplugins", dpopup_name, silent);
+    fprintf(fp, "<!-- END insert %s-->\n", dpopup_name);
   }
   fprintf(fp, "<script type=\"text/ecmascript\"><![CDATA[\n");
      // max one output every 250 ms
@@ -813,10 +837,10 @@ static void gen_final_file(const char *fname)
       "  dpopupobj.parentNode.appendChild(dpopupobj);\n"
       "  var onobj=document.getElementById(\"popup_on\");\n"
       //"  onobj.textContent=text_on;\n"
-      "  onobj.textContent=sim.get_cfg(the_tag).hi_desc;\n"
+      "  onobj.textContent=get_config(the_tag).hi_desc;\n"
       "  var offobj=document.getElementById(\"popup_off\");\n"
       //"  offobj.textContent=text_off;\n"
-      "  offobj.textContent=sim.get_cfg(the_tag).lo_desc;\n"
+      "  offobj.textContent=get_config(the_tag).lo_desc;\n"
       "  var tagobj=document.getElementById(\"popup_tag\");\n"
       "  tagobj.textContent=the_tag;\n"
       "}\n"

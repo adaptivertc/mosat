@@ -81,12 +81,12 @@ typedef enum
   SQR_OP,
 }  expr_token_t;
 
-typedef enum
+enum  expr_type_t
 {
   ANALOG_EXPR = 0,
   DISCRETE_EXPR = 1,
   BAD_EXPR = 2
-}  expr_type_t;
+};
 
 union expr_data_t
 {
