@@ -111,7 +111,7 @@ const char *simple_tank_t::get_name(void)
 
 void simple_tank_t::generate_doc(doc_object_base_t *dob)
 {
-  dob->start("simple_tank", "Either a standard pressure tank, or a cone take");
+  dob->start("simple_tank", "Either a standard pressure tank, or a cone tank");
   dob->param("Type (c = cone, p = pressure)");
   dob->param("tank color (both types)");
   dob->param("X of upper left (both types)");

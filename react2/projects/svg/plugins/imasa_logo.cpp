@@ -183,9 +183,9 @@ void imasa_logo_t::generate(plugin_data_t d, int argc, char **argv)
   double height = atof(argv[3]);
   double width = height;
   
-  fprintf(d.svg_fp, "<!--  START insert for imasa_logo (%03d) -->\n", n_instance);
+  //fprintf(d.svg_fp, "<!--  START insert for imasa_logo (%03d) -->\n", n_instance);
   gen_imasa_logo(d.svg_fp, x, y, height, width);
-  fprintf(d.svg_fp, "<!--  END insert for imasa_logo (%03d) -->\n", n_instance);
+  //fprintf(d.svg_fp, "<!--  END insert for imasa_logo (%03d) -->\n", n_instance);
   n_instance++;
 }
 

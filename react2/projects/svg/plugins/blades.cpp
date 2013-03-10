@@ -116,7 +116,7 @@ void blades_t::generate(plugin_data_t d, int argc, char **argv)
 
   fprintf(d.svg_fp, "</g>\n");
 
-  if ((strlen(the_tag) > 0) && (0 != strcmp(the_tag, "null")))
+  if ((strlen(the_tag) > 0) && (0 != strcasecmp(the_tag, "null")))
   {
     fprintf(d.js_fp, "var %s = new pump_t(\"%s\", \"%s\", \"%s\");\n",
              js_object_name, js_group_name, on_color, off_color);

@@ -12,11 +12,27 @@ Ok, what is exposed to plugins so that they can do their work, and how do they g
 
 There is a configuration file that is a delimited text file that has the name of the plugin in the first column, and, then the parameters for the plugin in the following columns. The system will parse each line and divide it into arguments delimited by '|', and, then pass these arguments to the corresponding plugin specified in the first argument.
 
+
+
+
 A plugin must inherit from "gen_plugin_base_t", which is an object with two pure virtual functions that you must implement: "get_name()", and "generate()". The method "get_name()" must return the name of the plugin, and the generate function will be called for EVERY line in th delimited configuration file that has that same name in the first column.
 
-The generate method recieves three file pointer (insertion points) that the plugin can write to, as well as argc/argv with all of the arguments.
+The generate method recieves plugin_data_t structure, as well as argc/argv with all of the arguments.
 
-void generate(FILE *svg_fp, FILE *svg_after_header_fp, FILE *js_fp, int argc, char **argv);
+void generate(plugin_data_t d, int argc, char **argv);
+
+The plugin_data_t is as follows.
+
+struct plugin_data_t
+{
+  FILE *svg_fp;
+  FILE *svg_top_of_file_fp;
+  FILE *js_fp;
+  bool popup_on;
+  const char *file_name;
+  int line_number;
+  bool silent;
+};
 
 1) svg_fp: This is the file where you insert the SVG objects that need to be drawn and possibly animated. You can also generate SVG objects using the Javascript APIs from the animation object constructor, or, the init method of the animation object constructor
 
@@ -24,7 +40,15 @@ void generate(FILE *svg_fp, FILE *svg_after_header_fp, FILE *js_fp, int argc, ch
 
 3) js_fp: This is where you put any Javascript code that you need to generate, and will be typically have ONLY the call to the constructor for you animation object with the required parameters. NOTE: the library that you need to implement your object should be inserted using the "add_js_library()" function call (see below).
 
-Besides generating (inserting) code into the files specified above, a plugin can call the following functions:
+4) popup_on: This tells the plugin if popups have been enabled so they can decide if they should generage any code to support popups.
+
+5) file_name: This is the file name of the configuration file that can be used when generating an error message.
+
+6) line_number: This is the line number in the file, which can also be used when generating an error message.
+
+7) silent: This is a flag instructing the popup that NO debug text should be generated to stdout during generation.
+
+Besides generating (inserting) code directly into the files specified above, a plugin can call the following functions:
 
 1) void add_js_library(const char *file_name);
 

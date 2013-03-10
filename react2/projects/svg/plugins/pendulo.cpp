@@ -45,9 +45,11 @@ const char *pendulo_t::get_name(void)
 
 void pendulo_t::generate_doc(doc_object_base_t *dob)
 {
+  /**
   dob->start("pendulo", "A simple pendulum");
   dob->notes("Just for testing");
   dob->end();
+  **/
 }
 
 

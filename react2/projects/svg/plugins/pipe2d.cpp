@@ -438,7 +438,7 @@ void pipe2d_t::generate(plugin_data_t d, int argc, char **argv)
 
 
   fprintf(d.svg_fp, "<!--  END insert for pipe2d (%03d) -->\n", n_instance);
-  if ((strlen(the_tag) > 0) && (0 != strcmp(the_tag, "null")))
+  if ((strlen(the_tag) > 0) && (0 != strcasecmp(the_tag, "null")))
   {
     add_js_library("pump.js");
     add_animation_object(the_tag, js_object_name);

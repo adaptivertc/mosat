@@ -45,9 +45,11 @@ const char *trasladar_t::get_name(void)
 
 void trasladar_t::generate_doc(doc_object_base_t *dob)
 {
+  /***
   dob->start("traslador", "Simple object that translate");
   dob->notes("Testing only");
   dob->end();
+  ***/
 }
 
 void trasladar_t::generate(plugin_data_t d, int argc, char **argv)

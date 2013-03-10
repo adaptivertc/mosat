@@ -79,7 +79,7 @@ void discrete_pv_t::generate(plugin_data_t d, int argc, char **argv)
   fprintf(d.svg_fp, "<text id=\"discrete_pv_%03d\" x=\"%lg\" y=\"%lg\" font-family=\"Verdana\" font-size=\"%lg\" fill=\"%s\" text-anchor=\"middle\">0</text>\n",
              n_instance, x, y, font_size, color); 
 
-  if ((strlen(the_tag) > 0) && (0 != strcmp(the_tag, "null")))
+  if ((strlen(the_tag) > 0) && (0 != strcasecmp(the_tag, "null")))
   {
     char js_object_name[30];
     snprintf(js_object_name, sizeof(js_object_name), "discrete_pv_obj_%03d", n_instance);

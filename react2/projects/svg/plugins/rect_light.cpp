@@ -62,14 +62,15 @@ void rect_light_t::generate_doc(doc_object_base_t *dob)
 
 void rect_light_t::generate(plugin_data_t d, int argc, char **argv)
 {
-  if (argc != 9)
+
+  if ((argc != 10) && (argc != 9))
   {
-    printf("%s, line %d: There must be 9 arguments to rect_light\n",
+    printf("%s, line %d: There must be 9 or 10 arguments to rect_light\n",
            d.file_name, d.line_number);
     exit(-1);
   }
 
-  const char *tag = argv[1];
+  const char *the_tag = argv[1];
   const char *on_color = argv[2];
   const char *off_color = argv[3];
   double x = atof(argv[4]);
@@ -82,6 +83,12 @@ void rect_light_t::generate(plugin_data_t d, int argc, char **argv)
   double text_x, text_y;
   const char *text_align;
   bool has_text=true;
+  bool gen_popup = false;
+  if (d.popup_on && (argc > 9))
+  {
+    gen_popup = (argv[9][0] == '1');
+  }
+
   
   switch (text_location)
    {
@@ -129,11 +136,24 @@ void rect_light_t::generate(plugin_data_t d, int argc, char **argv)
 
   fprintf(d.js_fp, "var %s = new rect_light_t(\"rect_light_%03d\", %s, \"%s\", \"%s\");\n", js_object_name, n_instance, js_pv_name, on_color, off_color); 
 
+  if (gen_popup)
+  {
+    double px, py;
+    find_a_place_nearby(&px, &py, x, y, width, height);
+    fprintf(d.svg_fp, "<rect x=\"%lg\"  y=\"%lg\" width=\"%lg\" height=\"%lg\"\n"
+       "  onclick=\"show_popup(%lg,%lg,'ON', 'Off', '%s')\" visibility=\"hidden\"\n"
+       "  pointer-events=\"all\" onmouseover=\"this.style.cursor='pointer';\"/>\n",
+         x, y, width, height, px, py, the_tag);
+  }
+
   fprintf(d.svg_fp, "<!--  END insert for rect_light (%03d) -->\n", n_instance);
   fprintf(d.js_fp, "// --  END insert for rect_light (%03d)\n", n_instance);
 
-  add_js_library("rect_light.js");
-  add_animation_object(tag, js_object_name);
+  if ((strlen(the_tag) > 0) && (0 != strcasecmp(the_tag, "null")))
+  {
+    add_js_library("rect_light.js");
+    add_animation_object(the_tag, js_object_name);
+  }
 
   n_instance++;
 }

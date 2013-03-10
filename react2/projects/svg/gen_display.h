@@ -7,9 +7,8 @@ char *check_params(rtsvg_param_t params[]);
 struct plugin_data_t
 {
   FILE *svg_fp;
-  FILE *js_fp;
-  //FILE *svg_after_header_fp;
   FILE *svg_top_of_file_fp;
+  FILE *js_fp;
   bool popup_on;
   const char *file_name;
   int line_number;

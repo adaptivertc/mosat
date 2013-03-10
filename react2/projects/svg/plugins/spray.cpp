@@ -128,7 +128,7 @@ void spray_t::generate(plugin_data_t d, int argc, char **argv)
   fprintf(d.js_fp, "var %s = new spray_t(\"%s\");\n",
              js_object_name, js_group_name);
   fprintf(d.svg_fp, "<!--  END insert for spray (%03d) -->\n", n_instance);
-  if ((strlen(the_tag) > 0) && (0 != strcmp(the_tag, "null")))
+  if ((strlen(the_tag) > 0) && (0 != strcasecmp(the_tag, "null")))
   {
     add_js_library("spray.js");
     add_animation_object(the_tag, js_object_name);

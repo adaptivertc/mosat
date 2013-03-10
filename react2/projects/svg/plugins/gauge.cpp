@@ -215,7 +215,7 @@ void gauge_t::generate(plugin_data_t d, int argc, char **argv)
                             n_instance, cx, cy + (width * (45.0/150.0)), width * (15.0/150.0));
   fprintf(d.svg_fp, "       alignment-baseline=\"middle\" text-anchor=\"middle\">cm</text>\n");
 
-  if ((strlen(the_tag) > 0) && (0 != strcmp(the_tag, "null")))
+  if ((strlen(the_tag) > 0) && (0 != strcasecmp(the_tag, "null")))
   {
     char js_object_name[30];
     snprintf(js_object_name, sizeof(js_object_name), "gauge_obj_%03d", n_instance);

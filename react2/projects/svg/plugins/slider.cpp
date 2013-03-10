@@ -243,7 +243,7 @@ void slider_t::generate(plugin_data_t d, int argc, char **argv)
   fprintf(d.js_fp, "document.addEventListener(\"mouseup\", %s, false);\n", slider_mouseup_name);
   fprintf(d.js_fp, "document.addEventListener(\"mousemove\", %s, false);\n", slider_mousemove_name);
 
-  if ((strlen(the_tag) > 0) && (0 != strcmp(the_tag, "null")))
+  if ((strlen(the_tag) > 0) && (0 != strcasecmp(the_tag, "null")))
   {
     fprintf(d.js_fp, "var %s = new slider_t(\"%s\", \"%s\", \"%s\", \"%s\", %lg, %lg, %lg, %lg, \"%s()\");\n", 
        js_object_name, the_tag, js_circle_name, js_rect_name, 

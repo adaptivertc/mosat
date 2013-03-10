@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
   }
   fprintf(fp, "\nexport CPATH=../:../../../../include/\n\n");
   fprintf(fp, ".PHONY: clean all\n\n"); 
-  fprintf(fp, "CPP=g++ -Wall -Werror -std=c++0x -fPIC -shared\n\n");
+  fprintf(fp, "CPP=g++ -Wall -Werror -Wformat=2 -std=c++0x -fPIC -shared\n\n");
   fprintf(fp, "all: ");
   for (int i=0; i < n_base; i++)
   {

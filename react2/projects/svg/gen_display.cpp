@@ -241,7 +241,7 @@ static void gen_simulation(FILE *js_fp)
     }
     fprintf(js_fp, 
            ");\n"
-       "var arg_tags;\n"
+       "var arg_tags=null;\n"
        "var n_arg_cfg = 0;\n"
       ); 
   }
@@ -290,17 +290,35 @@ static void gen_simulation(FILE *js_fp)
        "function send_output(tag, new_value)\n"
        "{\n"
        "  console.log(\"send_output, tag: \" + tag + \": \" + new_value);\n"
-       "  sim.set_pv(tag, new_value);\n"
+       "  if ('$' == tag.charAt(0))\n"
+       "  {\n"
+       "    // only convert if arg_tags have been set\n"
+       "    if (arg_tags == null) return;\n"
+       "    var argn = parseInt(tag.substring(1)) - 1;\n"
+       "    sim.set_pv(arg_tags[argn], new_value);\n"
+       "  }\n"
+       "  else\n"
+       "  {\n"
+       "    sim.set_pv(tag, new_value);\n"
+       "  }\n"
        "}\n"
       "\n"
     );
 
   fprintf(js_fp, 
-     "function get_config(the_tag)\n"
-     "{\n"
-     "  return sim.get_cfg(the_tag);\n"
-     "}\n"
-     "\n"
+       "function get_config(the_tag)\n"
+       "{\n"
+       "  if ('$' == the_tag.charAt(0))\n"
+       "  {\n"
+       "    var argn = parseInt(the_tag.substring(1)) - 1;\n"
+       "    return sim.get_cfg(arg_tags[argn]);\n"
+       "  }\n"
+       "  else\n"
+       "  {\n"
+       "    return sim.get_cfg(the_tag);\n"
+       "  }\n"
+       "}\n"
+       "\n"
     );
 
   fprintf(js_fp, 
@@ -437,7 +455,7 @@ static void gen_ajax_animation(FILE *js_fp)
       "arg_config_hrf = \"http://\" + location.hostname + \"/react/config?\";\n"
       "var arg_update_xReq;\n"
       "var arg_config_xReq;\n"
-      "var arg_tags;\n"
+      "var arg_tags=null;\n"
       "var n_arg_cfg = 0;\n"
     );
   }
@@ -452,8 +470,21 @@ static void gen_ajax_animation(FILE *js_fp)
     fprintf(js_fp, "var n_cfg = 0;\n");
 
     fprintf(js_fp, 
-      "function send_output(tag, val)\n"
+      "function send_output(the_tag, val)\n"
       "{\n"
+      "  var tag;\n"
+      "  if ('$' == the_tag.charAt(0))\n"
+      "  {\n"
+      "    // only convert if arg_tags have been set\n"
+      "    if (arg_tags == null) return;\n"
+      "    var argn = parseInt(the_tag.substring(1)) - 1;\n"
+       "   tag = arg_tags[argn];\n"
+      "  }\n"
+      "  else\n"
+      "  {\n"
+      "    tag = the_tag;\n"
+      "  }\n"
+
       "  var path = \"react/output?\" + tag + \"+\" + val;\n"
       "  console.log(\"send_output(\" + tag + \", \" + val + \")\");\n"
       "  console.log(path);\n"
@@ -475,7 +506,15 @@ static void gen_ajax_animation(FILE *js_fp)
       "}\n"
       "function get_config(the_tag)\n"
       "{\n"
-      "  return config_vals[the_tag.toUpperCase()];\n"
+      "  if ('$' == the_tag.charAt(0))\n"
+      "  {\n"
+      "    var argn = parseInt(the_tag.substring(1)) - 1;\n"
+      "    return config_vals[arg_tags[argn].toUpperCase()];\n"
+      "  }\n"
+      "  else\n"
+      "  {\n"
+      "    return config_vals[the_tag.toUpperCase()];\n"
+      "  }\n"
       "}\n"
      );
 

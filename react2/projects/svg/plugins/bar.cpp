@@ -162,7 +162,7 @@ void bar_t::generate(plugin_data_t d, int argc, char **argv)
                     n_instance, cx, y + height + (font_size * 1.1), font_size); 
 //---------------
 
-  if ((strlen(the_tag) > 0) && (0 != strcmp(the_tag, "null")))
+  if ((strlen(the_tag) > 0) && (0 != strcasecmp(the_tag, "null")))
   {
     char js_object_name[30];
     snprintf(js_object_name, sizeof(js_object_name), "bar_obj_%03d", n_instance);

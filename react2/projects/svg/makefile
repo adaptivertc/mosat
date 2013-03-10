@@ -15,7 +15,7 @@ GENMODE=-sim
 TINAMODE=-sim_file sim_tina.js
 #TINAMODE=-react
 
-CPP=g++ -Wall -Werror -std=c++0x
+CPP=g++ -Wall -Werror -Wformat=2 -std=c++0x
 
 all: so_files gen_points gen_bar gen_tank gen_display
 
@@ -52,9 +52,11 @@ depend:
 
 gauge:
 	./gen_display $(SILENT) -f display.gauge.txt -o gauge.svg $(GENMODE)
+	cp display.gauge.txt gauge.svg demofiles
 
 spray.slider:
 	./gen_display $(SILENT) -f display.spray.slider.txt -o spray.slider.svg $(GENMODE)
+	cp display.spray.slider.txt spray.slider.svg demofiles
 
 slider:
 	./gen_display $(SILENT) -f display.slider.txt -o slider.svg $(GENMODE)
@@ -65,33 +67,42 @@ doc:
 
 feed: 
 	./gen_display $(SILENT) -f display.feedtanks.txt -o feed.svg $(GENMODE) -popup
+	cp display.feedtanks.txt feed.svg demofiles
 
 cool:
 	./gen_display $(SILENT) -f display.coolingtower.txt -o cool.svg $(GENMODE) -popup
+	cp display.coolingtower.txt cool.svg demofiles
 
 switch:
 	./gen_display $(SILENT) -f display.switch.txt -o switch.svg $(GENMODE)
+	cp display.switch.txt switch.svg demofiles
 
 spray:
 	./gen_display $(SILENT) -f display.spray.round.txt -o spray.svg $(GENMODE) -popup
+	cp display.spray.round.txt spray.svg demofiles
 
 tina:
 	./gen_display $(SILENT) -f display.tina.txt -o tina.svg $(TINAMODE) -popup
+	cp display.tina.txt tina.svg demofiles
 
 transfer:
 	./gen_display $(SILENT) -f display.transfer.txt -o transfer.svg $(GENMODE)
+	cp display.transfer.txt transfer.svg demofiles
 
 imasa:
 	./gen_display $(SILENT) -f display.imasa.txt -o imasa.svg $(GENMODE)
 
 pipes:
 	./gen_display $(SILENT) -f display.pipes.txt -o pipes.svg $(GENMODE)
+	cp display.pipes.txt pipes.svg demofiles
 
 pipes2d:
 	./gen_display $(SILENT) -f display.pipes2d.txt -o pipes2d.svg $(GENMODE)
+	cp display.pipes2d.txt pipes2d.svg demofiles
 
 clean:
 	rm -rv gen_points gen_bar gen_tank gen_so_makefile ./plugins/*.so gen_display
 
 svgs: feed cool spray transfer tina switch imasa pipes pipes2d gauge slider
+	google-chrome demofiles/gauge.svg
 
