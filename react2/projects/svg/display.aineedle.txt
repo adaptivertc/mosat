@@ -1,4 +1,4 @@
-svg_header|Feed Tanks|0|0|300|150|
+svg_header|AI Faceplate|0|0|300|150|
 background|thistle|
 link_params|50|10|7|firebrick|middle|airound.svg|Round|aibar.svg|Bar|
 gauge|2|$1|firebrick|10|15|80|

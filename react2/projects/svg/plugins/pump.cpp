@@ -53,6 +53,7 @@ void pump_t::generate_doc(doc_object_base_t *dob)
   dob->param("Center Y for the pump");
   dob->param("Type (1 = clockwise outlet, 2 = counterclockwise outlet)");
   dob->param("Angle of rotation, not including base (typcially 0, 90, 180, or 270)");
+  dob->param("Generate popup 1 = yes, 0 = no");
   dob->example("pump|PUMP_ON|lime|gray|65|130|12|1|90|");
   dob->end();
 }

@@ -54,6 +54,7 @@ void valve_t::generate_doc(doc_object_base_t *dob)
   dob->param("Width");
   dob->param("Type (1 = square handle, 2 = rounded handle)");
   dob->param("Rotation Angle (typically 0, 90, 180, or 270)");
+  dob->param("Generate popup 1 = yes, 0 = no");
   dob->example("valve|VALVE3_ON|lime|gray|240|50|8|2|270|1|");
   dob->notes("We need to continue adding types of valves.");
   dob->end();

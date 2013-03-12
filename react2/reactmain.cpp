@@ -27,11 +27,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 
 #include "db.h"
-#include "utimer.h"
 #include "logfile.h"
 #include "conio.h"
 #include "ap_config.h"
 #include "timeaccum.h"
+#include "utimer.h"
 
 react_base_t *db = NULL;
 static react_t *reactdb = NULL;

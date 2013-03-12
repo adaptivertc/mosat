@@ -49,13 +49,6 @@ Member functions for the real time database.
 
 #include <sys/ipc.h>
 #include <sys/msg.h>
-#ifdef __REACT_MSG__
-#include "reactmsg.h"
-#endif
-#ifdef __REACT_SHM__
-#include <sys/ipc.h>
-#include <sys/shm.h>
-#endif
 
 static react_t *reactdb = NULL;
 
@@ -133,16 +126,6 @@ void react_t::exit_clean_up(void)
   {
     file_logger_points[i]->write_to_file();
   }
-
-
-
-#ifdef __REACT_MSG__
-  delete_msg_queue();
-#endif
-
-#ifdef __REACT_SHM__
-  delete_shared_memory();
-#endif
 
   for (int i=0; i < num_io_drivers; i++)
   {
@@ -472,18 +455,6 @@ void react_t::read_inputs(void)
   }
   taa[j].stop();
 
-#ifdef __REACT_SHM__
-  this->update_shared_memory();
-#endif
-  /**
-  {
-    time_t t;
-    t = time(NULL);
-    printf("%s\n", ctime(&t));
-  }
-  **/
-
-  //printf("\n");
   if (shutdown)
   {
     logfile->vprint("\nShuting down, sending all discrete outputs\n");
@@ -516,10 +487,6 @@ bool react_t::update(double theTime, bool execute_script)
   ta1.start();
   this->read_inputs();
   ta1.stop();
-
-#ifdef __REACT_MSG__
-  check_msg_queue();
-#endif
 
   if (execute_script)
   {
@@ -814,9 +781,9 @@ db_point_t ** react_t::read_one_point_type(db_point_factory_t *factory,
 {
   logfile->vprint("Reading %s ........\n", factory->abbreviation());
   int max_points = 100;
-  db_point_t **db_points =
+  db_point_t **dbps =
 	(db_point_t **) malloc(max_points * sizeof(db_point_t*));
-  MALLOC_CHECK(db_points);
+  MALLOC_CHECK(dbps);
 
   int n = 0;
   *cnt = 0;
@@ -850,9 +817,9 @@ db_point_t ** react_t::read_one_point_type(db_point_factory_t *factory,
 
     char errbuf[100];
 
-    db_points[n] = factory->new_point(argc, argv, errbuf, sizeof(errbuf));
+    dbps[n] = factory->new_point(argc, argv, errbuf, sizeof(errbuf));
 
-    if (db_points[n] == NULL)
+    if (dbps[n] == NULL)
     {
       logfile->vprint("%s:%d %s\n", path, i+1, errbuf);
       continue;
@@ -862,18 +829,18 @@ db_point_t ** react_t::read_one_point_type(db_point_factory_t *factory,
     if (n >= max_points)
     {
       max_points += 50;
-      db_points = (db_point_t **) realloc(db_points,
+      dbps = (db_point_t **) realloc(dbps,
 	      max_points * sizeof(db_point_t*));
-      MALLOC_CHECK(db_points);
+      MALLOC_CHECK(dbps);
     }
   }
   *cnt = n;
   if (n == 0)
   {
-    free(db_points);
+    free(dbps);
     return NULL;
   }
-  return db_points;
+  return dbps;
 }
 
 /************************************************************************/
@@ -1121,400 +1088,11 @@ void react_t::read_all_points(const char *a_home_dir)
     d_calcs[i]->parse_expr();
   }
   read_fns_end_hook();
-#ifdef __REACT_SHM__
-  this->init_shared_memory();
-  this->fill_shared_memory();
-  this->update_shared_memory();
-#endif
-#ifdef __REACT_MSG__
-  this->init_msg_queue();
-#endif
+
   this->setup_connection_handler();
 }
 
 /**********************************************************************/
-
-#ifdef __REACT_MSG__
-void react_t::check_msg_queue(void)
-{
-  reactmsgbuf_t msgbuf;
-  //printf("Checking queue . . \n");
-  if (-1 != msgrcv(this->qid, &msgbuf, sizeof(msgbuf.data), 1, IPC_NOWAIT))
-  {
-    //printf("Wow, another connection: %s\n", msgbuf.data.msg);
-    reactmsgbuf_t myreply;
-    myreply.mtype = 1;
-    myreply.data.qid = -1; // reall not used for a reply;
-
-    secuencia_step_t *stp;
-    stp = secuencia->new_script_type(msgbuf.data.msg,
-              myreply.data.msg, sizeof(myreply.data.msg), false);
-    if (stp == NULL)
-    {
-    }
-    else if (!stp->check())
-    {
-      delete stp;
-    }
-    else
-    {
-      stp->execute(0.0);
-      delete stp;
-      strcpy(myreply.data.msg, "SUCCESS");
-    }
-
-    //printf("Sending reply on qid: %d\n", msgbuf.data.qid);
-    int ret = msgsnd(msgbuf.data.qid, &myreply, sizeof(myreply.data), 0);
-    if (ret == -1)
-    {
-      logfile->perror("Can't send message\n");
-    }
-  }
-}
-#endif
-
-/**********************************************************************/
-
-#ifdef __REACT_SHM__
-void react_t::fill_shared_memory(void)
-{
-  if ((dinfo.adata == NULL) || (dinfo.ddata == NULL))
-  {
-    return;
-  }
-  int k=0;
-  for (int i=0; i < num_ai; i++)
-  {
-    safe_strcpy(dinfo.adata[k].tag, ai_points[i]->get_tag(),
-                   sizeof(dinfo.adata[k].tag));
-    safe_strcpy(dinfo.adata[k].description, ai_points[i]->description,
-                   sizeof(dinfo.adata[k].description));
-    dinfo.adata[i].min = ai_points[i]->eu_lo;
-    dinfo.adata[i].max = ai_points[i]->eu_hi;
-    dinfo.adata[i].dec = ai_points[i]->decimal;
-    k++;
-  }
-  for (int i=0; i < num_ao; i++)
-  {
-    safe_strcpy(dinfo.adata[k].tag, ao_points[i]->get_tag(),
-                   sizeof(dinfo.adata[k].tag));
-    safe_strcpy(dinfo.adata[k].description, ao_points[i]->description,
-                   sizeof(dinfo.adata[k].description));
-    dinfo.adata[i].min = ao_points[i]->output_limit_lo;
-    dinfo.adata[i].max = ao_points[i]->output_limit_hi;
-    dinfo.adata[i].dec = ao_points[i]->decimal;
-    k++;
-  }
-  k=0;
-  for (int i=0; i < num_di; i++)
-  {
-    safe_strcpy(dinfo.ddata[k].tag, di_points[i]->get_tag(),
-                   sizeof(dinfo.ddata[k].tag));
-    safe_strcpy(dinfo.ddata[k].description, di_points[i]->description,
-                   sizeof(dinfo.ddata[k].description));
-    k++;
-  }
-  for (int i=0; i < num_do; i++)
-  {
-    safe_strcpy(dinfo.ddata[k].tag, do_points[i]->get_tag(),
-                   sizeof(dinfo.ddata[k].tag));
-    safe_strcpy(dinfo.ddata[k].description, do_points[i]->description,
-                   sizeof(dinfo.ddata[k].description));
-    k++;
-  }
-  /**
-  for (int i=0; i < num_dcalc; i++)
-  {
-    safe_strcpy(dinfo.ddata[k].tag, dcalcs[i]->get_tag(),
-                   sizeof(dinfo.ddata[k].tag));
-    safe_strcpy(dinfo.ddata[k].description, dcalcs[i]->description,
-                   sizeof(dinfo.ddata[k].description));
-    k++;
-  }
-  **/
-}
-
-/**********************************************************************/
-
-void react_t::update_shared_memory(void)
-{
-  if ((dinfo.adata == NULL) || (dinfo.ddata == NULL))
-  {
-    return;
-  }
-  int k=0;
-  for (int i=0; i < num_ai; i++)
-  {
-    dinfo.adata[k].pv = ai_points[i]->pv;
-    dinfo.adata[k].state = ai_points[i]->get_point_state();
-    k++;
-  }
-  for (int i=0; i < num_ao; i++)
-  {
-    dinfo.adata[k].pv = ao_points[i]->pv;
-    dinfo.adata[k].state = ao_points[i]->get_point_state();
-    k++;
-  }
-  k=0;
-  for (int i=0; i < num_di; i++)
-  {
-    safe_strcpy(dinfo.ddata[k].pv, di_points[i]->pv_string,
-                   sizeof(dinfo.ddata[k].pv));
-    dinfo.ddata[k].state = di_points[i]->get_point_state();
-    k++;
-  }
-  for (int i=0; i < num_do; i++)
-  {
-    safe_strcpy(dinfo.ddata[k].pv, do_points[i]->pv_string,
-                   sizeof(dinfo.ddata[k].pv));
-    dinfo.ddata[k].state = do_points[i]->get_point_state();
-    k++;
-  }
-  /**
-  for (int i=0; i < num_dcalc; i++)
-  {
-    safe_strcpy(dinfo.ddata[k].pv, dcalcs[i]->pv_string,
-                   sizeof(dinfo.ddata[k].pv));
-    dinfo.ddata[k].state = dcalcs[i]->get_point_state();
-    k++;
-  }
-  **/
-}
-
-/**********************************************************************/
-
-void react_t::init_shared_memory(void)
-{
-  // First, calculate the size needed.
-  int shmsize = sizeof(display_info_t) + (sizeof(display_info_t) % 8);
-  int analog_offset = shmsize;
-  int n_analog = num_ai + num_ao;
-  int n_discrete = num_di + num_do;// + num_dcalc;
-  shmsize +=
-        (n_analog * sizeof(analog_display_data_t)) +
-       ((n_analog * sizeof(analog_display_data_t)) % 8);
-  int discrete_offset = shmsize;
-  shmsize +=
-        (n_discrete * sizeof(discrete_display_data_t)) +
-       ((n_discrete * sizeof(discrete_display_data_t)) % 8);
-  logfile->vprint("Analog offset = %d, discrete offset = %d\n",
-        analog_offset, discrete_offset);
-
-  // Create a shared segment, read/write for me, read only for others.
-  shmid =  shmget(IPC_PRIVATE, shmsize, IPC_CREAT | 0744);
-  if (shmid == -1)
-  {
-    logfile->perror("Could not create shared memory");
-    shmp = NULL;
-    return;
-  }
-  logfile->vprint("Created %d bytes of shared memory, id = %d\n", shmsize, shmid);
-
-  // Now attach to the shared memory.
-  shmp = shmat(shmid, NULL, 0);
-  if (shmp == (void *) -1)
-  {
-    logfile->perror("Could not attach to shared memory");
-    shmp = NULL;
-    return;
-  }
-  logfile->vprint("Attached to shared memory, addr = %p\n", shmp);
-
-  // Now issue a command to delete the segment. Notice we issue a delete
-  // command now, and it will only really be deleted when the LAST
-  // process detaches from shared memory.
-  int ret = shmctl(shmid, IPC_RMID, NULL);
-  if (ret == -1)
-  {
-    logfile->perror("Could not remove shared memory");
-    shmp = NULL;
-    return;
-  }
-  char *cp = (char *)shmp;
-  *cp = '#';
-  // Now put the info at address 0 and set up the pointers.
-  shm_data_header_t *shmheader = (shm_data_header_t *) cp;
-  shmheader->n_analog = n_analog;
-  shmheader->n_discrete = n_discrete;
-  shmheader->analog_offset = analog_offset;
-  shmheader->discrete_offset = discrete_offset;
-  get_display_pointers(shmp, &this->dinfo);
-
-  char path[200];
-  safe_strcpy(path, this->get_home_dir(), sizeof(path));
-  safe_strcat(path, "/shmid.txt", sizeof(path));
-  FILE *fp = fopen(path, "w");
-  if (fp == NULL)
-  {
-    logfile->perror(path);
-    return;
-  }
-  flogfile->vprint(fp, "%d\n", shmid);
-  fclose(fp);
-  logfile->vprint("%s: %d\n", path, shmid);
-}
-
-/**********************************************************************/
-
-void react_t::delete_shared_memory(void)
-{
-  // Detach from shared memory.
-  if (shmp == NULL)
-  {
-    logfile->vprint("Shared memory pointer is null . . .  can not detach\n");
-    return;
-  }
-  int ret = shmdt(shmp);
-  if (ret == -1)
-  {
-    logfile->perror("Could not detach from shared memory");
-    return;
-  }
-  logfile->vprint("Detach from shared memory successful\n");
-}
-
-#endif
-
-/**********************************************************************/
-
-#ifdef __REACT_MSG__
-void react_t::init_msg_queue(void)
-{
-  /* create the message que */
-
-  logfile->vprint("initializing queue . . \n");
-  int myqid = msgget(IPC_PRIVATE, IPC_CREAT | 0777);
-  if (myqid == -1)
-  {
-    logfile->perror("Could not create message queue");
-    return;
-  }
-  logfile->vprint("I got a message queue, id = %d\n", myqid);
-
-  // Write the id to a file for others to use.
-  char path[200];
-  safe_strcpy(path, this->get_home_dir(), sizeof(path));
-  safe_strcat(path, "/reactqid.txt", sizeof(path));
-  FILE *fp = fopen(path, "w");
-  if (fp == NULL)
-  {
-    logfile->perror(path);
-    return;
-  }
-  fprintf(fp, "%d\n", myqid);
-  double val;
-  this->qid = myqid;
-  fclose(fp);
-  logfile->vprint("%s: %d\n", path, myqid);
-}
-
-/**********************************************************************/
-
-void react_t::delete_msg_queue(void)
-{
-  if (qid == -1)
-  {
-    logfile->vprint("Message qid = -1, cannot destroy\n");
-    return;
-  }
-  int ret = msgctl(this->qid, IPC_RMID, NULL);
-  if (ret == -1)
-  {
-    logfile->perror("Could not destroy the message queue");
-    return;
-  }
-  logfile->vprint("Message queue destroyed successfully\n");
-}
-#endif
-
-/**********************************************************************/
-
-/**
-static const char * qname = "/adaptivertc.react.write_tag"; 
-static mqd_t mq_fd = (mqd_t) -1;
- **/
-
-static const char *wr_msg_name = "/home/artc";
-//static int wr_msg_id;
-
-
-
-void react_t::open_write_tag_queue(void)
-{
-  /***
-  mq_fd = mq_open(qname, O_RDWR | O_CREAT, 0755, NULL);
-  if (mq_fd == ((mqd_t) -1))
-  {
-    perror("mq_open");
-  }
-  ****/
-
-}
-
-/**********************************************************************/
-
-void react_t::check_write_tag_queue(void)
-{
-  /**
-  if (mq_fd == ((mqd_t) -1)) return;
-
-  unsigned prio;
-  char msgbuf[8192];
-  struct timespec ts;
-
-  ts.tv_sec = 0;
-  ts.tv_nsec = 0;
-  **/
-  tag_rw_data_t rwd;
-
-  key_t mykey = ftok(wr_msg_name, 1);
-  if (mykey == -1)
-  {
-    logfile->perror("Could not get shared memory key");
-    //logfile->vprint("Message queue destroyed successfully\n");
-    exit(0);
-  }
-  logfile->vprint("message queue key is: %x\n", mykey);
-
-  int myqid = msgget(mykey, IPC_CREAT | 0755);
-  if (myqid == -1)
-  {
-    logfile->perror("Could not create message queue");
-  }
-  else
-  {
-    logfile->vprint("I got a message queue, id = %d\n", myqid);
-  }
-
-
-  //int rval = mq_receive(mq_fd, msgbuf, sizeof(msgbuf), &prio);
-  //if (rval == -1)
-  //{
-  //  perror("mq_recieve");
-  //}
-
-  /***
-  int retv = mq_timedreceive(mq_fd, msgbuf, sizeof(msgbuf), &prio, &ts);
-
-  if (retv != sizeof(rwd)) return;
-
-  memcpy(&rwd, msgbuf, sizeof(rwd));
-  **/
-
-  const char *tag = rwd.tag;
-  db_point_t *dbp;
-  analog_value_point_t *aval;
-  dbp = this->get_db_point(tag);
-  if (dbp == NULL) return;
-  aval = dynamic_cast <analog_value_point_t *> (dbp);
-  if (aval != NULL)
-  {
-    aval->set(atof(rwd.value));
-  }
-}
-
-/**********************************************************************/
-
 
 static secuencia_t *background_sequences[20];
 static int n_background;
@@ -1838,224 +1416,13 @@ db_point_t *react_t::get_db_point(const char *the_tag)
 {
   /* This returns a pointer to a database point given the tag. */
 
-  db_point_t *p; 
   char tag[50];
-
   snprintf(tag, sizeof(tag), "%s", the_tag);
   for (char *p=tag; *p != '\0'; p++) 
   {
     *p = tolower(*p);
   }
-
-  //printf("---- looking for: %s\n", tag);
-  p = map[tag];
-  /**
-  if (p == NULL)
-  {
-    printf("NOT found\n");
-  }
-  else
-  {
-    printf("found\n");
-  }
-  **/
-
-  return p;
-
-  /**
-  int i;
-
-  for (i=0; i < num_ai; i++)
-  {
-    if (0 == strcasecmp(ai_points[i]->get_tag(), tag))
-    {
-      return ai_points[i];
-    }
-  }
-
-  for (i=0; i < num_pci; i++)
-  {
-    if (0 == strcasecmp(pci_points[i]->get_tag(), tag))
-    {
-      return pci_points[i];
-    }
-  }
-
-
-  for (i=0; i < num_ao; i++)
-  {
-    if (0 == strcasecmp(ao_points[i]->get_tag(), tag))
-    {
-      return ao_points[i];
-    }
-  }
-
-  for (i=0; i < num_di; i++)
-  {
-    if (0 == strcasecmp(di_points[i]->get_tag(), tag))
-    {
-      return di_points[i];
-    }
-  }
-
-
-  for (i=0; i < num_do; i++)
-  {
-    if (0 == strcasecmp(do_points[i]->get_tag(), tag))
-    {
-      return do_points[i];
-    }
-  }
-
-  for (i=0; i < num_calc; i++)
-  {
-    if (0 == strcasecmp(calcs[i]->get_tag(), tag))
-    {
-      return calcs[i];
-    }
-  }
-
-  for (i=0; i < num_d_calc; i++)
-  {
-    if (0 == strcasecmp(d_calcs[i]->get_tag(), tag))
-    {
-      return d_calcs[i];
-    }
-  }
-
-  for (i=0; i < num_dcalc; i++)
-  {
-    if (0 == strcasecmp(dcalcs[i]->get_tag(), tag))
-    {
-      return dcalcs[i];
-    }
-  }
-
-  for (i=0; i < num_timer; i++)
-  {
-    if (0 == strcasecmp(timers[i]->get_tag(), tag))
-    {
-      return timers[i];
-    }
-  }
-
-  for (i=0; i < num_analog_val; i++)
-  {
-    if (0 == strcasecmp(analog_vals[i]->get_tag(), tag))
-    {
-      return analog_vals[i];
-    }
-  }
-
-  for (i=0; i < num_discrete_val; i++)
-  {
-    if (0 == strcasecmp(discrete_vals[i]->get_tag(), tag))
-    {
-      return discrete_vals[i];
-    }
-  }
-
-
-  for (i=0; i < num_int; i++)
-  {
-    if (0 == strcasecmp(ints[i]->get_tag(), tag))
-    {
-      return ints[i];
-    }
-  }
-
-  for (i=0; i < num_pid; i++)
-  {
-    if (0 == strcasecmp(pid_points[i]->get_tag(), tag))
-    {
-      return pid_points[i];
-    }
-  }
-
-  for (i=0; i < num_rpid; i++)
-  {
-    if (0 == strcasecmp(rpid_points[i]->get_tag(), tag))
-    {
-      return rpid_points[i];
-    }
-  }
-
-  for (i=0; i < num_pump; i++)
-  {
-    if (0 == strcasecmp(pump_points[i]->get_tag(), tag))
-    {
-      return pump_points[i];
-    }
-  }
-
-  for (i=0; i < num_ac; i++)
-  {
-    if (0 == strcasecmp(ac_points[i]->get_tag(), tag))
-    {
-      return ac_points[i];
-    }
-  }
-
-
-  for (i=0; i < num_level; i++)
-  {
-    if (0 == strcasecmp(level_points[i]->get_tag(), tag))
-    {
-      return level_points[i];
-    }
-  }
-
-
-  for (i=0; i < num_data; i++)
-  {
-    if (0 == strcasecmp(data_points[i]->get_tag(), tag))
-    {
-      return data_points[i];
-    }
-  }
-
-  for (i=0; i < num_file_logger; i++)
-  {
-    if (0 == strcasecmp(file_logger_points[i]->get_tag(), tag))
-    {
-      return file_logger_points[i];
-    }
-  }
-
-  for (i=0; i < num_web_logger; i++)
-  {
-    if (0 == strcasecmp(web_logger_points[i]->get_tag(), tag))
-    {
-      return web_logger_points[i];
-    }
-  }
-
-  for (i=0; i < num_discrete_logger; i++)
-  {
-    if (0 == strcasecmp(discrete_logger_points[i]->get_tag(), tag))
-    {
-      return discrete_logger_points[i];
-    }
-  }
-
-  for (i=0; i < num_scan; i++)
-  {
-    if (0 == strcasecmp(scan_points[i]->get_tag(), tag))
-    {
-      return scan_points[i];
-    }
-  }
-
-  for (i=0; i < num_web; i++)
-  {
-    if (0 == strcasecmp(web_points[i]->get_tag(), tag))
-    {
-      return web_points[i];
-    }
-  }
-
-  return NULL;
-***/
+  return  map[tag];
 }
 
 /***********************************************************************/

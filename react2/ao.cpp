@@ -69,7 +69,7 @@ int ao_point_t::set_json(const char *attribute, const char *value)
   else if (0 == strcmp(attribute, "ramp"))
   {
     if (value[0] != '[') return -3; // must be an array
-    double ramp_val = atof(value + 1);
+    double ramp_v = atof(value + 1);
     double ramp_time = 0;
     bool found = false;
     for (unsigned int i=0; i < strlen(value); i++)
@@ -82,7 +82,7 @@ int ao_point_t::set_json(const char *attribute, const char *value)
     }
     if (found) 
     {
-      this->ramp(ramp_val, ramp_time);
+      this->ramp(ramp_v, ramp_time);
       return 0;
     }
     return -3;

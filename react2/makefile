@@ -1,10 +1,10 @@
 # Makefile for react.
-OBJ1 = reactmain.o db.o di.o do.o ai.o ao.o data.o file_logger.o web_logger.o discrete_logger.o scan.o discrete_calc.o shutdown.o alarmwin.o pointstate.o react_sms.o
+OBJ1 = db.o di.o do.o ai.o ao.o data.o file_logger.o web_logger.o discrete_logger.o scan.o discrete_calc.o shutdown.o alarmwin.o pointstate.o react_sms.o
 OBJ2 = secuencia.o iodriver.o pid.o remote_pid.o valve.o secuencia_step.o logfile.o control.o web.o displaydata.o script_support.o gen_case.o gen_script.o conio.o integer.o
 OBJ3 =	int.o pci.o ldiodriver.o timeaccum.o error.o eval.o expr.o exprlist.o exprtree.o point.o  calc.o lddbpoint.o analog.o discrete.o ac.o pump.o level.o timer_point.o analog_value.o discrete_value.o int_value.o
 OBJS =  $(OBJ1) $(OBJ2) $(OBJ3)
 
-SRC1 =	reactmain.cpp db.cpp di.cpp do.cpp ai.cpp ao.cpp data.cpp scan.cpp discrete_calc.cpp shutdown.cpp alarmwin.cpp pointstate.cpp react_sms.cpp
+SRC1 =	db.cpp di.cpp do.cpp ai.cpp ao.cpp data.cpp scan.cpp discrete_calc.cpp shutdown.cpp alarmwin.cpp pointstate.cpp react_sms.cpp
 SRC2 = secuencia.cpp iodriver.cpp pid.cpp remote_pid.cpp valve.cpp secuencia_step.cpp logfile.cpp control.cpp web.cpp displaydata.cpp integer.cpp
 SRC3 = script_support.cpp gen_case.cpp gen_script.cpp conio.cpp int.cpp
 SRC4 =	pci.cpp ldiodriver.cpp timeaccum.cpp error.cpp eval.cpp expr.cpp exprlist.cpp exprtree.cpp point.cpp calc.cpp lddbpoint.cpp analog.cpp discrete.cpp ac.cpp pump.cpp level.cpp timer_point.cpp analog_value.cpp discrete_value.cpp int_value.cpp
@@ -32,7 +32,8 @@ PROJECTDIRS = projects/silos projects/mod_apache projects/svg
 
 CDEBUG =
 
-CFLAGS = -Wall -Werror
+CFLAGS = -Wall -Wformat=2 -Werror 
+#CFLAGS = -Wall -Wformat=2 -Werror -Wshadow
 #CFLAGS = -Wall -Wextra -Wold-style-cast
 #CFLAGS=-Wall -Wstrict-prototypes -O2
 
@@ -61,9 +62,9 @@ drivers2:
 project:
 	for i in $(PROJECTDIRS); do cd "$$i"; $(MAKE); cd ../..; done
 
-react2:	$(INCLUDES) $(OBJS) dbpoint_util.so read_fns.cpp create_fns.cpp
+react2:	$(INCLUDES) $(OBJS) dbpoint_util.so reactmain.cpp read_fns.cpp create_fns.cpp
 	echo \"`svn info | grep -i revision`\" > revision_number
-	$(CPP) $(LDFLAGS) -rdynamic -o $@ $(OBJS) $(LIBS) read_fns.cpp create_fns.cpp -lsqlite3 -lrt
+	$(CPP) $(LDFLAGS) -rdynamic -o $@ $(OBJS) reactmain.cpp read_fns.cpp create_fns.cpp -lsqlite3 -lrt $(LIBS)
 
 react2sql:	$(INCLUDES) $(OBJS) dbpoint_util.so ./sqlite/sqlite_read_fns.cpp create_fns.cpp
 	echo \"`svn info | grep -i revision`\" > revision_number

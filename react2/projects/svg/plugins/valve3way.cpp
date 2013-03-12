@@ -56,7 +56,7 @@ void valve3way_t::generate_doc(doc_object_base_t *dob)
   dob->param("Rotation Angle (typically 0, 90, 180, or 270)");
   dob->param("On outlet: 1=left, 2=right, 3=bottom");
   dob->param("Off outlet:  1=left, 2=right, 3=bottom");
-  dob->param("Popup Enabled 1=true, 0=false");
+  dob->param("Generate popup 1 = yes, 0 = no");
   dob->example("valve3way|VALVE3WAY_DIR1|magenta|gray|70|35|8|2|90|2|3|1|");
 
   dob->notes("This is for a 3 way valve controlled by a boolean that directs fluid to one of "

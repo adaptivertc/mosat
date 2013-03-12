@@ -67,7 +67,6 @@ void discrete_logger_t::update(void)
    
     if (hour_change)
     {
-      struct tm mytm;
       localtime_r(&last_log_time, &mytm);
       fprintf(hour_fp, "%d", mytm.tm_hour);
       for (int i=0; i < num_points; i++)

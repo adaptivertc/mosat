@@ -27,11 +27,6 @@ Header file containing main real time database structure.
 #ifndef __DB_INC__
 #define __DB_INC__
 
-// The following defines tell react to use shared memory and message queues (Unix/Linux)
-
-//#define __REACT_SHM__
-//#define __REACT_MSG__
-
 class react_base_t;
 class react_drv_base_t;
 
@@ -185,6 +180,8 @@ public:
   void clear_kb_buf(void);
   void exit_clean_up(void);
   bool kbhit(void);
+
+  /**
   void check_msg_queue(void);
   void init_msg_queue(void);
   void delete_msg_queue(void);
@@ -192,6 +189,8 @@ public:
   void fill_shared_memory(void);
   void update_shared_memory(void);
   void delete_shared_memory(void);
+  **/
+
   void set_home_dir(const char *dir);
   const char *get_home_dir(void);
   void keyboard_on(bool v){keyboard_is_on = v;};

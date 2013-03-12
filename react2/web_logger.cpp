@@ -353,11 +353,11 @@ web_logger_t **web_logger_t::read(int *cnt, const char *home_dir)
     int secs_after_hour = nowtm.tm_sec + (nowtm.tm_min * 60);
     printf("Secs after hour: %d\n", secs_after_hour);
      
-    for (int i=0; 
-       ((i * p->sample_interval) < (secs_after_hour)) && (i < 500); i++)
+    for (int j=0; 
+       ((j * p->sample_interval) < (secs_after_hour)) && (j < 500); i++)
     {
-      printf("%d: %d\n", i, i * p->sample_interval);
-      p->next_secs = (i + 1) * p->sample_interval;
+      printf("%d: %d\n", j, j * p->sample_interval);
+      p->next_secs = (j + 1) * p->sample_interval;
       printf("next: %ld\n", p->next_secs);
     }
     nowtm.tm_min = 0;

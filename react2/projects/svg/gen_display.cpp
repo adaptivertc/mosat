@@ -244,6 +244,18 @@ static void gen_simulation(FILE *js_fp)
        "var arg_tags=null;\n"
        "var n_arg_cfg = 0;\n"
       ); 
+    fprintf(js_fp, 
+       "function convert_tag(tag)\n"
+       "{\n"
+       "  if ('$' == tag.charAt(0))\n"
+       "  {\n"
+       "    if (arg_tags == null) return tag;\n"
+       "    var argn = parseInt(tag.substring(1)) - 1;\n"
+       "    return arg_tags[argn];\n"
+       "  }\n"
+       "  return tag;\n"
+       "}\n"
+      ); 
   }
   fprintf(js_fp, "const update_objs = new Array(");
   for (int i=0; i < n_objs; i++)
@@ -881,7 +893,7 @@ static void gen_final_file(const char *fname)
       //"  offobj.textContent=text_off;\n"
       "  offobj.textContent=get_config(the_tag).lo_desc;\n"
       "  var tagobj=document.getElementById(\"popup_tag\");\n"
-      "  tagobj.textContent=the_tag;\n"
+      "  tagobj.textContent=convert_tag(the_tag);\n"
       "}\n"
     );
   }
