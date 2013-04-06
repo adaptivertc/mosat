@@ -1,12 +1,14 @@
 
-export CPATH=../../../include/
+export CPATH=../include/
 
 .PHONY : clean
 .PHONY : all
 .PHONY : so_files 
 .PHONY : doc 
+.PHONY : faceplates
+.PHONY: imasa gauge spray.slider slider svgs feed cool switch tina transfer spray
 
-RTCOMMON=../../../librtcommon/librtcommon.a
+RTCOMMON=../librtcommon/librtcommon.a
 
 SILENT=-silent
 #SILENT=
@@ -48,7 +50,6 @@ install:
 depend:
 	gcc -MM -MF depend gen_display.cpp
 
-.PHONY: imasa gauge spray.slider slider svgs feed cool switch tina transfer spray
 
 gauge:
 	./gen_display $(SILENT) -f display.gauge.txt -o gauge.svg $(GENMODE)
@@ -99,6 +100,16 @@ pipes:
 pipes2d:
 	./gen_display $(SILENT) -f display.pipes2d.txt -o pipes2d.svg $(GENMODE)
 	cp display.pipes2d.txt pipes2d.svg demofiles
+
+faceplates:
+	./gen_display $(SILENT) -f display.aibar.txt -o aibar.svg $(GENMODE)
+	./gen_display $(SILENT) -f display.airound.txt -o airound.svg $(GENMODE)
+	./gen_display $(SILENT) -f display.aineedle.txt  -o aineedle.svg $(GENMODE)
+	./gen_display $(SILENT) -f display.aoround.txt -o aoround.svg $(GENMODE)
+	./gen_display $(SILENT) -f display.di_rect.txt  -o di_rect.svg $(GENMODE)
+	./gen_display $(SILENT) -f display.dopopup.txt  -o dopopup.svg $(GENMODE) -popup
+	./gen_display $(SILENT) -f display.do_switch.txt -o doswitch.svg $(GENMODE)
+
 
 clean:
 	rm -rv gen_points gen_bar gen_tank gen_so_makefile ./plugins/*.so gen_display

@@ -147,7 +147,10 @@ void add_arg_object(int argn, const char *obj)
   }
   argn--; // Java script arrays start with zero
   arg_count[argn]++;
-  printf("Adding, object: %s, to be updated by the tag at position %d\n", obj, argn);
+  if (not silent)
+  {
+    printf("Adding, object: %s, to be updated by the tag at position %d\n", obj, argn);
+  }
   obj_list_t *tmp = new obj_list_t;
   tmp->next = arg_objs[argn];
   tmp->obj = strdup(obj);
@@ -244,19 +247,25 @@ static void gen_simulation(FILE *js_fp)
        "var arg_tags=null;\n"
        "var n_arg_cfg = 0;\n"
       ); 
-    fprintf(js_fp, 
+  }
+
+/***
+  fprintf(js_fp, 
        "function convert_tag(tag)\n"
        "{\n"
        "  if ('$' == tag.charAt(0))\n"
        "  {\n"
-       "    if (arg_tags == null) return tag;\n"
+       "    if (typeof arg_tags != 'undefined') return tag;\n"
+       //"    if (arg_tags == null) return tag;\n"
        "    var argn = parseInt(tag.substring(1)) - 1;\n"
        "    return arg_tags[argn];\n"
        "  }\n"
        "  return tag;\n"
        "}\n"
       ); 
-  }
+***/
+
+
   fprintf(js_fp, "const update_objs = new Array(");
   for (int i=0; i < n_objs; i++)
   {
@@ -302,17 +311,20 @@ static void gen_simulation(FILE *js_fp)
        "function send_output(tag, new_value)\n"
        "{\n"
        "  console.log(\"send_output, tag: \" + tag + \": \" + new_value);\n"
-       "  if ('$' == tag.charAt(0))\n"
-       "  {\n"
-       "    // only convert if arg_tags have been set\n"
-       "    if (arg_tags == null) return;\n"
-       "    var argn = parseInt(tag.substring(1)) - 1;\n"
-       "    sim.set_pv(arg_tags[argn], new_value);\n"
-       "  }\n"
-       "  else\n"
-       "  {\n"
-       "    sim.set_pv(tag, new_value);\n"
-       "  }\n"
+       "  tag = convert_tag(tag);\n"
+       "  sim.set_pv(tag, new_value);\n"
+       //"  if ('$' == tag.charAt(0))\n"
+       //"  {\n"
+       //"    // only convert if arg_tags have been set\n"
+       //"    if (typeof arg_tags == 'undefined') return\n"
+       //"    if (arg_tags == null) return;\n"
+       //"    var argn = parseInt(tag.substring(1)) - 1;\n"
+       //"    sim.set_pv(arg_tags[argn], new_value);\n"
+       //"  }\n"
+       //"  else\n"
+       //"  {\n"
+       //"    sim.set_pv(tag, new_value);\n"
+       //"  }\n"
        "}\n"
       "\n"
     );
@@ -485,17 +497,18 @@ static void gen_ajax_animation(FILE *js_fp)
       "function send_output(the_tag, val)\n"
       "{\n"
       "  var tag;\n"
-      "  if ('$' == the_tag.charAt(0))\n"
-      "  {\n"
-      "    // only convert if arg_tags have been set\n"
-      "    if (arg_tags == null) return;\n"
-      "    var argn = parseInt(the_tag.substring(1)) - 1;\n"
-       "   tag = arg_tags[argn];\n"
-      "  }\n"
-      "  else\n"
-      "  {\n"
-      "    tag = the_tag;\n"
-      "  }\n"
+      "  tag = convert_tag(the_tag);\n"
+      //"  if ('$' == the_tag.charAt(0))\n"
+      //"  {\n"
+      //"    // only convert if arg_tags have been set\n"
+      //"    if (arg_tags == null) return;\n"
+      //"    var argn = parseInt(the_tag.substring(1)) - 1;\n"
+      //"   tag = arg_tags[argn];\n"
+      //"  }\n"
+      //"  else\n"
+      //"  {\n"
+      //"    tag = the_tag;\n"
+      //"  }\n"
 
       "  var path = \"react/output?\" + tag + \"+\" + val;\n"
       "  console.log(\"send_output(\" + tag + \", \" + val + \")\");\n"
@@ -795,6 +808,21 @@ static void do_gen(const char *fname)
     if (!silent) printf("Generating simulator . . . \n");
     gen_simulation(js_fp);
   }
+
+  fprintf(js_fp,
+       "function convert_tag(tag)\n"
+       "{\n"
+       "  if ('$' == tag.charAt(0))\n"
+       "  {\n"
+       "    if (typeof arg_tags != 'undefined') return tag;\n"
+       //"    if (arg_tags == null) return tag;\n"
+       "    var argn = parseInt(tag.substring(1)) - 1;\n"
+       "    return arg_tags[argn];\n"
+       "  }\n"
+       "  return tag;\n"
+       "}\n"
+      );
+
 
 
   fclose(js_fp);

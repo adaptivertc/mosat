@@ -69,17 +69,7 @@ function slider_output_f()
     this.had_outputs = false;
     setTimeout(this.timeout_fn, MAX_OUTPUT_RATE);
     this.last_output_time = (new Date()).getTime();
-    if (arg_tags != null)
-    {
-      // only convert if arg_tags have been set
-      if ('$' == this.tag.charAt(0))
-      {
-        this.tag = this.tag.substring(1);
-        var argn = parseInt(this.tag) - 1;
-        this.tag = arg_tags[argn];
-      }
-    }
-
+    this.tag = convert_tag(this.tag);
     send_output(this.tag, this.pv);
     console.log("Output sent !!!!!!!!!!!!!!!!!!!!!");
   }
