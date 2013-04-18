@@ -332,6 +332,7 @@ static void gen_simulation(FILE *js_fp)
   fprintf(js_fp, 
        "function get_config(the_tag)\n"
        "{\n"
+       "  console.log('get_config, tag: ' + the_tag);\n"
        "  if ('$' == the_tag.charAt(0))\n"
        "  {\n"
        "    var argn = parseInt(the_tag.substring(1)) - 1;\n"
@@ -339,7 +340,9 @@ static void gen_simulation(FILE *js_fp)
        "  }\n"
        "  else\n"
        "  {\n"
-       "    return sim.get_cfg(the_tag);\n"
+       "    var the_cfg = sim.get_cfg(the_tag);\n"
+       "    console.log('get_config, cfg: ' + the_cfg);\n"
+       "    return the_cfg;\n" 
        "  }\n"
        "}\n"
        "\n"
@@ -436,7 +439,8 @@ static void gen_ajax_animation(FILE *js_fp)
   if (n_objs > 0)
   {
     fprintf(js_fp, 
-    "const react_update_hrf = \"http://\" + location.hostname + \"/react/tag?");
+    //"const react_update_hrf = \"http://\" + location.hostname + \"/react/tag?");
+    "const react_update_hrf = \"http://\" + location.host + \"/react/tag?");
     for (int i=0; i < n_objs; i++)
     {
       fprintf(js_fp, "%s%s", i==0?"":"+", tags[i]);
@@ -475,8 +479,10 @@ static void gen_ajax_animation(FILE *js_fp)
     }
     fprintf(js_fp, ");\n"); 
     fprintf(js_fp, 
-      "arg_update_hrf = \"http://\" + location.hostname + \"/react/tag\" + location.search;\n"
-      "arg_config_hrf = \"http://\" + location.hostname + \"/react/config?\";\n"
+      //"arg_update_hrf = \"http://\" + location.hostname + \"/react/tag\" + location.search;\n"
+      "arg_update_hrf = \"http://\" + location.host + \"/react/tag\" + location.search;\n"
+      //"arg_config_hrf = \"http://\" + location.hostname + \"/react/config?\";\n"
+      "arg_config_hrf = \"http://\" + location.host + \"/react/config?\";\n"
       "var arg_update_xReq;\n"
       "var arg_config_xReq;\n"
       "var arg_tags=null;\n"
@@ -488,7 +494,8 @@ static void gen_ajax_animation(FILE *js_fp)
   if (n_objs > 0)
   {
     fprintf(js_fp, 
-     "var react_config_hrf = \"http://\" + location.hostname + \"/react/config?\";\n");
+     //"var react_config_hrf = \"http://\" + location.hostname + \"/react/config?\";\n");
+     "var react_config_hrf = \"http://\" + location.host + \"/react/config?\";\n");
     fprintf(js_fp, "var update_xReq;\n");
     fprintf(js_fp, "var config_xReq;\n");
     fprintf(js_fp, "var n_cfg = 0;\n");
@@ -525,12 +532,14 @@ static void gen_ajax_animation(FILE *js_fp)
 
     fprintf(js_fp, 
       "var config_vals = new Array();\n"
-      "function save_config(val)\n"
+      "function save_config(the_tag, val)\n"
       "{\n"
-      "  config_vals[val.tag.toUpperCase()] = val;\n"
+      "  console.log('save_config, tag: ' + the_tag);\n"
+      "  config_vals[the_tag.toUpperCase()] = val;\n"
       "}\n"
       "function get_config(the_tag)\n"
       "{\n"
+      "  console.log('get_config, tag: ' + the_tag);\n"
       "  if ('$' == the_tag.charAt(0))\n"
       "  {\n"
       "    var argn = parseInt(the_tag.substring(1)) - 1;\n"
@@ -550,11 +559,12 @@ static void gen_ajax_animation(FILE *js_fp)
       "  console.log(\"config response: \" + config_xReq.responseText);\n"
       "  var val = JSON.parse(config_xReq.responseText);\n"
       "  update_objs[n_cfg].init(val);\n"
-      "  save_config(val);\n"
+      "  save_config(update_tags[n_cfg], val);\n"
       "  \n"
       "  n_cfg++;\n"
       "  if (n_cfg >= update_tags.length) \n"
       "  {\n"
+      "    var interval = setInterval(\"intervalHandler()\", 200);\n"
       "    config_xReq.abort();\n"
       "    return;\n"
       "  }\n"
@@ -668,6 +678,10 @@ static void gen_ajax_animation(FILE *js_fp)
 
   fprintf(js_fp, "function load()\n");
   fprintf(js_fp, "{\n");
+  if (popup_on)
+  {
+    fprintf(js_fp, "  show_main();\n");
+  }
   if (n_objs > 0)
   {
     fprintf(js_fp, 
@@ -718,7 +732,7 @@ static void gen_ajax_animation(FILE *js_fp)
     fprintf(js_fp, "  console.log(\"react_config_hrf = \" + react_config_hrf);\n");
   }
 
-  fprintf(js_fp, "  var interval = setInterval(\"intervalHandler()\", 200);\n");
+  //fprintf(js_fp, "  var interval = setInterval(\"intervalHandler()\", 200);\n");
   fprintf(js_fp, "};\n");
   fprintf(js_fp, "\n");
   fprintf(js_fp, "// -- END insert AJAX animation code --\n");
@@ -912,14 +926,17 @@ static void gen_final_file(const char *fname)
       "}\n"
       "function show_popup(x,y,text_on, text_off, the_tag)\n"
       "{\n"
+      "  console.log(\"show_popup, tag: \" + the_tag);\n"
+      "  var the_cfg = get_config(the_tag);\n"
+      "  console.log(\"show_popup, cfg: \" + the_cfg);\n"
       "  dpopupobj.setAttribute(\"transform\", \"translate(\" + x +\",\" + y +\")\");\n"
       "  dpopupobj.parentNode.appendChild(dpopupobj);\n"
       "  var onobj=document.getElementById(\"popup_on\");\n"
       //"  onobj.textContent=text_on;\n"
-      "  onobj.textContent=get_config(the_tag).hi_desc;\n"
+      "  onobj.textContent=the_cfg.hi_desc;\n"
       "  var offobj=document.getElementById(\"popup_off\");\n"
       //"  offobj.textContent=text_off;\n"
-      "  offobj.textContent=get_config(the_tag).lo_desc;\n"
+      "  offobj.textContent=the_cfg.lo_desc;\n"
       "  var tagobj=document.getElementById(\"popup_tag\");\n"
       "  tagobj.textContent=convert_tag(the_tag);\n"
       "}\n"

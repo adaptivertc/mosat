@@ -1,5 +1,6 @@
 function transform_mouse_xy(evt, svg_obj)
 {
+  //var point = svgRoot.createSVGPoint();
   var point = document.documentElement.createSVGPoint();
   //var point = svg_obj.createSVGPoint();
   point.x = evt.clientX;

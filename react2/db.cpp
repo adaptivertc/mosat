@@ -1461,14 +1461,14 @@ void react_t::serve_client(serve_thread_data_t *st)
   int sock_fd = st->sock_fd;
   int nc = st->n;
   delete st; 
-  char buf[1000];
-  char buf_out[1000];
+  char buf[2000];
+  char buf_out[2000];
   fprintf(sock_log_fp, "In react_t::serve_client(), sock_fd = %d, n = %d\n", sock_fd, nc);
   fflush(sock_log_fp);
   int n_req = 0;
   //analog_point_t *analog_point = NULL;
   db_point_t *db_point = NULL;
-  delim_separator_t ds_tag(1000, 100, '+');
+  delim_separator_t ds_tag(2000, 200, '+');
   while (true)
   {
     const char *msg = "React responded!!!!";
@@ -1483,108 +1483,141 @@ void react_t::serve_client(serve_thread_data_t *st)
       pthread_exit(NULL);
     }
     buf[n] = '\0';
-    //fprintf(sock_log_fp, "Got message of %d bytes on fd %d, n %d: %s, req # %d\n", n, sock_fd, nc, buf, n_req);
-    fflush(sock_log_fp);
-    if (0 == strncmp(buf, "faceplate", 9))
+    char *bstart = buf; 
+    char *bnext = NULL; 
+    int n_so_far = 0;
+    int k=0;
+    for (bstart = buf; bstart != NULL; bstart = bnext)
     {
-      msg = get_face(this, buf + 10); 
-    }
-    else if (0 == strncasecmp(buf, "config", 6))
-    {
-      char *tag = buf + 7;
-      ltrim(tag); 
-      rtrim(tag); 
-
-      //analog_point = NULL;
-      db_point = db->get_db_point(tag);
-
-      if (db_point == NULL)
+      //fprintf(sock_log_fp, "Got message of %d bytes on fd %d, n %d: %s, req # %d\n", n, sock_fd, nc, buf, n_req);
+      bool bfound = false;
+      for (; k < n; k++)
       {
-        fprintf(sock_log_fp, "NOT a database point: %s\n", tag);
-        snprintf(buf_out, sizeof(buf_out), "{\"pv\":99.99,\"eulabel\":\"not found: %s\"}", tag);
+        if (buf[k] == '\0')
+        {
+          bfound = true;
+          n_so_far += k;
+          if (k == (n-1))  
+          {
+            bnext = NULL;
+            break;
+          }
+          else
+          {
+            bnext = buf + k + 1;
+            k++;
+            fprintf(sock_log_fp, "at least one more message: '%s'\n", bnext);
+            break;
+          }
+        }
+
+      }
+      if (!bfound)
+      {
+        fprintf(sock_log_fp, "NO terminating char: '%s'\n", bstart);
+        bnext = NULL;
+      }
+      fflush(sock_log_fp);
+      if (0 == strncmp(bstart, "faceplate", 9))
+      {
+        msg = get_face(this, bstart + 10); 
+      }
+      else if (0 == strncasecmp(bstart, "config", 6))
+      {
+        char *tag = bstart + 7;
+        ltrim(tag); 
+        rtrim(tag); 
+
+        //analog_point = NULL;
+        db_point = db->get_db_point(tag);
+
+        if (db_point == NULL)
+        {
+          fprintf(sock_log_fp, "NOT a database point: %s\n", tag);
+          snprintf(buf_out, sizeof(buf_out), "{\"pv\":99.99,\"eulabel\":\"not found: %s\"}", tag);
+          msg = buf_out;
+        }
+        else
+        {
+          msg = db_point->get_config_json();
+        }
+      }
+      else if (0 == strncasecmp(bstart, "tag", 3))
+      {
+        printf("msg: %s\n", bstart);
+        char *tag_string = bstart + 4;
+        ltrim(tag_string); 
+        rtrim(tag_string); 
+        char **tag_argv;
+        int tag_argc;
+        tag_argv = ds_tag.separate(&tag_argc, tag_string);
+
+        snprintf(buf_out, sizeof(buf_out), "[");
+        printf("Tags[%d]: ", tag_argc);
+        for (int i=0; i < tag_argc; i++)
+        {
+          if (i != 0) safe_strcat(buf_out, ",", sizeof(buf_out));
+          printf("%s ", tag_argv[i]);
+          db_point = db->get_db_point(tag_argv[i]);
+          if (db_point == NULL)
+          {
+            safe_strcat(buf_out, "0", sizeof(buf_out));
+            fprintf(sock_log_fp, "Tag not found: %s\n", tag_argv[i]);
+          }
+          else
+          {
+            char val_buf[30];
+            db_point->get_pv_json(val_buf, sizeof(val_buf));
+            safe_strcat(buf_out, val_buf, sizeof(buf_out));
+            //printf("tag: %s, val: %s\n", tag_argv[i], val_buf);
+          }
+        } 
+        printf("\n");
+        safe_strcat(buf_out, "]", sizeof(buf_out));
         msg = buf_out;
       }
-      else
+      else if (0 == strncasecmp(bstart, "output", 6))
       {
-        msg = db_point->get_config_json();
-      }
-    }
-    else if (0 == strncasecmp(buf, "tag", 3))
-    {
-      printf("msg: %s\n", buf);
-      char *tag_string = buf + 4;
-      ltrim(tag_string); 
-      rtrim(tag_string); 
-      char **tag_argv;
-      int tag_argc;
-      tag_argv = ds_tag.separate(&tag_argc, tag_string);
-
-      snprintf(buf_out, sizeof(buf_out), "[");
-      printf("Tags[%d]: ", tag_argc);
-      for (int i=0; i < tag_argc; i++)
-      {
-        if (i != 0) safe_strcat(buf_out, ",", sizeof(buf_out));
-        printf("%s ", tag_argv[i]);
-        db_point = db->get_db_point(tag_argv[i]);
-        if (db_point == NULL)
+        printf("msg: %s\n", bstart);
+        char *output_string = bstart + 7;
+        ltrim(output_string);
+        rtrim(output_string);
+        char **output_argv;
+        int output_argc;
+        output_argv = ds_tag.separate(&output_argc, output_string);
+        if (output_argc != 2)
         {
-          safe_strcat(buf_out, "0", sizeof(buf_out));
-          fprintf(sock_log_fp, "Tag not found: %s\n", tag_argv[i]);
+          msg = "Wrong number of args";
         }
         else
         {
-          char val_buf[30];
-          db_point->get_pv_json(val_buf, sizeof(val_buf));
-          safe_strcat(buf_out, val_buf, sizeof(buf_out));
-          //printf("tag: %s, val: %s\n", tag_argv[i], val_buf);
+          db_point = db->get_db_point(output_argv[0]);
+          if (db_point == NULL)
+          {
+            msg = "Tag not found";
+          }
+          else
+          {
+            db_point->set_json("pv", output_argv[1]); 
+            msg = "OK";
+          }
         }
-      } 
-      printf("\n");
-      safe_strcat(buf_out, "]", sizeof(buf_out));
-      msg = buf_out;
-    }
-    else if (0 == strncasecmp(buf, "output", 6))
-    {
-      printf("msg: %s\n", buf);
-      char *output_string = buf + 7;
-      ltrim(output_string);
-      rtrim(output_string);
-      char **output_argv;
-      int output_argc;
-      output_argv = ds_tag.separate(&output_argc, output_string);
-      if (output_argc != 2)
-      {
-        msg = "Wrong number of args";
       }
       else
       {
-        db_point = db->get_db_point(output_argv[0]);
-        if (db_point == NULL)
-        {
-          msg = "Tag not found";
-        }
-        else
-        {
-          db_point->set_json("pv", output_argv[1]); 
-          msg = "OK";
-        }
+        snprintf(buf_out, sizeof(buf_out), "Unknown Command: '%s'\n", buf);
+        msg = buf_out;
       }
-    }
-
-    else
-    {
-      snprintf(buf_out, sizeof(buf_out), "Unknown Command: '%s'\n", buf);
-      msg = buf_out;
-    }
-    printf("reply: %s\n", msg);
-    n = write(sock_fd, msg, strlen(msg)); 
-    if (n <= 0)
-    {
-      fprintf(sock_log_fp, "react_t::serve_client(), error on WRITE socket %d, n = %d\n", sock_fd, nc);
-      fprintf(sock_log_fp, "react_t::serve_client(), closing socket and exiting thread\n");
-      fflush(sock_log_fp);
-      close(sock_fd);
-      pthread_exit(NULL);
+      printf("reply: %s\n", msg);
+      n = write(sock_fd, msg, strlen(msg)+1); // include a null 
+      if (n <= 0)
+      {
+        fprintf(sock_log_fp, "react_t::serve_client(), error on WRITE socket %d, n = %d\n", sock_fd, nc);
+        fprintf(sock_log_fp, "react_t::serve_client(), closing socket and exiting thread\n");
+        fflush(sock_log_fp);
+        close(sock_fd);
+        pthread_exit(NULL);
+      }
     }
   }
 }
@@ -1606,7 +1639,7 @@ static void *serve_cl(void *p)
 void react_t::wait_connections(void)
 {
   const short the_port = 5707;
-  const int the_backlog = 20;
+  const int the_backlog = 100;
   int sockfd, new_fd; 
   int n_connect = 0;
   struct sockaddr_in my_addr;  
@@ -1651,7 +1684,7 @@ void react_t::wait_connections(void)
 
   sin_size = sizeof(struct sockaddr_in);
 
-  logfile->vprint("react_t::wait_connections(), All OK, waiting for connections\n");
+  logfile->vprint("react_t::wait_connections(), All OK, waiting for connections on port %d\n", the_port);
   while (true)
   {
     fprintf(sock_log_fp, "Waiting for a connection!!\n");

@@ -12,8 +12,8 @@ RTCOMMON=../librtcommon/librtcommon.a
 
 SILENT=-silent
 #SILENT=
-GENMODE=-sim
-#GENMODE=-react
+#GENMODE=-sim
+GENMODE=-react
 TINAMODE=-sim_file sim_tina.js
 #TINAMODE=-react
 
@@ -115,5 +115,5 @@ clean:
 	rm -rv gen_points gen_bar gen_tank gen_so_makefile ./plugins/*.so gen_display
 
 svgs: feed cool spray transfer tina switch imasa pipes pipes2d gauge slider
-	google-chrome demofiles/gauge.svg
+#	google-chrome demofiles/gauge.svg
 
