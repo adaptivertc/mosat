@@ -8,7 +8,7 @@ export CPATH=../include/
 .PHONY : faceplates
 .PHONY: imasa gauge spray.slider slider svgs feed cool switch tina transfer spray
 
-RTCOMMON=../librtcommon/librtcommon.a
+RTCOMMON=
 
 SILENT=-silent
 #SILENT=
@@ -53,11 +53,11 @@ depend:
 
 gauge:
 	./gen_display $(SILENT) -f display.gauge.txt -o gauge.svg $(GENMODE)
-	cp display.gauge.txt gauge.svg demofiles
+#	cp display.gauge.txt gauge.svg demofiles
 
 spray.slider:
 	./gen_display $(SILENT) -f display.spray.slider.txt -o spray.slider.svg $(GENMODE)
-	cp display.spray.slider.txt spray.slider.svg demofiles
+#	cp display.spray.slider.txt spray.slider.svg demofiles
 
 slider:
 	./gen_display $(SILENT) -f display.slider.txt -o slider.svg $(GENMODE)
@@ -68,38 +68,38 @@ doc:
 
 feed: 
 	./gen_display $(SILENT) -f display.feedtanks.txt -o feed.svg $(GENMODE) -popup
-	cp display.feedtanks.txt feed.svg demofiles
+#	cp display.feedtanks.txt feed.svg demofiles
 
 cool:
 	./gen_display $(SILENT) -f display.coolingtower.txt -o cool.svg $(GENMODE) -popup
-	cp display.coolingtower.txt cool.svg demofiles
+#	cp display.coolingtower.txt cool.svg demofiles
 
 switch:
 	./gen_display $(SILENT) -f display.switch.txt -o switch.svg $(GENMODE)
-	cp display.switch.txt switch.svg demofiles
+#	cp display.switch.txt switch.svg demofiles
 
 spray:
 	./gen_display $(SILENT) -f display.spray.round.txt -o spray.svg $(GENMODE) -popup
-	cp display.spray.round.txt spray.svg demofiles
+#	cp display.spray.round.txt spray.svg demofiles
 
 tina:
 	./gen_display $(SILENT) -f display.tina.txt -o tina.svg $(TINAMODE) -popup
-	cp display.tina.txt tina.svg demofiles
+#	cp display.tina.txt tina.svg demofiles
 
 transfer:
 	./gen_display $(SILENT) -f display.transfer.txt -o transfer.svg $(GENMODE)
-	cp display.transfer.txt transfer.svg demofiles
+#	cp display.transfer.txt transfer.svg demofiles
 
 imasa:
 	./gen_display $(SILENT) -f display.imasa.txt -o imasa.svg $(GENMODE)
 
 pipes:
 	./gen_display $(SILENT) -f display.pipes.txt -o pipes.svg $(GENMODE)
-	cp display.pipes.txt pipes.svg demofiles
+#	cp display.pipes.txt pipes.svg demofiles
 
 pipes2d:
 	./gen_display $(SILENT) -f display.pipes2d.txt -o pipes2d.svg $(GENMODE)
-	cp display.pipes2d.txt pipes2d.svg demofiles
+#	cp display.pipes2d.txt pipes2d.svg demofiles
 
 faceplates:
 	./gen_display $(SILENT) -f display.aibar.txt -o aibar.svg $(GENMODE)

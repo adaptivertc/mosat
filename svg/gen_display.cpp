@@ -20,13 +20,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include <sys/types.h>
 #include <dirent.h>
 #include <dlfcn.h>
 #include <time.h>
 
 #include "gen_display.h"
-#include "arg.h"
 #include "react_svg.h"
 
 static gen_plugin_base_t *get_plugin(const char *type);
@@ -740,6 +740,85 @@ static void gen_ajax_animation(FILE *js_fp)
 
 /*********************************/
 
+// These functions are included to limit dependencies.
+/*********************************************************************/
+void rtrim(char *str)
+{
+  /* Trim the space from the right of a string. */
+  for (int i = (strlen(str) - 1);
+        isspace(str[i]) && (i >= 0); str[i--] = '\0');
+}
+/*********************************************************************/
+void ltrim(char *str)
+{
+  /* Trim the space from the left side of a string. */
+  int i, j;
+
+  for (i = 0; (str[i] != '\0') && isspace(str[i]); i++);
+  for (j = 0; (str[i] != '\0'); str[j++] = str[i++]);
+  str[j] = '\0';
+}
+/*********************************************************************/
+int get_svg_args(char *line, char *argv[], char delimeter, int max_args)
+{
+  int i;
+  char *p;
+
+  if (strlen(line) == 0)
+  {
+    return 0; 
+  }
+  p = line + (strlen(line) - 1);
+  // Here we trim white space off of the end of the string, but do not trim
+  // delimeters that might also be white space, such as a tab. 
+  // And, you need to stop at the start of the string!
+  while ((isspace(*p)) && (*p != delimeter) && (p > line))
+  {
+    *p = '\0';
+     p--;
+  }
+  p = line;
+  int n_delim = 0;
+  for (i=0; i < max_args; i++)
+  {
+    if (*p == '\0')
+    {
+      break;
+    }
+    argv[i] = p;
+    for ( ; (*p != '\0') && (*p != delimeter); p++);
+    if (*p == delimeter)
+    {
+      n_delim++;
+      *(p++) = '\0';
+    }
+    else
+    {
+      continue;
+    }
+  }
+  bool last_arg_ok = false;
+  for (p = argv[i-1]; *p != '\0'; p++)
+  {
+    if (!isspace(*p))
+    {
+      last_arg_ok = true;
+      break;
+    }
+  }
+  // This is a little tricky. It is possible the last arg is blank, but
+  // in that case, there must be a trailing delimeter. If there is just
+  // white space after the last delimiter, then it is not considered
+  // to be another argument.
+  if (!last_arg_ok && (n_delim < i))
+  {
+    i--;
+  }
+  return i;
+}
+
+/*********************************/
+
 static void do_gen(const char *fname)
 {
   const char *svg_file = "_tmp_display.svg";
@@ -774,19 +853,37 @@ static void do_gen(const char *fname)
   pdata.popup_on = popup_on;
   pdata.silent = silent;
 
-
-  delim_file_t df(500, 50, '|', '#');
-  df.print_lines(true);
-  char **argv;
-  int argc;
-  int line_num;
   gen_plugin_base_t *obj;
   pdata.file_name = fname;
-
-  for (argv = df.first(fname, &argc, &line_num);
-         (argv != NULL);
-            argv = df.next(&argc, &line_num))
+  char line[500];
+  int argc;
+  char *argv[50];
+  int line_num;
+  FILE *fp = fopen(fname, "r");
+  if (fp == NULL)
   {
+    perror(fname);
+    printf("Can't open: %s\n", fname);
+    exit(-1);
+  }
+  for (int i=0; NULL != fgets(line, sizeof(line), fp); i++)
+  {
+    line_num++;
+    ltrim(line);
+    rtrim(line);
+    if (line[0] == '#')
+    {
+      continue;
+    }
+    if (strlen(line) == 0)
+    {
+      continue;
+    }
+    argc = get_svg_args(line, argv, '|', 50);
+    if (argc == 0)
+    {
+      continue;
+    }
     pdata.line_number = line_num;
     if (argc < 2)
     {

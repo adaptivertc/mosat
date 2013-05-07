@@ -1,7 +1,6 @@
 svg_header|Main Switching|0|0|300|150|
 background|burlywood|
 
-demlux|250|110|12|
 link|5|145|5|firebrick|start|cool.svg|Cooling Tower|feed.svg|Feed Tanks|spray.svg|Spray|tina.svg|Tina|transfer.svg|Transfer|gauge.svg|Gauges|pipes.svg|Pipes|pipes2d.svg|Pipes 2D|
 only_text|Main Switching|blue|125|10|12|middle|
 # Start Time 
