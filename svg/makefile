@@ -12,8 +12,8 @@ RTCOMMON=
 
 SILENT=-silent
 #SILENT=
-#GENMODE=-sim
-GENMODE=-react
+GENMODE=-sim
+#GENMODE=-react
 TINAMODE=-sim_file sim_tina.js
 #TINAMODE=-react
 
