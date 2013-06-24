@@ -1406,7 +1406,7 @@ void react_t::index_db_point(db_point_t *dbp)
     logfile->vprint("*** Error, duplicate tag: %s\n", tag);
     return;
   }
-  //printf("@@@@@@@@@@@@@@@@@@@@@@@@@ Indexing: %s, map size = %d\n", tag, map.size());
+  printf("@@@@@@@@@@@@@@@@@@@@@@@@@ Indexing: %s, map size = %d\n", tag, int(map.size()));
   map[tag] = dbp; 
 }
 

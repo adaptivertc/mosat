@@ -63,7 +63,7 @@ project:
 	for i in $(PROJECTDIRS); do cd "$$i"; $(MAKE); cd ../..; done
 
 react2:	$(INCLUDES) $(OBJS) dbpoint_util.so reactmain.cpp read_fns.cpp create_fns.cpp
-	echo \"`svn info | grep -i revision`\" > revision_number
+	echo \"`svn info | grep -i revision | awk '{print $2}'`\" > revision_number
 	$(CPP) $(LDFLAGS) -rdynamic -o $@ $(OBJS) reactmain.cpp read_fns.cpp create_fns.cpp -lsqlite3 -lrt $(LIBS)
 
 react2sql:	$(INCLUDES) $(OBJS) dbpoint_util.so ./sqlite/sqlite_read_fns.cpp create_fns.cpp

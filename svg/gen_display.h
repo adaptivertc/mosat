@@ -66,6 +66,7 @@ public:
   virtual void generate_doc(doc_object_base_t *doc_base)=0;
   virtual void generate(plugin_data_t d, int argc, char **argv)=0;
   virtual rtsvg_param_t *param_types(int *n) {*n=0; return NULL;};
+  virtual ~gen_plugin_base_t(void); 
 };
 
 void add_js_library(const char *file_name);

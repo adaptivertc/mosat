@@ -326,7 +326,8 @@ void gen_displays_t::gen_table(time_t now, train_data_t *trains, train_calcs_t *
       fprintf(table_fp, "      <td style=\"vertical-align: top;\">-<br>\n");
     }
     fprintf(table_fp, "      </td>\n");
-    if (trains[i].section >= (n_sections / 2))
+    unsigned int tmp_section = n_sections / 2;
+    if (trains[i].section >= tmp_section)
     {
       fprintf(table_fp, "      <td style=\"vertical-align: top; background-color: rgb(153, 153, 255);\">(%s)<br>\n",
               sections.get_station_name(trains[i].section));

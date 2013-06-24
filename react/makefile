@@ -51,7 +51,7 @@ drivers2:
 	for i in $(DRIVERDIRS2); do cd "$$i"; $(MAKE); cd ../..; done
 
 react:	$(INCLUDES) $(OBJS) dbpoint_util.so
-	echo \"`svn info | grep Revision`\" > revision_number
+	echo \"`svn info | grep -i revision | awk '{print $2}'`\" > revision_number
 	$(CPP) $(LDFLAGS) -rdynamic -o $@ $(OBJS) $(LIBS) -lrt
 
 rtshmmain: rtshmmain.o ldiodriver.o reactshmio.o logfile.o reactshmio.h $(INCLUDES)
