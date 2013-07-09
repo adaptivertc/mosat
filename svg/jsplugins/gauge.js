@@ -38,12 +38,6 @@ function gauge_create_band(angle1, angle2, cx, cy, r1, r2, color)
   var rads1 = (angle1 - 90.0) * ((2.0 * Math.PI) / 360.0);
   var rads2 = (angle2 - 90.0) * ((2.0 * Math.PI) / 360.0);
 
-  //fprintf(svg_fp, "<path fill=\"none\" stroke=\"yellow\" stroke-width=\"5.000000\"\n");
-  //fprintf(svg_fp, "  d=\"M118.388164,23.292000 A67.500000,67.500000 0 0,1 141.474523,63.278748\"/>\n");
-
-  //fprintf(svg_fp, "<path fill=\"none\" stroke=\"red\" stroke-width=\"5.000000\"\n");
-  //fprintf(svg_fp, "   d=\"M141.474523,63.278748 A67.500000,67.500000 0 0,1 122.729708,122.729708\"/>\n");
-
   var x1 = cx - (r * Math.cos(rads1));
   var y1 = cy - (r * Math.sin(rads1));
   var x2 = cx - (r * Math.cos(rads2));
@@ -52,7 +46,7 @@ function gauge_create_band(angle1, angle2, cx, cy, r1, r2, color)
   shape.setAttribute("fill", "none");
   shape.setAttribute("stroke", color);
   shape.setAttribute("stroke-width", stroke_width);
-  var dstr = "M" + x1 + "," + y1 + " A" + r + "," + r + " 0 0,1 " + x2 + "," + y2;
+  var dstr = "M" + x1 + " " + y1 + " A" + r + " " + r + " 0 0 1 " + x2 + " " + y2;
   console.log("dstr: " + dstr);
   shape.setAttribute("d", dstr);
   //document.documentElement.appendChild(shape);

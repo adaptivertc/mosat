@@ -109,32 +109,44 @@ function slider_barclick_f(evt)
 slider_t.prototype.barclick=slider_barclick_f;
 ****/
 
-function slider_init_f(val)
+function slider_reinit_f(val)
 {
-  console.log("init, tag = " + this.tag);
   this.scale_hi = val.scale_hi;
   this.scale_lo = val.scale_lo;
   this.eu = val.eu;
   this.decimal_places = val.decimal_places;
+  this.scale_lo_text.textContent=this.scale_lo.toFixed(this.decimal_places);
+  this.scale_hi_text.textContent=this.scale_hi.toFixed(this.decimal_places);
+}
+slider_t.prototype.reinit=slider_reinit_f;
+
+function slider_init_f(val)
+{
+  console.log("slider init: tag = " + this.tag);
   var text_height = this.width * 1.0; 
   var text_y = this.y1 + (this.width * 2.5); 
-  console.log("Text, x: " +  this.x1 + " y: " + text_y + " h: " + text_height + " val: " + this.scale_lo.toFixed(this.decimal_places)); 
+  console.log("Text, x: " +  this.x1 + " y: " + text_y + " h: " + text_height + " val: " + val.scale_lo.toFixed(val.decimal_places)); 
   shape = document.createElementNS(svgNS, "text");
   shape.setAttribute("x", this.x1);
   shape.setAttribute("y", text_y);
   shape.setAttribute("font-size", text_height);
   //shape.setAttribute("baseline-shift", "-66%");
   shape.setAttribute("text-anchor", "middle");
-  shape.textContent=this.scale_lo.toFixed(this.decimal_places);
+  shape.textContent="";
   //document.documentElement.appendChild(shape);
   reactmainobj.appendChild(shape);
+  this.scale_lo_text = shape;
+
   shape = document.createElementNS(svgNS, "text");
   shape.setAttribute("x", this.x1 + this.length);
   shape.setAttribute("y", text_y);
   shape.setAttribute("font-size", text_height);
   shape.setAttribute("text-anchor", "middle");
-  shape.textContent=this.scale_hi.toFixed(this.decimal_places);
+  shape.textContent="";
   reactmainobj.appendChild(shape);
+  this.scale_hi_text = shape;
+
+  this.reinit(val);
 }
 slider_t.prototype.init=slider_init_f;
 
@@ -158,10 +170,18 @@ function slider_update_f(pv)
     console.log("Update ignored, slider moved recently .........");
   }
 }
-
 slider_t.prototype.update=slider_update_f;
+
+function slider_set_tag_f(the_new_tag)
+{
+  this.tag = the_new_tag;
+  this.reinit(get_config(the_new_tag));
+}
+slider_t.prototype.set_tag=slider_set_tag_f;
 
 function slider_interval_handler_f()
 {
 }
 slider_t.prototype.interval_handler=slider_interval_handler_f;
+
+

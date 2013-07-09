@@ -34,6 +34,8 @@ static const int RT_SIM_MODE = 0;
 static const int RT_REACT_MODE = 1;
 static int run_mode = RT_SIM_MODE;
 static bool popup_on = false;
+static bool analog_popup_on = false;
+//static bool analog_popup_on = true;
 static bool silent = false;
 static const char *sim_file="sim_pump.js";
 
@@ -55,6 +57,8 @@ static int n_js_libs = 0;
 static const char *js_lib_files[MAX_JSLIBS];
 static int n_svg_libs = 0;
 static const char *svg_lib_files[MAX_SVGLIBS];
+const static int sim_interval = 100;
+const static int react_interval = 200;
 
 struct obj_list_t 
 {
@@ -418,7 +422,9 @@ static void gen_simulation(FILE *js_fp)
   //fprintf(js_fp, "  pump_2_timeout();\n");
   //fprintf(js_fp, "  pump_3_timeout();\n");
 
-  fprintf(js_fp, "  var interval = setInterval(\"intervalHandler()\", 100);\n");
+  fprintf(js_fp, 
+      "  var interval = setInterval(\"intervalHandler()\", %d);\n",   
+      sim_interval);
 
   if (popup_on)
   {
@@ -564,14 +570,14 @@ static void gen_ajax_animation(FILE *js_fp)
       "  n_cfg++;\n"
       "  if (n_cfg >= update_tags.length) \n"
       "  {\n"
-      "    var interval = setInterval(\"intervalHandler()\", 200);\n"
+      "    var interval = setInterval(\"intervalHandler()\", %d);\n"
       "    config_xReq.abort();\n"
       "    return;\n"
       "  }\n"
       "  console.log(\"config tag: \" + update_tags[n_cfg])\n"
       "  config_xReq.open(\"GET\", react_config_hrf + update_tags[n_cfg], true);\n"
       "  config_xReq.send(null);\n"
-      "}\n"
+      "}\n", react_interval
     );
   }
 
@@ -999,6 +1005,13 @@ static void gen_final_file(const char *fname)
     include_file(fp, "./svgplugins", dpopup_name, silent);
     fprintf(fp, "<!-- END insert %s-->\n", dpopup_name);
   }
+  if (analog_popup_on)
+  {
+    const char *apopup_name = "analog_popup.svg";
+    fprintf(fp, "<!-- START insert %s-->\n", apopup_name);
+    include_file(fp, "./svgplugins", apopup_name, silent);
+    fprintf(fp, "<!-- END insert %s-->\n", apopup_name);
+  }
   fprintf(fp, "<script type=\"text/ecmascript\"><![CDATA[\n");
      // max one output every 250 ms
   fprintf(fp, "const MAX_OUTPUT_RATE = 250;\n"); 
@@ -1009,6 +1022,15 @@ static void gen_final_file(const char *fname)
   fprintf(fp, "const svgNS = \"http://www.w3.org/2000/svg\";\n");
   fprintf(fp, "var reactmainobj=document.getElementById(\"main_group\");\n");
 
+  if ((popup_on) || (analog_popup_on))
+  {
+    fprintf(fp, 
+      "function show_main()\n"
+      "{\n"
+      "  reactmainobj.parentNode.appendChild(reactmainobj);\n"
+      "}\n"
+    );
+  }
   if (popup_on)
   {
     fprintf(fp, 
@@ -1017,10 +1039,6 @@ static void gen_final_file(const char *fname)
       "  {document.getElementById('popup_bg_on').setAttribute('fill','yellow');}\n" 
       "function popup_off_timeout()\n"
       "  {document.getElementById('popup_bg_off').setAttribute('fill','yellow');}\n" 
-      "function show_main()\n"
-      "{\n"
-      "  reactmainobj.parentNode.appendChild(reactmainobj);\n"
-      "}\n"
       "function show_popup(x,y,text_on, text_off, the_tag)\n"
       "{\n"
       "  console.log(\"show_popup, tag: \" + the_tag);\n"
@@ -1038,6 +1056,35 @@ static void gen_final_file(const char *fname)
       "  tagobj.textContent=convert_tag(the_tag);\n"
       "}\n"
     );
+  }
+  if (analog_popup_on)
+  {
+    fprintf(fp, 
+      "var apopupobj=document.getElementById(\"analog_popup\");\n"
+      "function show_analog_popup(x,y,the_tag)\n"
+      "{\n"
+      "  console.log(\"show_popup, tag: \" + the_tag);\n"
+      "  var the_cfg = get_config(the_tag);\n"
+      "  console.log(\"show_popup, cfg: \" + the_cfg);\n"
+      "  apopupobj.setAttribute(\"transform\", \"translate(\" + x +\",\" + y +\")\");\n"
+      "  apopupobj.parentNode.appendChild(apopupobj);\n"
+
+      //"  var onobj=document.getElementById(\"popup_on\");\n"
+      //"  onobj.textContent=the_cfg.hi_desc;\n"
+
+      //"  var offobj=document.getElementById(\"popup_off\");\n"
+      //"  offobj.textContent=the_cfg.lo_desc;\n"
+
+      "  var tagobj=document.getElementById(\"apopup_tag\");\n"
+      "  tagobj.textContent=convert_tag(the_tag);\n"
+      "  slider_object_popup.set_tag(the_tag);\n"
+      "}\n"
+    );
+    const char *apopup_js = "analog_popup.js";
+    fprintf(fp, "<!-- START insert %s-->\n", apopup_js);
+    include_file(fp, "./jsplugins", apopup_js, silent);
+    fprintf(fp, "<!-- END insert %s-->\n", apopup_js);
+
   }
 
   for (int i=0; i < n_js_libs; i++)

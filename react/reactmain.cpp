@@ -183,9 +183,7 @@ int main(int argc, char *argv[])
     }
     else if (0 == strcmp(argv[current_arg], "-r") || (0 == strcmp(argv[current_arg], "--revision")))
     {
-      printf( "%i\n", 
-            #include "revision_number"
-            );
+      printf( "xx.xx\n");
       exit(0);
     }
     else if (0 == strcmp(argv[current_arg], "-bw"))

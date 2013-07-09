@@ -63,9 +63,9 @@ function sim_object_t()
     "PUMP2_AMP":{"tag":"PUMP2_AMP","description":"BOMBA 2","eu":"amps","decimal_places":1,"zero_cutoff":-12.5,"lo_alarm":0,"lo_caution":0,"hi_caution":30,"hi_alarm":35,"lo_alarm_enable":false,"lo_caution_enable":false,"hi_caution_enable":true,"hi_alarm_enable":true,"scale_lo":0,"scale_hi":40},
     "SLIDER":{"tag":"SLIDER","description":"Slider Value","eu":"%","decimal_places":1,"zero_cutoff":-100.0,"lo_alarm":0.0,"lo_caution":0.0,"hi_caution":0.0,"hi_alarm":0.0,"lo_alarm_enable":false,"lo_caution_enable":false,"hi_caution_enable":false,"hi_alarm_enable":false,"scale_lo":0,"scale_hi":100},
     "PUMP3_AMP":{"tag":"PUMP3_AMP","description":"BOMBA 3","eu":"amps","decimal_places":1,"zero_cutoff":-12.5,"lo_alarm":0,"lo_caution":0,"hi_caution":30,"hi_alarm":35,"lo_alarm_enable":false,"lo_caution_enable":false,"hi_caution_enable":true,"hi_alarm_enable":true,"scale_lo":0,"scale_hi":40},
-    "PUMP1_ON": {"tag":"PUMP1_ON","description":"Bomba 1 ON","lo_desc":"Off","hi_desc":"ON", "invert_pv":false},
-    "PUMP2_ON":{"tag":"PUMP2_ON","description":"Bomba 1 ON","lo_desc":"Off","hi_desc":"ON", "invert_pv":false},
-    "PUMP3_ON":{"tag":"PUMP3_ON","description":"Bomba 1 ON","lo_desc":"Off","hi_desc":"ON", "invert_pv":false},
+    "PUMP1_ON": {"tag":"PUMP1_ON","description":"Bomba 1 ON","lo_desc":"On","hi_desc":"Off", "invert_pv":false},
+    "PUMP2_ON":{"tag":"PUMP2_ON","description":"Bomba 1 ON","lo_desc":"On","hi_desc":"Off", "invert_pv":false},
+    "PUMP3_ON":{"tag":"PUMP3_ON","description":"Bomba 1 ON","lo_desc":"On","hi_desc":"Off", "invert_pv":false},
     "COV_810_A":{"tag":"COV_810_A","description":"COV-810-A","lo_desc":"to T811","hi_desc":"to T810", "invert_pv":false},
     "SPRAY_PUMP_ON":{"tag":"SPRAY_PUMP_ON","description":"Spray Pump ON","lo_desc":"Off","hi_desc":"On","invert_pv":false},
     "PVALVE_ON":{"tag":"PVALVE_ON","description":"Proportional Valve ON","lo_desc":"25","hi_desc":"75","invert_pv":false},
@@ -200,7 +200,7 @@ function next_value(tau, steady_state_value, last_value, delta_t)
       }
       this.rate = this.rate * 1.5;
       this.pv.LEVEL +=this.rate*0.1;
-      this.pv.LEVEL = ((this.pv.LEVEL+((Math.random()-0.5)*0.8)));
+      //this.pv.LEVEL = ((this.pv.LEVEL+((Math.random()-0.5)*0.8)));
       this.pv.KW = this.pv.LEVEL/3.2;
       this.pv.KWH += this.pv.KW / (3600 * 10); 
       this.pv.KWHM += this.pv.KW / (3600 * 10); 

@@ -32,7 +32,7 @@ static bool silent = false;
 void gen_elbo_ru(FILE *fp, double x, double y, double pipe_width, double elbo_width)
 {
   double small_width = elbo_width - pipe_width;
-  fprintf(fp, "<path fill=\"url(#%sRadial)\" d=\"M%lg,%lg a%lg,%lg 0 0,0 %lg,%lg h%lg a%lg,%lg 0 0,1 %lg,%lg z\"/>\n",
+  fprintf(fp, "<path fill=\"url(#%sRadial)\" d=\"M%lg %lg a%lg %lg 0 0 0 %lg %lg h%lg a%lg,%lg 0 0 1 %lg %lg z\"/>\n",
           pipe_color,
           /* M */ x, y + (pipe_width/2), 
           /* a */  elbo_width, elbo_width, elbo_width, -elbo_width,
@@ -45,7 +45,7 @@ void gen_elbo_ru(FILE *fp, double x, double y, double pipe_width, double elbo_wi
 void gen_elbo_rd(FILE *fp, double x, double y, double pipe_width, double elbo_width)
 {
   double small_width = elbo_width - pipe_width;
-  fprintf(fp, "<path fill=\"url(#%sRadial)\" d=\"M%lg,%lg a%lg,%lg 0 0,1 %lg,%lg h%lg a%lg,%lg 0 0,0 %lg,%lg z\"/>\n",
+  fprintf(fp, "<path fill=\"url(#%sRadial)\" d=\"M%lg %lg a%lg %lg 0 0 1 %lg %lg h%lg a%lg %lg 0 0 0 %lg %lg z\"/>\n",
           pipe_color,
           /* M */ x, y - (pipe_width/2), 
           /* a */  elbo_width, elbo_width, elbo_width, elbo_width,
@@ -58,7 +58,7 @@ void gen_elbo_rd(FILE *fp, double x, double y, double pipe_width, double elbo_wi
 void gen_elbo_lu(FILE *fp, double x, double y, double pipe_width, double elbo_width)
 {
   double small_width = elbo_width - pipe_width;
-  fprintf(fp, "<path fill=\"url(#%sRadial)\" d=\"M%lg,%lg a%lg,%lg 0 0,1 %lg,%lg h%lg a%lg,%lg 0 0,0 %lg,%lg z\"/>\n",
+  fprintf(fp, "<path fill=\"url(#%sRadial)\" d=\"M%lg %lg a%lg %lg 0 0 1 %lg %lg h%lg a%lg %lg 0 0 0 %lg %lg z\"/>\n",
           pipe_color,
           /* M */ x, y + (pipe_width/2), 
           /* a */  elbo_width, elbo_width, -elbo_width, -elbo_width,
@@ -71,7 +71,7 @@ void gen_elbo_lu(FILE *fp, double x, double y, double pipe_width, double elbo_wi
 void gen_elbo_ld(FILE *fp, double x, double y, double pipe_width, double elbo_width)
 {
   double small_width = elbo_width - pipe_width;
-  fprintf(fp, "<path fill=\"url(#%sRadial)\" d=\"M%lg,%lg a%lg,%lg 0 0,0 %lg,%lg h%lg a%lg,%lg 0 0,1 %lg,%lg z\"/>\n",
+  fprintf(fp, "<path fill=\"url(#%sRadial)\" d=\"M%lg %lg a%lg %lg 0 0,0 %lg %lg h%lg a%lg %lg 0 0 1 %lg %lg z\"/>\n",
           pipe_color,
           /* M */ x, y - (pipe_width/2), 
           /* a */  elbo_width, elbo_width, -elbo_width, elbo_width,

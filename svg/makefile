@@ -12,10 +12,10 @@ RTCOMMON=
 
 SILENT=-silent
 #SILENT=
-GENMODE=-sim
-#GENMODE=-react
-TINAMODE=-sim_file sim_tina.js
-#TINAMODE=-react
+#GENMODE=-sim
+GENMODE=-react
+#TINAMODE=-sim_file sim_tina.js
+TINAMODE=-react
 
 CPP=g++ -Wall -Werror -Wformat=2 -std=c++0x
 
@@ -100,6 +100,10 @@ pipes:
 pipes2d:
 	./gen_display $(SILENT) -f display.pipes2d.txt -o pipes2d.svg $(GENMODE)
 #	cp display.pipes2d.txt pipes2d.svg demofiles
+
+dash:
+	./gen_display $(SILENT) -f dash.txt -o dash.svg -sim 
+
 
 faceplates:
 	./gen_display $(SILENT) -f display.aibar.txt -o aibar.svg $(GENMODE)

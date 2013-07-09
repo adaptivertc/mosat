@@ -81,7 +81,7 @@ void pvalve_t::generate(plugin_data_t d, int argc, char **argv)
   double height = width;
   int type = atoi(argv[7]);
   int angle = atoi(argv[8]);
-  bool gen_popup = false;
+  bool gen_popup = true;
   double scale_factor = width / 50.0;
 //  double cx = x1 + (width / 2.0);
 //  double cy = y1 + (30.0 * scale_factor);
@@ -117,7 +117,7 @@ void pvalve_t::generate(plugin_data_t d, int argc, char **argv)
   if (type == 1)
   {
     fprintf(d.svg_fp, "  <path  \n");
-    fprintf(d.svg_fp, "     d=\"M%lg,%lg A%lg,%lg 0 1,1 %lg,%lg Z\"/>\n",
+    fprintf(d.svg_fp, "     d=\"M%lg %lg A%lg %lg 0 1 1 %lg %lg Z\"/>\n",
            x1 + (10.0 * scale_factor), y1 + (10.0 * scale_factor), 
            5.0 * scale_factor, 5.0 * scale_factor, 
            x1 + (40.0 * scale_factor), y1 + (10.0 * scale_factor));
@@ -148,7 +148,7 @@ void pvalve_t::generate(plugin_data_t d, int argc, char **argv)
     double px, py;
     find_a_place_nearby(&px, &py, x1, y1, width, width);
     fprintf(d.svg_fp, "<rect x=\"%lg\"  y=\"%lg\" width=\"%lg\" height=\"%lg\"\n"
-      "  onclick=\"show_popup(%lg,%lg,'Open', 'Close', '%s')\" visibility=\"hidden\"\n"
+      "  onclick=\"show_analog_popup(%lg,%lg,'%s')\" visibility=\"hidden\"\n"
       "  pointer-events=\"all\" onmouseover=\"this.style.cursor='pointer';\"/>\n",
          x1, y1, width, width, px, py, tag);
   }

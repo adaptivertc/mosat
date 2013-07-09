@@ -173,13 +173,12 @@ void pvalve3way_t::generate(plugin_data_t d, int argc, char **argv)
 
   if (gen_popup)
   {
-
     double px, py;
     find_a_place_nearby(&px, &py, x1, y1, width, width);
     fprintf(d.svg_fp, "<rect x=\"%lg\"  y=\"%lg\" width=\"%lg\" height=\"%lg\"\n"
-                      "  onclick=\"show_popup(%lg,%lg,'Open', 'Close', '%s')\" visibility=\"hidden\" \n"
-                      "  pointer-events=\"all\" onmouseover=\"this.style.cursor='pointer';\"/>\n",
-                      x1, y1, width, width, px, py, tag);
+      "  onclick=\"show_analog_popup(%lg,%lg,'%s')\" visibility=\"hidden\"\n"
+      "  pointer-events=\"all\" onmouseover=\"this.style.cursor='pointer';\"/>\n",
+         x1, y1, width, width, px, py, tag);
   }
 
   fprintf(d.js_fp, "// --  END insert for pvalve3way (%03d)\n", n_instance);

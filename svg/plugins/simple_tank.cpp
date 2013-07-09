@@ -36,7 +36,7 @@ void gen_cone_tank(FILE *fp, double x, double y, double width, double height, do
   fprintf(fp, "      x=\"%lg\" y=\"%lg\" width=\"%lg\" height=\"%lg\"/>\n", 
                           x, y + cap_height, width, height - cone_height - cap_height);
   fprintf(fp, "    <path fill=\"url(#%sRadial)\"\n", tank_color);
-  fprintf(fp, "      d=\"M%lg,%lg A%lg,%lg 0 1,1 %lg,%lg z M%lg,%lg L%lg,%lg\"/>\n",
+  fprintf(fp, "      d=\"M%lg %lg A%lg %lg 0 1 1 %lg %lg z M%lg %lg L%lg %lg\"/>\n",
                      //d="M0,50 A125,50 0 1,1 250,50 M250,100 L250,100"/>
                           x, y + cap_height, 
                           width / 2.0, cap_height, 
@@ -44,7 +44,7 @@ void gen_cone_tank(FILE *fp, double x, double y, double width, double height, do
                           x, y + (cap_height * 2.0),
                           x, y + (cap_height * 2.0)); 
   fprintf(fp, "    <path fill=\"url(#%sRadial)\"\n", tank_color);
-  fprintf(fp, "d=\"M%lg,%lg h%lg l%lg,%lg h%lg z m 0 %lg h 0\"/>\n",
+  fprintf(fp, "d=\"M%lg %lg h%lg l%lg %lg h%lg z m 0 %lg h 0\"/>\n",
                      //d="M0,400 h200 l-50,100 h-100 z "/>
                           x, y + height - cone_height,
                           width, 
@@ -63,7 +63,7 @@ void gen_pressure_tank(FILE *fp, double x, double y, double width, double height
   fprintf(fp, "      x=\"%lg\" y=\"%lg\" width=\"%lg\" height=\"%lg\"/>\n", 
                           x, y + top_height, width, height - (2 * top_height));
   fprintf(fp, "    <path fill=\"url(#%sRadial)\"\n", tank_color);
-  fprintf(fp, "      d=\"M%lg,%lg A%lg,%lg 0 1,1 %lg,%lg z M%lg,%lg L%lg,%lg\"/>\n",
+  fprintf(fp, "      d=\"M%lg %lg A%lg %lg 0 1 1 %lg %lg z M%lg %lg L%lg %lg\"/>\n",
                      //d="M0,50 A125,50 0 1,1 250,50 M250,100 L250,100"/>
                           x, y + top_height, 
                           width / 2.0, top_height, 
@@ -71,7 +71,7 @@ void gen_pressure_tank(FILE *fp, double x, double y, double width, double height
                           x, y + (top_height * 2.0),
                           x, y + (top_height * 2.0)); 
   fprintf(fp, "    <path fill=\"url(#%sRadial)\"\n", tank_color);
-  fprintf(fp, "      d=\"M%lg,%lg A%lg,%lg 0 1,0 %lg,%lg z M%lg,%lg L%lg,%lg\"/>\n",
+  fprintf(fp, "      d=\"M%lg %lg A%lg %lg 0 1,0 %lg %lg z M%lg %lg L%lg %lg\"/>\n",
                       //d="M0,450 A125,50 0 1,0 250,450 M250,400 L250,400"/>
                           x, y + height - (top_height), 
                           (width / 2.0), (top_height), 

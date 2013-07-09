@@ -139,7 +139,7 @@ void valve3way_t::generate(plugin_data_t d, int argc, char **argv)
   if (type == 1)
   {
     fprintf(d.svg_fp, "  <path  fill=\"%s\" \n", on_color);
-    fprintf(d.svg_fp, "     d=\"M%lg,%lg A%lg,%lg 0 1,1 %lg,%lg Z\"/>\n",
+    fprintf(d.svg_fp, "     d=\"M%lg %lg A%lg %lg 0 1 1 %lg %lg Z\"/>\n",
            x1 + (10.0 * scale_factor), y1 + (10.0 * scale_factor), 
            5.0 * scale_factor, 3.0 * scale_factor, 
            x1 + (40.0 * scale_factor), y1 + (10.0 * scale_factor));

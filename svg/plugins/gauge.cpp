@@ -73,7 +73,7 @@ void gauge_t::generate(plugin_data_t d, int argc, char **argv)
 
   int gtype = atol(argv[1]);
   const char *the_tag = argv[2];
-  const char *color = argv[3];
+  const char *the_color = argv[3];
   double x = atof(argv[4]);
   double y = atof(argv[5]);
   double width = atof(argv[6]);
@@ -82,6 +82,53 @@ void gauge_t::generate(plugin_data_t d, int argc, char **argv)
   //double cx = x + (width/2.0);
   //double cy = y + (height/2.0);
   //double stroke_width = height / 100.0;
+
+  const char *needle_color;
+  if (0 == strcasecmp(the_color, "yellow"))
+  {
+    needle_color = "url(#yellowLinearV)";
+    add_svg_library("yellow_gradients.svg");
+  }
+  else if (0 == strcasecmp(the_color, "black"))
+  {
+    needle_color = "url(#blackLinearV)";
+    add_svg_library("black_gradients.svg");
+  }
+  else if (0 == strcasecmp(the_color, "orange"))
+  {
+    needle_color = "url(#orangeLinearV)";
+    add_svg_library("orange_gradients.svg");
+  }
+  else if (0 == strcasecmp(the_color, "brown"))
+  {
+    needle_color = "url(#brownLinearV)";
+    add_svg_library("brown_gradients.svg");
+  }
+  else if (0 == strcasecmp(the_color, "white"))
+  {
+    needle_color = "url(#whiteLinearV)";
+    add_svg_library("white_gradients.svg");
+  }
+  else if (0 == strcasecmp(the_color, "red"))
+  {
+    needle_color = "url(#redLinearV)";
+    add_svg_library("red_gradients.svg");
+  }
+  else if (0 == strcasecmp(the_color, "blue"))
+  {
+    needle_color = "url(#blueLinearV)";
+    add_svg_library("blue_gradients.svg");
+  }
+  else if (0 == strcasecmp(the_color, "green"))
+  {
+    needle_color = "url(#greenLinearV)";
+    add_svg_library("green_gradients.svg");
+  }
+  else // Anything else, use the color 
+  {
+    needle_color = the_color;
+  }
+
 
   double cx = x + width / 2.0;
   double cy = y + width / 2.0;
@@ -177,7 +224,7 @@ void gauge_t::generate(plugin_data_t d, int argc, char **argv)
 
   char needle_d[200];
   double needle_r = width * (6.0/150.0);
-  snprintf(needle_d, sizeof(needle_d), "d=\"M%lg,%lg A%lg,%lg 0 1,1 %lg,%lg L%lg,%lg Z\"", 
+  snprintf(needle_d, sizeof(needle_d), "d=\"M%lg %lg A%lg %lg 0 1 1 %lg %lg L%lg %lg Z\"", 
                           cx - needle_r, cy, needle_r, needle_r, cx + needle_r, cy, 
                                        cx, y + (width * (140.0/150.0))),
   fprintf(d.svg_fp, "<!-- d: '%s' -->\n", needle_d); 
@@ -193,7 +240,7 @@ void gauge_t::generate(plugin_data_t d, int argc, char **argv)
   ***/
 
 
-  fprintf(d.svg_fp, "  <path fill=\"%s\" id=\"gauge_needle_%03d\" \n", color, n_instance);
+  fprintf(d.svg_fp, "  <path fill=\"%s\" id=\"gauge_needle_%03d\" \n", needle_color, n_instance);
   fprintf(d.svg_fp, "      %s />\n", needle_d);
 
 
@@ -201,7 +248,7 @@ void gauge_t::generate(plugin_data_t d, int argc, char **argv)
             cx, cy, width * (4.0/150.0));
 
   fprintf(d.svg_fp, "  <text id=\"gauge_pv_%03d\" x=\"%lg\" y=\"%lg\" font-size=\"%lg\" style=\"fill:%s;\" \n",
-                            n_instance, cx, cy + (width * (25.0/150.0)), width * (20.0/150.0), color);
+                            n_instance, cx, cy + (width * (25.0/150.0)), width * (20.0/150.0), the_color);
   fprintf(d.svg_fp, "       alignment-baseline=\"middle\" text-anchor=\"middle\">300</text>\n");
   fprintf(d.svg_fp, "\n");
 

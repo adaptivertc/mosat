@@ -126,7 +126,7 @@ void pump_t::generate(plugin_data_t d, int argc, char **argv)
   { 
     fprintf(d.svg_fp, "<path \n");
     fprintf(d.svg_fp, "%s", str);
-    fprintf(d.svg_fp, "  d=\"M%lg,%lg A%lg,%lg 0 1,0 %lg,%lg L%lg,%lg L%lg,%lg Z\"/>\n",
+    fprintf(d.svg_fp, "  d=\"M%lg %lg A%lg %lg 0 1 0 %lg %lg L%lg %lg L%lg %lg Z\"/>\n",
             x1, cy, 50.0 * scale_factor, 50.0 * scale_factor, 
             x1 + (30.0 * scale_factor), y1 + (4.1742430 * scale_factor),
             x1 + (30.0 * scale_factor), y1 - (10.0 * scale_factor),
@@ -136,7 +136,7 @@ void pump_t::generate(plugin_data_t d, int argc, char **argv)
   {
     fprintf(d.svg_fp, "<path \n");
     fprintf(d.svg_fp, "%s", str);
-    fprintf(d.svg_fp, "  d=\"M%lg,%lg A%lg,%lg 0 1,1 %lg,%lg L%lg,%lg L%lg,%lg Z\"/>\n",
+    fprintf(d.svg_fp, "  d=\"M%lg %lg A%lg %lg 0 1 1 %lg %lg L%lg %lg L%lg %lg Z\"/>\n",
             x2, cy, 50.0 * scale_factor, 50.0 * scale_factor, 
             x1 + (70.0 * scale_factor), y1 + (4.1742430 * scale_factor),
             x1 + (70.0 * scale_factor), y1 - (10.0 * scale_factor),
