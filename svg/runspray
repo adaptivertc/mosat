@@ -1,4 +1,4 @@
 #! /bin/sh
-gnome-terminal --command="/home/carr/trunk/react2/react2 -x -d /home/carr/trunk/react2/projects/spray/"
+gnome-terminal --command="../react2/react2 -x -d ../react2/projects/spray/"
 sleep 5
-gnome-terminal --command="node /home/carr/trunk/node/webserver.js 8888" 
+gnome-terminal --command="node ../node/webserver.js 8888" 
