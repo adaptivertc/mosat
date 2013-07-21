@@ -174,7 +174,7 @@ clean:
 
 
 install:
-	cp react /usr/local/bin
+	cp react2 /usr/local/bin
 	cp rtshmmain /usr/local/bin
 	cp rconsole /usr/local/bin
 	cp rdisplay /usr/local/bin
