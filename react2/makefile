@@ -44,7 +44,7 @@ CPP = g++  -g -std=c++0x $(CFLAGS)
 
 MAKE = make
 
-all: react2 integrate rconsole reactcgi rdrivers drivers2 rtshmmain ai.so project
+all: react2 react2-conf integrate rconsole reactcgi rdrivers drivers2 rtshmmain ai.so project
 
 %.o:	%.cpp $(INCLUDES)
 	$(CPP) -c  -o $@ $<
@@ -65,9 +65,12 @@ project:
 react2:	$(INCLUDES) $(OBJS) dbpoint_util.so reactmain.cpp read_fns.cpp create_fns.cpp
 	echo \"`svn info | grep -i revision | awk '{print $2}'`\" > revision_number
 	$(CPP) $(LDFLAGS) -rdynamic -o $@ $(OBJS) reactmain.cpp read_fns.cpp create_fns.cpp -lsqlite3 -lrt $(LIBS)
+react2-conf: 
+	# defaults to atemajac_pumps 
+	echo `pwd`/projects/atemajac_pumps/ > react2.conf
 
 react2sql:	$(INCLUDES) $(OBJS) dbpoint_util.so ./sqlite/sqlite_read_fns.cpp create_fns.cpp
-	echo \"`svn info | grep -i revision`\" > revision_number
+	echo \"`svn info | grep -i revision | awk '{print $2}'`\" > revision_number
 	$(CPP) $(LDFLAGS) -rdynamic -o $@ $(OBJS) $(LIBS) ./sqlite/sqlite_read_fns.cpp sqlite/sql_read_apconfig.cpp create_fns.cpp -lsqlite3 -lrt
 
 rtshmmain: rtshmmain.o ldiodriver.o reactshmio.o logfile.o reactshmio.h $(INCLUDES)
@@ -179,6 +182,8 @@ install:
 	cp rconsole /usr/local/bin
 	cp rdisplay /usr/local/bin
 	cp ai.so /usr/local/lib
+	cp -r projects /usr/local/etc/react2
+	cp react.conf /usr/local/etc/react2/
 
 ppcall:
 	make -f makefile.ppc
