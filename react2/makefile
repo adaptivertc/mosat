@@ -130,7 +130,7 @@ rconsole: reactconsole.cpp
 	$(CPP) -o rconsole reactconsole.cpp
 
 rdisplay: rtdisplay.cpp displaydata.cpp
-	$(CPP) -o rdisplay -l ncurses rtdisplay.cpp displaydata.cpp
+	$(CPP) -o rdisplay rtdisplay.cpp displaydata.cpp -lncurses
 
 cgiTest: cgiTest.c
 	$(CPP) -o  cgiTest cgiTest.c

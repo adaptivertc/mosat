@@ -53,10 +53,10 @@ void react_set_color(int y, int x, int n, short color)
      attr = A_NORMAL;
      break;
     case CAUTION_COLOR:
-     attr = A_BOLD;
+     attr = short(A_BOLD);
      break;
     case ALARM_COLOR:
-     attr = A_BOLD;
+     attr = short(A_BOLD);
      break;
     case FAILED_COLOR:
      attr = A_NORMAL;
@@ -72,7 +72,7 @@ void test_colors(short bg)
 {
   short colors[9] = {COLOR_BLACK, COLOR_BLACK, COLOR_RED, COLOR_GREEN, COLOR_YELLOW,
                       COLOR_BLUE, COLOR_MAGENTA, COLOR_CYAN, COLOR_WHITE};
-  short attrs[3] = {A_NORMAL, A_BOLD, A_DIM};
+  short attrs[3] = {short(A_NORMAL), short(A_BOLD), short(A_DIM)};
   int n = 0;
   int x = 5;
   int y = 5;
@@ -253,10 +253,10 @@ int main(int argc, char *argv[])
   }
   printf("I attached to shared memory, addr = %p\n", myshmp);
 
-  char *cp = (char *) myshmp;
+  // char *cp = (char *) myshmp;
   display_info_t dinfo;
   get_display_pointers(myshmp, &dinfo);
-  int n_display;
+  // int n_display;
   const int maxlist = 20;
   display_list_t dlist[maxlist];
   int nl = 0;
