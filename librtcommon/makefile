@@ -16,9 +16,11 @@ librtcommon.so: $(OBJS)
 librtcommon.a: $(OBJS) 
 	  ar r librtcommon.a $(OBJS) 
 
-
 install:
 	cp librtcommon.so /usr/local/lib
+
+uninstall:
+	cp /usr/local/lib/librtcommon.so
 
 installppc:
 	make -f makefile.ppc install

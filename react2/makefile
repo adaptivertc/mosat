@@ -10,7 +10,7 @@ SRC3 = script_support.cpp gen_case.cpp gen_script.cpp conio.cpp int.cpp
 SRC4 =	pci.cpp ldiodriver.cpp timeaccum.cpp error.cpp eval.cpp expr.cpp exprlist.cpp exprtree.cpp point.cpp calc.cpp lddbpoint.cpp analog.cpp discrete.cpp ac.cpp pump.cpp level.cpp timer_point.cpp analog_value.cpp discrete_value.cpp int_value.cpp
 SRCS =  $(SRC1) $(SRC2) $(SRC3) $(SRC4)
 
-.PHONY: clean all project rdrivers drivers2 install ppcall ppcclean armall armclean
+.PHONY: clean all project rdrivers drivers2 install uninstall ppcall ppcclean armall armclean
 
 export CPATH=../include
 
@@ -185,6 +185,15 @@ install:
 	mkdir -p /usr/local/etc/react2/projects
 	cp -r projects /usr/local/etc/react2/projects
 	cp react2.conf /usr/local/etc/react2/
+
+uninstall:
+	rm /usr/local/bin/react2
+	cp /usr/local/bin/rtshmmain
+	cp /usr/local/bin/rconsole
+	cp /usr/local/bin/rdisplay
+	cp /usr/local/lib/ai.so
+	rm -r /usr/local/etc/react2/projects
+	rm /usr/local/etc/react2/react2.conf
 
 ppcall:
 	make -f makefile.ppc
