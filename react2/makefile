@@ -44,7 +44,7 @@ CPP = g++  -g -std=c++0x $(CFLAGS)
 
 MAKE = make
 
-all: react2 react2-conf integrate rconsole reactcgi rdrivers drivers2 rtshmmain ai.so project
+all: react2 react2-conf rdisplay integrate rconsole reactcgi rdrivers drivers2 rtshmmain ai.so project
 
 %.o:	%.cpp $(INCLUDES)
 	$(CPP) -c  -o $@ $<
@@ -183,7 +183,7 @@ install:
 	cp rdisplay /usr/local/bin
 	cp ai.so /usr/local/lib
 	cp -r projects /usr/local/etc/react2
-	cp react.conf /usr/local/etc/react2/
+	cp react2.conf /usr/local/etc/react2/
 
 ppcall:
 	make -f makefile.ppc
