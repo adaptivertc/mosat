@@ -182,7 +182,8 @@ install:
 	cp rconsole /usr/local/bin
 	cp rdisplay /usr/local/bin
 	cp ai.so /usr/local/lib
-	cp -r projects /usr/local/etc/react2
+	mkdir -p /usr/local/etc/react2/projects
+	cp -r projects /usr/local/etc/react2/projects
 	cp react2.conf /usr/local/etc/react2/
 
 ppcall:
