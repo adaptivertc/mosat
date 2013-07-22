@@ -12,8 +12,8 @@ uninstall:
 	rm -rf /usr/local/etc/react2/svg
 
 install-ubuntu-inits:
-	cp init/ubuntu/init/react2web.conf /etc/init/
-	cp init/ubuntu/init.d/react2web /etc/init.d/
+	cp inits/ubuntu/init/react2web.conf /etc/init/
+	cp inits/ubuntu/init.d/react2web /etc/init.d/
 	chmod a+x /etc/init.d/react2web
 	update-rc.d react2web defaults
 
