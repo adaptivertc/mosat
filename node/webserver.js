@@ -6,7 +6,7 @@ var net = require("net");
 
 var react_port = 5707;
 var react_host = "localhost";
-var html_root = "../svg";
+var html_root = __dirname + "/../svg";
 
 var port = process.argv[2] || 8888;
 process.chdir(html_root);
