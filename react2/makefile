@@ -44,7 +44,7 @@ CPP = g++  -g -std=c++0x $(CFLAGS)
 
 MAKE = make
 
-all: react2 react2-conf rdisplay integrate rconsole reactcgi rdrivers drivers2 rtshmmain ai.so project
+all: react2 rdisplay integrate rconsole reactcgi rdrivers drivers2 rtshmmain ai.so project
 
 %.o:	%.cpp $(INCLUDES)
 	$(CPP) -c  -o $@ $<
@@ -65,9 +65,6 @@ project:
 react2:	$(INCLUDES) $(OBJS) dbpoint_util.so reactmain.cpp read_fns.cpp create_fns.cpp
 	echo \"`svn info | grep -i revision | awk '{print $2}'`\" > revision_number
 	$(CPP) $(LDFLAGS) -rdynamic -o $@ $(OBJS) reactmain.cpp read_fns.cpp create_fns.cpp -lsqlite3 -lrt $(LIBS)
-react2-conf: 
-	# defaults to atemajac_pumps 
-	echo `pwd`/projects/atemajac_pumps/ > react2.conf
 
 react2sql:	$(INCLUDES) $(OBJS) dbpoint_util.so ./sqlite/sqlite_read_fns.cpp create_fns.cpp
 	echo \"`svn info | grep -i revision | awk '{print $2}'`\" > revision_number
@@ -183,11 +180,15 @@ install:
 	cp ai.so /usr/local/lib
 	mkdir -p /usr/local/etc/react2/
 	cp -r projects /usr/local/etc/react2/
-	cp react2.conf /usr/local/etc/react2/
+	mkdir /usr/local/etc/react2/default/
+	# default config file for environment variables for the debian-daemon
+	touch /usr/local/etc/react2/default/react2
 	# create drivers directory
 	for d in `find drivers -name "*.so" | cut -d'/' -f2`; do mkdir -p /usr/local/etc/react2/drivers/$$d; done
 	# copy drivers
 	for f in `find drivers -name "*.so"`; do cp $$f /usr/local/etc/react2/$$f; done
+	# create a default init file for configuration plastic sim
+	echo /usr/local/etc/react2/projects/plasticsim > /usr/local/etc/react2/react2.conf
 
 uninstall:
 	rm /usr/local/bin/react2
@@ -195,9 +196,21 @@ uninstall:
 	rm /usr/local/bin/rconsole
 	rm /usr/local/bin/rdisplay
 	rm /usr/local/lib/ai.so
+	rm -r /usr/local/etc/react2/default
 	rm -r /usr/local/etc/react2/projects
 	rm /usr/local/etc/react2/react2.conf
 	rm -r /usr/local/etc/react2/drivers
+
+install-ubuntu-inits:
+	cp inits/ubuntu/init/react2.conf /etc/init/
+	cp inits/ubuntu/init.d/react2 /etc/init.d/
+	chmod a+x /etc/init.d/react2
+	update-rc.d react2 defaults
+
+uninstall-ubuntu-inits:
+	update-rc.d react2 remove
+	rm /etc/init/react2.conf
+	rm /etc/init.d/react2
 
 ppcall:
 	make -f makefile.ppc
