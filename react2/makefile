@@ -175,25 +175,29 @@ clean:
 #	for i in $(DRIVERDIRS2); do cd "$$i"; $(MAKE) clean; cd ../..; done
 #	for i in $(PROJECTDIRS); do cd "$$i"; $(MAKE) clean; cd ../..; done
 
-
 install:
 	cp react2 /usr/local/bin
 	cp rtshmmain /usr/local/bin
 	cp rconsole /usr/local/bin
 	cp rdisplay /usr/local/bin
 	cp ai.so /usr/local/lib
-	mkdir -p /usr/local/etc/react2/projects
-	cp -r projects /usr/local/etc/react2/projects
+	mkdir -p /usr/local/etc/react2/
+	cp -r projects /usr/local/etc/react2/
 	cp react2.conf /usr/local/etc/react2/
+	# create drivers directory
+	for d in `find drivers -name "*.so" | cut -d'/' -f2`; do mkdir -p /usr/local/etc/react2/drivers/$$d; done
+	# copy drivers
+	for f in `find drivers -name "*.so"`; do cp $$f /usr/local/etc/react2/$$f; done
 
 uninstall:
 	rm /usr/local/bin/react2
-	cp /usr/local/bin/rtshmmain
-	cp /usr/local/bin/rconsole
-	cp /usr/local/bin/rdisplay
-	cp /usr/local/lib/ai.so
+	rm /usr/local/bin/rtshmmain
+	rm /usr/local/bin/rconsole
+	rm /usr/local/bin/rdisplay
+	rm /usr/local/lib/ai.so
 	rm -r /usr/local/etc/react2/projects
 	rm /usr/local/etc/react2/react2.conf
+	rm -r /usr/local/etc/react2/drivers
 
 ppcall:
 	make -f makefile.ppc
