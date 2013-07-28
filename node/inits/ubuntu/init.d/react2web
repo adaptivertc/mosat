@@ -67,7 +67,7 @@ NODE_PATH="/usr/lib/node_modules"
 APPLICATION_DIRECTORY="/usr/local/etc/react2/web"
 APPLICATION_START="webserver.js"
 PIDFILE=/var/run/react2web.pid
-LOGFILE=/varlog/react2web.pid
+LOGFILE=/var/log/react2web.log
  
 # Add node to the path for situations in which the environment is passed.
 PATH=$NODE_BIN_DIR:$PATH
