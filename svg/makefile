@@ -19,7 +19,7 @@ TINAMODE=-react
 
 CPP=g++ -Wall -Werror -Wformat=2 -std=c++0x
 
-all: so_files gen_points gen_bar gen_tank gen_display svgs
+all: so_files gen_points gen_bar gen_tank gen_display svgs doc
 
 
 so_files: gen_so_makefile
@@ -47,6 +47,8 @@ dtest.svg: display.txt gen_display so_files
 install: 
 	mkdir /usr/local/etc/react2/svg
 	cp auge.svg spray.slider.svg slider.svg feed.svg cool.svg switch.svg spray.svg tina.svg transfer.svg imasa.svg pipes.svg pipes2d.svg dash.svg aibar.svg airound.svg aineedle.svg aoround.svg di_rect.svg dopopup.svg doswitch.svg /usr/local/etc/react2/svg/
+	cp svgdoc.html /usr/local/react2/svg/
+	cp svgdoc.txt /usr/local/react2/svg/
 
 uninstall:
 	rm -rf /usr/local/etc/react2/svg
