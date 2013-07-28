@@ -49,6 +49,7 @@ run_by_init() {
 }
 
 check_for_no_start() {
+    continue
 }
 
 check_dev_null() {
@@ -72,6 +73,7 @@ check_privsep_dir() {
 }
 
 check_config() {
+    continue
 }
 
 export PATH="${PATH:+$PATH:}/usr/sbin:/sbin:/usr/local/bin"
