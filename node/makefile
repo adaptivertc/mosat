@@ -7,7 +7,7 @@ install:
 	cp webserver.js /usr/local/etc/react2/web/
 
 uninstall:
-	rm -rf /usr/lcoal/etc/react2/web
+	rm -rf /usr/local/etc/react2/web
 
 install-ubuntu-inits:
 	cp inits/ubuntu/init/react2web.conf /etc/init/
