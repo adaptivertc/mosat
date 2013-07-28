@@ -19,7 +19,7 @@ TINAMODE=-react
 
 CPP=g++ -Wall -Werror -Wformat=2 -std=c++0x
 
-all: so_files gen_points gen_bar gen_tank gen_display
+all: so_files gen_points gen_bar gen_tank gen_display svgs
 
 
 so_files: gen_so_makefile
@@ -45,7 +45,8 @@ dtest.svg: display.txt gen_display so_files
 	./gen_display $(SILENT) -f display.txt -d ./plugins/ -o dtest.svg $(GENMODE)
 
 install: 
-	sudo cp ai.svg /var/www
+	mkdir /usr/local/etc/react2/svg
+	cp *.svg /usr/local/etc/react2/svg/
 
 depend:
 	gcc -MM -MF depend gen_display.cpp
