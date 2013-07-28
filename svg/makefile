@@ -46,7 +46,10 @@ dtest.svg: display.txt gen_display so_files
 
 install: 
 	mkdir /usr/local/etc/react2/svg
-	cp *.svg /usr/local/etc/react2/svg/
+	cp auge.svg spray.slider.svg slider.svg feed.svg cool.svg switch.svg spray.svg tina.svg transfer.svg imasa.svg pipes.svg pipes2d.svg dash.svg aibar.svg airound.svg aineedle.svg aoround.svg di_rect.svg dopopup.svg doswitch.svg /usr/local/etc/react2/svg/
+
+uninstall:
+	rm -rf /usr/local/etc/react2/svg
 
 depend:
 	gcc -MM -MF depend gen_display.cpp
