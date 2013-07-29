@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
 {
    int device;
    int my_id;
-   int i, j;
+   //int i, j;
 
    char dev_name[60];
    if (argc > 1)
@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
    // write(device, "x", 1);
    char read_data[100];
    char write_data[100];
-   int total_read = 0;
+   //int total_read = 0;
    int count = 0;
    printf("Using device: %s, Id: %d\n", dev_name, my_id);
    while (1)

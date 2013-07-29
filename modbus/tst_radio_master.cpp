@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
   printf("------------------ line %d, msg = %s\n", __LINE__, argv[3]);
   const char *dev_name;
   int device;
-  int j;
+  //int j;
   /**
   Mbm_trame trame;
   int result;
@@ -98,8 +98,8 @@ int main(int argc, char *argv[])
 
 
    /*** Write ***/
-   char write_data;
-   write_data = 'x';
+   //char write_data;
+   //write_data = 'x';
 
    while (1)
    {
@@ -114,7 +114,7 @@ int main(int argc, char *argv[])
      printf("Writing . . .\n ");
 
      write(device,buf,strlen(buf)-1); // Write everything but the character return.
-     printf("Write done - %d chars\n", strlen(buf)-1);
+     printf("Write done - %d chars\n", int(strlen(buf)-1));
      char read_data[100];
      int total_read = 0;
      while (1)
