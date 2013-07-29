@@ -46,9 +46,9 @@ dtest.svg: display.txt gen_display so_files
 
 install: 
 	mkdir /usr/local/etc/react2/svg
-	cp feed.svg cool.svg spray.svg transfer.svg tina.svg switch.svg imasa.svg pipes.svg pipes2d.svg gauge.svg slider.svg /usr/local/react2/svg/
-	cp svgdoc.html /usr/local/react2/svg/
-	cp svgdoc.txt /usr/local/react2/svg/
+	cp feed.svg cool.svg spray.svg transfer.svg tina.svg switch.svg imasa.svg pipes.svg pipes2d.svg gauge.svg slider.svg /usr/local/etc/react2/svg/
+	cp svgdoc.html /usr/local/etc/react2/svg/
+	cp svgdoc.txt /usr/local/etc/react2/svg/
 
 uninstall:
 	rm -rf /usr/local/etc/react2/svg
