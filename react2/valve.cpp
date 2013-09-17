@@ -66,10 +66,10 @@ void valve_point_t::update(void)
 {
   point_lock_t l(&this->point_lock, tag);
 
-  bool open = open_point->get_pv();
-  bool closed = closed_point->get_pv();
+  bool is_open = open_point->get_pv();
+  bool is_closed = closed_point->get_pv();
   double tnow = db->get_time();
-  bool valid = (!pv && !open && closed) || (pv && open && !closed);
+  bool valid = (!pv && !is_open && is_closed) || (pv && is_open && !is_closed);
   
   if (this->in_transition)
   {

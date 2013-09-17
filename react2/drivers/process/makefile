@@ -4,10 +4,10 @@ export CPATH=../../../include:../../
 all: libprocess_drv.so 
 
 process_drv.o:	process_drv.cpp process_drv.h
-	g++ -std=c++0x -Wall -fpic -c process_drv.cpp 
+	g++ -std=c++0x -Wall -fPIC -c process_drv.cpp 
 
 process_mq.o:	process_mq.cpp process_drv.h
-	g++ -std=c++0x -Wall -fpic -c process_mq.cpp 
+	g++ -std=c++0x -Wall -fPIC -c process_mq.cpp 
 
 libprocess_drv.so: process_drv.o process_mq.o
 	g++ -std=c++0x -Wall -o libprocess_drv.so -shared process_drv.o process_mq.o -lrt ../../../modbus/librtmodbus.a 

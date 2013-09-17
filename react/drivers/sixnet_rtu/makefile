@@ -9,7 +9,7 @@ libsixnet_rtu.so: sixnet_rtu.o
 #/opt/sixnet/powerpc-linux/lib/libsxio.a  /opt/sixnet/powerpc-linux/lib/libsxiodb.a 
 
 sixnet_rtu.o:	sixnet_rtu.cpp
-	$(CPP) -fpic -c sixnet_rtu.cpp 
+	$(CPP) -fPIC -c sixnet_rtu.cpp 
 
 clean:
 	rm *.o *.so

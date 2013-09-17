@@ -52,7 +52,7 @@ Besides generating (inserting) code directly into the files specified above, a p
 
 1) void add_js_library(const char *file_name);
 
-This function adds a javascript library to the list of javascript library to be inserted into the final SVG file, eliminating any duplicates so that each library is only inserted one time. The definition of animation objects should be handled in this manner.
+This function adds a javascript library to the list of javascript library to be inserted into the final SVG file, eliminating any duplicates so that each library is only inserted one time. The inclusion of animation objects should be handled in this manner.
 
 2) void add_svg_library(const char *file_name);
 

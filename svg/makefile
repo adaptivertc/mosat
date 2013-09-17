@@ -12,10 +12,10 @@ RTCOMMON=
 
 SILENT=-silent
 #SILENT=
-#GENMODE=-sim
-GENMODE=-react
-#TINAMODE=-sim_file sim_tina.js
-TINAMODE=-react
+GENMODE=-sim
+#GENMODE=-react
+TINAMODE=-sim_file sim_tina.js
+#TINAMODE=-react
 
 CPP=g++ -Wall -Werror -Wformat=2 -std=c++0x
 

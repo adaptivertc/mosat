@@ -777,7 +777,8 @@ void parse_file(const char *fname)
   generate_case_start();
 
   char line[500];
-  for (int i=0; NULL != fgets(line, sizeof(line), fp); i++)
+  //for (int i=0; NULL != fgets(line, sizeof(line), fp); i++)
+  while(NULL != fgets(line, sizeof(line), fp))
   {
     if (0 == strncmp(line, "/*#SCRIPT_OBJECT#",17))
     {
@@ -798,7 +799,8 @@ void parse_file(const char *fname)
 	int n_functions = 0;
 	char *fn_names[20];
 	char *fn_types[20];
-        for (int i=0; NULL != fgets(line, sizeof(line), fp); i++)
+        //for (int i=0; NULL != fgets(line, sizeof(line), fp); i++)
+        while(NULL != fgets(line, sizeof(line), fp))
 	{
           if (0 == strncmp(line, "};", 2))
 	  {

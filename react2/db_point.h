@@ -934,8 +934,8 @@ private:
   double volume_lo_hi;
 
   double current_level;
-  bool lo_state;
-  bool hi_state;
+  //bool lo_state;
+  //bool hi_state;
   bool pumping;
 
 

@@ -5,7 +5,7 @@ libsimacdrv.so: sim_ac.o exp_sim.o ac_unit_sim.o random_tools.o sim_ac.h
 	g++ -Wall -o libsimacdrv.so -shared sim_ac.o exp_sim.o ac_unit_sim.o random_tools.o
 
 simac.o: sim_ac.cpp
-	g++ -Wall -c -fpic sim_ac.cpp
+	g++ -Wall -c -fPIC sim_ac.cpp
 
 exp_sim: exp_sim.cpp exp_sim.h
 	g++ -Wall -o exp_sim exp_sim.cpp

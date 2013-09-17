@@ -30,16 +30,18 @@ DRIVERDIRS2 = drivers/sim_tina drivers/dallas_1wire drivers/sim_ac drivers/proce
 
 PROJECTDIRS = projects/silos
 
-CDEBUG =
+CDEBUG = 
 
-CFLAGS = -Wall -Wformat=2 -Werror 
+CFLAGS = -std=c++0x -Wall -Wformat=2 -Werror -Wshadow 
+
+#CFLAGS = -Wall -Wformat=2 -Werror -Weffc++ 
 #CFLAGS = -Wall -Wformat=2 -Werror -Wshadow
 #CFLAGS = -Wall -Wextra -Wold-style-cast
 #CFLAGS=-Wall -Wstrict-prototypes -O2
 
 LDFLAGS =
 
-CPP = g++  -g -std=c++0x $(CFLAGS)
+CPP = g++ $(CFLAGS)
 
 
 MAKE = make

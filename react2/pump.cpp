@@ -135,7 +135,7 @@ void pump_point_t::update(void)
   //printf("PUMP UPDATE: %s\n", tag);
   if (change_started)
   {
-    time_t now = time(NULL);
+    //time_t now = time(NULL);
     if (now > (last_change_time + int(delay) + 1))
     {
       //printf("%s", change_start_line);
@@ -150,7 +150,7 @@ void pump_point_t::update(void)
   if (state != last_state_at_change)
   {
     char datestr[40];
-    time_t now = time(NULL); 
+    //time_t now = time(NULL); 
     struct tm mytm;
     localtime_r(&now, &mytm);
     strftime(datestr, sizeof(datestr), "%Y-%m-%dT%H:%M:%S%z", &mytm); // Changed to use the ISO standard for timestamp.

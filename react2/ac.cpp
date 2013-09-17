@@ -175,7 +175,7 @@ void ac_point_t::update(void)
 
   if (change_started)
   {
-    time_t now = time(NULL);
+    //time_t now = time(NULL);
     if (now > (last_change_time + int(delay) + 1))
     {
       logfile->vprint("------- %s: Delay expired, %0.1lf\n", tag, delay);

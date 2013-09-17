@@ -314,7 +314,7 @@ bool parse_function_call(char *str, int *argc, char *argv[], int max,
     while (!done)
     {
       //int n = strcspn(str, "(),.");
-      char *p = find_str_ignore_strings(start, ",");
+      p = find_str_ignore_strings(start, ",");
       //char *p;
       //for (p = start; (*p != '\0') && (*p != ','); p++);
       ////if (*p == '\0')

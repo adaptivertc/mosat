@@ -16,6 +16,10 @@ To checkout the latest version of the source code on another computer, use the f
 
 svn co https://mosat.svn.sourceforge.net/svnroot/mosat/trunk/
 
+The new command after the updates to sourceforge :-(
+
+svn co svn+ssh://USERNAME@svn.code.sf.net/p/mosat/code/
+
 There are basically six important projects here:
 
 1) Mosat, wich is a departure monitoring system currently in use at SITEUR (Light Rail System Guadalajara, Mexico). It keeps track of the departures at the extreme of line 1 and line 2, and could be easily adapted to any light rail system. With this, the operators in central control will know the departures in real-time, and how man seconds early/late each departure was. There are also monthly reports generated for management.
