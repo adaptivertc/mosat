@@ -36,6 +36,21 @@ Header file for procedures in common.lib.
 //#include <io.h>
 #include <time.h>
 
+#define DISALLOW_COPY_AND_ASSIGN(TypeName) \
+  TypeName(const TypeName&);               \
+  void operator=(const TypeName&)
+/**
+  From Google
+  Use MACRO as below to disable copy and assign if you do not declare your own.
+
+  class MyClass {
+
+  private:
+    DISALLOW_COPY_AND_ASSIGN(MyClass);
+  };
+**/
+
+
 #define FAILED (-1)
 #define SUCCESS (0)
 

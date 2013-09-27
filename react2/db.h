@@ -101,7 +101,7 @@ private:
   db_point_t **db_points[MAX_POINT_TYPES];
   db_point_t **read_one_point_type(db_point_factory_t *factory, const char *a_home_dir, int *n);
   void read_factory_points(const char *a_home_dir);
-
+  DISALLOW_COPY_AND_ASSIGN(react_t);
 public:
   bool global_alarm_disable;
   ai_point_t **ai_points;

@@ -180,6 +180,8 @@ public:
   virtual ~db_point_t(void) {};
 protected:
   sem_t point_lock;
+private:
+  DISALLOW_COPY_AND_ASSIGN(db_point_t);
 };
 
 class field_point_t
