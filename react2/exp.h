@@ -90,7 +90,7 @@ enum  expr_type_t
 
 union expr_data_t
 {
-  char tag[20];
+  tag_t tag;
   double number;
   bool boolean;
 };

@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
       printf(" *** success returned!!\n");
     }
     char *p, *val, *tag;
-    bool found = false;
+    //bool found = false;
     tag = line;
     bool colon_next = true; // we first expect a colon before the first coma
     //bool found_dot = false;
@@ -106,7 +106,7 @@ int main(int argc, char *argv[])
         if (colon_next)
         {
           *p = '\0';
-          found = true;
+          //found = true;
           val = p + 1;
           printf("\ntag: '%s', val: %lf\n", tag, atof(val));
           colon_next = false;

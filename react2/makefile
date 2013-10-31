@@ -66,7 +66,7 @@ project:
 
 react2:	$(INCLUDES) $(OBJS) dbpoint_util.so reactmain.cpp read_fns.cpp create_fns.cpp
 	echo \"`svn info | grep -i revision | awk '{print $2}'`\" > revision_number
-	$(CPP) $(LDFLAGS) -rdynamic -o $@ $(OBJS) reactmain.cpp read_fns.cpp create_fns.cpp -lsqlite3 -lrt $(LIBS)
+	$(CPP) $(LDFLAGS) -rdynamic -o $@ $(OBJS) reactmain.cpp read_fns.cpp create_fns.cpp -lsqlite3 -lrt -lpthread $(LIBS)
 
 react2sql:	$(INCLUDES) $(OBJS) dbpoint_util.so ./sqlite/sqlite_read_fns.cpp create_fns.cpp
 	echo \"`svn info | grep -i revision | awk '{print $2}'`\" > revision_number

@@ -1,5 +1,4 @@
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -40,6 +39,7 @@ void process_file(const char *fname, FILE *fp_out)
          (argv != NULL); 
             argv = df.next(&argc, &line_num))
   {
+    static n_bool = 1;
     if (argc < 2)
     {
       printf("Wrong number of args, line %d\n", line_num);
@@ -70,7 +70,7 @@ void process_file(const char *fname, FILE *fp_out)
       fprintf(fp_out, "<tr>\n");
       fprintf(fp_out, "  <td class=\"name\">%s: </td>\n", argv[1]);
       fprintf(fp_out, "  <td class=\"input\">\n");
-      fprintf(fp_out, "    <input TYPE=\"text\" name=\"string_%s\" size=\"%s\" value=\"\">\n", argv[2], argv[3]);
+      fprintf(fp_out, "    <input TYPE=\"text\" name=\"string_%d\" size=\"12\" value=\"0\">\n", n_bool);
       fprintf(fp_out, "  </td>\n");
       fprintf(fp_out, "  <td> \n");
       fprintf(fp_out, "    4 a %s caracteres \n", argv[3]);

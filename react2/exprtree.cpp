@@ -259,7 +259,9 @@ expr_tree_t *get_expr_tree(expr_list_t *list, int n_tokens)
 	 tree->left->type = DISCRETE_EXPR;
 	 tree->left->left = NULL;
 	 tree->left->right = NULL;
-	 strcpy(tree->left->data.tag, list[1].data.tag);
+	 //strcpy(tree->left->data.tag, list[1].data.tag);
+	 snprintf(tree->left->data.tag, sizeof(tree->left->data.tag), "%s", 
+                list[1].data.tag);
 	 tree = check_end(list + 2, n_tokens - 2, tree);
 	 return tree;
        }
@@ -322,7 +324,9 @@ expr_tree_t *get_expr_tree(expr_list_t *list, int n_tokens)
 	 tree->left->type = ANALOG_EXPR;
 	 tree->left->left = NULL;
 	 tree->left->right = NULL;
-	 strcpy(tree->left->data.tag, list[1].data.tag);
+	 //strcpy(tree->left->data.tag, list[1].data.tag);
+	 snprintf(tree->left->data.tag, sizeof(tree->left->data.tag), "%s", 
+                list[1].data.tag);
 	 tree = check_end(list + 2, n_tokens - 2, tree);
 	 return tree;
        }
@@ -414,7 +418,9 @@ expr_tree_t *get_expr_tree(expr_list_t *list, int n_tokens)
        tree->type = ANALOG_EXPR;
        tree->left = NULL;
        tree->right = NULL;
-       strcpy(tree->data.tag, list[0].data.tag);
+       //strcpy(tree->data.tag, list[0].data.tag);
+       snprintf(tree->data.tag, sizeof(tree->data.tag), "%s", 
+                list[0].data.tag);
        tree = check_end(list + 1, n_tokens - 1, tree);
        return tree;
      case DISCRETE_TAG:
@@ -423,7 +429,9 @@ expr_tree_t *get_expr_tree(expr_list_t *list, int n_tokens)
        tree->type = DISCRETE_EXPR;
        tree->left = NULL;
        tree->right = NULL;
-       strcpy(tree->data.tag, list[0].data.tag);
+       //strcpy(tree->data.tag, list[0].data.tag);
+       snprintf(tree->data.tag, sizeof(tree->data.tag), "%s", 
+                list[0].data.tag);
        tree = check_end(list + 1, n_tokens - 1, tree);
        return tree;
      case NUMBER:
