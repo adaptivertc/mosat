@@ -21,27 +21,27 @@ all: onboard onboard_2x24 onboard_4x40 drive odo_mode_4x40 odo_mode sim_CBTC CBT
 
 onboard:	onboard.o spd_display.o spd_comm.o spd_select.o spd_algo_DC.o spd_algo_RD.o spd_algo_VV.o \
 		profile_reader.o  sim_reader.o alg_compare.o $(INCLUDES)
-	$(CPP) -o onboard -lncurses onboard.o spd_display.o spd_comm.o spd_select.o sim_reader.o alg_compare.o \
+	$(CPP) -o onboard onboard.o spd_display.o spd_comm.o spd_select.o sim_reader.o alg_compare.o \
 			spd_algo_DC.o spd_algo_RD.o  spd_algo_VV.o profile_reader.o  $(RTMODBUS) $(RTCOMMON) -lrt -lncurses
 
 sim_CBTC:	sim_CBTC.o spd_display.o spd_comm.o spd_select.o spd_algo_DC.o spd_algo_RD.o spd_algo_VV.o \
 		profile_reader.o  sim_reader.o alg_compare.o $(INCLUDES)
-	$(CPP) -o sim_CBTC -lncurses sim_CBTC.o spd_display.o spd_comm.o spd_select.o sim_reader.o alg_compare.o \
+	$(CPP) -o sim_CBTC sim_CBTC.o spd_display.o spd_comm.o spd_select.o sim_reader.o alg_compare.o \
 			spd_algo_DC.o spd_algo_RD.o  spd_algo_VV.o profile_reader.o  $(RTMODBUS) $(RTCOMMON) -lrt -lncurses
 
 onboard_4x40:	onboard.o spd_display_4x40.o spd_comm.o spd_select.o spd_algo_DC.o spd_algo_RD.o spd_algo_VV.o \
 		profile_reader.o  sim_reader.o alg_compare.o $(INCLUDES)
-	$(CPP) -o onboard_4x40 -lncurses onboard.o spd_display_4x40.o spd_comm.o spd_select.o sim_reader.o alg_compare.o \
+	$(CPP) -o onboard_4x40 onboard.o spd_display_4x40.o spd_comm.o spd_select.o sim_reader.o alg_compare.o \
 			spd_algo_DC.o spd_algo_RD.o  spd_algo_VV.o profile_reader.o -lpthread $(RTMODBUS) $(RTCOMMON) -lrt -lncurses
 
 drive:	onboard.o spd_display.o spd_comm_drive.o spd_select.o spd_algo_DC.o spd_algo_RD.o spd_algo_VV.o \
 		profile_reader.o  sim_reader.o alg_compare.o $(INCLUDES)
-	$(CPP) -o drive -lncurses onboard.o spd_display.o spd_comm_drive.o spd_select.o sim_reader.o alg_compare.o \
+	$(CPP) -o drive onboard.o spd_display.o spd_comm_drive.o spd_select.o sim_reader.o alg_compare.o \
 			spd_algo_DC.o spd_algo_RD.o  spd_algo_VV.o profile_reader.o $(RTMODBUS) $(RTCOMMON) -lrt -lncurses
 
 onboard_2x24:	onboard.o spd_display_2x24.o spd_comm.o d2x24_curses.o spd_select.o sim_reader.o \
 		spd_algo_DC.o spd_algo_RD.o  spd_algo_VV.o profile_reader.o alg_compare.o $(INCLUDES)
-	$(CPP) -o onboard_2x24 -lncurses onboard.o spd_display_2x24.o spd_comm.o sim_reader.o profile_reader.o alg_compare.o \
+	$(CPP) -o onboard_2x24 onboard.o spd_display_2x24.o spd_comm.o sim_reader.o profile_reader.o alg_compare.o \
 		d2x24_curses.o spd_select.o  spd_algo_DC.o spd_algo_RD.o  spd_algo_VV.o $(RTMODBUS) $(RTCOMMON) -lrt -lncurses
 
 lcdmesg: lcdmesg.c
@@ -61,15 +61,15 @@ mo_test: mo_test.cpp
 
 autonomous_mode: autonomous_mode.o spd_comm.o make_profile_dir.o 
 	$(CPP) -o autonomous_mode autonomous_mode.o spd_comm.o make_profile_dir.o  \
-	  -lncurses $(RTMODBUS) $(RTCOMMON) -lrt -lncurses
+	  $(RTMODBUS) $(RTCOMMON) -lrt -lncurses
 
 odo_mode: odo_mode.o odo_display.o spd_comm.o $(INCLUDES)
 	$(CPP) -o odo_mode odo_mode.o spd_comm.o \
-	  odo_display.o -lncurses $(RTMODBUS) $(RTCOMMON) -lrt -lncurses
+	  odo_display.o $(RTMODBUS) $(RTCOMMON) -lrt -lncurses -lpthread
 
 odo_mode_4x40: odo_mode.o odo_display_4x40.o spd_comm.o 
 	$(CPP) -o odo_mode_4x40 -DUSE_PRINTF odo_mode.o spd_comm.o \
-	  odo_display_4x40.o -lncurses $(RTMODBUS) $(RTCOMMON) -lrt -lncurses
+	  odo_display_4x40.o $(RTMODBUS) $(RTCOMMON) -lrt -lncurses -lpthread
 
 #profile_reader: profile_reader.cpp profile_reader.h
 #	$(CPP) -o profile_reader profile_reader.cpp  $(RTCOMMON)
