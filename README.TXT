@@ -14,11 +14,7 @@ apt-get install subversion
 
 To checkout the latest version of the source code on another computer, use the following command:
 
-svn co https://mosat.svn.sourceforge.net/svnroot/mosat/trunk/
-
-The new command after the updates to sourceforge :-(
-
-svn co svn+ssh://USERNAME@svn.code.sf.net/p/mosat/code/
+git clone https://github.com/adaptivertc/mosat.git
 
 There are basically six important projects here:
 
